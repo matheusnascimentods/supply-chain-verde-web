@@ -1,59 +1,222 @@
-# SupplyChainVerdeWeb
+# Supply Chain Verde — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.24.
+SPA Angular para rastreabilidade de cadeias de suprimentos sustentáveis. A aplicação consome a API REST do projeto `supply-chain-verde-api` e atende consumidores públicos, fornecedores, auditores, gestores e administradores.
 
-## Development server
+## Status
 
-To start a local development server, run:
+O repositório está no bootstrap do frontend Angular. A estrutura funcional está especificada, mas as features de autenticação, rastreabilidade e domínio ainda precisam ser implementadas conforme o checklist em [`docs/tasks.md`](docs/tasks.md).
 
-```bash
-ng serve
+O conceito visual e os fluxos principais estão no arquivo do Figma:
+
+[Supply Chain Verde — Login](https://www.figma.com/design/RwTUc1H65VlQ0qsKmBu48A/Supply-Chain-Verde---Login?node-id=0-1)
+
+As telas foram exportadas para [`screenshots/`](screenshots/) usando o MCP do Composio.
+
+## Telas
+
+### Login
+
+![Tela de login](/docs/screenshots/01-login.png)
+
+### Rastreabilidade pública
+
+![Tela de rastreabilidade pública](/docs/screenshots/02-traceability.png)
+
+### Dashboard
+
+![Dashboard](/docs/screenshots/03-dashboard.png)
+
+### Lista de fornecedores
+
+![Lista de fornecedores](/docs/screenshots/04-suppliers-list.png)
+
+### Ranking de fornecedores
+
+![Ranking de fornecedores](/docs/screenshots/05-suppliers-ranking.png)
+
+### Formulário de fornecedor
+
+![Formulário de fornecedor](/docs/screenshots/06-supplier-form.png)
+
+### Lista de produtos
+
+![Lista de produtos](/docs/screenshots/07-products-list.png)
+
+### Formulário de produto
+
+![Formulário de produto](/docs/screenshots/08-product-form.png)
+
+### Lista de certificações
+
+![Lista de certificações](/docs/screenshots/09-certifications-list.png)
+
+### Lista de lotes
+
+![Lista de lotes](/docs/screenshots/10-batches-list.png)
+
+### Etapas da cadeia
+
+![Etapas da cadeia](/docs/screenshots/11-chain-stages-list.png)
+
+### Nova etapa sem transporte
+
+![Nova etapa sem transporte](/docs/screenshots/12-chain-form-no-transport.png)
+
+### Nova etapa com transporte
+
+![Nova etapa com transporte](/docs/screenshots/13-chain-form-transport.png)
+
+### Cálculo de emissão
+
+![Cálculo de emissão](/docs/screenshots/14-chain-form-calculate-emission.png)
+
+### Emissão calculada
+
+![Emissão calculada](/docs/screenshots/15-chain-form-emission-calculated.png)
+
+### Lista de relatórios
+
+![Lista de relatórios](/docs/screenshots/16-reports-list.png)
+
+### Lista de usuários
+
+![Lista de usuários](/docs/screenshots/17-users-list.png)
+
+As imagens documentam uma aplicação desktop de 1440 px de largura, com navegação lateral nas telas autenticadas, cartões e tabelas para os dados operacionais e fluxo progressivo para registro de etapas e cálculo de emissões.
+
+## Objetivo do produto
+
+Permitir que cada lote tenha uma jornada rastreável, desde a produção até o varejo, com fornecedores, certificações, etapas logísticas e pegada de carbono associados. Consumidores consultam a origem por uma URL pública ou QR Code; usuários internos trabalham conforme o perfil de acesso.
+
+## Perfis de acesso
+
+| Perfil | Responsabilidades |
+| --- | --- |
+| **Público** | Consulta a rastreabilidade de um lote sem autenticação |
+| **admin** | Administração de usuários, fornecedores, produtos e auditoria |
+| **manager** | Fornecedores, produtos, ranking e geração de relatórios |
+| **auditor** | Validação de certificações, relatórios e auditoria do sistema |
+| **supplier** | Perfil próprio, certificações, lotes, etapas e relatórios próprios |
+
+## Telas e fluxos principais
+
+### Autenticação
+
+- Tela de login com email e senha.
+- Requisição `POST /auth/login`.
+- Mensagem genérica para credenciais inválidas, sem revelar qual campo falhou.
+- Sessão armazenada em `sessionStorage`, com o papel do usuário derivado do JWT.
+- Expiração do JWT encerra a sessão e redireciona para `/login`.
+
+### Rastreabilidade pública
+
+Disponível em `/rastreio/:batchId`, sem autenticação. Exibe produto, fornecedor, linha do tempo da cadeia, endereços de origem e destino, transporte e emissões de carbono por etapa e no total. Um lote inexistente deve gerar uma mensagem amigável.
+
+### Área autenticada
+
+Após o login, o usuário acessa um dashboard adaptado ao papel:
+
+- **admin:** usuários e auditoria do sistema;
+- **manager:** fornecedores, ranking, produtos e relatórios;
+- **auditor:** certificações, relatórios e auditoria;
+- **supplier:** perfil, certificações, lotes, etapas e relatórios próprios.
+
+O fluxo operacional do fornecedor é:
+
+```text
+Novo lote → nova etapa → transporte (quando aplicável) → cálculo de emissão
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Sitemap e API principal
 
-## Code scaffolding
+| Rota/tela | Perfis | Endpoint(s) |
+| --- | --- | --- |
+| Rastreabilidade do lote | Público | `GET /batches/{id}/traceability`, `GET /batches/{id}/carbon-footprint` |
+| Login | Todos | `POST /auth/login` |
+| Dashboard | Autenticados | Conteúdo por perfil |
+| Usuários | admin | `POST /users`, `GET /users/me`, `PATCH /users/{id}/role` |
+| Auditoria | admin, auditor | `GET /audit-logs` |
+| Fornecedores | admin, manager | `POST/PUT/GET /suppliers` |
+| Ranking | admin, manager, auditor, supplier | `GET /suppliers/ranking` |
+| Produtos | admin, manager | `POST/PUT/GET /products` |
+| Relatórios | manager, auditor, supplier | `POST/GET /suppliers/{id}/reports` |
+| Certificações | auditor, supplier | `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status` |
+| Lotes | supplier, admin, manager, auditor | `POST /batches`, `GET /suppliers/{id}/batches` |
+| Etapas da cadeia | supplier, manager, admin | `POST/GET /batches/{id}/stages`, `POST /stages/{id}/transport`, `POST /stages/{id}/emission` |
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Arquitetura planejada
 
-```bash
-ng generate component component-name
+O projeto usa organização por feature e componentes standalone:
+
+```text
+src/app/
+├── core/       # sessão, guards e interceptors
+├── shared/     # componentes reutilizáveis
+├── features/   # auth, traceability, dashboard e domínios
+└── environments/
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Decisões técnicas:
+
+- Angular 21 com standalone components e sem `NgModule`;
+- Signals e services por feature, sem NgRx;
+- Reactive Forms;
+- Tailwind CSS;
+- Zod para validar respostas da API em runtime e derivar tipos/enums;
+- `HttpInterceptorFn` para anexar o JWT e tratar `401`/`403`;
+- guards funcionais para autenticação e autorização por papel;
+- lazy loading nas rotas de features;
+- Cypress para os fluxos E2E principais.
+
+## Como executar
+
+### Pré-requisitos
+
+- Node.js compatível com Angular 21;
+- npm 10 ou superior;
+- API backend disponível, quando forem implementadas as chamadas reais.
+
+### Instalação
 
 ```bash
-ng generate --help
+npm install
 ```
 
-## Building
-
-To build the project run:
+### Servidor de desenvolvimento
 
 ```bash
-ng build
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+A aplicação fica disponível em `http://localhost:4200/`.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Build de produção
 
 ```bash
-ng test
+npm run build
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### Testes unitários
 
 ```bash
-ng e2e
+npm test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+O projeto ainda não define uma suíte E2E no `package.json`; o plano prevê Cypress para login, rastreabilidade pública e registro de lote.
 
-## Additional Resources
+## Documentação do projeto
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [`docs/spec.md`](docs/spec.md): requisitos funcionais, perfis, telas, sitemap e fluxos.
+- [`docs/plan.md`](docs/plan.md): arquitetura Angular, estado, autenticação, contratos e convenções.
+- [`docs/tasks.md`](docs/tasks.md): checklist de implementação por fases.
+
+## Fora do escopo do MVP
+
+- Exportação de relatórios em PDF ou CSV;
+- dashboards com múltiplos gráficos elaborados;
+- autocadastro público de fornecedores;
+- refresh token e renovação automática de sessão.
+
+## Licença
+
+Projeto acadêmico do grupo Supply Chain Verde.
