@@ -16,71 +16,71 @@ As telas foram exportadas para [`screenshots/`](screenshots/) usando o MCP do Co
 
 ### Login
 
-![Tela de login](screenshots/01-login.png)
+![Tela de login](/docs/screenshots/01-login.png)
 
 ### Rastreabilidade pública
 
-![Tela de rastreabilidade pública](screenshots/02-traceability.png)
+![Tela de rastreabilidade pública](/docs/screenshots/02-traceability.png)
 
 ### Dashboard
 
-![Dashboard](screenshots/03-dashboard.png)
+![Dashboard](/docs/screenshots/03-dashboard.png)
 
 ### Lista de fornecedores
 
-![Lista de fornecedores](screenshots/04-suppliers-list.png)
+![Lista de fornecedores](/docs/screenshots/04-suppliers-list.png)
 
 ### Ranking de fornecedores
 
-![Ranking de fornecedores](screenshots/05-suppliers-ranking.png)
+![Ranking de fornecedores](/docs/screenshots/05-suppliers-ranking.png)
 
 ### Formulário de fornecedor
 
-![Formulário de fornecedor](screenshots/06-supplier-form.png)
+![Formulário de fornecedor](/docs/screenshots/06-supplier-form.png)
 
 ### Lista de produtos
 
-![Lista de produtos](screenshots/07-products-list.png)
+![Lista de produtos](/docs/screenshots/07-products-list.png)
 
 ### Formulário de produto
 
-![Formulário de produto](screenshots/08-product-form.png)
+![Formulário de produto](/docs/screenshots/08-product-form.png)
 
 ### Lista de certificações
 
-![Lista de certificações](screenshots/09-certifications-list.png)
+![Lista de certificações](/docs/screenshots/09-certifications-list.png)
 
 ### Lista de lotes
 
-![Lista de lotes](screenshots/10-batches-list.png)
+![Lista de lotes](/docs/screenshots/10-batches-list.png)
 
 ### Etapas da cadeia
 
-![Etapas da cadeia](screenshots/11-chain-stages-list.png)
+![Etapas da cadeia](/docs/screenshots/11-chain-stages-list.png)
 
 ### Nova etapa sem transporte
 
-![Nova etapa sem transporte](screenshots/12-chain-form-no-transport.png)
+![Nova etapa sem transporte](/docs/screenshots/12-chain-form-no-transport.png)
 
 ### Nova etapa com transporte
 
-![Nova etapa com transporte](screenshots/13-chain-form-transport.png)
+![Nova etapa com transporte](/docs/screenshots/13-chain-form-transport.png)
 
 ### Cálculo de emissão
 
-![Cálculo de emissão](screenshots/14-chain-form-calculate-emission.png)
+![Cálculo de emissão](/docs/screenshots/14-chain-form-calculate-emission.png)
 
 ### Emissão calculada
 
-![Emissão calculada](screenshots/15-chain-form-emission-calculated.png)
+![Emissão calculada](/docs/screenshots/15-chain-form-emission-calculated.png)
 
 ### Lista de relatórios
 
-![Lista de relatórios](screenshots/16-reports-list.png)
+![Lista de relatórios](/docs/screenshots/16-reports-list.png)
 
 ### Lista de usuários
 
-![Lista de usuários](screenshots/17-users-list.png)
+![Lista de usuários](/docs/screenshots/17-users-list.png)
 
 As imagens documentam uma aplicação desktop de 1440 px de largura, com navegação lateral nas telas autenticadas, cartões e tabelas para os dados operacionais e fluxo progressivo para registro de etapas e cálculo de emissões.
 
