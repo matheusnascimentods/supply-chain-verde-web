@@ -14,11 +14,12 @@
 
 - [x] Projeto Angular criado (`ng new`, Tailwind, standalone components, sem SSR/SSG)
 - [x] `.github/copilot-instructions.md` gerado pelo Angular CLI
-- [ ] Complementar `.github/copilot-instructions.md` com o conteúdo deste `plan.md` (stack, estrutura de pastas, convenções — preservando o conteúdo genérico do Angular já presente)
-- [ ] Instalar Zod (`npm install zod`)
-- [ ] Configurar `environments/environment.ts` e `environment.prod.ts` (`apiUrl`)
-- [ ] Confirmar `.gitignore` cobre `node_modules/`, `dist/`, arquivos de IDE
-- [ ] Rodar `ng serve` e confirmar que a aplicação sobe vazia antes de criar qualquer feature
+- [x] Complementar `.github/copilot-instructions.md` com o conteúdo deste `plan.md` (stack, estrutura de pastas, convenções — preservando o conteúdo genérico do Angular já presente)
+- [x] Instalar Zod (`npm install zod`)
+- [x] Criar `.env.example` com todas as variáveis de ambiente conhecidas
+- [x] Configurar `environments/environment.ts` e `environment.prod.ts` (`apiUrl`)
+- [x] Confirmar `.gitignore` cobre `node_modules/`, `dist/`, arquivos de IDE
+- [x] Rodar `ng serve` e confirmar que a aplicação sobe vazia antes de criar qualquer feature
 
 ---
 
