@@ -27,14 +27,14 @@
 
 *Depende apenas da Fase 0. Bloqueia guards/interceptor de todas as features protegidas.*
 
-- [ ] Definir `UserRole` (schema Zod compartilhado — decidir local: `core/session/index.schema.ts`)
-- [ ] `core/session/index.service.ts` — signal de `role`, leitura/escrita em `sessionStorage` (ver plan.md seção 6)
-- [ ] `core/session/index.service.spec.ts`
-- [ ] `core/guards/index.guard.ts` — `authGuard` (bloqueia sem sessão) + `roleGuard` (compara `route.data['roles']` com a sessão)
-- [ ] `core/guards/index.guard.spec.ts`
-- [ ] `core/interceptors/index.interceptor.ts` — injeta `Authorization: Bearer`, trata `401`/`403` global (logout automático)
-- [ ] `core/interceptors/index.interceptor.spec.ts`
-- [ ] Registrar guard/interceptor em `app.config.ts` (`provideHttpClient(withInterceptors([...]))`)
+- [x] Definir `UserRole` (schema Zod compartilhado — decidir local: `core/session/index.schema.ts`)
+- [x] `core/session/index.service.ts` — signal de `role`, leitura/escrita em `sessionStorage` (ver plan.md seção 6)
+- [x] `core/session/index.service.spec.ts`
+- [x] `core/guards/index.guard.ts` — `authGuard` (bloqueia sem sessão) + `roleGuard` (compara `route.data['roles']` com a sessão)
+- [x] `core/guards/index.guard.spec.ts`
+- [x] `core/interceptors/index.interceptor.ts` — injeta `Authorization: Bearer`, trata `401`/`403` global (logout automático)
+- [x] `core/interceptors/index.interceptor.spec.ts`
+- [x] Registrar guard/interceptor em `app.config.ts` (`provideHttpClient(withInterceptors([...]))`)
 
 ---
 
