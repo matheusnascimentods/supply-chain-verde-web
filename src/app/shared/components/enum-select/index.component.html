@@ -1,0 +1,52 @@
+<div class="flex flex-col gap-1 w-full" data-testid="enum-select-container">
+  @if (label()) {
+    <label
+      [for]="id()"
+      class="text-sm font-medium text-slate-700 dark:text-slate-200"
+      data-testid="enum-select-label"
+    >
+      {{ label() }}
+      @if (required()) {
+        <span class="text-red-500" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  <select
+    [id]="id()"
+    [name]="name() || id()"
+    [disabled]="effectiveDisabled()"
+    [required]="required()"
+    [attr.aria-required]="required()"
+    [attr.aria-invalid]="!!error()"
+    [attr.aria-describedby]="error() ? id() + '-error' : null"
+    [value]="effectiveValue()"
+    (change)="onSelectChange($event)"
+    (blur)="onBlur()"
+    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-xs transition-colors focus:border-emerald-500 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:disabled:bg-slate-700/50 cursor-pointer"
+    data-testid="enum-select-element"
+  >
+    @if (placeholder()) {
+      <option value="" [disabled]="required()">
+        {{ placeholder() }}
+      </option>
+    }
+
+    @for (opt of parsedOptions(); track opt) {
+      <option [value]="opt">
+        {{ getOptionLabel(opt) }}
+      </option>
+    }
+  </select>
+
+  @if (error()) {
+    <p
+      [id]="id() + '-error'"
+      class="text-xs text-red-600 dark:text-red-400"
+      role="alert"
+      data-testid="enum-select-error"
+    >
+      {{ error() }}
+    </p>
+  }
+</div>
