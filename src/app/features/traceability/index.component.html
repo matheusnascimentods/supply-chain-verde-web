@@ -1,0 +1,83 @@
+<div class="min-h-screen bg-slate-50 text-slate-800">
+  <header class="flex h-[72px] items-center justify-between border border-slate-200 bg-white px-5 sm:px-10 lg:px-[4.5%]">
+    <a class="flex items-center gap-2.5 text-base font-bold tracking-tight text-slate-900" href="/" aria-label="Supply Chain Verde, início">
+      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-green-600 text-white" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 4c-7 0-12 2-13 7-1 4 2 7 6 6 5-1 7-6 7-13Z"/><path d="M4 21c2-5 5-8 11-11"/>
+        </svg>
+      </span>
+      <span>Supply Chain Verde</span>
+    </a>
+    <span class="text-sm text-slate-500">Rastreabilidade Pública</span>
+  </header>
+
+  <main class="mx-auto my-10 max-w-[960px] bg-white px-6 py-8 sm:px-8 sm:py-9 lg:px-8">
+    @if (isLoading()) {
+      <section class="py-20 text-center" aria-label="Carregando rastreabilidade">
+        <app-spinner [message]="'Carregando a jornada do lote…'" />
+      </section>
+    } @else if (errorMessage()) {
+      <section class="rounded-lg border border-amber-200 bg-amber-50 p-6" role="alert">
+        <h1 class="font-semibold text-amber-950">Lote não encontrado</h1>
+        <p class="mt-1 text-sm text-amber-900">{{ errorMessage() }}</p>
+      </section>
+    } @else if (traceability(); as batch) {
+      <section aria-labelledby="batch-heading">
+        <h1 id="batch-heading" class="text-[28px] font-bold leading-tight tracking-tight text-slate-900">{{ batch.productName }}</h1>
+        <dl class="mt-5 grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-[180px_90px_1fr] sm:gap-x-6">
+          <div><dt class="text-xs text-slate-500">Fornecedor</dt><dd class="mt-1 font-semibold text-slate-900">{{ batch.supplierName }}</dd></div>
+          <div><dt class="text-xs text-slate-500">Quantidade</dt><dd class="mt-1 font-semibold text-slate-900">{{ batch.quantity }}</dd></div>
+          <div><dt class="text-xs text-slate-500">Produzido em</dt><dd class="mt-1 font-semibold text-slate-900">{{ batch.producedAt | date:'dd/MM/yyyy' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="mt-12 grid gap-8 sm:mt-[58px] sm:grid-cols-[280px_1fr] sm:items-center sm:gap-6" aria-labelledby="carbon-heading">
+        <div>
+          <h2 id="carbon-heading" class="text-sm text-slate-500">Pegada de Carbono Total</h2>
+          <p class="mt-1 text-4xl font-bold leading-none tracking-tight text-green-600 sm:text-[38px]">{{ footprint()?.totalCo2Kg ?? batch.totalCo2Kg }} kg CO₂e</p>
+        </div>
+        @if (footprint(); as carbon) {
+          <app-carbon-chart [emissions]="carbon.emissionsByStage" [stages]="batch.stages" />
+        }
+      </section>
+
+      <section class="mt-12" aria-labelledby="journey-heading">
+        <h2 id="journey-heading" class="text-lg font-bold text-slate-900">Jornada do Lote</h2>
+        @if (batch.stages.length) {
+          <ol class="mt-2">
+            @for (stage of batch.stages; track stage.chainId; let last = $last) {
+              <li class="grid grid-cols-[10px_1fr] gap-x-4 border-b border-slate-200 py-5 last:border-b-0">
+                <span class="mt-1.5 h-2.5 w-2.5 rounded-full bg-green-600" aria-hidden="true"></span>
+                <article class="min-w-0">
+                  <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <h3 class="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700">{{ stageLabel(stage.stageType) }}</h3>
+                    <p class="text-xs text-slate-500">
+                      {{ stage.startedAt | date:'dd/MM/yyyy' }}@if (stage.endedAt) { – {{ stage.endedAt | date:'dd/MM/yyyy' }} }
+                    </p>
+                  </div>
+                  <p class="mt-1.5 text-sm text-slate-700">
+                    @if (stage.originAddress; as origin) {
+                      {{ origin.city }}, {{ origin.state }}
+                    } @else { Origem não informada }
+                    @if (stage.destinationAddress; as destination) {
+                      <span aria-hidden="true"> → </span>{{ destination.city }}, {{ destination.state }}
+                    }
+                  </p>
+                  @if (stage.transport; as transport) {
+                    <p class="mt-0.5 text-sm text-slate-500">{{ transportLabel(transport.transportMode) }} · {{ transport.fuelType }} · {{ transport.distance }} km</p>
+                  }
+                  @if (stage.emission; as emission) {
+                    <p class="mt-0.5 text-sm font-medium text-slate-900">Emissão: {{ emission.co2Kg }} kg CO₂e</p>
+                  }
+                </article>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="mt-4 text-sm text-slate-600">Ainda não há etapas registradas para este lote.</p>
+        }
+      </section>
+      <p class="sr-only">Lote #{{ batch.batchId }} · {{ batch.quantity }} unidades</p>
+    }
+  </main>
+</div>
