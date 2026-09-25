@@ -103,9 +103,9 @@ _Depende de: Fase 2 (shared components). Não depende de Fase 1/3 (rota pública
 
 _Depende de: Fase 1 (role da sessão)._
 
-- [ ] `src/app/features/dashboard/index.component.ts` — componente de dashboard com conteúdo condicional conforme `role`
-- [ ] `src/app/features/dashboard/index.component.html` — template do dashboard role-aware
-- [ ] `src/app/features/dashboard/index.component.spec.ts` — testes unitários do dashboard
+- [x] `src/app/features/dashboard/index.component.ts` — componente de dashboard com conteúdo condicional conforme `role`
+- [x] `src/app/features/dashboard/index.component.html` — template do dashboard role-aware
+- [x] `src/app/features/dashboard/index.component.spec.ts` — testes unitários do dashboard
 
 ---
 
