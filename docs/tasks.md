@@ -87,15 +87,15 @@ _Depende de: Fase 1 (session), Fase 2 (error-toast/spinner)._
 
 _Depende de: Fase 2 (shared components). Não depende de Fase 1/3 (rota pública, paralelizável com Auth)._
 
-- [ ] `src/app/features/traceability/index.schema.ts` — schemas Zod para `BatchTraceabilityResponseDTO` e `CarbonFootprintResponseDTO`
-- [ ] `src/app/features/traceability/index.service.ts` — chamadas `GET /batches/{id}/traceability` e `GET /batches/{id}/carbon-footprint`
-- [ ] `src/app/features/traceability/index.service.spec.ts` — testes unitários do serviço de rastreabilidade
-- [ ] `src/app/features/traceability/index.component.ts` — tela principal de rastreamento com timeline das etapas e tratamento de erro amigável
-- [ ] `src/app/features/traceability/index.component.html` — template da timeline pública
-- [ ] `src/app/features/traceability/index.component.spec.ts` — testes unitários do componente de rastreabilidade
-- [ ] `src/app/features/traceability/carbon-chart/index.component.ts` — componente gráfico de emissão de CO₂ por etapa
-- [ ] `src/app/features/traceability/carbon-chart/index.component.html` — template do gráfico de pegada de carbono
-- [ ] `src/app/features/traceability/carbon-chart/index.component.spec.ts` — testes unitários do gráfico de carbono
+- [x] `src/app/features/traceability/index.schema.ts` — schemas Zod para `BatchTraceabilityResponseDTO` e `CarbonFootprintResponseDTO`
+- [x] `src/app/features/traceability/index.service.ts` — chamadas `GET /batches/{id}/traceability` e `GET /batches/{id}/carbon-footprint`
+- [x] `src/app/features/traceability/index.service.spec.ts` — testes unitários do serviço de rastreabilidade
+- [x] `src/app/features/traceability/index.component.ts` — tela principal de rastreamento com timeline das etapas e tratamento de erro amigável
+- [x] `src/app/features/traceability/index.component.html` — template da timeline pública
+- [x] `src/app/features/traceability/index.component.spec.ts` — testes unitários do componente de rastreabilidade
+- [x] `src/app/features/traceability/carbon-chart/index.component.ts` — componente gráfico de emissão de CO₂ por etapa
+- [x] `src/app/features/traceability/carbon-chart/index.component.html` — template do gráfico de pegada de carbono
+- [x] `src/app/features/traceability/carbon-chart/index.component.spec.ts` — testes unitários do gráfico de carbono
 
 ---
 
