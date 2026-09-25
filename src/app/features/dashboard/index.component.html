@@ -1,0 +1,63 @@
+<div class="min-h-screen bg-white text-slate-800 md:flex">
+  <aside class="border-b border-slate-200 bg-white p-5 md:min-h-screen md:w-60 md:shrink-0 md:border-b-0 md:border-r md:px-5 md:py-6">
+    <a routerLink="/dashboard" class="flex items-center gap-2.5 text-sm font-bold tracking-tight text-slate-900" aria-label="Supply Chain Verde, dashboard">
+      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-green-600 text-white" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 4c-7 0-12 2-13 7-1 4 2 7 6 6 5-1 7-6 7-13Z"/><path d="M4 21c2-5 5-8 11-11"/>
+        </svg>
+      </span>
+      <span>Supply Chain Verde</span>
+    </a>
+
+    <nav class="mt-6 flex gap-2 overflow-x-auto md:flex-col" aria-label="Navegação principal">
+      <a routerLink="/dashboard" routerLinkActive="bg-green-50 text-green-700" [routerLinkActiveOptions]="{ exact: true }" class="shrink-0 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Dashboard</a>
+      @if (content(); as dashboard) {
+        @for (link of dashboard.links; track link.path) {
+          <a [routerLink]="link.path" class="shrink-0 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">{{ link.label }}</a>
+        }
+      }
+    </nav>
+  </aside>
+
+  <main class="min-w-0 flex-1 px-6 py-8 sm:px-10 sm:py-10 lg:px-12">
+    @if (content(); as dashboard) {
+      <header class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-[28px]">Bem-vindo(a)</h1>
+          <p class="mt-1 text-sm text-slate-500">{{ dashboard.description }}</p>
+        </div>
+        <span class="rounded-full bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700">{{ roleLabel() }}</span>
+      </header>
+
+      <section class="mt-12" aria-labelledby="overview-heading">
+        <div class="mb-5">
+          <h2 id="overview-heading" class="text-lg font-bold text-slate-900">{{ dashboard.title }}</h2>
+          <p class="mt-1 text-sm text-slate-500">Escolha uma área para continuar.</p>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          @for (link of dashboard.links; track link.path) {
+            <a [routerLink]="link.path" class="group rounded-xl border border-slate-200 bg-white p-5 transition hover:border-green-300 hover:bg-green-50/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+              <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-green-700" aria-hidden="true">
+                <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"/><path d="M8 8h8M8 12h8M8 16h4"/>
+                </svg>
+              </span>
+              <h3 class="mt-4 font-semibold text-slate-900">{{ link.label }}</h3>
+              <span class="mt-2 inline-flex items-center gap-1 text-sm text-green-700">Acessar <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">→</span></span>
+            </a>
+          }
+        </div>
+      </section>
+
+      <section class="mt-8 rounded-xl border border-green-100 bg-green-50/60 p-5" aria-label="Resumo do perfil">
+        <p class="text-sm font-semibold text-green-900">Seu espaço de trabalho</p>
+        <p class="mt-1 text-sm leading-6 text-slate-600">{{ dashboard.description }} Os dados e registros disponíveis aparecem nas áreas acima.</p>
+      </section>
+    } @else {
+      <section class="rounded-xl border border-slate-200 bg-slate-50 p-6" role="status">
+        <h1 class="font-semibold text-slate-900">Perfil indisponível</h1>
+        <p class="mt-1 text-sm text-slate-600">Entre novamente para carregar o dashboard do seu perfil.</p>
+      </section>
+    }
+  </main>
+</div>
