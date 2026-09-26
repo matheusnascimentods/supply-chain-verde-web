@@ -1,1 +1,66 @@
-<main class="mx-auto max-w-6xl p-6"><h1 class="mb-5 text-2xl font-bold">Auditoria do sistema</h1><form class="mb-5 grid gap-3 rounded-xl border bg-white p-4 sm:grid-cols-4" (ngSubmit)="search()"><label class="grid gap-1">ID do usuário<input class="rounded border p-2" name="userId" [ngModel]="userId()" (ngModelChange)="userId.set($event)" /></label><label class="grid gap-1">Ação<input class="rounded border p-2" name="action" [ngModel]="action()" (ngModelChange)="action.set($event)" /></label><label class="grid gap-1">Tabela afetada<input class="rounded border p-2" name="tableAffected" [ngModel]="tableAffected()" (ngModelChange)="tableAffected.set($event)" /></label><button class="self-end rounded bg-emerald-700 px-4 py-2 text-white">Filtrar</button></form>@if(error()){<p role="alert" class="mb-3 text-red-700">{{error()}}</p>}<div class="overflow-x-auto rounded-xl border bg-white"><table class="w-full text-left text-sm"><thead class="bg-slate-50"><tr><th class="p-3">Data</th><th class="p-3">Usuário</th><th class="p-3">Ação</th><th class="p-3">Tabela</th><th class="p-3">Detalhes</th></tr></thead><tbody>@for(log of logs();track log.auditLogId){<tr class="border-t"><td class="p-3">{{log.timestamp|date:'short'}}</td><td class="p-3">{{log.userId}}</td><td class="p-3">{{log.action}}</td><td class="p-3">{{log.tableAffected ?? log.entity}}</td><td class="p-3">{{log.details}}</td></tr>}@empty{<tr><td class="p-3" colspan="5">Nenhum registro encontrado.</td></tr>}</tbody></table></div></main>
+<main class="min-h-screen min-w-0 flex-1 bg-white px-6 py-8 text-slate-800 sm:px-10 sm:py-10">
+  <div class="mx-auto max-w-7xl">
+    <header class="mb-7">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Auditoria do sistema</h1>
+      <p class="mt-1 text-sm text-slate-500">Consulte o histórico de ações realizadas na plataforma.</p>
+    </header>
+
+    <form class="mb-6 grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-4" (ngSubmit)="applyFilters()">
+      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="audit-user-id">
+        ID do usuário
+        <input id="audit-user-id" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="number" min="1" name="userId" [ngModel]="userId()" (ngModelChange)="userId.set($event)" placeholder="Ex.: 12" />
+      </label>
+      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="audit-action">
+        Ação
+        <select id="audit-action" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="action" [ngModel]="action()" (ngModelChange)="action.set($event)">
+          <option value="">Todas as ações</option>
+          @for (option of actions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="audit-table">
+        Tabela afetada
+        <input id="audit-table" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" name="tableAffected" [ngModel]="tableAffected()" (ngModelChange)="tableAffected.set($event)" placeholder="Ex.: supplier" />
+      </label>
+      <div class="flex items-end gap-2">
+        <button class="flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" type="submit">Filtrar</button>
+        <button class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50" type="button" (click)="clearFilters()">Limpar</button>
+      </div>
+    </form>
+
+    @if (error()) {
+      <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+        <p>{{ error() }}</p>
+        <button class="mt-2 font-semibold underline" type="button" (click)="load()">Tentar novamente</button>
+      </div>
+    } @else if (loading()) {
+      <div class="rounded-2xl border border-slate-200 p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando registros de auditoria…</div>
+    } @else {
+      <section class="overflow-x-auto rounded-2xl border border-slate-200 bg-white px-5 shadow-sm sm:px-7" aria-label="Registros de auditoria">
+        <table class="w-full min-w-[680px] text-left text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 text-slate-500">
+              <th scope="col" class="py-5 pr-5 font-normal">Data e hora</th>
+              <th scope="col" class="px-5 py-5 font-normal">Usuário</th>
+              <th scope="col" class="px-5 py-5 font-normal">Ação</th>
+              <th scope="col" class="py-5 pl-5 font-normal">Tabela afetada</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of filteredLogs(); track log.logId) {
+              <tr class="border-b border-slate-200 last:border-b-0">
+                <td class="py-5 pr-5 whitespace-nowrap text-slate-700">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="px-5 py-5 text-slate-700">{{ log.userId ?? 'Sistema' }}</td>
+                <td class="px-5 py-5"><span class="inline-flex rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">{{ actionLabel(log.action) }}</span></td>
+                <td class="py-5 pl-5 text-slate-700">{{ log.affectedTable ?? '—' }}</td>
+              </tr>
+            } @empty {
+              <tr><td class="py-12 text-center text-slate-500" colspan="4">{{ logs().length ? 'Nenhum registro corresponde aos filtros.' : 'Nenhum registro de auditoria encontrado.' }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+  </div>
+</main>
