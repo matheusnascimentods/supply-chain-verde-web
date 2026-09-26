@@ -313,3 +313,16 @@ _Substitua a navegação para uma página separada de cadastro por um modal aber
 - [ ] Permitir revisar e editar os campos preenchidos e tratar CEP não encontrado, falha na consulta e indisponibilidade do serviço sem impedir o preenchimento manual do endereço
 - [ ] Preservar validações, mensagens de erro, estados de envio e comportamento de sucesso do cadastro atual, fechando o modal e atualizando a listagem após a criação
 - [ ] Garantir acessibilidade do modal, incluindo foco, fechamento e uso por teclado, além de comportamento responsivo
+
+---
+
+## Task 15 — Redesign da tela de Produtos
+
+_Redesenhe a listagem de produtos como uma grade de cards com imagens, usando `docs/references/reference-05.png` e `docs/references/reference-06.png` como referências visuais. Adapte o conteúdo ao Supply Chain Verde: use imagens relacionadas às categorias dos produtos em vez das imagens de veículos e preserve os dados e ações já existentes._
+
+- [ ] Substituir a tabela atual por cards responsivos que exibam imagem, nome, categoria, descrição e unidade do produto, preservando as ações disponíveis
+- [ ] Organizar a busca e o botão “Novo” na mesma linha, cada um ocupando 50% da largura disponível, seguindo a estrutura definida para Fornecedores
+- [ ] Consumir `GET /api/v1/products` com `limit=20` e `offset` iniciado em `0`; aplicar a busca antes da paginação para que ela encontre produtos em todas as páginas
+- [ ] Usar `hasNext` para controlar a paginação visual inspirada em `docs/references/reference-04.png`: exibir página atual e botões Anterior/Próxima, desativando Anterior no `offset=0` e Próxima quando `hasNext=false`
+- [ ] Associar imagens às categorias atuais e carregá-las de `public/images/products/`: `agriculture.webp`, `livestock.webp`, `processed-food.webp`, `textile.webp`, `forestry.webp` e `other.webp`; apresentar fallback quando uma imagem não estiver disponível
+- [ ] Alinhar a grade e seus estados de carregamento, erro e vazio ao layout da Fase 11 e garantir comportamento responsivo
