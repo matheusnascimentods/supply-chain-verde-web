@@ -1,3 +1,9 @@
 import { z } from 'zod';
-export const auditLogResponseSchema = z.object({ auditLogId: z.number(), userId: z.number(), action: z.string(), entity: z.string().optional(), tableAffected: z.string().optional(), timestamp: z.string(), details: z.string().optional() }).passthrough();
+export const auditLogResponseSchema = z.object({
+  logId: z.number(),
+  userId: z.number().nullable().optional(),
+  action: z.enum(['INSERT', 'UPDATE', 'DELETE', 'STATUS_CHANGE']),
+  affectedTable: z.string().nullable().optional(),
+  performedAt: z.string(),
+}).passthrough();
 export type AuditLogResponseDTO = z.infer<typeof auditLogResponseSchema>;
