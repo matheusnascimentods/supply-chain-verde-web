@@ -11,7 +11,7 @@
   <nav class="mt-6 flex gap-2 overflow-x-auto md:flex-col" aria-label="Navegação principal">
     <a routerLink="/dashboard" routerLinkActive="bg-green-50 text-green-700" [routerLinkActiveOptions]="{ exact: true }" class="shrink-0 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Dashboard</a>
     @for (link of links(); track link.path) {
-      <a [routerLink]="link.path" routerLinkActive="bg-green-50 text-green-700" [routerLinkActiveOptions]="{ exact: true }" class="shrink-0 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">{{ link.label }}</a>
+      <a [routerLink]="link.path" routerLinkActive="bg-green-50 text-green-700" class="shrink-0 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">{{ link.label }}</a>
     }
   </nav>
 </aside>

@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { AppSidebarComponent } from '../../shared/components/app-sidebar/index.component';
 import { UserRole } from '../../core/session/index.schema';
 import { SessionService } from '../../core/session/index.service';
 import { DASHBOARDS } from './index.constants';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AppSidebarComponent],
+  imports: [],
   templateUrl: './index.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
