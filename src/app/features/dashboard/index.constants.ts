@@ -14,7 +14,7 @@ export const DASHBOARDS = {
   },
   manager: {
     title: 'Resumo da operação',
-    description: 'Gerencie fornecedores e produtos e acompanhe a sustentabilidade da cadeia.',
+    description: 'Aqui está o resumo da sua operação hoje',
     links: [
       { label: 'Fornecedores', path: '/suppliers' },
       { label: 'Ranking de fornecedores', path: '/suppliers/ranking' },
