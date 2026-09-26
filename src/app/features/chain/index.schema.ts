@@ -1,0 +1,11 @@
+import { z } from 'zod';
+import { addressRequestSchema } from '../suppliers/index.schema';
+import { stageTypeSchema, transportModeSchema, fuelTypeSchema, calculationMethodSchema, chainResponseSchema } from '../traceability/index.schema';
+export const stageRequestSchema = z.object({ stageType: stageTypeSchema, originAddress: addressRequestSchema.optional(), destinationAddress: addressRequestSchema.optional(), startedAt: z.string(), endedAt: z.string().optional() }).passthrough();
+export const stageResponseSchema = chainResponseSchema;
+export const transportRequestSchema = z.object({ transportMode: transportModeSchema, distance: z.number().positive(), fuelType: fuelTypeSchema, capacity: z.number().positive() });
+export const emissionCalculationRequestSchema = z.object({ calculationMethod: calculationMethodSchema });
+export type StageRequestDTO = z.infer<typeof stageRequestSchema>;
+export type StageResponseDTO = z.infer<typeof stageResponseSchema>;
+export type TransportRequestDTO = z.infer<typeof transportRequestSchema>;
+export type EmissionCalculationRequestDTO = z.infer<typeof emissionCalculationRequestSchema>;
