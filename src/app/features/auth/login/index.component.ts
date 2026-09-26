@@ -6,7 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { SpinnerComponent } from '../../../shared/components/spinner/index.component';
 import { ErrorToastComponent } from '../../../shared/components/error-toast/index.component';
 import { ErrorToastService } from '../../../shared/components/error-toast/index.service';
@@ -14,7 +14,7 @@ import { AuthService } from '../index.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, SpinnerComponent, ErrorToastComponent],
+  imports: [ReactiveFormsModule, SpinnerComponent, ErrorToastComponent],
   templateUrl: './index.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
