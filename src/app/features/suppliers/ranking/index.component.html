@@ -1,1 +1,80 @@
-<main class="mx-auto max-w-6xl p-6"><a routerLink="/suppliers" class="text-emerald-700 underline">← Fornecedores</a><h1 class="my-5 text-2xl font-bold">Ranking de sustentabilidade</h1><label class="mb-4 flex items-center gap-3">Ordenar por <select class="rounded border p-2" [value]="sort()" (change)="setSort($any($event.target).value)"><option value="sustainabilityScore">Score sustentável</option><option value="activeCertifications">Certificações ativas</option><option value="totalCo2Kg">CO₂ total</option></select></label>@if(error()){<p role="alert">{{error()}}</p>}<ol class="grid gap-3">@for(item of items();track item.supplierId;let i=$index){<li class="flex items-center justify-between rounded-xl border bg-white p-4"><strong>{{i+1}}. {{name(item)}}</strong><span>Score {{item.sustainabilityScore}} · {{certifications(item)}} certificações · {{item.totalCo2Kg ?? 0}} kg CO₂</span></li>}@empty{<li class="rounded-xl border p-4">Nenhum fornecedor no ranking.</li>}</ol></main>
+<div class="min-h-screen bg-white text-slate-800 md:flex">
+  <app-sidebar />
+
+  <main class="min-w-0 flex-1 px-6 py-8 sm:px-10 sm:py-10">
+    <div class="mx-auto max-w-7xl">
+      <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-slate-900">Ranking de Fornecedores</h1>
+          <p class="mt-1 text-sm text-slate-500">Ordenados por desempenho ambiental</p>
+        </div>
+
+        <label class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700">
+          <span>Ordenar por:</span>
+          <select
+            aria-label="Ordenar ranking por"
+            class="cursor-pointer appearance-none bg-transparent font-semibold focus:outline-none"
+            [value]="sort()"
+            (change)="setSort($any($event.target).value)"
+          >
+            <option value="sustainabilityScore">Score</option>
+            <option value="activeCertifications">Certificações</option>
+            <option value="totalCo2Kg">CO₂ total</option>
+          </select>
+        </label>
+      </header>
+
+      @if (error()) {
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+          <p>{{ error() }}</p>
+          <button class="mt-2 font-semibold underline" type="button" (click)="load()">Tentar novamente</button>
+        </div>
+      } @else if (loading()) {
+        <div class="rounded-2xl border border-slate-200 p-10 text-center text-sm text-slate-500" aria-live="polite">
+          Carregando ranking…
+        </div>
+      } @else {
+        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white px-2 shadow-sm sm:px-2" aria-label="Ranking de fornecedores">
+          <ol>
+            @for (item of items(); track item.supplierId; let i = $index) {
+              <li class="grid grid-cols-[2rem_minmax(10rem,1fr)] items-center gap-x-3 gap-y-3 border-b border-slate-200 px-3 py-4 last:border-b-0 sm:grid-cols-[2rem_15rem_minmax(8rem,1fr)_2rem_7rem_6rem] sm:gap-x-5 sm:px-4">
+                <span
+                  class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold"
+                  [class.bg-amber-100]="i === 0"
+                  [class.text-amber-700]="i === 0"
+                  [class.bg-slate-200]="i !== 0"
+                  [class.text-slate-700]="i !== 0"
+                  [attr.aria-label]="'Posição ' + (i + 1)"
+                >{{ i + 1 }}</span>
+
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-semibold text-slate-900">{{ name(item) }}</p>
+                  <p class="mt-0.5 truncate text-xs text-slate-500">{{ location(item.supplierId) }}</p>
+                </div>
+
+                <div class="col-span-2 flex items-center gap-3 sm:col-span-1">
+                  <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-200" role="meter" [attr.aria-label]="'Score de sustentabilidade de ' + name(item)" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="scorePercent(item.sustainabilityScore)">
+                    <div class="h-full rounded-full bg-green-600" [style.width.%]="scorePercent(item.sustainabilityScore)"></div>
+                  </div>
+                </div>
+
+                <strong class="text-right text-lg font-bold leading-none text-green-600">{{ score(item.sustainabilityScore) }}</strong>
+
+                <span class="justify-self-start whitespace-nowrap rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">
+                  {{ certifications(item) }} {{ certifications(item) === 1 ? 'certificação' : 'certificações' }}
+                </span>
+
+                <div class="col-span-2 text-xs sm:col-span-1">
+                  <p class="text-slate-400">CO₂ total</p>
+                  <p class="mt-0.5 whitespace-nowrap font-medium text-slate-900">{{ co2(item.totalCo2Kg) }} kg</p>
+                </div>
+              </li>
+            } @empty {
+              <li class="px-4 py-12 text-center text-sm text-slate-500">Nenhum fornecedor no ranking.</li>
+            }
+          </ol>
+        </section>
+      }
+    </div>
+  </main>
+</div>
