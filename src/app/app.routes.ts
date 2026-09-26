@@ -54,7 +54,7 @@ export const routes: Routes = [
       {
         path: 'certifications',
         canActivate: [roleGuard],
-        data: { roles: ['auditor', 'supplier'] },
+        data: { roles: ['admin', 'auditor', 'supplier'] },
         loadChildren: () => import('./features/certifications/routes').then((module) => module.routes),
       },
       {
@@ -69,6 +69,8 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'manager', 'auditor', 'supplier'] },
         loadChildren: () => import('./features/reports/routes').then((module) => module.routes),
       },
       {
