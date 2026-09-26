@@ -29,7 +29,10 @@ describe('DashboardComponent', () => {
   it('shows manager-specific summary and navigation', () => {
     const page = renderAs('manager');
     expect(page.textContent).toContain('Gestor');
-    expect(page.textContent).toContain('Resumo da operação');
+    expect(page.textContent).toContain('Aqui está o resumo da sua operação hoje');
+    expect(page.textContent).toContain('Lotes Ativos');
+    expect(page.textContent).toContain('Lotes Recentes');
+    expect(page.textContent).toContain('Café Orgânico Especial');
     expect(page.textContent).toContain('Ranking de fornecedores');
     expect(page.textContent).toContain('Produtos');
     expect(page.textContent).not.toContain('Gerenciar usuários');
