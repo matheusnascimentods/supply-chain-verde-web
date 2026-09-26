@@ -245,3 +245,110 @@ _Depende de: fluxo completo (Fases 3–7) funcionando._
 - [x] Wireframes/mockups das 13 telas do `spec.md`
 - [x] Revisão visual dos componentes em `src/app/shared/components/` contra o wireframe (classes Tailwind CSS)
 - [x] Ajuste de responsividade para a tela de apresentação/projeção
+
+---
+
+## Fase 10 — CI e padrões de contribuição
+
+_Automatiza as verificações do frontend em cada pull request e mantém o fluxo de contribuição alinhado ao repositório da API. Usar `npm ci` com o `package-lock.json` para instalações reproduzíveis._
+
+- [ ] `.github/workflows/ci.yml` — pipeline de GitHub Actions para pull requests e pushes em `main`, configurando Node.js e cache do npm e executando `npm ci`, testes unitários em modo não interativo, `npm run build`, `npm audit` com nível mínimo de severidade definido e `npm run lint`; qualquer etapa com falha deve reprovar a pipeline
+- [ ] Configurar ESLint com regras apropriadas para Angular e TypeScript e adicionar o script `lint` ao `package.json`, sem aplicar correções automáticas na CI
+- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — template com descrição/contexto, tipo de mudança, checklist de testes/build/lint, impacto técnico e evidências visuais quando aplicável
+- [ ] Configurar proteção da branch `main` no GitHub para bloquear pushes/commits diretos e exigir pull request aprovado, além da aprovação dos checks obrigatórios da CI antes do merge
+
+---
+
+## Fase 11 — Navegação superior
+
+_Use `docs/references/reference-01.png` como referência visual principal para desenvolver a navegação superior. Adapte a composição ao Supply Chain Verde e às rotas/permissões existentes; a referência orienta o design, sem exigir cópia literal do conteúdo._
+
+- [ ] Substituir a sidebar por uma barra superior compartilhada no layout autenticado, com a marca do Supply Chain Verde e links para as áreas disponíveis ao perfil atual
+- [ ] Destacar o item correspondente à rota ativa e manter acessíveis as rotas já existentes, sem exibir uma opção de notificações
+- [ ] Adicionar acesso ao perfil do usuário na barra superior, com identificação do usuário e ações de perfil/sessão compatíveis com os recursos já disponíveis
+- [ ] Adaptar a navegação para telas menores, preservando acesso às opções de menu e ao perfil sem comprometer o conteúdo das páginas
+- [ ] Revisar as telas autenticadas para adequar espaçamento e largura do conteúdo ao layout sem sidebar e validar a navegação por perfil
+
+---
+
+## Task 12 — Redesign da Dashboard
+
+_As telas serão redesenhadas individualmente para dar mais personalidade à interface. Esta task inicia o trabalho pela Dashboard. Use `docs/references/reference-01.png` como base visual, adaptando o conteúdo ao Supply Chain Verde e mantendo os dados que a Dashboard já apresenta; não reproduza os dados de exemplo da referência._
+
+- [ ] Reorganizar a Dashboard no padrão visual da referência, com hierarquia clara para saudação, indicadores e seções de análise, mantendo identidade visual própria do Supply Chain Verde
+- [ ] Exibir os quatro indicadores atuais em uma única fileira com quatro cards, seguindo a estrutura da referência, preservando seus dados e mapeando cada card para a resposta atual da rota
+- [ ] Incluir os gráficos da referência que fazem sentido para os dados disponíveis: gráfico de barras verticais, gráfico menor de barras horizontais e gráfico de pizza
+- [ ] Revisar o contrato e os dados retornados pela rota da Dashboard para identificar se os gráficos e indicadores podem ser preenchidos; se faltarem dados relevantes, documentar a necessidade de enriquecimento da API antes de implementar valores, sem inventar dados
+- [ ] Exibir uma tabela com os 10 produtos mais recentes e incluir a ação “Ver todos” direcionando para a tela de produtos
+- [ ] Não incluir o card “Inventory Snapshot” da referência
+- [ ] Não incluir filtros, seleção/filtro por período ou o botão de ação do cabeçalho exibidos na referência
+- [ ] Ajustar espaçamentos e comportamento responsivo da Dashboard para o layout da navegação superior da Fase 11
+- [ ] Registrar cada próxima tela como uma task de redesign independente, seguindo a mesma abordagem tela a tela
+
+---
+
+## Task 13 — Redesign e unificação de Fornecedores e Ranking
+
+_Unifique as telas de fornecedores e ranking em uma experiência de gestão e desempenho ambiental. Use `docs/references/reference-02.png` como referência visual para apresentar os três primeiros colocados em cards destacados, adaptando o visual e os dados ao Supply Chain Verde, sem copiar conteúdo fictício da referência._
+
+- [ ] Combinar listagem de fornecedores e ranking em uma única tela, mantendo as informações e funcionalidades relevantes de ambas e evitando duas opções de navegação para a mesma área
+- [ ] No cabeçalho da área, dispor a busca de fornecedores e o botão de adicionar fornecedor na mesma linha, cada um ocupando 50% da largura disponível
+- [ ] Apresentar os três fornecedores mais bem ranqueados em cards próprios, seguindo a composição da referência e destacando sua posição e dados reais do ranking
+- [ ] Consumir `GET /api/v1/suppliers/ranking` de forma paginada com `limit=20` e `offset` iniciado em `0`, avançando o offset em 20 itens ao buscar páginas seguintes e usando o `hasNext` da resposta para controlar a navegação
+- [ ] Usar `docs/references/reference-04.png` como base visual para paginação e exibir página atual com botões Anterior/Próxima; desativar visualmente Anterior quando `offset=0` e Próxima quando `hasNext=false` (sem total de itens, não exibir total de páginas nem botão de última página)
+- [ ] Preservar a ordenação e os dados atuais do ranking, incluindo score, certificações e CO₂ total; na listagem ranqueada abaixo do top 3, substituir a barra verde de score pelas colunas CNPJ e telefone
+- [ ] Remover a badge “Ordenar por: Score” do cabeçalho da tela
+- [ ] Garantir que a busca continue permitindo localizar fornecedores fora do top 3 e que o acesso aos detalhes/cadastro respeite as rotas e permissões existentes
+- [ ] Adaptar cards, busca e listagem para telas menores e alinhar a tela ao layout da navegação superior da Fase 11
+
+---
+
+## Task 14 — Cadastro de fornecedor em modal
+
+_Substitua a navegação para uma página separada de cadastro por um modal aberto a partir da tela unificada de fornecedores. Use `docs/references/reference-03.png` como referência para a composição do formulário e adapte os campos ao modelo de fornecedor do projeto._
+
+- [ ] Abrir o formulário de criação de fornecedor em um modal sobre a tela de fornecedores, sem navegar para uma página separada
+- [ ] Organizar campos relacionados lado a lado em linhas/colunas quando houver espaço e empilhá-los em telas menores
+- [ ] Quando o CEP atingir oito dígitos válidos, aplicar um debounce curto antes de consultar a API ViaCEP e preencher os campos de endereço retornados; evitar consultas duplicadas e ignorar respostas de CEPs anteriores, mantendo número e complemento para preenchimento manual
+- [ ] Permitir revisar e editar os campos preenchidos e tratar CEP não encontrado, falha na consulta e indisponibilidade do serviço sem impedir o preenchimento manual do endereço
+- [ ] Preservar validações, mensagens de erro, estados de envio e comportamento de sucesso do cadastro atual, fechando o modal e atualizando a listagem após a criação
+- [ ] Garantir acessibilidade do modal, incluindo foco, fechamento e uso por teclado, além de comportamento responsivo
+
+---
+
+## Task 15 — Redesign da tela de Produtos
+
+_Redesenhe a listagem de produtos como uma grade de cards com imagens, usando `docs/references/reference-05.png` e `docs/references/reference-06.png` como referências visuais. Adapte o conteúdo ao Supply Chain Verde: use imagens relacionadas às categorias dos produtos em vez das imagens de veículos e preserve os dados e ações já existentes._
+
+- [ ] Substituir a tabela atual por cards responsivos que exibam imagem, nome, categoria, descrição e unidade do produto, preservando as ações disponíveis
+- [ ] Organizar a busca e o botão “Novo” na mesma linha, cada um ocupando 50% da largura disponível, seguindo a estrutura definida para Fornecedores; o botão deve abrir o modal de cadastro definido na Task 16, sem navegar para uma página separada
+- [ ] Consumir `GET /api/v1/products` com `limit=20` e `offset` iniciado em `0`; aplicar a busca antes da paginação para que ela encontre produtos em todas as páginas
+- [ ] Usar `hasNext` para controlar a paginação visual inspirada em `docs/references/reference-04.png`: exibir página atual e botões Anterior/Próxima, desativando Anterior no `offset=0` e Próxima quando `hasNext=false`
+- [ ] Associar imagens às categorias atuais e carregá-las de `public/images/products/`: `agriculture.webp`, `livestock.webp`, `processed-food.webp`, `textile.webp`, `forestry.webp` e `other.webp`; apresentar fallback quando uma imagem não estiver disponível
+- [ ] Alinhar a grade e seus estados de carregamento, erro e vazio ao layout da Fase 11 e garantir comportamento responsivo
+
+---
+
+## Task 16 — Cadastro de produto em modal
+
+_Substitua a navegação para a página separada de cadastro por um modal aberto a partir da listagem de produtos. Use `docs/references/reference-03.png` como referência de composição do modal, adaptando os campos atuais de produto._
+
+- [ ] Abrir o formulário de criação de produto em um modal sobre a listagem, sem navegar para `/products/new`
+- [ ] Manter no formulário os campos atuais de nome, descrição, categoria e unidade, com validações e mensagens de erro
+- [ ] Seguir a composição visual da referência de modal, com layout responsivo e campos organizados lado a lado quando houver espaço
+- [ ] Preservar os estados de envio e, após sucesso, fechar o modal e atualizar a lista de produtos
+- [ ] Garantir acessibilidade do modal, incluindo foco, fechamento e uso por teclado
+
+---
+
+## Task 17 — Redesign da tela de Certificações
+
+_Redesenhe a listagem conforme `docs/screenshots/09-certifications-list.png`, seguindo o padrão visual dos screenshots do projeto. O screenshot define o alvo da listagem; para o cadastro, use `docs/references/reference-03.png` como referência de modal, pois não há screenshot específico para esse fluxo._
+
+- [ ] Exibir na listagem fornecedor, certificação, órgão emissor, data de emissão, data de validade e status
+- [ ] Substituir o checkbox atual pelo dropdown “Apenas expirando”, funcional para alternar entre todas as certificações e as que estão expirando
+- [ ] Exibir o status como badge com dropdown funcional por certificação, permitindo atualizar o status pelos valores suportados pela API (`active`, `expired`, `suspended`, `underReview`) e atualizar a listagem após sucesso
+- [ ] Exibir o botão “Nova certificação” e abrir o cadastro em modal, sem navegar para uma página separada
+- [ ] No modal, manter os campos atuais de nome, organização emissora, número, emissão, validade e URL do documento, além da associação correta ao fornecedor autenticado
+- [ ] Preservar validações, permissões, estados de carregamento/erro/sucesso e atualizar a listagem após a criação
+- [ ] Garantir acessibilidade dos dropdowns e do modal, além de adaptar a listagem e o formulário para telas menores
