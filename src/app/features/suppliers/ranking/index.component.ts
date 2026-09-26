@@ -2,9 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { forkJoin } from 'rxjs';
 import { SuppliersService } from '../index.service';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
-import { AppSidebarComponent } from '../../../shared/components/app-sidebar/index.component';
 
-@Component({ selector: 'app-supplier-ranking', imports: [AppSidebarComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-supplier-ranking', templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierRankingComponent {
   private readonly service = inject(SuppliersService);
   readonly items = signal<SupplierRankingResponseDTO[]>([]); readonly sort = signal('sustainabilityScore'); readonly error = signal('');
