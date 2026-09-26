@@ -4,7 +4,7 @@ SPA Angular para rastreabilidade de cadeias de suprimentos sustentáveis. A apli
 
 ## Status
 
-O repositório está no bootstrap do frontend Angular. A estrutura funcional está especificada, mas as features de autenticação, rastreabilidade e domínio ainda precisam ser implementadas conforme o checklist em [`docs/tasks.md`](docs/tasks.md).
+O frontend implementa autenticação, rastreabilidade pública, dashboards por perfil e as principais áreas de domínio. O andamento e as próximas etapas estão no checklist [`docs/tasks.md`](docs/tasks.md).
 
 O conceito visual e os fluxos principais estão no arquivo do Figma:
 
@@ -202,7 +202,22 @@ npm run build
 npm test
 ```
 
-O projeto ainda não define uma suíte E2E no `package.json`; o plano prevê Cypress para login, rastreabilidade pública e registro de lote.
+### Testes E2E (Cypress)
+
+Inicie o servidor em um terminal:
+
+```bash
+npm start
+```
+
+Em outro terminal, execute a suíte ou abra o Cypress interativo:
+
+```bash
+npm run cypress:run
+npm run cypress:open
+```
+
+Os cenários E2E simulam os endpoints do backend para cobrir login, rastreabilidade pública e o fluxo de lote, etapa, transporte e emissão.
 
 ## Documentação do projeto
 

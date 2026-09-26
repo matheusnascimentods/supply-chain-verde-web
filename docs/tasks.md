@@ -234,9 +234,9 @@ _A navegação manual por perfil requer sessão/API e navegador, indisponíveis 
 
 _Depende de: fluxo completo (Fases 3–7) funcionando._
 
-- [ ] `cypress/e2e/login.cy.ts` — teste E2E do fluxo de autenticação e redirecionamento
-- [ ] `cypress/e2e/traceability-public.cy.ts` — teste E2E da consulta pública de rastreabilidade
-- [ ] `cypress/e2e/register-batch-flow.cy.ts` — teste E2E do fluxo do fornecedor: lote → etapa → transporte → emissão
+- [x] `cypress/e2e/login.cy.ts` — teste E2E do fluxo de autenticação e redirecionamento
+- [x] `cypress/e2e/traceability-public.cy.ts` — teste E2E da consulta pública de rastreabilidade
+- [x] `cypress/e2e/register-batch-flow.cy.ts` — teste E2E do fluxo do fornecedor: lote → etapa → transporte → emissão
 
 ---
 
