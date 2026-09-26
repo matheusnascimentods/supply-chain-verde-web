@@ -3,9 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProductsService } from '../index.service';
 import { ProductCategory, ProductResponseDTO } from '../index.schema';
-import { AppSidebarComponent } from '../../../shared/components/app-sidebar/index.component';
 
-@Component({ selector: 'app-products-list', imports: [RouterLink, FormsModule, AppSidebarComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-products-list', imports: [RouterLink, FormsModule], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
 export class ProductListComponent {
   private readonly service = inject(ProductsService);
 

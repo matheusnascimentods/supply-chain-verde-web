@@ -4,9 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { SuppliersService } from '../index.service';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
-import { AppSidebarComponent } from '../../../shared/components/app-sidebar/index.component';
 
-@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, AppSidebarComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierListComponent {
   private readonly service = inject(SuppliersService);
 
