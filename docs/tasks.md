@@ -242,6 +242,6 @@ _Depende de: fluxo completo (Fases 3–7) funcionando._
 
 ## Fase 9 — Design Visual (por último, por decisão do time)
 
-- [ ] Wireframes/mockups das 13 telas do `spec.md`
-- [ ] Revisão visual dos componentes em `src/app/shared/components/` contra o wireframe (classes Tailwind CSS)
-- [ ] Ajuste de responsividade para a tela de apresentação/projeção
+- [x] Wireframes/mockups das 13 telas do `spec.md`
+- [x] Revisão visual dos componentes em `src/app/shared/components/` contra o wireframe (classes Tailwind CSS)
+- [x] Ajuste de responsividade para a tela de apresentação/projeção
