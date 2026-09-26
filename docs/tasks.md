@@ -298,3 +298,16 @@ _Unifique as telas de fornecedores e ranking em uma experiência de gestão e de
 - [ ] Remover a badge “Ordenar por: Score” do cabeçalho da tela
 - [ ] Garantir que a busca continue permitindo localizar fornecedores fora do top 3 e que o acesso aos detalhes/cadastro respeite as rotas e permissões existentes
 - [ ] Adaptar cards, busca e listagem para telas menores e alinhar a tela ao layout da navegação superior da Fase 11
+
+---
+
+## Task 14 — Cadastro de fornecedor em modal
+
+_Substitua a navegação para uma página separada de cadastro por um modal aberto a partir da tela unificada de fornecedores. Use `docs/references/reference-03.png` como referência para a composição do formulário e adapte os campos ao modelo de fornecedor do projeto._
+
+- [ ] Abrir o formulário de criação de fornecedor em um modal sobre a tela de fornecedores, sem navegar para uma página separada
+- [ ] Organizar campos relacionados lado a lado em linhas/colunas quando houver espaço e empilhá-los em telas menores
+- [ ] Quando o CEP atingir oito dígitos válidos, aplicar um debounce curto antes de consultar a API ViaCEP e preencher os campos de endereço retornados; evitar consultas duplicadas e ignorar respostas de CEPs anteriores, mantendo número e complemento para preenchimento manual
+- [ ] Permitir revisar e editar os campos preenchidos e tratar CEP não encontrado, falha na consulta e indisponibilidade do serviço sem impedir o preenchimento manual do endereço
+- [ ] Preservar validações, mensagens de erro, estados de envio e comportamento de sucesso do cadastro atual, fechando o modal e atualizando a listagem após a criação
+- [ ] Garantir acessibilidade do modal, incluindo foco, fechamento e uso por teclado, além de comportamento responsivo
