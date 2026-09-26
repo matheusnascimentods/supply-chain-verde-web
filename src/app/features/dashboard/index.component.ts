@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AppSidebarComponent } from '../../shared/components/app-sidebar/index.component';
 import { UserRole } from '../../core/session/index.schema';
 import { SessionService } from '../../core/session/index.service';
 import { DASHBOARDS } from './index.constants';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [AppSidebarComponent],
   templateUrl: './index.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

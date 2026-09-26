@@ -1,3 +1,58 @@
-<main class="mx-auto max-w-6xl p-6"><header class="mb-6 flex items-center justify-between"><h1 class="text-2xl font-bold text-slate-900">Fornecedores</h1><a class="rounded-lg bg-emerald-700 px-4 py-2 text-white" routerLink="new">Novo</a></header><form class="mb-4 flex gap-2" (ngSubmit)="reload()"><input aria-label="Buscar fornecedores" class="flex-1 rounded border p-2" name="search" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Nome ou CNPJ"/><button class="rounded bg-slate-800 px-4 py-2 text-white">Buscar</button><a class="rounded border px-4 py-2" routerLink="ranking">Ver ranking</a></form>
-@if (error()) { <p role="alert" class="rounded-lg bg-red-50 p-4 text-red-700">{{ error() }}</p> }
-@if (loading()) { <p aria-live="polite">Carregando…</p> } @else { <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table class="w-full text-left text-sm"><thead class="bg-slate-50"><tr><th class="p-3">ID</th><th class="p-3">name</th><th class="p-3">Ações</th></tr></thead><tbody>@for (item of items(); track item['supplierId']) { <tr class="border-t"><td class="p-3">{{ item['supplierId'] }}</td><td class="p-3">{{ item['name'] }}</td><td class="p-3"><a class="text-emerald-700 underline" [routerLink]="[item['supplierId'], 'edit']">Editar</a></td></tr> } @empty { <tr><td class="p-3 text-slate-500" colspan="3">Nenhum registro encontrado.</td></tr> }</tbody></table></div> }</main>
+<div class="min-h-screen bg-white text-slate-800 md:flex">
+  <app-sidebar />
+
+  <main class="min-w-0 flex-1 px-6 py-8 sm:px-10 sm:py-10">
+    <div class="mx-auto max-w-7xl">
+      <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-slate-900">Fornecedores</h1>
+          <p class="mt-1 text-sm text-slate-500">Gerencie os fornecedores da cadeia de suprimentos</p>
+        </div>
+        <a routerLink="new" class="inline-flex items-center rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">+ Novo Fornecedor</a>
+      </header>
+
+      <label class="sr-only" for="supplier-search">Buscar fornecedor</label>
+      <input id="supplier-search" class="mb-6 w-full max-w-xs rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="search" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Buscar fornecedor..." />
+
+      @if (error()) {
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+          <p>{{ error() }}</p>
+          <button class="mt-2 font-semibold underline" type="button" (click)="reload()">Tentar novamente</button>
+        </div>
+      } @else if (loading()) {
+        <div class="rounded-xl border border-slate-200 p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando fornecedores…</div>
+      } @else {
+        <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white px-5 shadow-sm sm:px-7">
+          <table class="w-full min-w-[850px] text-left text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 text-slate-500">
+                <th scope="col" class="py-7 pr-5 font-normal">Nome</th>
+                <th scope="col" class="px-5 py-7 font-normal">CNPJ</th>
+                <th scope="col" class="px-5 py-7 font-normal">Cidade/UF</th>
+                <th scope="col" class="px-5 py-7 font-normal">Telefone</th>
+                <th scope="col" class="px-5 py-7 font-normal">Certificações</th>
+                <th scope="col" class="py-7 pl-5 font-normal">Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of filteredItems(); track item.supplierId) {
+                <tr class="border-b border-slate-200 last:border-b-0">
+                  <td class="py-6 pr-5 text-slate-700"><a class="hover:text-green-700 hover:underline" [routerLink]="[item.supplierId, 'edit']">{{ item.name }}</a></td>
+                  <td class="px-5 py-6 text-slate-700">{{ item.cnpj ?? '—' }}</td>
+                  <td class="px-5 py-6 text-slate-700">{{ item.address?.city ?? '—' }}@if (item.address?.state) { /{{ item.address?.state }} }</td>
+                  <td class="px-5 py-6 text-slate-700">{{ item.phone ?? '—' }}</td>
+                  <td class="px-5 py-6">
+                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-green-50]="certificationLabel(item.supplierId).includes('ativas') || certificationLabel(item.supplierId).includes('expirando')" [class.text-green-700]="certificationLabel(item.supplierId).includes('ativas') || certificationLabel(item.supplierId).includes('expirando')" [class.bg-slate-200]="certificationLabel(item.supplierId) === 'Sem certificação'" [class.text-slate-700]="certificationLabel(item.supplierId) === 'Sem certificação'">{{ certificationLabel(item.supplierId) }}</span>
+                  </td>
+                  <td class="py-6 pl-5 text-slate-700">{{ score(item.supplierId) }}</td>
+                </tr>
+              } @empty {
+                <tr><td class="py-12 text-center text-slate-500" colspan="6">{{ search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado.' }}</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </main>
+</div>
