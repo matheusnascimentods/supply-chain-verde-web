@@ -115,106 +115,106 @@ _Depende de: Fases 1 e 2. Cada feature é independente das outras — ideal para
 
 ### 6.1 Suppliers (Fornecedores e Ranking)
 
-- [ ] `src/app/features/suppliers/index.schema.ts` — schemas Zod (`supplierRequestSchema`, `supplierResponseSchema`, `supplierRankingResponseSchema`)
-- [ ] `src/app/features/suppliers/index.service.ts` — serviço de fornecedores e ranking com signals
-- [ ] `src/app/features/suppliers/index.service.spec.ts` — testes unitários do serviço
-- [ ] `src/app/features/suppliers/routes.ts` — rotas filhas de fornecedores (`list`, `form`, `ranking`)
-- [ ] `src/app/features/suppliers/list/index.component.ts` — tela de listagem e busca de fornecedores
-- [ ] `src/app/features/suppliers/list/index.component.html`
-- [ ] `src/app/features/suppliers/list/index.component.spec.ts`
-- [ ] `src/app/features/suppliers/form/index.component.ts` — tela de cadastro e edição (inclui endereço)
-- [ ] `src/app/features/suppliers/form/index.component.html`
-- [ ] `src/app/features/suppliers/form/index.component.spec.ts`
-- [ ] `src/app/features/suppliers/ranking/index.component.ts` — tela de ranking de sustentabilidade ordenável
-- [ ] `src/app/features/suppliers/ranking/index.component.html`
-- [ ] `src/app/features/suppliers/ranking/index.component.spec.ts`
+- [x] `src/app/features/suppliers/index.schema.ts` — schemas Zod (`supplierRequestSchema`, `supplierResponseSchema`, `supplierRankingResponseSchema`)
+- [x] `src/app/features/suppliers/index.service.ts` — serviço de fornecedores e ranking com signals
+- [x] `src/app/features/suppliers/index.service.spec.ts` — testes unitários do serviço
+- [x] `src/app/features/suppliers/routes.ts` — rotas filhas de fornecedores (`list`, `form`, `ranking`)
+- [x] `src/app/features/suppliers/list/index.component.ts` — tela de listagem e busca de fornecedores
+- [x] `src/app/features/suppliers/list/index.component.html`
+- [x] `src/app/features/suppliers/list/index.component.spec.ts`
+- [x] `src/app/features/suppliers/form/index.component.ts` — tela de cadastro e edição (inclui endereço)
+- [x] `src/app/features/suppliers/form/index.component.html`
+- [x] `src/app/features/suppliers/form/index.component.spec.ts`
+- [x] `src/app/features/suppliers/ranking/index.component.ts` — tela de ranking de sustentabilidade ordenável
+- [x] `src/app/features/suppliers/ranking/index.component.html`
+- [x] `src/app/features/suppliers/ranking/index.component.spec.ts`
 
 ### 6.2 Products (Produtos)
 
-- [ ] `src/app/features/products/index.schema.ts` — schemas Zod (`productRequestSchema`, `productResponseSchema`, enums `category` e `unit`)
-- [ ] `src/app/features/products/index.service.ts` — serviço de produtos com signals
-- [ ] `src/app/features/products/index.service.spec.ts` — testes unitários do serviço
-- [ ] `src/app/features/products/routes.ts` — rotas filhas de produtos (`list`, `form`)
-- [ ] `src/app/features/products/list/index.component.ts` — tela de listagem de produtos
-- [ ] `src/app/features/products/list/index.component.html`
-- [ ] `src/app/features/products/list/index.component.spec.ts`
-- [ ] `src/app/features/products/form/index.component.ts` — tela de cadastro/edição com select de enums
-- [ ] `src/app/features/products/form/index.component.html`
-- [ ] `src/app/features/products/form/index.component.spec.ts`
+- [x] `src/app/features/products/index.schema.ts` — schemas Zod (`productRequestSchema`, `productResponseSchema`, enums `category` e `unit`)
+- [x] `src/app/features/products/index.service.ts` — serviço de produtos com signals
+- [x] `src/app/features/products/index.service.spec.ts` — testes unitários do serviço
+- [x] `src/app/features/products/routes.ts` — rotas filhas de produtos (`list`, `form`)
+- [x] `src/app/features/products/list/index.component.ts` — tela de listagem de produtos
+- [x] `src/app/features/products/list/index.component.html`
+- [x] `src/app/features/products/list/index.component.spec.ts`
+- [x] `src/app/features/products/form/index.component.ts` — tela de cadastro/edição com select de enums
+- [x] `src/app/features/products/form/index.component.html`
+- [x] `src/app/features/products/form/index.component.spec.ts`
 
 ### 6.3 Certifications (Certificações)
 
-- [ ] `src/app/features/certifications/index.schema.ts` — schemas Zod (`certificationRequestSchema`, `certificationResponseSchema`, enum `status`)
-- [ ] `src/app/features/certifications/index.service.ts` — serviço de certificações (cadastro, expiring, alteração de status)
-- [ ] `src/app/features/certifications/index.service.spec.ts` — testes unitários do serviço
-- [ ] `src/app/features/certifications/routes.ts` — rotas filhas de certificações (`list`, `form`)
-- [ ] `src/app/features/certifications/list/index.component.ts` — listagem com filtro de expirando e ação de alterar status
-- [ ] `src/app/features/certifications/list/index.component.html`
-- [ ] `src/app/features/certifications/list/index.component.spec.ts`
-- [ ] `src/app/features/certifications/form/index.component.ts` — tela de envio de nova certificação
-- [ ] `src/app/features/certifications/form/index.component.html`
-- [ ] `src/app/features/certifications/form/index.component.spec.ts`
+- [x] `src/app/features/certifications/index.schema.ts` — schemas Zod (`certificationRequestSchema`, `certificationResponseSchema`, enum `status`)
+- [x] `src/app/features/certifications/index.service.ts` — serviço de certificações (cadastro, expiring, alteração de status)
+- [x] `src/app/features/certifications/index.service.spec.ts` — testes unitários do serviço
+- [x] `src/app/features/certifications/routes.ts` — rotas filhas de certificações (`list`, `form`)
+- [x] `src/app/features/certifications/list/index.component.ts` — listagem com filtro de expirando e ação de alterar status
+- [x] `src/app/features/certifications/list/index.component.html`
+- [x] `src/app/features/certifications/list/index.component.spec.ts`
+- [x] `src/app/features/certifications/form/index.component.ts` — tela de envio de nova certificação
+- [x] `src/app/features/certifications/form/index.component.html`
+- [x] `src/app/features/certifications/form/index.component.spec.ts`
 
 ### 6.4 Batches (Lotes)
 
-- [ ] `src/app/features/batches/index.schema.ts` — schemas Zod (`batchRequestSchema`, `batchResponseSchema`, enum `status`)
-- [ ] `src/app/features/batches/index.service.ts` — serviço de gestão de lotes com signals
-- [ ] `src/app/features/batches/index.service.spec.ts` — testes unitários do serviço
-- [ ] `src/app/features/batches/routes.ts` — rotas filhas de lotes (`list`, `form`)
-- [ ] `src/app/features/batches/list/index.component.ts` — listagem de lotes do fornecedor
-- [ ] `src/app/features/batches/list/index.component.html`
-- [ ] `src/app/features/batches/list/index.component.spec.ts`
-- [ ] `src/app/features/batches/form/index.component.ts` — formulário de cadastro de lote vinculado a produto
-- [ ] `src/app/features/batches/form/index.component.html`
-- [ ] `src/app/features/batches/form/index.component.spec.ts`
+- [x] `src/app/features/batches/index.schema.ts` — schemas Zod (`batchRequestSchema`, `batchResponseSchema`, enum `status`)
+- [x] `src/app/features/batches/index.service.ts` — serviço de gestão de lotes com signals
+- [x] `src/app/features/batches/index.service.spec.ts` — testes unitários do serviço
+- [x] `src/app/features/batches/routes.ts` — rotas filhas de lotes (`list`, `form`)
+- [x] `src/app/features/batches/list/index.component.ts` — listagem de lotes do fornecedor
+- [x] `src/app/features/batches/list/index.component.html`
+- [x] `src/app/features/batches/list/index.component.spec.ts`
+- [x] `src/app/features/batches/form/index.component.ts` — formulário de cadastro de lote vinculado a produto
+- [x] `src/app/features/batches/form/index.component.html`
+- [x] `src/app/features/batches/form/index.component.spec.ts`
 
 ### 6.5 Chain (Etapas da Cadeia, Transporte e Emissão)
 
-- [ ] `src/app/features/chain/index.schema.ts` — schemas Zod (`stageRequestSchema`, `stageResponseSchema`, `transportRequestSchema`, `emissionCalculationRequestSchema`)
-- [ ] `src/app/features/chain/index.service.ts` — chamadas de etapas, transporte e cálculo de CO₂
-- [ ] `src/app/features/chain/index.service.spec.ts` — testes unitários do serviço
-- [ ] `src/app/features/chain/routes.ts` — rotas filhas da cadeia (`list`, `form`)
-- [ ] `src/app/features/chain/list/index.component.ts` — linha do tempo cronológica das etapas de um lote
-- [ ] `src/app/features/chain/list/index.component.html`
-- [ ] `src/app/features/chain/list/index.component.spec.ts`
-- [ ] `src/app/features/chain/form/index.component.ts` — cadastro de etapa, subformulário condicional de transporte e ação para calcular emissão
-- [ ] `src/app/features/chain/form/index.component.html`
-- [ ] `src/app/features/chain/form/index.component.spec.ts`
+- [x] `src/app/features/chain/index.schema.ts` — schemas Zod (`stageRequestSchema`, `stageResponseSchema`, `transportRequestSchema`, `emissionCalculationRequestSchema`)
+- [x] `src/app/features/chain/index.service.ts` — chamadas de etapas, transporte e cálculo de CO₂
+- [x] `src/app/features/chain/index.service.spec.ts` — testes unitários do serviço
+- [x] `src/app/features/chain/routes.ts` — rotas filhas da cadeia (`list`, `form`)
+- [x] `src/app/features/chain/list/index.component.ts` — linha do tempo cronológica das etapas de um lote
+- [x] `src/app/features/chain/list/index.component.html`
+- [x] `src/app/features/chain/list/index.component.spec.ts`
+- [x] `src/app/features/chain/form/index.component.ts` — cadastro de etapa, subformulário condicional de transporte e ação para calcular emissão
+- [x] `src/app/features/chain/form/index.component.html`
+- [x] `src/app/features/chain/form/index.component.spec.ts`
 
 ### 6.6 Reports (Relatórios de Sustentabilidade)
 
-- [ ] `src/app/features/reports/index.schema.ts` — schemas Zod (`reportRequestSchema`, `reportResponseSchema`)
-- [ ] `src/app/features/reports/index.service.ts` — serviço para geração e consulta de relatórios
-- [ ] `src/app/features/reports/index.service.spec.ts` — testes unitários do serviço
-- [ ] `src/app/features/reports/routes.ts` — rotas filhas de relatórios (`list`, `form`)
-- [ ] `src/app/features/reports/list/index.component.ts` — listagem e consulta detalhada de relatórios gerados
-- [ ] `src/app/features/reports/list/index.component.html`
-- [ ] `src/app/features/reports/list/index.component.spec.ts`
-- [ ] `src/app/features/reports/form/index.component.ts` — formulário de geração de relatório por período/fornecedor
-- [ ] `src/app/features/reports/form/index.component.html`
-- [ ] `src/app/features/reports/form/index.component.spec.ts`
+- [x] `src/app/features/reports/index.schema.ts` — schemas Zod (`reportRequestSchema`, `reportResponseSchema`)
+- [x] `src/app/features/reports/index.service.ts` — serviço para geração e consulta de relatórios
+- [x] `src/app/features/reports/index.service.spec.ts` — testes unitários do serviço
+- [x] `src/app/features/reports/routes.ts` — rotas filhas de relatórios (`list`, `form`)
+- [x] `src/app/features/reports/list/index.component.ts` — listagem e consulta detalhada de relatórios gerados
+- [x] `src/app/features/reports/list/index.component.html`
+- [x] `src/app/features/reports/list/index.component.spec.ts`
+- [x] `src/app/features/reports/form/index.component.ts` — formulário de geração de relatório por período/fornecedor
+- [x] `src/app/features/reports/form/index.component.html`
+- [x] `src/app/features/reports/form/index.component.spec.ts`
 
 ### 6.7 Users (Gestão de Usuários)
 
-- [ ] `src/app/features/users/index.schema.ts` — schemas Zod (`userRequestSchema`, `userResponseSchema`, `updateUserRoleSchema`)
-- [ ] `src/app/features/users/index.service.ts` — serviço de usuários (criação, listagem e alteração de role)
-- [ ] `src/app/features/users/index.service.spec.ts` — testes unitários do serviço
-- [ ] `src/app/features/users/routes.ts` — rotas filhas de usuários (`list`, `form`)
-- [ ] `src/app/features/users/list/index.component.ts` — listagem de usuários com ação de alterar perfil (`PATCH /users/{id}/role`)
-- [ ] `src/app/features/users/list/index.component.html`
-- [ ] `src/app/features/users/list/index.component.spec.ts`
-- [ ] `src/app/features/users/form/index.component.ts` — formulário de criação de novo usuário
-- [ ] `src/app/features/users/form/index.component.html`
-- [ ] `src/app/features/users/form/index.component.spec.ts`
+- [x] `src/app/features/users/index.schema.ts` — schemas Zod (`userRequestSchema`, `userResponseSchema`, `updateUserRoleSchema`)
+- [x] `src/app/features/users/index.service.ts` — serviço de usuários (criação, listagem e alteração de role)
+- [x] `src/app/features/users/index.service.spec.ts` — testes unitários do serviço
+- [x] `src/app/features/users/routes.ts` — rotas filhas de usuários (`list`, `form`)
+- [x] `src/app/features/users/list/index.component.ts` — listagem de usuários com ação de alterar perfil (`PATCH /users/{id}/role`)
+- [x] `src/app/features/users/list/index.component.html`
+- [x] `src/app/features/users/list/index.component.spec.ts`
+- [x] `src/app/features/users/form/index.component.ts` — formulário de criação de novo usuário
+- [x] `src/app/features/users/form/index.component.html`
+- [x] `src/app/features/users/form/index.component.spec.ts`
 
 ### 6.8 Audit Log (Auditoria)
 
-- [ ] `src/app/features/audit-log/index.schema.ts` — schema Zod (`auditLogResponseSchema`)
-- [ ] `src/app/features/audit-log/index.service.ts` — serviço de auditoria (`GET /audit-logs` com filtros)
-- [ ] `src/app/features/audit-log/index.service.spec.ts` — testes unitários do serviço
-- [ ] `src/app/features/audit-log/index.component.ts` — tela de listagem de logs de auditoria
-- [ ] `src/app/features/audit-log/index.component.html`
-- [ ] `src/app/features/audit-log/index.component.spec.ts`
+- [x] `src/app/features/audit-log/index.schema.ts` — schema Zod (`auditLogResponseSchema`)
+- [x] `src/app/features/audit-log/index.service.ts` — serviço de auditoria (`GET /audit-logs` com filtros)
+- [x] `src/app/features/audit-log/index.service.spec.ts` — testes unitários do serviço
+- [x] `src/app/features/audit-log/index.component.ts` — tela de listagem de logs de auditoria
+- [x] `src/app/features/audit-log/index.component.html`
+- [x] `src/app/features/audit-log/index.component.spec.ts`
 
 ---
 
