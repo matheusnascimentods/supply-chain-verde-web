@@ -13,6 +13,20 @@ import { DASHBOARDS } from './index.constants';
 export class DashboardComponent {
   private readonly session = inject(SessionService);
 
+  readonly metrics = [
+    { label: 'Lotes Ativos', value: '24' },
+    { label: 'Certificações Expirando', value: '5' },
+    { label: 'Fornecedores Ativos', value: '18' },
+    { label: 'Emissão Total (mês)', value: '342 kg CO2e' },
+  ];
+
+  readonly recentBatches = [
+    { product: 'Café Orgânico Especial', supplier: 'Fazenda Verde Ltda', quantity: '500 kg', status: 'Em trânsito' },
+    { product: 'Cacau Fino', supplier: 'Sítio Bom Fruto', quantity: '320 kg', status: 'Concluído' },
+    { product: 'Mel Silvestre', supplier: 'Apiário Cerrado', quantity: '150 kg', status: 'Concluído' },
+    { product: 'Castanha do Pará', supplier: 'Coop. Amazônia', quantity: '800 kg', status: 'Pendente' },
+  ];
+
   readonly role = this.session.role;
   readonly roleLabel = computed(() => {
     const role = this.role();
