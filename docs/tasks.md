@@ -222,9 +222,11 @@ _Depende de: Fases 1 e 2. Cada feature é independente das outras — ideal para
 
 _Depende de: todas as features da Fase 6 existirem para o roteamento fazer sentido de ponta a ponta._
 
-- [ ] `src/app/app.routes.ts` — configuração completa das rotas com lazy loading (`loadComponent`, `loadChildren`), `authGuard` e `roleGuard`
-- [ ] Conferir cada rota contra o sitemap do `spec.md` (seção 4)
+- [x] `src/app/app.routes.ts` — configuração completa das rotas com lazy loading (`loadComponent`, `loadChildren`), `authGuard` e `roleGuard`
+- [x] Conferir cada rota contra o sitemap do `spec.md` (seção 4)
 - [ ] Testar manualmente a navegação com um usuário de cada `role`
+
+_A navegação manual por perfil requer sessão/API e navegador, indisponíveis neste ambiente; a compilação de produção foi verificada._
 
 ---
 
