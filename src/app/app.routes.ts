@@ -1,13 +1,16 @@
+
 import { Routes } from '@angular/router';
 import { authGuard, roleGuard } from './core/guards/index.guard';
 
 export const routes: Routes = [
   {
     path: 'rastreio/:batchId',
+    title: "Rastreio",
     loadComponent: () => import('./features/traceability').then((module) => module.TraceabilityComponent),
   },
   {
     path: 'login',
+    title: "Login",
     loadComponent: () => import('./features/auth/login').then((module) => module.LoginComponent),
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -17,6 +20,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
+        title: "Dashboard",
         loadComponent: () => import('./features/dashboard').then((module) => module.DashboardComponent),
       },
       {
@@ -82,7 +86,7 @@ export const routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: 'dashboard',
+        redirectTo: 'dashboard'
       },
     ],
   },
