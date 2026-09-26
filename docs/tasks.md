@@ -268,3 +268,32 @@ _Use `docs/references/reference-01.png` como referência visual principal para d
 - [ ] Adicionar acesso ao perfil do usuário na barra superior, com identificação do usuário e ações de perfil/sessão compatíveis com os recursos já disponíveis
 - [ ] Adaptar a navegação para telas menores, preservando acesso às opções de menu e ao perfil sem comprometer o conteúdo das páginas
 - [ ] Revisar as telas autenticadas para adequar espaçamento e largura do conteúdo ao layout sem sidebar e validar a navegação por perfil
+
+---
+
+## Task 12 — Redesign da Dashboard
+
+_As telas serão redesenhadas individualmente para dar mais personalidade à interface. Esta task inicia o trabalho pela Dashboard. Use `docs/references/reference-01.png` como base visual, adaptando o conteúdo ao Supply Chain Verde e mantendo os dados que a Dashboard já apresenta; não reproduza os dados de exemplo da referência._
+
+- [ ] Reorganizar a Dashboard no padrão visual da referência, com hierarquia clara para saudação, indicadores e seções de análise, mantendo identidade visual própria do Supply Chain Verde
+- [ ] Exibir os quatro indicadores atuais em uma única fileira com quatro cards, seguindo a estrutura da referência, preservando seus dados e mapeando cada card para a resposta atual da rota
+- [ ] Incluir os gráficos da referência que fazem sentido para os dados disponíveis: gráfico de barras verticais, gráfico menor de barras horizontais e gráfico de pizza
+- [ ] Revisar o contrato e os dados retornados pela rota da Dashboard para identificar se os gráficos e indicadores podem ser preenchidos; se faltarem dados relevantes, documentar a necessidade de enriquecimento da API antes de implementar valores, sem inventar dados
+- [ ] Exibir uma tabela com os 10 produtos mais recentes e incluir a ação “Ver todos” direcionando para a tela de produtos
+- [ ] Não incluir o card “Inventory Snapshot” da referência
+- [ ] Não incluir filtros, seleção/filtro por período ou o botão de ação do cabeçalho exibidos na referência
+- [ ] Ajustar espaçamentos e comportamento responsivo da Dashboard para o layout da navegação superior da Fase 11
+- [ ] Registrar cada próxima tela como uma task de redesign independente, seguindo a mesma abordagem tela a tela
+
+---
+
+## Task 13 — Redesign e unificação de Fornecedores e Ranking
+
+_Unifique as telas de fornecedores e ranking em uma experiência de gestão e desempenho ambiental. Use `docs/references/reference-02.png` como referência visual para apresentar os três primeiros colocados em cards destacados, adaptando o visual e os dados ao Supply Chain Verde, sem copiar conteúdo fictício da referência._
+
+- [ ] Combinar listagem de fornecedores e ranking em uma única tela, mantendo as informações e funcionalidades relevantes de ambas e evitando duas opções de navegação para a mesma área
+- [ ] No cabeçalho da área, dispor a busca de fornecedores e o botão de adicionar fornecedor na mesma linha, cada um ocupando 50% da largura disponível
+- [ ] Apresentar os três fornecedores mais bem ranqueados em cards próprios, seguindo a composição da referência e destacando sua posição e dados reais do ranking
+- [ ] Preservar a ordenação e os dados atuais do ranking, incluindo score, certificações e CO₂ total; na listagem ranqueada abaixo do top 3, substituir a barra verde de score pelas colunas CNPJ e telefone
+- [ ] Garantir que a busca continue permitindo localizar fornecedores fora do top 3 e que o acesso aos detalhes/cadastro respeite as rotas e permissões existentes
+- [ ] Adaptar cards, busca e listagem para telas menores e alinhar a tela ao layout da navegação superior da Fase 11
