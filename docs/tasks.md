@@ -380,3 +380,88 @@ _Use `docs/references/reference-09.png` como referência visual para a gestão d
 - [ ] Exibir a role como badge com dropdown para alteração; salvar a seleção pela rota existente `PATCH /api/v1/users/{userId}/role`, disponível somente para administradores
 - [ ] Consumir a listagem paginada `GET /api/v1/users` com `limit=20`, `offset` e `hasNext`; aplicar a busca por email antes da paginação e reutilizar os controles de paginação das tasks anteriores
 - [ ] Garantir acessibilidade do modal e dos dropdowns e preservar estados de carregamento, erro e lista vazia, com tabela responsiva
+
+---
+
+## Task 20 — Redesign da tela de Lotes
+
+_Redesenhe a tela de lotes usando `docs/references/reference-10.png` como referência principal para a grade de cards com timeline e `docs/references/reference-11.png` como referência secundária para a hierarquia de informações do lote. Adapte ambas ao layout do Supply Chain Verde. Não criar uma página separada de detalhes: os dados e etapas devem ser apresentados nos próprios cards._
+
+- [ ] Substituir a listagem atual por cards em duas colunas em telas largas, responsivos para uma coluna em telas menores; exibir em cada card o ID do lote, produto, fornecedor, quantidade, data de produção, status/etapa atual e uma timeline cronológica das etapas registradas
+- [ ] Usar `GET /api/v1/batches` com `page` iniciado em `0` e `size=20`; renderizar a paginação com página atual e botões Anterior/Próxima, desativando Anterior na primeira página e Próxima quando `page + 1 >= totalPages`
+- [ ] A listagem paginada já está prevista na **Task 12 da API**, com acesso para `ADMIN`, `MANAGER` e `AUDITOR`, query `page`/`size` e resposta contendo `content`, `page`, `size`, `totalElements` e `totalPages`; a task da API ainda está pendente
+- [ ] Obter etapas e emissões pela rota existente `GET /api/v1/batches/{batchId}/traceability`, exibindo-as na timeline sem navegar para outra tela; antes da implementação, confirmar como o status atual deve ser representado, pois o contrato atual da listagem paginada não inclui status nem etapas. Se necessário, atualizar a Task 12 da API para retornar esses dados de forma eficiente, evitando uma chamada de rastreabilidade por card
+- [ ] Manter somente a ação “Novo lote” no cabeçalho, sem searchbar; mostrar a ação apenas para `ADMIN` e `SUPPLIER`, perfis autorizados a criar lotes, e abrir um modal baseado em `docs/references/reference-03.png`
+- [ ] No modal de lote, usar o contrato de `POST /api/v1/batches`: `productId` e `supplierId` (selecionados por nome na interface e enviados como IDs), `quantity` positiva e `producedAt` em formato de data. Não incluir validade ou descrição, pois esses campos não fazem parte do `BatchRequestDTO` atual
+  - **Payload esperado:**
+    ```json
+    {
+      "productId": 8,
+      "supplierId": 4,
+      "quantity": 500.0,
+      "producedAt": "2026-09-20"
+    }
+    ```
+- [ ] Em cada card, oferecer a ação “Adicionar etapa”, que abre um modal. Usar `docs/screenshots/12-chain-form-no-transport.png` e `docs/screenshots/13-chain-form-transport.png` como referências para os campos e `docs/screenshots/14-chain-form-calculate-emission.png` e `docs/screenshots/15-chain-form-emission-calculated.png` para o fluxo de cálculo de emissão
+- [ ] No modal de etapa, incluir tipo da etapa, início e fim, origem/destino opcionais e, para etapas do tipo transporte, modal, distância, combustível e capacidade. Criar a etapa por `POST /api/v1/batches/{batchId}/stages`; depois, quando aplicável, registrar transporte e calcular emissão com as rotas existentes. Alinhar o payload ao contrato da API (`batchId`, `originAddressId`, `destinationAddressId`, `stageType`, `startedAt`, `endedAt`), sem enviar objetos de endereço aninhados se a API continuar esperando IDs
+  - **Payload da etapa:**
+    ```json
+    {
+      "batchId": 101,
+      "originAddressId": 51,
+      "destinationAddressId": 52,
+      "stageType": "TRANSPORT",
+      "startedAt": "2026-09-20T08:00:00",
+      "endedAt": null
+    }
+    ```
+  - Para transporte, enviar `transportMode`, `distance`, `fuelType` e `capacity` a `POST /api/v1/stages/{stageId}/transport`; para cálculo de emissão, enviar `calculationMethod` a `POST /api/v1/stages/{stageId}/emission`. Endereços no payload da etapa são IDs de endereços existentes; se o fluxo precisar cadastrar endereços digitados no modal, documentar primeiro a alteração necessária no contrato da API.
+- [ ] Após criar lote ou etapa, fechar o modal correspondente e atualizar o card/listagem; preservar validação, estados de envio, mensagens de erro, acessibilidade de foco/teclado e layout responsivo
+- [ ] Salvar as imagens dos cards em `public/images/batches/`, usando nomes estáveis por tipo de etapa: `production.webp`, `storage.webp`, `processing.webp`, `transport.webp`, `distribution.webp` e `retail.webp`; escolher a imagem pela etapa atual e oferecer fallback se o arquivo não carregar
+
+### Prompts para gerar as imagens dos cards
+
+Gerar uma imagem por tipo de etapa, mantendo o estilo consistente entre os seis arquivos. Usar orientação horizontal 3:2, composição simples que permaneça legível em um card pequeno, estética editorial realista e sustentável, paleta natural com detalhes verdes, iluminação suave, sem texto, letras, números, logotipos, marcas d'água ou elementos de interface. Salvar cada resultado no caminho indicado acima.
+
+- **`production.webp` — produção:** “Aerial editorial photograph of sustainable Brazilian agriculture at the production stage, healthy crop rows and a farmer inspecting plants, rich natural greens, soft morning light, responsible farming, realistic photography, horizontal 3:2 composition, no text, no logos.”
+- **`storage.webp` — armazenagem:** “Editorial photograph inside a clean sustainable warehouse at the storage stage, neatly organized reusable produce crates and sacks on shelves, subtle green accents, natural soft light, realistic photography, horizontal 3:2 composition, no text, no logos.”
+- **`processing.webp` — processamento:** “Editorial photograph of an efficient clean food processing facility at the processing stage, workers handling agricultural produce on a hygienic production line, stainless equipment and subtle green details, realistic photography, horizontal 3:2 composition, no text, no logos.”
+- **`transport.webp` — transporte:** “Editorial photograph of a modern low-emission delivery truck transporting agricultural goods on a green rural route in Brazil, landscape and vehicle visible, sustainable logistics, soft daylight, realistic photography, horizontal 3:2 composition, no text, no logos.”
+- **`distribution.webp` — distribuição:** “Editorial photograph of the distribution stage at a local logistics hub, workers moving reusable crates from a small low-emission vehicle to a neighborhood delivery point, sustainable supply chain, natural soft light, realistic photography, horizontal 3:2 composition, no text, no logos.”
+- **`retail.webp` — varejo:** “Editorial photograph of the retail stage in a welcoming Brazilian grocery store, fresh locally sourced produce arranged on shelves with a shop worker restocking, sustainable retail, warm natural light, realistic photography, horizontal 3:2 composition, no text, no logos.”
+
+---
+
+## Task 21 — Redesign da gestão de Relatórios
+
+_Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de gestão já estabelecidas, especialmente a Task 19 de Usuários. A tela deve facilitar a consulta dos relatórios existentes; a geração de relatório permanece disponível pelas ações e permissões atuais._
+
+- [ ] Exibir os relatórios em uma tabela com as colunas CNPJ, Razão social, Período, CO₂ total, Total de lotes e Data de geração; formatar CNPJ, datas e valores numéricos para leitura, sem trocar os valores retornados pela API
+- [ ] Consumir a nova listagem geral `GET /api/v1/reports` definida na **Task 17 da API**, com `limit=20` e `offset` inicial `0`; a rota atual `GET /api/v1/suppliers/{supplierId}/reports` lista somente relatórios de um fornecedor e não é paginada
+- [ ] Implementar a paginação no padrão das telas anteriores: exibir página atual e botões Anterior/Próxima, avançar o offset em 20 itens e desativar Próxima quando `hasNext=false`; desativar Anterior no offset `0`
+- [ ] Ao selecionar uma linha ou ação de um relatório, navegar para uma tela de detalhe dedicada usando `GET /api/v1/reports/{reportId}`; apresentar os dados do relatório separadamente, incluindo identificação do fornecedor, período, totais e data de geração, sem oferecer edição se não houver operação de edição na API
+- [ ] Manter a ação de geração de relatório e o formulário existentes, preservando suas permissões, validações, estados de carregamento/erro/sucesso e associação ao fornecedor
+- [ ] Tratar carregamento, erro e lista vazia; manter tabela e detalhe acessíveis e responsivos, respeitando a navegação e identidade visual compartilhadas
+
+### Contrato esperado para a listagem
+
+```json
+{
+  "items": [
+    {
+      "reportId": 301,
+      "supplierId": 4,
+      "supplierCnpj": "12.345.678/0001-90",
+      "supplierName": "Fazenda Verde Ltda",
+      "periodStartAt": "2026-08-01",
+      "periodEndAt": "2026-08-31",
+      "totalCo2Kg": 125.75,
+      "totalBatchCount": 12,
+      "generatedAt": "2026-09-01T10:30:00"
+    }
+  ],
+  "limit": 20,
+  "offset": 0,
+  "hasNext": true
+}
+```
