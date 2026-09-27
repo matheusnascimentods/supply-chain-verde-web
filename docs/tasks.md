@@ -210,7 +210,7 @@ _Depende de: Fases 1 e 2. Cada feature é independente das outras — ideal para
 ### 6.8 Audit Log (Auditoria)
 
 - [x] `src/app/features/audit-log/index.schema.ts` — schema Zod (`auditLogResponseSchema`)
-- [x] `src/app/features/audit-log/index.service.ts` — serviço de auditoria (`GET /audit-logs` com filtros)
+- [x] `src/app/features/audit-log/index.service.ts` — serviço de auditoria (`GET /audit-logs`)
 - [x] `src/app/features/audit-log/index.service.spec.ts` — testes unitários do serviço
 - [x] `src/app/features/audit-log/index.component.ts` — tela de listagem de logs de auditoria
 - [x] `src/app/features/audit-log/index.component.html`
@@ -352,3 +352,31 @@ _Redesenhe a listagem conforme `docs/screenshots/09-certifications-list.png`, se
 - [ ] No modal, manter os campos atuais de nome, organização emissora, número, emissão, validade e URL do documento, além da associação correta ao fornecedor autenticado
 - [ ] Preservar validações, permissões, estados de carregamento/erro/sucesso e atualizar a listagem após a criação
 - [ ] Garantir acessibilidade dos dropdowns e do modal, além de adaptar a listagem e o formulário para telas menores
+
+---
+
+## Task 18 — Redesign da tela de Auditoria
+
+_Use `docs/references/reference-07.png` como referência visual principal e `docs/references/reference-08.png` como referência para o seletor de intervalo de datas. Preserve a tabela e os dados reais de auditoria, adaptando as referências ao layout do Supply Chain Verde._
+
+- [ ] Manter a tabela de auditoria com usuário/email, operação, data e hora, tabela afetada e detalhes disponíveis; exibir as operações em badges com cores diferentes e consistentes
+- [ ] Remover os filtros dropdown de usuário e navegador; manter somente o dropdown de operação, além da busca por email e do filtro de intervalo de datas
+- [ ] Implementar o seletor de datas inspirado em `reference-08.png`; na abertura da tela, buscar somente os últimos sete dias, sem filtro de operação ou email
+- [ ] Consumir `GET /api/v1/audit-logs` com intervalo obrigatório, operação e email opcionais, `limit=20` e `offset`; usar `hasNext` para a paginação, desativando Anterior no primeiro offset e Próxima quando `hasNext=false`
+- [ ] Abrir um modal pelo botão “Exportar logs”, com intervalo de datas obrigatório e filtros opcionais de operação e email do usuário
+- [ ] Buscar todas as páginas correspondentes aos filtros do modal e gerar/baixar o CSV localmente no navegador; não exigir endpoint de exportação de arquivo na API
+- [ ] Tratar carregamento, erro, resultado vazio e falha durante a exportação, mantendo a tela e o modal responsivos e acessíveis
+
+---
+
+## Task 19 — Redesign da tela de Usuários
+
+_Use `docs/references/reference-09.png` como referência visual para a gestão de usuários. Adapte a composição ao layout compartilhado da Fase 11 e exiba somente informações existentes e necessárias ao Supply Chain Verde. Para o formulário de criação, use `docs/references/reference-03.png` como referência de modal._
+
+- [ ] Apresentar usuários em uma tabela com as colunas Nome, Email, Role e `createdAt`, sem dados de exemplo como última atividade
+- [ ] Incluir busca por email e fazer o botão “Adicionar usuário” abrir um modal, sem navegar para uma página separada
+- [ ] No modal, manter os campos atuais de nome, email, senha e role, com as validações existentes, e criar o usuário pela rota `POST /api/v1/users`
+- [ ] Após a criação bem-sucedida, fechar o modal e atualizar a tabela; preservar estados de envio e mensagens de erro
+- [ ] Exibir a role como badge com dropdown para alteração; salvar a seleção pela rota existente `PATCH /api/v1/users/{userId}/role`, disponível somente para administradores
+- [ ] Consumir a listagem paginada `GET /api/v1/users` com `limit=20`, `offset` e `hasNext`; aplicar a busca por email antes da paginação e reutilizar os controles de paginação das tasks anteriores
+- [ ] Garantir acessibilidade do modal e dos dropdowns e preservar estados de carregamento, erro e lista vazia, com tabela responsiva
