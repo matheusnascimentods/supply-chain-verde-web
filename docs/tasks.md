@@ -371,10 +371,12 @@ _Use `docs/references/reference-07.png` como referência visual principal e `doc
 
 ## Task 19 — Redesign da tela de Usuários
 
-_Use `docs/references/reference-09.png` como referência visual para a gestão de usuários. Adapte a composição ao layout compartilhado da Fase 11 e exiba somente informações existentes e necessárias ao Supply Chain Verde._
+_Use `docs/references/reference-09.png` como referência visual para a gestão de usuários. Adapte a composição ao layout compartilhado da Fase 11 e exiba somente informações existentes e necessárias ao Supply Chain Verde. Para o formulário de criação, use `docs/references/reference-03.png` como referência de modal._
 
 - [ ] Apresentar usuários em uma tabela com as colunas Nome, Email, Role e `createdAt`, sem dados de exemplo como última atividade
-- [ ] Incluir busca por email e manter acesso à criação de usuário pela ação “Adicionar usuário”
+- [ ] Incluir busca por email e fazer o botão “Adicionar usuário” abrir um modal, sem navegar para uma página separada
+- [ ] No modal, manter os campos atuais de nome, email, senha e role, com as validações existentes, e criar o usuário pela rota `POST /api/v1/users`
+- [ ] Após a criação bem-sucedida, fechar o modal e atualizar a tabela; preservar estados de envio e mensagens de erro
 - [ ] Exibir a role como badge com dropdown para alteração; salvar a seleção pela rota existente `PATCH /api/v1/users/{userId}/role`, disponível somente para administradores
 - [ ] Consumir a listagem paginada `GET /api/v1/users` com `limit=20`, `offset` e `hasNext`; aplicar a busca por email antes da paginação e reutilizar os controles de paginação das tasks anteriores
-- [ ] Preservar estados de carregamento, erro e lista vazia, com tabela acessível e comportamento responsivo
+- [ ] Garantir acessibilidade do modal e dos dropdowns e preservar estados de carregamento, erro e lista vazia, com tabela responsiva
