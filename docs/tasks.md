@@ -366,3 +366,15 @@ _Use `docs/references/reference-07.png` como referência visual principal e `doc
 - [ ] Abrir um modal pelo botão “Exportar logs”, com intervalo de datas obrigatório e filtros opcionais de operação e email do usuário
 - [ ] Buscar todas as páginas correspondentes aos filtros do modal e gerar/baixar o CSV localmente no navegador; não exigir endpoint de exportação de arquivo na API
 - [ ] Tratar carregamento, erro, resultado vazio e falha durante a exportação, mantendo a tela e o modal responsivos e acessíveis
+
+---
+
+## Task 19 — Redesign da tela de Usuários
+
+_Use `docs/references/reference-09.png` como referência visual para a gestão de usuários. Adapte a composição ao layout compartilhado da Fase 11 e exiba somente informações existentes e necessárias ao Supply Chain Verde._
+
+- [ ] Apresentar usuários em uma tabela com as colunas Nome, Email, Role e `createdAt`, sem dados de exemplo como última atividade
+- [ ] Incluir busca por email e manter acesso à criação de usuário pela ação “Adicionar usuário”
+- [ ] Exibir a role como badge com dropdown para alteração; salvar a seleção pela rota existente `PATCH /api/v1/users/{userId}/role`, disponível somente para administradores
+- [ ] Consumir a listagem paginada `GET /api/v1/users` com `limit=20`, `offset` e `hasNext`; aplicar a busca por email antes da paginação e reutilizar os controles de paginação das tasks anteriores
+- [ ] Preservar estados de carregamento, erro e lista vazia, com tabela acessível e comportamento responsivo
