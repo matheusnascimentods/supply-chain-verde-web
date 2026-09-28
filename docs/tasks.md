@@ -298,7 +298,8 @@ _Unifique as telas de fornecedores e ranking em uma experiência de gestão e de
 - [ ] Usar `docs/references/reference-04.png` como base visual para paginação e exibir página atual com botões Anterior/Próxima; desativar visualmente Anterior quando `offset=0` e Próxima quando `hasNext=false` (sem total de itens, não exibir total de páginas nem botão de última página)
 - [ ] Preservar a ordenação e os dados atuais do ranking, incluindo score, certificações e CO₂ total; na listagem ranqueada abaixo do top 3, substituir a barra verde de score pelas colunas CNPJ e telefone
 - [ ] Remover a badge “Ordenar por: Score” do cabeçalho da tela
-- [ ] Garantir que a busca continue permitindo localizar fornecedores fora do top 3 e que o acesso aos detalhes/cadastro respeite as rotas e permissões existentes
+- [ ] Implementar a busca de fornecedores pela API, permitindo localizar fornecedores fora do top 3 por nome (full-text) ou CNPJ (correspondência parcial); enviar o termo junto à paginação, reiniciar o offset ao alterar a busca e preservar a busca ao navegar entre páginas
+- [ ] Garantir que o acesso aos detalhes/cadastro respeite as rotas e permissões existentes
 - [ ] Adaptar cards, busca e listagem para telas menores e alinhar a tela ao layout da navegação superior da Fase 11
 
 ---
@@ -322,7 +323,7 @@ _Redesenhe a listagem de produtos como uma grade de cards com imagens, usando `d
 
 - [ ] Substituir a tabela atual por cards responsivos que exibam imagem, nome, categoria, descrição e unidade do produto, preservando as ações disponíveis
 - [ ] Organizar a busca e o botão “Novo” na mesma linha, cada um ocupando 50% da largura disponível, seguindo a estrutura definida para Fornecedores; o botão deve abrir o modal de cadastro definido na Task 16, sem navegar para uma página separada
-- [ ] Consumir `GET /api/v1/products` com `limit=20` e `offset` iniciado em `0`; aplicar a busca antes da paginação para que ela encontre produtos em todas as páginas
+- [ ] Consumir `GET /api/v1/products` com `limit=20` e `offset` iniciado em `0`; enviar o termo de busca à API para pesquisar por nome, categoria ou descrição com full-text antes da paginação e encontrar produtos em todas as páginas
 - [ ] Usar `hasNext` para controlar a paginação visual inspirada em `docs/references/reference-04.png`: exibir página atual e botões Anterior/Próxima, desativando Anterior no `offset=0` e Próxima quando `hasNext=false`
 - [ ] Associar imagens às categorias atuais e carregá-las de `public/images/products/`: `agriculture.webp`, `livestock.webp`, `processed-food.webp`, `textile.webp`, `forestry.webp` e `other.webp`; apresentar fallback quando uma imagem não estiver disponível
 - [ ] Alinhar a grade e seus estados de carregamento, erro e vazio ao layout da Fase 11 e garantir comportamento responsivo
@@ -362,7 +363,7 @@ _Use `docs/references/reference-07.png` como referência visual principal e `doc
 - [ ] Manter a tabela de auditoria com usuário/email, operação, data e hora, tabela afetada e detalhes disponíveis; exibir as operações em badges com cores diferentes e consistentes
 - [ ] Remover os filtros dropdown de usuário e navegador; manter somente o dropdown de operação, além da busca por email e do filtro de intervalo de datas
 - [ ] Implementar o seletor de datas inspirado em `reference-08.png`; na abertura da tela, buscar somente os últimos sete dias, sem filtro de operação ou email
-- [ ] Consumir `GET /api/v1/audit-logs` com intervalo obrigatório, operação e email opcionais, `limit=20` e `offset`; usar `hasNext` para a paginação, desativando Anterior no primeiro offset e Próxima quando `hasNext=false`
+- [ ] Consumir `GET /api/v1/audit-logs` com intervalo obrigatório, operação e email opcionais, `limit=20` e `offset`; filtrar o email parcialmente e sem diferenciar maiúsculas de minúsculas na API; usar `hasNext` para a paginação, desativando Anterior no primeiro offset e Próxima quando `hasNext=false`
 - [ ] Abrir um modal pelo botão “Exportar logs”, com intervalo de datas obrigatório e filtros opcionais de operação e email do usuário
 - [ ] Buscar todas as páginas correspondentes aos filtros do modal e gerar/baixar o CSV localmente no navegador; não exigir endpoint de exportação de arquivo na API
 - [ ] Tratar carregamento, erro, resultado vazio e falha durante a exportação, mantendo a tela e o modal responsivos e acessíveis
@@ -378,7 +379,7 @@ _Use `docs/references/reference-09.png` como referência visual para a gestão d
 - [ ] No modal, manter os campos atuais de nome, email, senha e role, com as validações existentes, e criar o usuário pela rota `POST /api/v1/users`
 - [ ] Após a criação bem-sucedida, fechar o modal e atualizar a tabela; preservar estados de envio e mensagens de erro
 - [ ] Exibir a role como badge com dropdown para alteração; salvar a seleção pela rota existente `PATCH /api/v1/users/{userId}/role`, disponível somente para administradores
-- [ ] Consumir a listagem paginada `GET /api/v1/users` com `limit=20`, `offset` e `hasNext`; aplicar a busca por email antes da paginação e reutilizar os controles de paginação das tasks anteriores
+- [ ] Consumir a listagem paginada `GET /api/v1/users` com `limit=20`, `offset` e `hasNext`; enviar o email à API para correspondência parcial case-insensitive antes da paginação e reutilizar os controles de paginação das tasks anteriores
 - [ ] Garantir acessibilidade do modal e dos dropdowns e preservar estados de carregamento, erro e lista vazia, com tabela responsiva
 
 ---
