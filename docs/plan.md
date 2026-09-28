@@ -118,12 +118,11 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', loadComponent: () => import('./features/dashboard').then(m => m.DashboardComponent) },
       { path: 'suppliers', data: { roles: ['admin', 'manager'] }, canActivate: [roleGuard], loadChildren: () => import('./features/suppliers/routes') },
-      { path: 'suppliers/ranking', loadComponent: () => import('./features/suppliers/ranking').then(m => m.RankingComponent) },
       { path: 'products', data: { roles: ['admin', 'manager'] }, canActivate: [roleGuard], loadChildren: () => import('./features/products/routes') },
       { path: 'certifications', data: { roles: ['auditor', 'supplier'] }, canActivate: [roleGuard], loadChildren: () => import('./features/certifications/routes') },
       { path: 'batches', loadChildren: () => import('./features/batches/routes') },
-      { path: 'batches/:batchId/stages', loadChildren: () => import('./features/chain/routes') },
       { path: 'reports', loadChildren: () => import('./features/reports/routes') },
+      { path: 'reports/:reportId', loadComponent: () => import('./features/reports/detail').then(m => m.ReportDetailComponent) },
       { path: 'users', data: { roles: ['admin'] }, canActivate: [roleGuard], loadChildren: () => import('./features/users/routes') },
       { path: 'audit-log', data: { roles: ['admin', 'auditor'] }, canActivate: [roleGuard], loadComponent: () => import('./features/audit-log').then(m => m.AuditLogComponent) },
     ],
@@ -134,6 +133,7 @@ export const routes: Routes = [
 - `authGuard` — bloqueia se não houver sessão válida, redireciona pro `/login`.
 - `roleGuard` — lê `route.data['roles']` e compara com a `role` da sessão; um guard genérico reaproveitado, não um por feature.
 - Rotas sem `data.roles` mas dentro do bloco protegido = qualquer perfil autenticado (ex: `batches`, `reports`, cujo acesso varia por *dado* — o próprio ou todos —, não por rota).
+- No destino do redesign, ranking é apresentado junto da listagem em `/suppliers`; a timeline do lote fica nos cards de `/batches`, sem rota de detalhe de etapas; `/reports/:reportId` apresenta a consulta individual do relatório.
 
 ---
 
@@ -254,6 +254,13 @@ load() {
 `LocalDate`/`LocalDateTime` do backend chegam como string ISO 8601 no JSON — validados como `z.string()`, sem coerção pra `Date` no schema; a conversão de exibição fica a cargo de quem consome (`DatePipe`).
 
 **Escopo do Zod**: usado para validar dados que **entram** vindos da API (resposta) e como fonte de tipos/`ENUM`s. Validação de **formulário** continua com os validators nativos do Reactive Forms — não existe integração oficial `zodResolver` para Angular como há no ecossistema React, então não vale forçar essa ponte.
+
+### Listagens paginadas e filtros
+
+- Fornecedores/ranking, produtos, usuários, auditoria e relatórios usam `limit`/`offset` com `hasNext`; as telas iniciam em `limit=20`, avançam ou recuam 20 itens e não presumem total de páginas.
+- Certificações e lotes usam `page`/`size` com metadados `totalPages`; certificações enviam `onlyExpiring=true` para filtrar vencimentos e lotes podem enviar `supplierId` quando permitido pelo perfil.
+- A listagem geral de relatórios usa `GET /reports` paginada, com filtro opcional por fornecedor; fornecedores só podem consultar seus próprios dados. A tela de detalhe usa `GET /reports/{reportId}`.
+- Serviços validam o envelope e os itens paginados com schemas Zod antes de atualizar os signals; mudanças de contrato devem ser sincronizadas com as tasks e a especificação da API.
 
 ---
 
