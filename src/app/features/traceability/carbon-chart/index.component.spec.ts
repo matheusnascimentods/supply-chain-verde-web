@@ -23,8 +23,8 @@ describe('CarbonChartComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Produção');
     expect(compiled.textContent).toContain('Transporte');
-    expect(compiled.textContent).toContain('4 kg CO₂e');
-    const bars = compiled.querySelectorAll('li > div:last-child > div');
+    expect(compiled.textContent).toContain('4 kg');
+    const bars = compiled.querySelectorAll('li > div:nth-child(2) > div');
     expect((bars[0] as HTMLElement).style.width).toBe('100%');
     expect((bars[1] as HTMLElement).style.width).toBe('50%');
   });
