@@ -252,9 +252,9 @@ _Depende de: fluxo completo (Fases 3–7) funcionando._
 
 _Automatiza as verificações do frontend em cada pull request e mantém o fluxo de contribuição alinhado ao repositório da API. Usar `npm ci` com o `package-lock.json` para instalações reproduzíveis._
 
-- [ ] `.github/workflows/ci.yml` — pipeline de GitHub Actions para pull requests e pushes em `main`, configurando Node.js e cache do npm e executando `npm ci`, testes unitários em modo não interativo, `npm run build`, `npm audit` com nível mínimo de severidade definido e `npm run lint`; qualquer etapa com falha deve reprovar a pipeline
-- [ ] Configurar ESLint com regras apropriadas para Angular e TypeScript e adicionar o script `lint` ao `package.json`, sem aplicar correções automáticas na CI
-- [ ] `.github/PULL_REQUEST_TEMPLATE.md` — template com descrição/contexto, tipo de mudança, checklist de testes/build/lint, impacto técnico e evidências visuais quando aplicável
+- [x] `.github/workflows/ci.yml` — pipeline de GitHub Actions para pull requests e pushes em `main`, configurando Node.js e cache do npm e executando `npm ci`, testes unitários em modo não interativo, `npm run build`, `npm audit` com nível mínimo de severidade definido e `npm run lint`; qualquer etapa com falha deve reprovar a pipeline
+- [x] Configurar ESLint com regras apropriadas para Angular e TypeScript e adicionar o script `lint` ao `package.json`, sem aplicar correções automáticas na CI
+- [x] `.github/PULL_REQUEST_TEMPLATE.md` — template com descrição/contexto, tipo de mudança, checklist de testes/build/lint, impacto técnico e evidências visuais quando aplicável
 - [ ] Configurar proteção da branch `main` no GitHub para bloquear pushes/commits diretos e exigir pull request aprovado, além da aprovação dos checks obrigatórios da CI antes do merge
 
 ---

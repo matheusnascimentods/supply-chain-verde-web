@@ -76,7 +76,7 @@ describe('ConfirmDialogComponent', () => {
 
   it('should emit cancel when cancel button is clicked', () => {
     let cancelled = false;
-    component.cancel.subscribe(() => {
+    component.cancelled.subscribe(() => {
       cancelled = true;
     });
 
@@ -89,7 +89,7 @@ describe('ConfirmDialogComponent', () => {
 
   it('should emit cancel when close (X) button is clicked', () => {
     let cancelled = false;
-    component.cancel.subscribe(() => {
+    component.cancelled.subscribe(() => {
       cancelled = true;
     });
 
@@ -102,7 +102,7 @@ describe('ConfirmDialogComponent', () => {
 
   it('should emit cancel when clicking directly on the backdrop', () => {
     let cancelled = false;
-    component.cancel.subscribe(() => {
+    component.cancelled.subscribe(() => {
       cancelled = true;
     });
 
@@ -115,7 +115,7 @@ describe('ConfirmDialogComponent', () => {
 
   it('should NOT emit cancel when clicking inside the dialog container', () => {
     let cancelled = false;
-    component.cancel.subscribe(() => {
+    component.cancelled.subscribe(() => {
       cancelled = true;
     });
 
@@ -128,7 +128,7 @@ describe('ConfirmDialogComponent', () => {
 
   it('should emit cancel on Escape keydown when open', () => {
     let cancelled = false;
-    component.cancel.subscribe(() => {
+    component.cancelled.subscribe(() => {
       cancelled = true;
     });
 
@@ -143,7 +143,7 @@ describe('ConfirmDialogComponent', () => {
     fixture.detectChanges();
 
     let cancelled = false;
-    component.cancel.subscribe(() => {
+    component.cancelled.subscribe(() => {
       cancelled = true;
     });
 
