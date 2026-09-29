@@ -25,7 +25,7 @@ export class ConfirmDialogComponent {
   readonly variant = input<ConfirmDialogVariant>('danger');
 
   readonly confirm = output<void>();
-  readonly cancel = output<void>();
+  readonly cancelled = output<void>();
 
   protected readonly confirmButtonClasses = computed(() => {
     const baseClasses =
@@ -43,7 +43,7 @@ export class ConfirmDialogComponent {
   }
 
   onCancel(): void {
-    this.cancel.emit();
+    this.cancelled.emit();
   }
 
   onBackdropClick(event: MouseEvent): void {
