@@ -26,7 +26,7 @@ export class AuthService {
       tap({
         next: (response) => {
           this._isLoading.set(false);
-          this.sessionService.setSession(response.token, response.role);
+          this.sessionService.setSession(response.token, response.role, credentials.email);
         },
         error: () => {
           this._isLoading.set(false);
