@@ -17,7 +17,14 @@ export const supplierResponseSchema = z.object({
   registeredAt: z.string().nullable().optional(),
 }).passthrough();
 export const supplierRankingResponseSchema = z.object({ supplierId: z.number(), supplierName: z.string().optional(), name: z.string().optional(), sustainabilityScore: z.number(), activeCertificationCount: z.number().optional(), activeCertifications: z.number().optional(), activeCertificationsCount: z.number().optional(), totalCo2Kg: z.number().optional() }).passthrough();
+export const supplierRankingPageSchema = z.object({
+  items: z.array(supplierRankingResponseSchema),
+  limit: z.number(),
+  offset: z.number(),
+  hasNext: z.boolean(),
+});
 export type AddressRequestDTO = z.infer<typeof addressRequestSchema>;
 export type SupplierRequestDTO = z.infer<typeof supplierRequestSchema>;
 export type SupplierResponseDTO = z.infer<typeof supplierResponseSchema>;
 export type SupplierRankingResponseDTO = z.infer<typeof supplierRankingResponseSchema>;
+export type SupplierRankingPageDTO = z.infer<typeof supplierRankingPageSchema>;

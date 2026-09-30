@@ -293,16 +293,16 @@ _As telas serão redesenhadas individualmente para dar mais personalidade à int
 
 _Unifique as telas de fornecedores e ranking em uma experiência de gestão e desempenho ambiental. Use `docs/references/reference-02.png` como referência visual para apresentar os três primeiros colocados em cards destacados, adaptando o visual e os dados ao Supply Chain Verde, sem copiar conteúdo fictício da referência._
 
-- [ ] Combinar listagem de fornecedores e ranking em uma única tela, mantendo as informações e funcionalidades relevantes de ambas e evitando duas opções de navegação para a mesma área
-- [ ] No cabeçalho da área, dispor a busca de fornecedores e o botão de adicionar fornecedor na mesma linha, cada um ocupando 50% da largura disponível
-- [ ] Apresentar os três fornecedores mais bem ranqueados em cards próprios, seguindo a composição da referência e destacando sua posição e dados reais do ranking
-- [ ] Consumir `GET /api/v1/suppliers/ranking` de forma paginada com `limit=20` e `offset` iniciado em `0`, avançando o offset em 20 itens ao buscar páginas seguintes e usando o `hasNext` da resposta para controlar a navegação
-- [ ] Usar `docs/references/reference-04.png` como base visual para paginação e exibir página atual com botões Anterior/Próxima; desativar visualmente Anterior quando `offset=0` e Próxima quando `hasNext=false` (sem total de itens, não exibir total de páginas nem botão de última página)
-- [ ] Preservar a ordenação e os dados atuais do ranking, incluindo score, certificações e CO₂ total; na listagem ranqueada abaixo do top 3, substituir a barra verde de score pelas colunas CNPJ e telefone
-- [ ] Remover a badge “Ordenar por: Score” do cabeçalho da tela
-- [ ] Implementar a busca de fornecedores pela API, permitindo localizar fornecedores fora do top 3 por nome (full-text) ou CNPJ (correspondência parcial); enviar o termo junto à paginação, reiniciar o offset ao alterar a busca e preservar a busca ao navegar entre páginas
-- [ ] Garantir que o acesso aos detalhes/cadastro respeite as rotas e permissões existentes
-- [ ] Adaptar cards, busca e listagem para telas menores e alinhar a tela ao layout da navegação superior da Fase 11
+- [x] Combinar listagem de fornecedores e ranking em uma única tela, mantendo as informações e funcionalidades relevantes de ambas e evitando duas opções de navegação para a mesma área
+- [x] No cabeçalho da área, dispor a busca de fornecedores e o botão de adicionar fornecedor na mesma linha, cada um ocupando 50% da largura disponível
+- [x] Apresentar os três fornecedores mais bem ranqueados em cards próprios, seguindo a composição da referência e destacando sua posição e dados reais do ranking
+- [x] Consumir `GET /api/v1/suppliers/ranking` de forma paginada com `limit=20` e `offset` iniciado em `0`, avançando o offset em 20 itens ao buscar páginas seguintes e usando o `hasNext` da resposta para controlar a navegação
+- [x] Usar `docs/references/reference-04.png` como base visual para paginação e exibir página atual com botões Anterior/Próxima; desativar visualmente Anterior quando `offset=0` e Próxima quando `hasNext=false` (sem total de itens, não exibir total de páginas nem botão de última página)
+- [x] Preservar a ordenação e os dados atuais do ranking, incluindo score, certificações e CO₂ total; na listagem ranqueada abaixo do top 3, substituir a barra verde de score pelas colunas CNPJ e telefone
+- [x] Remover a badge “Ordenar por: Score” do cabeçalho da tela
+- [x] Implementar a busca de fornecedores pela API, permitindo localizar fornecedores fora do top 3 por nome (full-text) ou CNPJ (correspondência parcial); enviar o termo junto à paginação, reiniciar o offset ao alterar a busca e preservar a busca ao navegar entre páginas
+- [x] Garantir que o acesso aos detalhes/cadastro respeite as rotas e permissões existentes
+- [x] Adaptar cards, busca e listagem para telas menores e alinhar a tela ao layout da navegação superior da Fase 11
 
 ---
 
