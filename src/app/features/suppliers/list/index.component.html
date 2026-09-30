@@ -25,6 +25,44 @@
     } @else if (loading()) {
       <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando fornecedores…</div>
     } @else {
+      @if (!rankingAvailable()) {
+        <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+          O ranking está indisponível no momento. A lista de fornecedores continua disponível.
+        </div>
+        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-labelledby="supplier-list-heading">
+          <div class="px-5 py-5 sm:px-6">
+            <h2 id="supplier-list-heading" class="text-lg font-semibold text-slate-900">Fornecedores cadastrados</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[650px] text-left text-sm">
+              <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th scope="col" class="px-5 py-3 font-medium">Fornecedor</th>
+                  <th scope="col" class="px-5 py-3 font-medium">CNPJ</th>
+                  <th scope="col" class="px-5 py-3 font-medium">Telefone</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (supplier of fallbackSuppliers(); track supplier.supplierId) {
+                  <tr class="border-t border-slate-100 hover:bg-slate-50">
+                    <td class="px-5 py-4">
+                      @if (canManage()) {
+                        <a class="font-semibold text-slate-800 hover:text-green-700 hover:underline" [routerLink]="['/', 'suppliers', supplier.supplierId, 'edit']">{{ supplier.name }}</a>
+                      } @else {
+                        <span class="font-semibold text-slate-800">{{ supplier.name }}</span>
+                      }
+                    </td>
+                    <td class="px-5 py-4 text-slate-600">{{ supplier.cnpj ?? '—' }}</td>
+                    <td class="px-5 py-4 text-slate-600">{{ supplier.phone ?? '—' }}</td>
+                  </tr>
+                } @empty {
+                  <tr><td class="px-5 py-12 text-center text-slate-500" colspan="3">{{ search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado.' }}</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      } @else {
       @if (podium().length) {
         <section class="mb-8" aria-labelledby="top-suppliers-heading">
           <h2 id="top-suppliers-heading" class="mb-4 text-lg font-semibold text-slate-900">Destaques do ranking</h2>
@@ -98,6 +136,7 @@
           <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="!hasNext() || loading()" (click)="nextPage()">Próxima</button>
         </nav>
       </section>
+      }
     }
   </div>
   @if (createModalOpen()) {

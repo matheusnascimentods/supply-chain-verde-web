@@ -1,9 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map, tap } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { z } from 'zod';
 import { environment } from '../../../environments/environment';
 import { SupplierRequestDTO, SupplierResponseDTO, SupplierRankingPageDTO, ViaCepResponseDTO, supplierResponseSchema, supplierRankingPageSchema, viaCepResponseSchema } from './index.schema';
+import { certificationListResponseSchema } from '../certifications/index.schema';
 
 @Injectable({ providedIn: 'root' })
 export class SuppliersService {
@@ -39,8 +40,28 @@ export class SuppliersService {
   }
 
   loadExpiringCertificationSupplierIds(): Observable<number[]> {
-    return this.http.get<unknown>(`${environment.apiUrl}/certifications/expiring`).pipe(
-      map((raw) => z.array(z.object({ supplierId: z.number() }).passthrough()).parse(raw).map((item) => item.supplierId)),
+    const pageSize = 100;
+    const loadPage = (page: number) =>
+      this.http
+        .get<unknown>(`${environment.apiUrl}/certifications`, {
+          params: new HttpParams()
+            .set('page', page)
+            .set('size', pageSize)
+            .set('status', 'EXPIRED'),
+        })
+        .pipe(map((raw) => certificationListResponseSchema.parse(raw)));
+
+    return loadPage(0).pipe(
+      switchMap((firstPage) => {
+        const remainingPages = Array.from(
+          { length: Math.max(firstPage.totalPages - 1, 0) },
+          (_, index) => loadPage(index + 1),
+        );
+        return forkJoin([of(firstPage), ...remainingPages]);
+      }),
+      map((pages) =>
+        [...new Set(pages.flatMap((page) => page.items.map((item) => item.supplierId)))],
+      ),
     );
   }
 }

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { catchError, forkJoin, of, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { SessionService } from '../../../core/session/index.service';
 import { SuppliersService } from '../index.service';
 import { SupplierFormComponent } from '../form/index.component';
@@ -22,6 +22,7 @@ export class SupplierListComponent {
   readonly expiringSupplierIds = signal<number[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
+  readonly rankingAvailable = signal(true);
   readonly search = signal('');
   readonly offset = signal(0);
   readonly hasNext = signal(false);
@@ -32,6 +33,15 @@ export class SupplierListComponent {
     ranking: item,
     supplier: this.items().find((supplier) => supplier.supplierId === item.supplierId),
   })));
+  readonly fallbackSuppliers = computed(() => {
+    const term = this.search().trim().toLocaleLowerCase('pt-BR');
+    const digits = term.replace(/\D/g, '');
+    if (!term) return this.items();
+    return this.items().filter((supplier) =>
+      supplier.name.toLocaleLowerCase('pt-BR').includes(term) ||
+      (digits.length > 0 && (supplier.cnpj ?? '').replace(/\D/g, '').includes(digits)),
+    );
+  });
   readonly podium = computed(() => this.offset() === 0 && !this.search().trim() ? this.rankedSuppliers().slice(0, 3) : []);
   readonly tableItems = computed(() => this.offset() === 0 && !this.search().trim() ? this.rankedSuppliers().slice(3) : this.rankedSuppliers());
 
@@ -45,17 +55,22 @@ export class SupplierListComponent {
     this.loading.set(true);
     this.error.set('');
     forkJoin({
-      ranking: this.service.loadRanking({ limit: PAGE_SIZE, offset: this.offset(), search: this.search() }),
+      ranking: this.service
+        .loadRanking({ limit: PAGE_SIZE, offset: this.offset(), search: this.search() })
+        .pipe(catchError(() => of(null))),
       suppliers: this.service.load(),
-      expiringSupplierIds: this.service.loadExpiringCertificationSupplierIds(),
+      expiringSupplierIds: this.service
+        .loadExpiringCertificationSupplierIds()
+        .pipe(catchError(() => of([] as number[]))),
     }).subscribe({
       next: ({ ranking, suppliers, expiringSupplierIds }) => {
         if (sequence !== this.loadSequence) return;
-        const rankingItems = Array.isArray(ranking) ? ranking : ranking.items;
+        this.rankingAvailable.set(ranking !== null);
+        const rankingItems = ranking === null ? [] : Array.isArray(ranking) ? ranking : ranking.items;
         this.ranking.set(rankingItems);
         this.items.set(suppliers);
         this.expiringSupplierIds.set(expiringSupplierIds);
-        this.hasNext.set(Array.isArray(ranking) ? false : ranking.hasNext);
+        this.hasNext.set(ranking === null || Array.isArray(ranking) ? false : ranking.hasNext);
         this.loading.set(false);
       },
       error: () => {
