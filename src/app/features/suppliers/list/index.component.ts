@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { SessionService } from '../../../core/session/index.service';
 import { SuppliersService } from '../index.service';
+import { SupplierFormComponent } from '../form/index.component';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
 
 const PAGE_SIZE = 20;
 
-@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierFormComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierListComponent {
   private readonly service = inject(SuppliersService);
   private readonly session = inject(SessionService);
@@ -24,6 +25,7 @@ export class SupplierListComponent {
   readonly search = signal('');
   readonly offset = signal(0);
   readonly hasNext = signal(false);
+  readonly createModalOpen = signal(false);
   readonly pageNumber = computed(() => Math.floor(this.offset() / PAGE_SIZE) + 1);
   readonly canManage = computed(() => ['admin', 'manager'].includes(this.session.role() ?? ''));
   readonly rankedSuppliers = computed(() => this.ranking().map((item) => ({
@@ -79,6 +81,19 @@ export class SupplierListComponent {
   nextPage(): void {
     if (!this.hasNext()) return;
     this.offset.update((offset) => offset + PAGE_SIZE);
+    this.load();
+  }
+
+  openCreateModal(): void {
+    this.createModalOpen.set(true);
+  }
+
+  dismissCreateModal(): void {
+    this.createModalOpen.set(false);
+  }
+
+  supplierCreated(): void {
+    this.createModalOpen.set(false);
     this.load();
   }
 
