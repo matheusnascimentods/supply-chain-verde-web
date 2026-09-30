@@ -1,66 +1,115 @@
-<main class="min-h-screen min-w-0 flex-1 bg-white px-6 py-8 text-slate-800 sm:px-10 sm:py-10">
+<main class="min-h-screen min-w-0 flex-1 bg-slate-50 px-4 py-7 text-slate-800 sm:px-8 sm:py-9">
   <div class="mx-auto max-w-7xl">
-    <header class="mb-7">
-      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Auditoria do sistema</h1>
-      <p class="mt-1 text-sm text-slate-500">Consulte o histórico de ações realizadas na plataforma.</p>
+    <header class="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Auditoria</h1>
+        <p class="mt-1 text-sm text-slate-500">Consulte e exporte as atividades registradas no sistema.</p>
+      </div>
+      <button #exportTrigger type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" (click)="openExport()">
+        <span aria-hidden="true">↓</span> Exportar logs
+      </button>
     </header>
 
-    <form class="mb-6 grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-4" (ngSubmit)="applyFilters()">
-      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="audit-user-id">
-        ID do usuário
-        <input id="audit-user-id" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="number" min="1" name="userId" [ngModel]="userId()" (ngModelChange)="userId.set($event)" placeholder="Ex.: 12" />
+    <form class="mb-5 grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1.5fr_auto] lg:items-end" (ngSubmit)="applyFilters()">
+      <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="audit-start-date">Data inicial
+        <input id="audit-start-date" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" name="startDate" required [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" />
       </label>
-      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="audit-action">
-        Ação
-        <select id="audit-action" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="action" [ngModel]="action()" (ngModelChange)="action.set($event)">
-          <option value="">Todas as ações</option>
-          @for (option of actions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-          }
+      <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="audit-end-date">Data final
+        <input id="audit-end-date" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" name="endDate" required [ngModel]="endDate()" (ngModelChange)="endDate.set($event)" />
+      </label>
+      <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="audit-action">Operação
+        <select id="audit-action" class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="action" [ngModel]="action()" (ngModelChange)="action.set($event)">
+          <option value="">Todas as operações</option>
+          @for (option of actions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }
         </select>
       </label>
-      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="audit-table">
-        Tabela afetada
-        <input id="audit-table" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" name="tableAffected" [ngModel]="tableAffected()" (ngModelChange)="tableAffected.set($event)" placeholder="Ex.: supplier" />
+      <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="audit-email">Email do usuário
+        <input id="audit-email" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="search" name="email" autocomplete="off" placeholder="Buscar por email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
       </label>
-      <div class="flex items-end gap-2">
-        <button class="flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" type="submit">Filtrar</button>
-        <button class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50" type="button" (click)="clearFilters()">Limpar</button>
-      </div>
+      <button class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" type="submit">Filtrar</button>
     </form>
+    @if (filterError()) { <p class="mb-4 text-sm text-red-700" role="alert">{{ filterError() }}</p> }
 
     @if (error()) {
       <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
-        <p>{{ error() }}</p>
-        <button class="mt-2 font-semibold underline" type="button" (click)="load()">Tentar novamente</button>
+        <p>{{ error() }}</p><button class="mt-2 font-semibold underline" type="button" (click)="load()">Tentar novamente</button>
       </div>
     } @else if (loading()) {
-      <div class="rounded-2xl border border-slate-200 p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando registros de auditoria…</div>
+      <div class="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando registros de auditoria…</div>
     } @else {
-      <section class="overflow-x-auto rounded-2xl border border-slate-200 bg-white px-5 shadow-sm sm:px-7" aria-label="Registros de auditoria">
-        <table class="w-full min-w-[680px] text-left text-sm">
-          <thead>
-            <tr class="border-b border-slate-200 text-slate-500">
-              <th scope="col" class="py-5 pr-5 font-normal">Data e hora</th>
-              <th scope="col" class="px-5 py-5 font-normal">Usuário</th>
-              <th scope="col" class="px-5 py-5 font-normal">Ação</th>
-              <th scope="col" class="py-5 pl-5 font-normal">Tabela afetada</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (log of filteredLogs(); track log.logId) {
-              <tr class="border-b border-slate-200 last:border-b-0">
-                <td class="py-5 pr-5 whitespace-nowrap text-slate-700">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td class="px-5 py-5 text-slate-700">{{ log.userId ?? 'Sistema' }}</td>
-                <td class="px-5 py-5"><span class="inline-flex rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700">{{ actionLabel(log.action) }}</span></td>
-                <td class="py-5 pl-5 text-slate-700">{{ log.affectedTable ?? '—' }}</td>
+      <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-label="Registros de auditoria">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[820px] text-left text-sm">
+            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <tr>
+                <th scope="col" class="px-5 py-4">Usuário / email</th><th scope="col" class="px-5 py-4">Operação</th><th scope="col" class="px-5 py-4">Data e hora</th><th scope="col" class="px-5 py-4">Tabela afetada</th><th scope="col" class="px-5 py-4">Detalhes</th>
               </tr>
-            } @empty {
-              <tr><td class="py-12 text-center text-slate-500" colspan="4">{{ logs().length ? 'Nenhum registro corresponde aos filtros.' : 'Nenhum registro de auditoria encontrado.' }}</td></tr>
-            }
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              @for (log of logs(); track log.logId) {
+                <tr class="border-t border-slate-100 hover:bg-slate-50/70">
+                  <td class="px-5 py-4"><span class="block font-medium text-slate-800">{{ userEmail(log) ?? (log.userId ? 'Usuário #' + log.userId : 'Sistema') }}</span>@if (userEmail(log) && log.userId) { <span class="mt-0.5 block text-xs text-slate-400">ID {{ log.userId }}</span> }</td>
+                  <td class="px-5 py-4"><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" [class]="'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ' + actionClass(log.action)">{{ actionLabel(log.action) }}</span></td>
+                  <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td class="px-5 py-4 text-slate-600">{{ log.affectedTable ?? '—' }}</td>
+                  <td class="max-w-sm px-5 py-4 text-slate-600">{{ detailsLabel(log.details) }}</td>
+                </tr>
+              } @empty {
+                <tr><td class="px-5 py-14 text-center text-slate-500" colspan="5">Nenhum registro de auditoria encontrado para este período e filtros.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <nav class="flex items-center justify-between border-t border-slate-100 px-4 py-3 sm:px-5" aria-label="Paginação dos registros">
+          <span class="text-xs text-slate-500">{{ logs().length ? pageOffset() + 1 : 0 }}–{{ displayedRangeEnd() }} registros</span>
+          <div class="flex gap-2">
+            <button type="button" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="pageOffset() === 0 || loading()" (click)="previousPage()">Anterior</button>
+            <button type="button" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="!hasNext() || loading()" (click)="nextPage()">Próxima</button>
+          </div>
+        </nav>
       </section>
     }
   </div>
+
+  @if (exportOpen()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4" (click)="$event.target === $event.currentTarget ? closeExport() : null" (keydown)="onExportKeydown($event)">
+      <section #exportDialog role="dialog" aria-modal="true" aria-labelledby="export-title" class="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl sm:p-7">
+        <div class="mb-5 flex items-start justify-between gap-4">
+          <div><h2 id="export-title" class="text-xl font-bold text-slate-900">Exportar logs</h2><p class="mt-1 text-sm text-slate-500">Escolha o intervalo e os filtros do arquivo CSV.</p></div>
+          <button type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600" aria-label="Fechar" [disabled]="exporting()" (click)="closeExport()">✕</button>
+        </div>
+        @if (!exportUrl()) {
+        <form class="grid gap-4" (ngSubmit)="exportLogs()">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-start-date">Data inicial
+              <input #exportStartInput id="export-start-date" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" name="exportStartDate" required [ngModel]="exportStartDate()" (ngModelChange)="exportStartDate.set($event)" />
+            </label>
+            <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-end-date">Data final
+              <input id="export-end-date" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" name="exportEndDate" required [ngModel]="exportEndDate()" (ngModelChange)="exportEndDate.set($event)" />
+            </label>
+          </div>
+          <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-action">Operação
+            <select id="export-action" class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="exportAction" [ngModel]="exportAction()" (ngModelChange)="exportAction.set($event)"><option value="">Todas as operações</option>@for (option of actions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select>
+          </label>
+          <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-email">Email do usuário
+            <input id="export-email" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="search" name="exportEmail" placeholder="Buscar por email" [ngModel]="exportEmail()" (ngModelChange)="exportEmail.set($event)" />
+          </label>
+          @if (exportError()) { <p role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ exportError() }}</p> }
+          <div class="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button type="button" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" [disabled]="exporting()" (click)="closeExport()">Cancelar</button>
+            <button type="submit" class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60" [disabled]="exporting()">{{ exporting() ? 'Preparando CSV…' : 'Preparar CSV' }}</button>
+          </div>
+        </form>
+        } @else {
+          <div class="grid gap-4" role="status">
+            <p class="text-sm text-slate-600">Arquivo pronto para baixar.</p>
+            <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="button" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" (click)="clearPreparedExport()">Alterar filtros</button>
+              <a class="rounded-lg bg-green-700 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-green-800" [href]="exportUrl()" [download]="exportFilename()" (click)="logCsvDownloadClick()">Baixar CSV</a>
+            </div>
+          </div>
+        }
+      </section>
+    </div>
+  }
 </main>
