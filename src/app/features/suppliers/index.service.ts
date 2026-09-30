@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { z } from 'zod';
 import { environment } from '../../../environments/environment';
-import { SupplierRequestDTO, SupplierResponseDTO, SupplierRankingPageDTO, supplierResponseSchema, supplierRankingPageSchema } from './index.schema';
+import { SupplierRequestDTO, SupplierResponseDTO, SupplierRankingPageDTO, ViaCepResponseDTO, supplierResponseSchema, supplierRankingPageSchema, viaCepResponseSchema } from './index.schema';
 
 @Injectable({ providedIn: 'root' })
 export class SuppliersService {
@@ -29,6 +29,12 @@ export class SuppliersService {
     return this.http.get<unknown>(`${this.base}/ranking`, { params: query }).pipe(
       map((raw) => supplierRankingPageSchema.parse(raw)),
       tap((page) => this._ranking.set(page)),
+    );
+  }
+
+  lookupZipCode(zipCode: string): Observable<ViaCepResponseDTO> {
+    return this.http.get<unknown>(`https://viacep.com.br/ws/${zipCode}/json/`).pipe(
+      map((raw) => viaCepResponseSchema.parse(raw)),
     );
   }
 
