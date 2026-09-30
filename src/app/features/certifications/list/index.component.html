@@ -1,3 +1,284 @@
-<main class="mx-auto max-w-6xl p-6"><header class="mb-6 flex items-center justify-between"><h1 class="text-2xl font-bold text-slate-900">Certificações</h1><a class="rounded-lg bg-emerald-700 px-4 py-2 text-white" routerLink="new">Nova certificação</a></header><label class="mb-4 flex items-center gap-2"><input type="checkbox" [checked]="expiring()" (change)="expiring.set($any($event.target).checked);reload()"/> Expirando em breve</label>
-@if (error()) { <p role="alert" class="rounded-lg bg-red-50 p-4 text-red-700">{{ error() }}</p> }
-@if (loading()) { <p aria-live="polite">Carregando…</p> } @else { <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table class="w-full text-left text-sm"><thead class="bg-slate-50"><tr><th class="p-3">ID</th><th class="p-3">Certificação</th><th class="p-3">Validade</th><th class="p-3">Status</th><th class="p-3">Alterar status</th></tr></thead><tbody>@for (item of items(); track item['certificationId']) { <tr class="border-t"><td class="p-3">{{ item['certificationId'] }}</td><td class="p-3">{{ item['name'] }}</td><td class="p-3">{{ item['expiresAt'] }}</td><td class="p-3">{{ item['status'] }}</td><td class="p-3"><select aria-label="Alterar status" class="rounded border p-2" [value]="item['status']" (change)="setStatus(item['certificationId'], $any($event.target).value)"><option value="active">Ativa</option><option value="expired">Expirada</option><option value="suspended">Suspensa</option><option value="underReview">Em análise</option></select></td></tr> } @empty { <tr><td class="p-3 text-slate-500" colspan="5">Nenhum registro encontrado.</td></tr> }</tbody></table></div> }</main>
+<main class="min-h-screen min-w-0 flex-1 bg-slate-50 px-4 py-6 text-slate-800 sm:px-8 sm:py-8">
+  <div class="mx-auto max-w-7xl">
+    <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Certificações</h1>
+        <p class="mt-1 text-sm text-slate-500">
+          Valide e acompanhe as certificações ambientais dos fornecedores
+        </p>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <details
+          #certificationFilterMenu
+          class="relative"
+          (keydown)="handleMenuKeydown($event, certificationFilterMenu)"
+        >
+          <summary
+            class="flex w-72 cursor-pointer list-none items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 [&::-webkit-details-marker]:hidden"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="certificationFilterMenu.open"
+          >
+            <span>{{ filterLabel() }}</span>
+            <svg
+              class="h-4 w-4 shrink-0 text-slate-500 transition-transform open:rotate-180"
+              [class.rotate-180]="certificationFilterMenu.open"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.22 7.47a.75.75 0 0 1 1.06 0L10 11.19l3.72-3.72a.75.75 0 0 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.53a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </summary>
+          <div
+            class="absolute right-0 z-30 mt-3 w-72 overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-2 shadow-[0_16px_48px_-18px_rgba(15,23,42,0.3)]"
+            role="menu"
+            aria-label="Filtrar certificações"
+          >
+            @for (option of filterOptions; track option.value) {
+              @if ($index === 1) {
+                <div class="my-2 border-t border-slate-100" role="separator"></div>
+              }
+              <button
+                type="button"
+                class="flex w-full items-center gap-4 rounded-2xl px-4 py-3.5 text-left text-sm font-semibold text-slate-800 transition hover:bg-slate-100 focus:bg-slate-100 focus:outline-none"
+                [class.bg-slate-100]="filter() === option.value"
+                role="menuitemradio"
+                [attr.aria-checked]="filter() === option.value"
+                (click)="setFilter(option.value)"
+              >
+                <svg
+                  class="h-5 w-5 shrink-0 text-slate-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path [attr.d]="filterIcon(option.value)" />
+                </svg>
+                <span>{{ option.label }}</span>
+                @if (filter() === option.value) {
+                  <svg
+                    class="ml-auto h-4 w-4 text-green-700"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.704 5.29a1 1 0 0 1 .006 1.414l-7.2 7.26a1 1 0 0 1-1.42.002l-3.8-3.8a1 1 0 1 1 1.414-1.414l3.09 3.09 6.493-6.547a1 1 0 0 1 1.417-.005Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                }
+              </button>
+            }
+          </div>
+        </details>
+        @if (canCreate()) {
+          <button
+            type="button"
+            class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+            (click)="openCreateModal()"
+          >
+            + Nova certificação
+          </button>
+        }
+      </div>
+    </header>
+
+    @if (error()) {
+      <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+        <p>{{ error() }}</p>
+        <button class="mt-2 font-semibold underline" type="button" (click)="reload()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else if (loading()) {
+      <div
+        class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500"
+        aria-live="polite"
+      >
+        Carregando certificações…
+      </div>
+    } @else {
+      @if (statusError()) {
+        <p
+          class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          role="alert"
+        >
+          {{ statusError() }}
+        </p>
+      }
+      <section
+        class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+        aria-label="Lista de certificações"
+      >
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[900px] text-left text-sm">
+            <thead class="text-slate-500">
+              <tr class="border-b border-slate-200">
+                <th scope="col" class="px-5 py-5 font-medium">ID</th>
+                <th scope="col" class="px-5 py-5 font-medium">Certificação</th>
+                <th scope="col" class="px-5 py-5 font-medium">Órgão emissor</th>
+                <th scope="col" class="px-5 py-5 font-medium">Emitida em</th>
+                <th scope="col" class="px-5 py-5 font-medium">Expira em</th>
+                <th scope="col" class="px-5 py-5 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of items(); track item.certificationId) {
+                <tr class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70">
+                  <td class="px-5 py-5 font-medium text-slate-700">#{{ item.supplierId }}</td>
+                  <td class="px-5 py-5 text-slate-700">{{ item.name }}</td>
+                  <td class="px-5 py-5 text-slate-600">{{ item.issuingOrganization }}</td>
+                  <td class="whitespace-nowrap px-5 py-5 text-slate-600">
+                    {{ date(item.issuedAt) }}
+                  </td>
+                  <td class="whitespace-nowrap px-5 py-5 text-slate-600">
+                    {{ date(item.expiresAt) }}
+                  </td>
+                  <td class="px-5 py-5">
+                    @if (canUpdateStatus()) {
+                      <details
+                        #certificationStatusMenu
+                        class="relative inline-block"
+                        (keydown)="handleMenuKeydown($event, certificationStatusMenu)"
+                      >
+                        <summary
+                          class="inline-flex min-w-24 cursor-pointer list-none items-center justify-between gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset transition hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-1 [&::-webkit-details-marker]:hidden"
+                          [class]="statusStyle(item.status)"
+                          [class.pointer-events-none]="updatingStatusId() === item.certificationId"
+                          [class.opacity-60]="updatingStatusId() === item.certificationId"
+                          [attr.aria-label]="'Atualizar status da certificação ' + item.name"
+                          aria-haspopup="menu"
+                          [attr.aria-expanded]="certificationStatusMenu.open"
+                        >
+                          {{ statusLabel(item.status) }}
+                          <svg
+                            class="h-3.5 w-3.5 transition-transform"
+                            [class.rotate-180]="certificationStatusMenu.open"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M5.22 7.47a.75.75 0 0 1 1.06 0L10 11.19l3.72-3.72a.75.75 0 0 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.53a.75.75 0 0 1 0-1.06Z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </summary>
+                        <div
+                          class="absolute right-0 z-30 mt-2 w-52 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-[0_16px_48px_-18px_rgba(15,23,42,0.3)]"
+                          role="menu"
+                          [attr.aria-label]="'Status da certificação ' + item.name"
+                        >
+                          @for (status of statusOptions; track status) {
+                            <button
+                              type="button"
+                              class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-100 focus:bg-slate-100 focus:outline-none"
+                              [class.bg-slate-100]="item.status === status"
+                              role="menuitemradio"
+                              [attr.aria-checked]="item.status === status"
+                              [disabled]="updatingStatusId() === item.certificationId"
+                              (click)="setStatus(item, status); closeStatusMenu(certificationStatusMenu)"
+                            >
+                              <svg
+                                class="h-4 w-4 shrink-0 text-slate-500"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                              >
+                                <path [attr.d]="statusIcon(status)" />
+                              </svg>
+                              <span>{{ statusLabel(status) }}</span>
+                              @if (item.status === status) {
+                                <svg
+                                  class="ml-auto h-4 w-4 text-green-700"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    fill-rule="evenodd"
+                                    d="M16.704 5.29a1 1 0 0 1 .006 1.414l-7.2 7.26a1 1 0 0 1-1.42.002l-3.8-3.8a1 1 0 1 1 1.414-1.414l3.09 3.09 6.493-6.547a1 1 0 0 1 1.417-.005Z"
+                                    clip-rule="evenodd"
+                                  />
+                                </svg>
+                              }
+                            </button>
+                          }
+                        </div>
+                      </details>
+                    } @else {
+                      <span
+                        class="inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset"
+                        [class]="statusStyle(item.status)"
+                        >{{ statusLabel(item.status) }}</span
+                      >
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td class="px-5 py-14 text-center text-sm text-slate-500" colspan="6">
+                    {{
+                      expiring()
+                        ? 'Nenhuma certificação expirando foi encontrada.'
+                        : 'Nenhuma certificação cadastrada.'
+                    }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+      @if (totalPages() > 1) {
+        <nav
+          class="mt-4 flex items-center justify-between"
+          aria-label="Paginação de certificações"
+        >
+          <button
+            type="button"
+            class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            [disabled]="page() === 0 || loading()"
+            (click)="previousPage()"
+          >
+            Anterior
+          </button>
+          <span class="text-sm text-slate-500" aria-live="polite">
+            Página {{ page() + 1 }} de {{ totalPages() }}
+          </span>
+          <button
+            type="button"
+            class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+            [disabled]="page() + 1 >= totalPages() || loading()"
+            (click)="nextPage()"
+          >
+            Próxima
+          </button>
+        </nav>
+      }
+    }
+  </div>
+
+  @if (createModalOpen()) {
+    <app-certifications-form
+      [modal]="true"
+      (saved)="certificationCreated()"
+      (dismissed)="dismissCreateModal()"
+    />
+  }
+</main>
