@@ -275,15 +275,17 @@ _Use `docs/references/reference-01.png` como referência visual principal para d
 
 _As telas serão redesenhadas individualmente para dar mais personalidade à interface. Esta task inicia o trabalho pela Dashboard. Use `docs/references/reference-01.png` como base visual, adaptando o conteúdo ao Supply Chain Verde e mantendo os dados que a Dashboard já apresenta; não reproduza os dados de exemplo da referência._
 
-- [ ] Reorganizar a Dashboard no padrão visual da referência, com hierarquia clara para saudação, indicadores e seções de análise, mantendo identidade visual própria do Supply Chain Verde
-- [ ] Exibir os quatro indicadores atuais em uma única fileira com quatro cards, seguindo a estrutura da referência, preservando seus dados e mapeando cada card para a resposta atual da rota
-- [ ] Incluir os gráficos da referência que fazem sentido para os dados disponíveis: gráfico de barras verticais, gráfico menor de barras horizontais e gráfico de pizza
-- [ ] Revisar o contrato e os dados retornados pela rota da Dashboard para identificar se os gráficos e indicadores podem ser preenchidos; se faltarem dados relevantes, documentar a necessidade de enriquecimento da API antes de implementar valores, sem inventar dados
-- [ ] Exibir uma tabela com os 10 produtos mais recentes e incluir a ação “Ver todos” direcionando para a tela de produtos
-- [ ] Não incluir o card “Inventory Snapshot” da referência
-- [ ] Não incluir filtros, seleção/filtro por período ou o botão de ação do cabeçalho exibidos na referência
-- [ ] Ajustar espaçamentos e comportamento responsivo da Dashboard para o layout da navegação superior da Fase 11
-- [ ] Registrar cada próxima tela como uma task de redesign independente, seguindo a mesma abordagem tela a tela
+- [x] Reorganizar a Dashboard no padrão visual da referência, com hierarquia clara para saudação, indicadores e seções de análise, mantendo identidade visual própria do Supply Chain Verde
+- [x] Exibir os quatro indicadores atuais em uma única fileira com quatro cards, seguindo a estrutura da referência, mapeando `activeBatches`, `expiringCertifications`, `suppliers` e `monthlyEmissionKgCo2e` da API
+- [x] Exibir gráficos de barras verticais e de pizza derivados da distribuição por etapa dos 10 lotes recentes retornados pela API; o gráfico horizontal foi removido após revisão visual
+- [x] Revisar o contrato da rota da Dashboard: a API fornece os quatro indicadores e lotes recentes, mas não séries de emissões por período, totais por categoria nem agregação de todos os lotes por etapa; os gráficos usam explicitamente apenas a amostra dos lotes recentes, sem inventar valores
+- [x] Exibir em tabela os produtos associados aos até 10 lotes mais recentes retornados pela API e incluir “Ver todos” direcionando para a listagem de lotes; cada linha representa um lote e exibe o nome do produto associado
+- [x] Não incluir o card “Inventory Snapshot” da referência
+- [x] Não incluir filtros, seleção/filtro por período ou o botão de ação do cabeçalho exibidos na referência
+- [x] Ajustar espaçamentos e comportamento responsivo da Dashboard para o layout da navegação superior da Fase 11
+- [x] Registrar cada próxima tela como uma task de redesign independente, seguindo a mesma abordagem tela a tela; as Tasks 13–21 já registram essas telas
+
+**Contrato consumido:** `GET /api/v1/dashboard/summary?limit=10`, disponível a qualquer usuário autenticado, retorna os quatro indicadores globais e os lotes recentes ordenados pela produção. A resposta não fornece série histórica de emissões, produtos por categoria nem total de lotes por etapa; os gráficos apresentam a distribuição por etapa somente dentro da amostra recente retornada. A tabela mantém uma linha por lote e identifica o produto associado, pois o contrato entrega lotes recentes, não uma listagem de produtos.
 
 ---
 
