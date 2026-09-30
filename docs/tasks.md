@@ -263,11 +263,11 @@ _Automatiza as verificações do frontend em cada pull request e mantém o fluxo
 
 _Use `docs/references/reference-01.png` como referência visual principal para desenvolver a navegação superior. Adapte a composição ao Supply Chain Verde e às rotas/permissões existentes; a referência orienta o design, sem exigir cópia literal do conteúdo._
 
-- [ ] Substituir a sidebar por uma barra superior compartilhada no layout autenticado, com a marca do Supply Chain Verde e links para as áreas disponíveis ao perfil atual
-- [ ] Destacar o item correspondente à rota ativa e manter acessíveis as rotas já existentes, sem exibir uma opção de notificações
-- [ ] Adicionar acesso ao perfil do usuário na barra superior, com identificação do usuário e ações de perfil/sessão compatíveis com os recursos já disponíveis
-- [ ] Adaptar a navegação para telas menores, preservando acesso às opções de menu e ao perfil sem comprometer o conteúdo das páginas
-- [ ] Revisar as telas autenticadas para adequar espaçamento e largura do conteúdo ao layout sem sidebar e validar a navegação por perfil
+- [x] Substituir a sidebar por uma barra superior compartilhada no layout autenticado, com a marca do Supply Chain Verde e links para as áreas disponíveis ao perfil atual
+- [x] Destacar o item correspondente à rota ativa e manter acessíveis as rotas já existentes, sem exibir uma opção de notificações
+- [x] Adicionar acesso ao perfil do usuário na barra superior, com identificação do usuário e ações de perfil/sessão compatíveis com os recursos já disponíveis
+- [x] Adaptar a navegação para telas menores, preservando acesso às opções de menu e ao perfil sem comprometer o conteúdo das páginas
+- [x] Revisar as telas autenticadas para adequar espaçamento e largura do conteúdo ao layout sem sidebar e validar a navegação por perfil
 
 ---
 
