@@ -323,12 +323,12 @@ _Substitua a navegação para uma página separada de cadastro por um modal aber
 
 _Redesenhe a listagem de produtos como uma grade de cards com imagens, usando `docs/references/reference-05.png` e `docs/references/reference-06.png` como referências visuais. Adapte o conteúdo ao Supply Chain Verde: use imagens relacionadas às categorias dos produtos em vez das imagens de veículos e preserve os dados e ações já existentes._
 
-- [ ] Substituir a tabela atual por cards responsivos que exibam imagem, nome, categoria, descrição e unidade do produto, preservando as ações disponíveis
-- [ ] Organizar a busca e o botão “Novo” na mesma linha, cada um ocupando 50% da largura disponível, seguindo a estrutura definida para Fornecedores; o botão deve abrir o modal de cadastro definido na Task 16, sem navegar para uma página separada
-- [ ] Consumir `GET /api/v1/products` com `limit=20` e `offset` iniciado em `0`; enviar o termo de busca à API para pesquisar por nome, categoria ou descrição com full-text antes da paginação e encontrar produtos em todas as páginas
-- [ ] Usar `hasNext` para controlar a paginação visual inspirada em `docs/references/reference-04.png`: exibir página atual e botões Anterior/Próxima, desativando Anterior no `offset=0` e Próxima quando `hasNext=false`
-- [ ] Associar imagens às categorias atuais e carregá-las de `public/images/products/`: `agriculture.webp`, `livestock.webp`, `processed-food.webp`, `textile.webp`, `forestry.webp` e `other.webp`; apresentar fallback quando uma imagem não estiver disponível
-- [ ] Alinhar a grade e seus estados de carregamento, erro e vazio ao layout da Fase 11 e garantir comportamento responsivo
+- [x] Substituir a tabela atual por cards responsivos que exibam imagem, nome, categoria, descrição e unidade do produto, preservando as ações disponíveis
+- [x] Organizar a busca e o botão “Novo” na mesma linha, cada um ocupando 50% da largura disponível, seguindo a estrutura definida para Fornecedores; o botão deve abrir o modal de cadastro definido na Task 16, sem navegar para uma página separada
+- [x] Consumir `GET /api/v1/products` com `limit=20` e `offset` iniciado em `0`; enviar o termo de busca à API para pesquisar por nome, categoria ou descrição com full-text antes da paginação e encontrar produtos em todas as páginas
+- [x] Usar `hasNext` para controlar a paginação visual inspirada em `docs/references/reference-04.png`: exibir página atual e botões Anterior/Próxima, desativando Anterior no `offset=0` e Próxima quando `hasNext=false`
+- [x] Associar imagens às categorias atuais e carregá-las de `public/images/products/`: `agriculture.webp`, `livestock.webp`, `processed-food.webp`, `textile.webp`, `forestry.webp` e `other.webp`; apresentar fallback quando uma imagem não estiver disponível
+- [x] Alinhar a grade e seus estados de carregamento, erro e vazio ao layout da Fase 11 e garantir comportamento responsivo
 
 ---
 
@@ -336,11 +336,11 @@ _Redesenhe a listagem de produtos como uma grade de cards com imagens, usando `d
 
 _Substitua a navegação para a página separada de cadastro por um modal aberto a partir da listagem de produtos. Use `docs/references/reference-03.png` como referência de composição do modal, adaptando os campos atuais de produto._
 
-- [ ] Abrir o formulário de criação de produto em um modal sobre a listagem, sem navegar para `/products/new`
-- [ ] Manter no formulário os campos atuais de nome, descrição, categoria e unidade, com validações e mensagens de erro
-- [ ] Seguir a composição visual da referência de modal, com layout responsivo e campos organizados lado a lado quando houver espaço
-- [ ] Preservar os estados de envio e, após sucesso, fechar o modal e atualizar a lista de produtos
-- [ ] Garantir acessibilidade do modal, incluindo foco, fechamento e uso por teclado
+- [x] Abrir o formulário de criação de produto em um modal sobre a listagem, sem navegar para `/products/new`
+- [x] Manter no formulário os campos atuais de nome, descrição, categoria e unidade, com validações e mensagens de erro
+- [x] Seguir a composição visual da referência de modal, com layout responsivo e campos organizados lado a lado quando houver espaço
+- [x] Preservar os estados de envio e, após sucesso, fechar o modal e atualizar a lista de produtos
+- [x] Garantir acessibilidade do modal, incluindo foco, fechamento e uso por teclado
 
 ---
 
