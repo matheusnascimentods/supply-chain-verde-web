@@ -123,6 +123,7 @@ describe('AuthService', () => {
 
       expect(sessionService.token).toBe('jwt-token-12345');
       expect(sessionService.role()).toBe('admin');
+      expect(sessionService.email()).toBe(mockCredentials.email);
       expect(sessionService.isAuthenticated()).toBe(true);
       expect(service.isAuthenticated()).toBe(true);
       expect(service.role()).toBe('admin');

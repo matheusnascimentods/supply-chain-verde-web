@@ -50,8 +50,16 @@ describe('SessionService', () => {
       expect(sessionStorage.getItem('role')).toBe('admin');
       expect(service.token).toBe('sample-jwt-token');
       expect(service.role()).toBe('admin');
+      expect(service.email()).toBeNull();
       expect(service.hasSession()).toBe(true);
       expect(service.isAuthenticated()).toBe(true);
+    });
+
+    it('should store and restore the email used to sign in', () => {
+      service.setSession('sample-jwt-token', 'manager', 'person@example.com');
+
+      expect(sessionStorage.getItem('email')).toBe('person@example.com');
+      expect(service.email()).toBe('person@example.com');
     });
 
     it('should clear sessionStorage and reset role signal on clearSession', () => {
@@ -62,8 +70,10 @@ describe('SessionService', () => {
 
       expect(sessionStorage.getItem('token')).toBeNull();
       expect(sessionStorage.getItem('role')).toBeNull();
+      expect(sessionStorage.getItem('email')).toBeNull();
       expect(service.token).toBeNull();
       expect(service.role()).toBeNull();
+      expect(service.email()).toBeNull();
       expect(service.hasSession()).toBe(false);
       expect(service.isAuthenticated()).toBe(false);
     });
@@ -71,12 +81,14 @@ describe('SessionService', () => {
     it('should restore role from sessionStorage upon instantiation', () => {
       sessionStorage.setItem('token', 'restored-token');
       sessionStorage.setItem('role', 'supplier');
+      sessionStorage.setItem('email', 'supplier@example.com');
 
       TestBed.resetTestingModule();
       const newService = TestBed.inject(SessionService);
 
       expect(newService.token).toBe('restored-token');
       expect(newService.role()).toBe('supplier');
+      expect(newService.email()).toBe('supplier@example.com');
       expect(newService.hasSession()).toBe(true);
       expect(newService.isAuthenticated()).toBe(true);
     });

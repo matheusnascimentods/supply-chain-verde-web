@@ -3,21 +3,39 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { SessionService } from '../../../core/session/index.service';
+import { UserRole } from '../../../core/session/index.schema';
+import { AuthService } from '../../../features/auth/index.service';
 import { DASHBOARDS } from '../../../features/dashboard/index.constants';
 
+const ROLE_LABELS: Record<UserRole, string> = {
+  admin: 'Administrador',
+  manager: 'Gestor',
+  auditor: 'Auditor',
+  supplier: 'Fornecedor',
+};
+
 @Component({
-  selector: 'app-sidebar',
+  selector: 'app-top-nav',
   imports: [RouterLink],
   templateUrl: './index.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppSidebarComponent {
+export class TopNavComponent {
   private readonly session = inject(SessionService);
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+
   readonly links = computed(() => {
     const role = this.session.role();
     return role ? DASHBOARDS[role].links : [];
   });
+  readonly email = this.session.email;
+  readonly roleLabel = computed(() => {
+    const role = this.session.role();
+    return role ? ROLE_LABELS[role] : '';
+  });
+  readonly isSupplier = computed(() => this.session.role() === 'supplier');
+  readonly mobileMenuOpen = signal(false);
   private readonly currentUrl = signal(this.router.url);
 
   constructor() {
@@ -26,7 +44,10 @@ export class AppSidebarComponent {
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
-      .subscribe((event) => this.currentUrl.set(event.urlAfterRedirects));
+      .subscribe((event) => {
+        this.currentUrl.set(event.urlAfterRedirects);
+        this.mobileMenuOpen.set(false);
+      });
   }
 
   isDashboardActive(): boolean {
@@ -41,6 +62,14 @@ export class AppSidebarComponent {
       .sort((left, right) => right.length - left.length)[0];
 
     return activePath === path;
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen.update((open) => !open);
+  }
+
+  logout(): void {
+    this.auth.logout();
   }
 
   private normalizedUrl(): string {
