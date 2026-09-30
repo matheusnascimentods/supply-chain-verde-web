@@ -9,6 +9,13 @@ export const productResponseSchema = z.object({
   category: productCategorySchema,
   unit: productUnitSchema,
 }).passthrough();
+export const productPageSchema = z.object({
+  items: z.array(productResponseSchema),
+  limit: z.number(),
+  offset: z.number(),
+  hasNext: z.boolean(),
+});
 export type ProductCategory = z.infer<typeof productCategorySchema>;
 export type ProductRequestDTO = z.infer<typeof productRequestSchema>;
 export type ProductResponseDTO = z.infer<typeof productResponseSchema>;
+export type ProductPageDTO = z.infer<typeof productPageSchema>;
