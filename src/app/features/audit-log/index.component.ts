@@ -32,6 +32,8 @@ export class AuditLogComponent {
   readonly exportEmail = signal('');
   readonly exporting = signal(false);
   readonly exportError = signal('');
+  readonly exportUrl = signal('');
+  readonly exportFilename = signal('');
 
   readonly actions = [
     { value: 'INSERT', label: 'Cadastro' },
@@ -88,6 +90,7 @@ export class AuditLogComponent {
   }
 
   openExport(): void {
+    this.clearPreparedExport();
     this.exportStartDate.set(this.startDate());
     this.exportEndDate.set(this.endDate());
     this.exportAction.set(this.action());
@@ -99,6 +102,7 @@ export class AuditLogComponent {
   closeExport(): void {
     if (!this.exporting()) {
       this.exportOpen.set(false);
+      this.clearPreparedExport();
       setTimeout(() => this.exportTrigger?.nativeElement.focus());
     }
   }
@@ -106,8 +110,18 @@ export class AuditLogComponent {
   exportLogs(): void {
     if (!this.exportStartDate() || !this.exportEndDate() || this.exportStartDate() > this.exportEndDate()) {
       this.exportError.set('Informe um intervalo de datas válido.');
+      console.warn('[Auditoria CSV] Preparação cancelada: intervalo de datas inválido.', {
+        startDate: this.exportStartDate(),
+        endDate: this.exportEndDate(),
+      });
       return;
     }
+    console.info('[Auditoria CSV] Preparação iniciada.', {
+      startDate: this.exportStartDate(),
+      endDate: this.exportEndDate(),
+      action: this.exportAction() || 'todas',
+      emailFilterApplied: Boolean(this.exportEmail().trim()),
+    });
     this.exporting.set(true);
     this.exportError.set('');
     this.service.loadAll({
@@ -115,19 +129,20 @@ export class AuditLogComponent {
       action: this.exportAction(), email: this.exportEmail(),
     }).subscribe({
       next: (logs) => {
+        console.info('[Auditoria CSV] Registros carregados.', { count: logs.length });
         const columns = ['Email do usuário', 'Operação', 'Data e hora', 'Tabela afetada', 'Detalhes'];
         const rows = logs.map((log) => [log.userEmail ?? log.email ?? '', log.action, log.performedAt, log.affectedTable ?? '', log.details ?? '']);
         const csv = [columns, ...rows].map((row) => row.map((value) => this.csvCell(value)).join(',')).join('\r\n');
         const blob = new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `audit-logs-${this.exportStartDate()}-${this.exportEndDate()}.csv`;
-        link.click();
-        URL.revokeObjectURL(url);
+        console.info('[Auditoria CSV] Arquivo preparado.', {
+          filename: `audit-logs-${this.exportStartDate()}-${this.exportEndDate()}.csv`,
+          bytes: blob.size,
+          records: logs.length,
+        });
+        this.exportUrl.set(url);
+        this.exportFilename.set(`audit-logs-${this.exportStartDate()}-${this.exportEndDate()}.csv`);
         this.exporting.set(false);
-        this.exportOpen.set(false);
-        setTimeout(() => this.exportTrigger?.nativeElement.focus());
       },
       error: (error: unknown) => {
         console.error('[Auditoria] Erro ao exportar registros de auditoria:', error);
@@ -137,11 +152,25 @@ export class AuditLogComponent {
     });
   }
 
+  logCsvDownloadClick(): void {
+    console.info('[Auditoria CSV] Link nativo de download clicado.', {
+      filename: this.exportFilename(),
+      urlAvailable: Boolean(this.exportUrl()),
+    });
+  }
+
+  clearPreparedExport(): void {
+    const url = this.exportUrl();
+    if (url) URL.revokeObjectURL(url);
+    this.exportUrl.set('');
+    this.exportFilename.set('');
+  }
+
   onExportKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') { this.closeExport(); return; }
     if (event.key !== 'Tab' || !this.exportDialog) return;
     const focusable = Array.from(this.exportDialog.nativeElement.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex="0"]',
+      'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex="0"]',
     ));
     const first = focusable[0];
     const last = focusable[focusable.length - 1];

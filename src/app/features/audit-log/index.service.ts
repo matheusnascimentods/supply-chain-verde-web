@@ -43,12 +43,21 @@ export class AuditLogService {
   }
 
   loadAll(filters: Omit<AuditLogFilters, 'offset'>): Observable<AuditLogPageDTO['content']> {
-    const loadPage = (offset: number): Observable<AuditLogPageDTO['content']> =>
-      this.load({ ...filters, offset }).pipe(
-        concatMap((page) => page.hasNext
-          ? loadPage(offset + 20).pipe(map((next) => [...page.content, ...next]))
-          : of(page.content)),
+    const loadPage = (offset: number): Observable<AuditLogPageDTO['content']> => {
+      console.info('[Auditoria CSV] Solicitando página à API.', { offset });
+      return this.load({ ...filters, offset }).pipe(
+        concatMap((page) => {
+          console.info('[Auditoria CSV] Página recebida da API.', {
+            offset,
+            count: page.content.length,
+            hasNext: page.hasNext,
+          });
+          return page.hasNext
+            ? loadPage(offset + 20).pipe(map((next) => [...page.content, ...next]))
+            : of(page.content);
+        }),
       );
+    };
     return loadPage(0);
   }
 }
