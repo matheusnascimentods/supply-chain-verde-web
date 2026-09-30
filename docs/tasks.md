@@ -348,13 +348,13 @@ _Substitua a navegação para a página separada de cadastro por um modal aberto
 
 _Redesenhe a listagem conforme `docs/screenshots/09-certifications-list.png`, seguindo o padrão visual dos screenshots do projeto. O screenshot define o alvo da listagem; para o cadastro, use `docs/references/reference-03.png` como referência de modal, pois não há screenshot específico para esse fluxo._
 
-- [ ] Exibir na listagem fornecedor, certificação, órgão emissor, data de emissão, data de validade e status
-- [ ] Substituir o checkbox atual pelo dropdown “Apenas expirando”, funcional para alternar entre todas as certificações e as que estão expirando
-- [ ] Exibir o status como badge com dropdown funcional por certificação, permitindo atualizar o status pelos valores suportados pela API (`active`, `expired`, `suspended`, `underReview`) e atualizar a listagem após sucesso
-- [ ] Exibir o botão “Nova certificação” e abrir o cadastro em modal, sem navegar para uma página separada
-- [ ] No modal, manter os campos atuais de nome, organização emissora, número, emissão, validade e URL do documento, além da associação correta ao fornecedor autenticado
-- [ ] Preservar validações, permissões, estados de carregamento/erro/sucesso e atualizar a listagem após a criação
-- [ ] Garantir acessibilidade dos dropdowns e do modal, além de adaptar a listagem e o formulário para telas menores
+- [x] Exibir na listagem fornecedor, certificação, órgão emissor, data de emissão, data de validade e status
+- [x] Substituir o checkbox atual pelo dropdown “Apenas expirando”, funcional para alternar entre todas as certificações e as que estão expirando
+- [x] Exibir o status como badge com dropdown funcional por certificação, permitindo atualizar o status pelos valores suportados pela API (`active`, `expired`, `suspended`, `underReview`) e atualizar a listagem após sucesso
+- [x] Exibir o botão “Nova certificação” e abrir o cadastro em modal, sem navegar para uma página separada
+- [x] No modal, manter os campos atuais de nome, organização emissora, número, emissão, validade e URL do documento, além da associação correta ao fornecedor autenticado
+- [x] Preservar validações, permissões, estados de carregamento/erro/sucesso e atualizar a listagem após a criação
+- [x] Garantir acessibilidade dos dropdowns e do modal, além de adaptar a listagem e o formulário para telas menores
 
 ---
 
