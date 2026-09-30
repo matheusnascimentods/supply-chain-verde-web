@@ -32,6 +32,7 @@ export class ProductFormComponent implements AfterViewInit, OnDestroy {
   private previousFocus: HTMLElement | null = null;
 
   @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
+  @ViewChild('firstField') private firstField?: ElementRef<HTMLInputElement>;
 
   readonly modal = input(false);
   readonly saved = output<void>();
@@ -43,6 +44,21 @@ export class ProductFormComponent implements AfterViewInit, OnDestroy {
 
   readonly productCategorySchema = productCategorySchema;
   readonly productUnitSchema = productUnitSchema;
+  readonly productCategoryLabels: Record<string, string> = {
+    AGRICULTURE: 'Agricultura',
+    LIVESTOCK: 'Pecuária',
+    PROCESSED_FOOD: 'Alimentos processados',
+    TEXTILE: 'Têxtil',
+    FORESTRY: 'Silvicultura',
+    OTHER: 'Outro',
+  };
+  readonly productUnitLabels: Record<string, string> = {
+    KG: 'Quilograma (kg)',
+    TON: 'Tonelada (t)',
+    LITER: 'Litro (L)',
+    UNIT: 'Unidade (un)',
+    M3: 'Metro cúbico (m³)',
+  };
 
   readonly form = this.fb.group({
     name: ['', [Validators.required]],
@@ -71,7 +87,7 @@ export class ProductFormComponent implements AfterViewInit, OnDestroy {
     if (!this.modal()) return;
     this.previousFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    queueMicrotask(() => this.dialog?.nativeElement.focus());
+    queueMicrotask(() => this.firstField?.nativeElement.focus());
   }
 
   ngOnDestroy(): void {
@@ -111,6 +127,14 @@ export class ProductFormComponent implements AfterViewInit, OnDestroy {
   private data(): any {
     const value = this.form.getRawValue();
     return value;
+  }
+
+  fieldError(field: 'name' | 'category' | 'unit'): string {
+    const control = this.form.controls[field];
+    if (!control.touched || !control.hasError('required')) return '';
+
+    const labels = { name: 'o nome', category: 'a categoria', unit: 'a unidade' };
+    return `Informe ${labels[field]}.`;
   }
 
   submit(): void {
