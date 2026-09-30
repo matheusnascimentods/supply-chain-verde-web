@@ -33,6 +33,15 @@ const STAGE_COLORS: Record<DashboardStageType, string> = {
   RETAIL: '#64748b',
 };
 
+const STAGE_BADGE_CLASSES: Record<DashboardStageType, string> = {
+  PRODUCTION: 'bg-green-100 text-green-800',
+  STORAGE: 'bg-teal-100 text-teal-800',
+  PROCESSING: 'bg-lime-100 text-lime-800',
+  TRANSPORT: 'bg-amber-100 text-amber-900',
+  DISTRIBUTION: 'bg-sky-100 text-sky-800',
+  RETAIL: 'bg-violet-100 text-violet-800',
+};
+
 @Component({
   selector: 'app-dashboard',
   imports: [RouterLink],
@@ -139,6 +148,10 @@ export class DashboardComponent {
 
   stageLabel(stage: DashboardStageType): string {
     return STAGE_LABELS[stage];
+  }
+
+  stageBadgeClass(stage: DashboardStageType): string {
+    return `rounded-full px-2.5 py-1 text-xs font-medium ${STAGE_BADGE_CLASSES[stage]}`;
   }
 
   pieDashArray(percent: number): string {
