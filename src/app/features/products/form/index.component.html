@@ -1,1 +1,40 @@
-<main class="mx-auto max-w-2xl p-6"><a routerLink="../" class="text-emerald-700 underline">← Voltar</a><h1 class="my-5 text-2xl font-bold">{{ editing() ? 'Editar' : 'Cadastrar' }} produto</h1><form [formGroup]="form" (ngSubmit)="submit()" class="grid gap-4 rounded-xl border border-slate-200 bg-white p-6"><label class="grid gap-1 text-sm font-medium">Nome<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="name" /></label> <label class="grid gap-1 text-sm font-medium">Descrição<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="description" /></label> <label class="grid gap-1 text-sm font-medium">Categoria<app-enum-select [options]="productCategorySchema.options" [formControlName]="'category'" /></label> <label class="grid gap-1 text-sm font-medium">Unidade<app-enum-select [options]="productUnitSchema.options" [formControlName]="'unit'" /></label>@if (error()) { <p role="alert" class="text-red-700">{{error()}}</p> }<button class="rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white disabled:opacity-50" [disabled]="form.invalid || saving()">{{saving() ? 'Salvando…' : 'Salvar'}}</button></form></main>
+@if (modal()) {
+  <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/50 p-3 sm:p-6" (click)="closeModal()">
+    <section #dialog class="mx-auto my-4 w-full max-w-2xl rounded-2xl bg-white shadow-2xl outline-none sm:my-10" role="dialog" aria-modal="true" aria-labelledby="product-form-title" aria-describedby="product-form-description" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="handleDialogKeydown($event)">
+      <ng-container [ngTemplateOutlet]="productFormContent"></ng-container>
+    </section>
+  </div>
+} @else {
+  <main class="min-h-screen bg-slate-50 px-4 py-8 text-slate-800 sm:px-8">
+    <div class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <ng-container [ngTemplateOutlet]="productFormContent"></ng-container>
+    </div>
+  </main>
+}
+
+<ng-template #productFormContent>
+  <header class="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-7">
+    <div>
+      @if (!modal()) { <a routerLink="/products" class="mb-3 inline-flex text-sm font-medium text-green-700 hover:underline">← Voltar para produtos</a> }
+      <h1 id="product-form-title" class="text-xl font-bold text-slate-900">{{ editing() ? 'Editar produto' : 'Adicionar produto' }}</h1>
+      <p id="product-form-description" class="mt-1 text-sm text-slate-500">Informe os dados do produto.</p>
+    </div>
+    @if (modal()) { <button type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600" aria-label="Fechar cadastro" [disabled]="saving()" (click)="closeModal()">&times;</button> }
+  </header>
+
+  @if (error()) { <p class="mx-5 mt-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 sm:mx-7" role="alert">{{ error() }}</p> }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5 px-5 py-5 sm:px-7 sm:py-6">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <label class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2" for="product-name">Nome<input id="product-name" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="name" required /></label>
+      <label class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2" for="product-description">Descrição<input id="product-description" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="description" /></label>
+      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="product-category">Categoria<app-enum-select id="product-category" [options]="productCategorySchema.options" [formControlName]="'category'" /></label>
+      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="product-unit">Unidade<app-enum-select id="product-unit" [options]="productUnitSchema.options" [formControlName]="'unit'" /></label>
+    </div>
+    <footer class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+      @if (modal()) { <button type="button" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" [disabled]="saving()" (click)="closeModal()">Cancelar</button> }
+      @else { <a routerLink="/products" class="rounded-lg border border-slate-300 px-5 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancelar</a> }
+      <button class="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50" [disabled]="form.invalid || saving()">{{ saving() ? 'Salvando…' : 'Salvar produto' }}</button>
+    </footer>
+  </form>
+</ng-template>
