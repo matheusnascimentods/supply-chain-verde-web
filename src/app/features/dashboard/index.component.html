@@ -95,7 +95,7 @@
                     <td class="px-4 py-3.5 font-medium text-slate-900">{{ batch.productName }}</td>
                     <td class="px-4 py-3.5 text-slate-600">{{ batch.supplierName }}</td>
                     <td class="px-4 py-3.5 text-slate-600">{{ formatQuantity(batch) }}</td>
-                    <td class="px-4 py-3.5"><span class="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-800">{{ stageLabel(batch.status) }}</span></td>
+                    <td class="px-4 py-3.5"><span [class]="stageBadgeClass(batch.status)">{{ stageLabel(batch.status) }}</span></td>
                   </tr>
                 }
               </tbody>
