@@ -7,7 +7,6 @@ export const DASHBOARDS = {
     description: 'Acesse as áreas de gestão e acompanhe a atividade da plataforma.',
     links: [
       { label: 'Fornecedores', path: '/suppliers' },
-      { label: 'Ranking de fornecedores', path: '/suppliers/ranking' },
       { label: 'Produtos', path: '/products' },
       { label: 'Certificações', path: '/certifications' },
       { label: 'Lotes', path: '/batches' },
@@ -21,7 +20,6 @@ export const DASHBOARDS = {
     description: 'Aqui está o resumo da sua operação hoje',
     links: [
       { label: 'Fornecedores', path: '/suppliers' },
-      { label: 'Ranking de fornecedores', path: '/suppliers/ranking' },
       { label: 'Produtos', path: '/products' },
       { label: 'Lotes', path: '/batches' },
       { label: 'Relatórios', path: '/reports' },
@@ -34,7 +32,7 @@ export const DASHBOARDS = {
       { label: 'Certificações', path: '/certifications' },
       { label: 'Relatórios', path: '/reports' },
       { label: 'Auditoria do sistema', path: '/audit-log' },
-      { label: 'Ranking de fornecedores', path: '/suppliers/ranking' },
+      { label: 'Fornecedores', path: '/suppliers' },
       { label: 'Lotes', path: '/batches' },
     ],
   },
@@ -46,7 +44,7 @@ export const DASHBOARDS = {
       { label: 'Minhas certificações', path: '/certifications' },
       { label: 'Meus relatórios', path: '/reports' },
       { label: 'Meu perfil', path: '/suppliers/me' },
-      { label: 'Ranking de fornecedores', path: '/suppliers/ranking' },
+      { label: 'Fornecedores', path: '/suppliers' },
     ],
   },
 } satisfies Record<UserRole, RoleDashboard>;

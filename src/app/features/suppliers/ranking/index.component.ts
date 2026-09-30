@@ -15,9 +15,9 @@ export class SupplierRankingComponent {
   load(): void {
     this.loading.set(true);
     this.error.set('');
-    forkJoin({ items: this.service.loadRanking(this.sort()), suppliers: this.service.load() }).subscribe({
-      next: ({ items, suppliers }) => {
-        this.items.set(items);
+    forkJoin({ page: this.service.loadRanking({ limit: 20 }), suppliers: this.service.load() }).subscribe({
+      next: ({ page, suppliers }) => {
+        this.items.set(Array.isArray(page) ? page : page.items);
         this.suppliers.set(suppliers);
         this.loading.set(false);
       },

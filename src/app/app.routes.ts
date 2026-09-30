@@ -26,13 +26,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard').then((module) => module.DashboardComponent),
       },
       {
-        path: 'suppliers/ranking',
-        loadComponent: () =>
-          import('./features/suppliers/ranking/index.component').then(
-            (module) => module.SupplierRankingComponent,
-          ),
-      },
-      {
         path: 'suppliers/me',
         canActivate: [roleGuard],
         data: { roles: ['supplier'] },
@@ -43,8 +36,6 @@ export const routes: Routes = [
       },
       {
         path: 'suppliers',
-        canActivate: [roleGuard],
-        data: { roles: ['admin', 'manager'] },
         loadChildren: () => import('./features/suppliers/routes').then((module) => module.routes),
       },
       {

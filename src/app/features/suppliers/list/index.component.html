@@ -1,54 +1,103 @@
-<main class="min-h-screen min-w-0 flex-1 bg-white px-6 py-8 text-slate-800 sm:px-10 sm:py-10">
-    <div class="mx-auto max-w-7xl">
-      <header class="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 class="text-2xl font-bold tracking-tight text-slate-900">Fornecedores</h1>
-          <p class="mt-1 text-sm text-slate-500">Gerencie os fornecedores da cadeia de suprimentos</p>
-        </div>
-        <a routerLink="new" class="inline-flex items-center rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">+ Novo Fornecedor</a>
-      </header>
+<main class="min-h-screen min-w-0 flex-1 bg-slate-50 px-4 py-6 text-slate-800 sm:px-8 sm:py-8">
+  <div class="mx-auto max-w-7xl">
+    <header class="mb-7">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Fornecedores</h1>
+      <p class="mt-1 text-sm text-slate-500">Desempenho ambiental e gestão de fornecedores</p>
+    </header>
 
-      <label class="sr-only" for="supplier-search">Buscar fornecedor</label>
-      <input id="supplier-search" class="mb-6 w-full max-w-xs rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="search" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Buscar fornecedor..." />
-
-      @if (error()) {
-        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
-          <p>{{ error() }}</p>
-          <button class="mt-2 font-semibold underline" type="button" (click)="reload()">Tentar novamente</button>
-        </div>
-      } @else if (loading()) {
-        <div class="rounded-xl border border-slate-200 p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando fornecedores…</div>
+    <div class="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div>
+        <label class="sr-only" for="supplier-search">Buscar por nome ou CNPJ</label>
+        <input id="supplier-search" class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="search" [ngModel]="search()" (ngModelChange)="searchFor($event)" placeholder="Buscar por nome ou CNPJ..." />
+      </div>
+      @if (canManage()) {
+        <a routerLink="new" class="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-3 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">+ Adicionar fornecedor</a>
       } @else {
-        <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white px-5 shadow-sm sm:px-7">
+        <div aria-hidden="true"></div>
+      }
+    </div>
+
+    @if (error()) {
+      <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+        <p>{{ error() }}</p>
+        <button class="mt-2 font-semibold underline" type="button" (click)="load()">Tentar novamente</button>
+      </div>
+    } @else if (loading()) {
+      <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando fornecedores…</div>
+    } @else {
+      @if (podium().length) {
+        <section class="mb-8" aria-labelledby="top-suppliers-heading">
+          <h2 id="top-suppliers-heading" class="mb-4 text-lg font-semibold text-slate-900">Destaques do ranking</h2>
+          <div class="grid gap-4 md:grid-cols-3">
+            @for (entry of podium(); track entry.ranking.supplierId; let index = $index) {
+              <article class="relative overflow-hidden rounded-2xl border bg-white p-5 shadow-sm" [class.border-amber-300]="index === 0" [class.border-slate-400]="index === 1" [class.bg-slate-50]="index === 1" [class.shadow-md]="index === 1" [class.border-orange-300]="index === 2">
+                <div class="mb-4 flex items-start justify-between gap-3">
+                  <span class="inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold" [class.bg-amber-100]="index === 0" [class.text-amber-800]="index === 0" [class.bg-slate-300]="index === 1" [class.text-slate-800]="index === 1" [class.shadow-sm]="index === 1" [class.bg-orange-100]="index === 2" [class.text-orange-800]="index === 2">{{ index + 1 }}</span>
+                  <span class="rounded-full px-3 py-1 text-xs font-semibold" [class.bg-green-50]="index === 0" [class.text-green-800]="index === 0" [class.bg-slate-200]="index === 1" [class.text-slate-800]="index === 1" [class.bg-orange-50]="index === 2" [class.text-orange-800]="index === 2">{{ score(entry.ranking.sustainabilityScore) }} pontos</span>
+                </div>
+                <h3 class="truncate text-lg font-semibold text-slate-900">{{ name(entry.ranking) }}</h3>
+                <p class="mt-1 truncate text-sm text-slate-500">{{ entry.supplier?.address?.city ?? 'Localização não informada' }}@if (entry.supplier?.address?.state) { /{{ entry.supplier?.address?.state }} }</p>
+                <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm">
+                  <div><dt class="text-xs text-slate-500">Certificações ativas</dt><dd class="mt-1 font-semibold text-slate-900">{{ entry.ranking.activeCertificationCount ?? entry.ranking.activeCertifications ?? entry.ranking.activeCertificationsCount ?? 0 }}</dd></div>
+                  <div><dt class="text-xs text-slate-500">CO₂ total</dt><dd class="mt-1 font-semibold text-slate-900">{{ co2(entry.ranking.totalCo2Kg) }} kg</dd></div>
+                </dl>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-labelledby="supplier-ranking-heading">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-5 sm:px-6">
+          <div>
+            <h2 id="supplier-ranking-heading" class="text-lg font-semibold text-slate-900">Ranking de fornecedores</h2>
+            <p class="mt-1 text-sm text-slate-500">Ordenado por score de sustentabilidade</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
           <table class="w-full min-w-[850px] text-left text-sm">
-            <thead>
-              <tr class="border-b border-slate-200 text-slate-500">
-                <th scope="col" class="py-7 pr-5 font-normal">Nome</th>
-                <th scope="col" class="px-5 py-7 font-normal">CNPJ</th>
-                <th scope="col" class="px-5 py-7 font-normal">Cidade/UF</th>
-                <th scope="col" class="px-5 py-7 font-normal">Telefone</th>
-                <th scope="col" class="px-5 py-7 font-normal">Certificações</th>
-                <th scope="col" class="py-7 pl-5 font-normal">Score</th>
+            <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+              <tr>
+                <th scope="col" class="px-5 py-3 font-medium">Posição</th>
+                <th scope="col" class="px-5 py-3 font-medium">Fornecedor</th>
+                <th scope="col" class="px-5 py-3 text-right font-medium">Score</th>
+                <th scope="col" class="px-5 py-3 font-medium">CNPJ</th>
+                <th scope="col" class="px-5 py-3 font-medium">Telefone</th>
+                <th scope="col" class="px-5 py-3 font-medium">Certificações</th>
+                <th scope="col" class="px-5 py-3 text-right font-medium">CO₂ total</th>
               </tr>
             </thead>
             <tbody>
-              @for (item of filteredItems(); track item.supplierId) {
-                <tr class="border-b border-slate-200 last:border-b-0">
-                  <td class="py-6 pr-5 text-slate-700"><a class="hover:text-green-700 hover:underline" [routerLink]="[item.supplierId, 'edit']">{{ item.name }}</a></td>
-                  <td class="px-5 py-6 text-slate-700">{{ item.cnpj ?? '—' }}</td>
-                  <td class="px-5 py-6 text-slate-700">{{ item.address?.city ?? '—' }}@if (item.address?.state) { /{{ item.address?.state }} }</td>
-                  <td class="px-5 py-6 text-slate-700">{{ item.phone ?? '—' }}</td>
-                  <td class="px-5 py-6">
-                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-green-50]="certificationLabel(item.supplierId).includes('ativas') || certificationLabel(item.supplierId).includes('expirando')" [class.text-green-700]="certificationLabel(item.supplierId).includes('ativas') || certificationLabel(item.supplierId).includes('expirando')" [class.bg-slate-200]="certificationLabel(item.supplierId) === 'Sem certificação'" [class.text-slate-700]="certificationLabel(item.supplierId) === 'Sem certificação'">{{ certificationLabel(item.supplierId) }}</span>
+              @for (entry of tableItems(); track entry.ranking.supplierId; let index = $index) {
+                <tr class="border-t border-slate-100 hover:bg-slate-50">
+                  <td class="px-5 py-4 font-medium text-slate-500">{{ offset() + (podium().length ? index + 4 : index + 1) }}</td>
+                  <td class="px-5 py-4">
+                    @if (canManage()) {
+                      <a class="font-semibold text-slate-800 hover:text-green-700 hover:underline" [routerLink]="['/', 'suppliers', entry.ranking.supplierId, 'edit']">{{ name(entry.ranking) }}</a>
+                    } @else {
+                      <span class="font-semibold text-slate-800">{{ name(entry.ranking) }}</span>
+                    }
                   </td>
-                  <td class="py-6 pl-5 text-slate-700">{{ score(item.supplierId) }}</td>
+                  <td class="px-5 py-4 text-right font-semibold text-green-700">{{ score(entry.ranking.sustainabilityScore) }}</td>
+                  <td class="px-5 py-4 text-slate-600">{{ entry.supplier?.cnpj ?? '—' }}</td>
+                  <td class="px-5 py-4 text-slate-600">{{ entry.supplier?.phone ?? '—' }}</td>
+                  <td class="px-5 py-4">
+                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-green-50]="certificationLabel(entry.ranking.supplierId, entry.ranking) !== 'Sem certificação'" [class.text-green-700]="certificationLabel(entry.ranking.supplierId, entry.ranking) !== 'Sem certificação'" [class.bg-slate-100]="certificationLabel(entry.ranking.supplierId, entry.ranking) === 'Sem certificação'" [class.text-slate-600]="certificationLabel(entry.ranking.supplierId, entry.ranking) === 'Sem certificação'">{{ certificationLabel(entry.ranking.supplierId, entry.ranking) }}</span>
+                  </td>
+                  <td class="px-5 py-4 text-right text-slate-700">{{ co2(entry.ranking.totalCo2Kg) }} kg</td>
                 </tr>
               } @empty {
-                <tr><td class="py-12 text-center text-slate-500" colspan="6">{{ search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado.' }}</td></tr>
+                <tr><td class="px-5 py-12 text-center text-slate-500" colspan="7">{{ ranking().length ? 'Todos os resultados desta página estão nos destaques.' : (search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado no ranking.') }}</td></tr>
               }
             </tbody>
           </table>
         </div>
-      }
-    </div>
+        <nav class="flex items-center justify-between border-t border-slate-100 px-5 py-4 sm:px-6" aria-label="Paginação do ranking">
+          <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="offset() === 0 || loading()" (click)="previousPage()">Anterior</button>
+          <span class="text-sm text-slate-500">Página {{ pageNumber() }}</span>
+          <button type="button" class="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="!hasNext() || loading()" (click)="nextPage()">Próxima</button>
+        </nav>
+      </section>
+    }
+  </div>
 </main>
