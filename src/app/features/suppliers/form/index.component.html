@@ -1,1 +1,94 @@
-<main class="mx-auto max-w-2xl p-6"><a routerLink="../" class="text-emerald-700 underline">← Voltar</a><h1 class="my-5 text-2xl font-bold">{{ editing() ? 'Editar' : 'Cadastrar' }} fornecedor</h1><form [formGroup]="form" (ngSubmit)="submit()" class="grid gap-4 rounded-xl border border-slate-200 bg-white p-6"><label class="grid gap-1 text-sm font-medium">Nome<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="name" /></label> <label class="grid gap-1 text-sm font-medium">CNPJ<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="cnpj" /></label> <label class="grid gap-1 text-sm font-medium">Telefone<input class="rounded-lg border border-slate-300 px-3 py-2" type="tel" formControlName="phone" /></label> <label class="grid gap-1 text-sm font-medium">Rua<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="street" /></label> <label class="grid gap-1 text-sm font-medium">Número<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="number" /></label> <label class="grid gap-1 text-sm font-medium">Bairro<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="neighborhood" /></label> <label class="grid gap-1 text-sm font-medium">Complemento<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="complement" /></label> <label class="grid gap-1 text-sm font-medium">CEP<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="zipCode" /></label> <label class="grid gap-1 text-sm font-medium">Cidade<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="city" /></label> <label class="grid gap-1 text-sm font-medium">Estado<input class="rounded-lg border border-slate-300 px-3 py-2" type="text" formControlName="state" /></label>@if (error()) { <p role="alert" class="text-red-700">{{error()}}</p> }<button class="rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white disabled:opacity-50" [disabled]="form.invalid || saving()">{{saving() ? 'Salvando…' : 'Salvar'}}</button></form></main>
+@if (modal()) {
+  <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/50 p-3 sm:p-6" (click)="closeModal()">
+    <section #dialog class="mx-auto my-4 w-full max-w-2xl rounded-2xl bg-white shadow-2xl outline-none sm:my-10" role="dialog" aria-modal="true" aria-labelledby="supplier-form-title" aria-describedby="supplier-form-description" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="handleDialogKeydown($event)">
+      <ng-container [ngTemplateOutlet]="supplierFormContent"></ng-container>
+    </section>
+  </div>
+} @else {
+  <main class="min-h-screen bg-slate-50 px-4 py-8 text-slate-800 sm:px-8">
+    <div class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <ng-container [ngTemplateOutlet]="supplierFormContent"></ng-container>
+    </div>
+  </main>
+}
+
+<ng-template #supplierFormContent>
+  <header class="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-7">
+    <div>
+      @if (!modal()) {
+        <a routerLink="/suppliers" class="mb-3 inline-flex text-sm font-medium text-green-700 hover:underline">← Voltar para fornecedores</a>
+      }
+      <h1 id="supplier-form-title" class="text-xl font-bold text-slate-900">{{ editing() ? 'Editar fornecedor' : 'Adicionar fornecedor' }}</h1>
+      <p id="supplier-form-description" class="mt-1 text-sm text-slate-500">Informe os dados da empresa e do endereço.</p>
+    </div>
+    @if (modal()) {
+      <button type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-600" aria-label="Fechar cadastro" [disabled]="saving()" (click)="closeModal()">&times;</button>
+    }
+  </header>
+
+  @if (error()) {
+    <p class="mx-5 mt-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 sm:mx-7" role="alert">{{ error() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6 px-5 py-5 sm:px-7 sm:py-6">
+    <section aria-labelledby="supplier-company-heading">
+      <h2 id="supplier-company-heading" class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Dados do fornecedor</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2" for="supplier-name">Razão social
+          <input id="supplier-name" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="name" autocomplete="organization" required />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="supplier-cnpj">CNPJ
+          <input id="supplier-cnpj" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="cnpj" inputmode="numeric" autocomplete="off" required />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="supplier-phone">Telefone
+          <input id="supplier-phone" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="tel" formControlName="phone" autocomplete="tel" required />
+        </label>
+      </div>
+    </section>
+
+    <section aria-labelledby="supplier-address-heading">
+      <h2 id="supplier-address-heading" class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Endereço</h2>
+      <div id="supplier-cep-status" class="mb-3 min-h-5 text-sm text-slate-500" aria-live="polite">
+        @if (cepLoading()) {
+          <span>Consultando CEP…</span>
+        } @else if (cepMessage()) {
+          <span [class.text-red-700]="cepMessage().startsWith('CEP não encontrado') || cepMessage().startsWith('Não foi possível')" [class.text-green-700]="cepMessage().startsWith('Endereço localizado')">{{ cepMessage() }}</span>
+        } @else {
+          <span>O endereço será preenchido quando o CEP for localizado.</span>
+        }
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="supplier-zip-code">CEP
+          <input id="supplier-zip-code" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="zipCode" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required aria-describedby="supplier-cep-status" />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="supplier-state">Estado (UF)
+          <input id="supplier-state" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="state" autocomplete="address-level1" maxlength="2" required />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2" for="supplier-street">Logradouro
+          <input id="supplier-street" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="street" autocomplete="address-line1" required />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="supplier-number">Número
+          <input id="supplier-number" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="number" autocomplete="address-line2" required />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="supplier-neighborhood">Bairro
+          <input id="supplier-neighborhood" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="neighborhood" required />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="supplier-complement"><span>Complemento <span class="font-normal text-slate-400">(opcional)</span></span>
+          <input id="supplier-complement" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="complement" autocomplete="address-line3" />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="supplier-city">Cidade
+          <input id="supplier-city" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="city" autocomplete="address-level2" required />
+        </label>
+      </div>
+    </section>
+
+    <footer class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+      @if (modal()) {
+        <button type="button" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:opacity-50" [disabled]="saving()" (click)="closeModal()">Cancelar</button>
+      } @else {
+        <a routerLink="/suppliers" class="rounded-lg border border-slate-300 px-5 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancelar</a>
+      }
+      <button type="submit" class="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" [disabled]="form.invalid || saving()">{{ saving() ? 'Salvando…' : (editing() ? 'Salvar alterações' : 'Cadastrar fornecedor') }}</button>
+    </footer>
+  </form>
+</ng-template>
