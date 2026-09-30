@@ -72,12 +72,13 @@
   </div>
 
   @if (exportOpen()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4" (click)="$event.target === $event.currentTarget && closeExport()" (keydown)="onExportKeydown($event)">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4" (click)="$event.target === $event.currentTarget ? closeExport() : null" (keydown)="onExportKeydown($event)">
       <section #exportDialog role="dialog" aria-modal="true" aria-labelledby="export-title" class="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl sm:p-7">
         <div class="mb-5 flex items-start justify-between gap-4">
           <div><h2 id="export-title" class="text-xl font-bold text-slate-900">Exportar logs</h2><p class="mt-1 text-sm text-slate-500">Escolha o intervalo e os filtros do arquivo CSV.</p></div>
           <button type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600" aria-label="Fechar" [disabled]="exporting()" (click)="closeExport()">✕</button>
         </div>
+        @if (!exportUrl()) {
         <form class="grid gap-4" (ngSubmit)="exportLogs()">
           <div class="grid gap-4 sm:grid-cols-2">
             <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-start-date">Data inicial
@@ -96,9 +97,18 @@
           @if (exportError()) { <p role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ exportError() }}</p> }
           <div class="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button type="button" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" [disabled]="exporting()" (click)="closeExport()">Cancelar</button>
-            <button type="submit" class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60" [disabled]="exporting()">{{ exporting() ? 'Preparando CSV…' : 'Baixar CSV' }}</button>
+            <button type="submit" class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60" [disabled]="exporting()">{{ exporting() ? 'Preparando CSV…' : 'Preparar CSV' }}</button>
           </div>
         </form>
+        } @else {
+          <div class="grid gap-4" role="status">
+            <p class="text-sm text-slate-600">Arquivo pronto para baixar.</p>
+            <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="button" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" (click)="clearPreparedExport()">Alterar filtros</button>
+              <a class="rounded-lg bg-green-700 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-green-800" [href]="exportUrl()" [download]="exportFilename()" (click)="logCsvDownloadClick()">Baixar CSV</a>
+            </div>
+          </div>
+        }
       </section>
     </div>
   }
