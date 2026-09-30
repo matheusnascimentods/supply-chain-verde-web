@@ -26,15 +26,35 @@
 
   <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5 px-5 py-5 sm:px-7 sm:py-6">
     <div class="grid gap-4 sm:grid-cols-2">
-      <label class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2" for="product-name">Nome<input id="product-name" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="name" required /></label>
+      <div class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2">
+        <label for="product-name">Nome <span class="text-red-600" aria-hidden="true">*</span></label>
+        <input #firstField id="product-name" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100 aria-invalid:border-red-500" type="text" formControlName="name" required [attr.aria-invalid]="!!fieldError('name')" [attr.aria-describedby]="fieldError('name') ? 'product-name-error' : null" />
+        @if (fieldError('name')) { <p id="product-name-error" class="text-xs font-normal text-red-700" role="alert">{{ fieldError('name') }}</p> }
+      </div>
       <label class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2" for="product-description">Descrição<input id="product-description" class="rounded-lg border border-slate-300 px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="description" /></label>
-      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="product-category">Categoria<app-enum-select id="product-category" [options]="productCategorySchema.options" [formControlName]="'category'" /></label>
-      <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="product-unit">Unidade<app-enum-select id="product-unit" [options]="productUnitSchema.options" [formControlName]="'unit'" /></label>
+      <app-enum-select
+        id="product-category"
+        label="Categoria"
+        [options]="productCategorySchema.options"
+        [labels]="productCategoryLabels"
+        [required]="true"
+        [error]="fieldError('category')"
+        [formControlName]="'category'"
+      />
+      <app-enum-select
+        id="product-unit"
+        label="Unidade"
+        [options]="productUnitSchema.options"
+        [labels]="productUnitLabels"
+        [required]="true"
+        [error]="fieldError('unit')"
+        [formControlName]="'unit'"
+      />
     </div>
     <footer class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
       @if (modal()) { <button type="button" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" [disabled]="saving()" (click)="closeModal()">Cancelar</button> }
       @else { <a routerLink="/products" class="rounded-lg border border-slate-300 px-5 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancelar</a> }
-      <button class="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50" [disabled]="form.invalid || saving()">{{ saving() ? 'Salvando…' : 'Salvar produto' }}</button>
+      <button class="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:cursor-wait disabled:opacity-50" [disabled]="saving()">{{ saving() ? 'Salvando…' : 'Salvar produto' }}</button>
     </footer>
   </form>
 </ng-template>
