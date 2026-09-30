@@ -23,8 +23,16 @@ export const supplierRankingPageSchema = z.object({
   offset: z.number(),
   hasNext: z.boolean(),
 });
+export const viaCepResponseSchema = z.object({
+  logradouro: z.string().optional(),
+  bairro: z.string().optional(),
+  localidade: z.string().optional(),
+  uf: z.string().optional(),
+  erro: z.union([z.boolean(), z.literal('true'), z.literal('false')]).optional(),
+}).passthrough();
 export type AddressRequestDTO = z.infer<typeof addressRequestSchema>;
 export type SupplierRequestDTO = z.infer<typeof supplierRequestSchema>;
 export type SupplierResponseDTO = z.infer<typeof supplierResponseSchema>;
 export type SupplierRankingResponseDTO = z.infer<typeof supplierRankingResponseSchema>;
 export type SupplierRankingPageDTO = z.infer<typeof supplierRankingPageSchema>;
+export type ViaCepResponseDTO = z.infer<typeof viaCepResponseSchema>;
