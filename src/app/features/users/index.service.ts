@@ -25,12 +25,12 @@ export class UsersService {
             limit: 20,
             offset: params.offset ?? 0,
             hasNext: response.hasNext === true,
-            ...(typeof response.totalPages === 'number' ? { totalPages: response.totalPages } : {}),
+            totalPages: typeof response.totalPages === 'number' ? response.totalPages : 0,
           };
         }
         if (Array.isArray(raw)) {
           const items = z.array(userResponseSchema).parse(raw);
-          return { items, limit: 20, offset: params.offset ?? 0, hasNext: items.length === 20 };
+          return { items, limit: 20, offset: params.offset ?? 0, hasNext: items.length === 20, totalPages: items.length === 0 ? 0 : 1 };
         }
         throw parsed.error;
       }),

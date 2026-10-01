@@ -22,6 +22,7 @@ export const supplierRankingPageSchema = z.object({
   limit: z.number(),
   offset: z.number(),
   hasNext: z.boolean(),
+  totalPages: z.number(),
 });
 export const viaCepResponseSchema = z.object({
   logradouro: z.string().optional(),
