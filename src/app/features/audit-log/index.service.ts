@@ -35,6 +35,7 @@ export class AuditLogService {
           return {
             content: raw as AuditLogPageDTO['content'],
             hasNext: raw.length === 20,
+            totalPages: raw.length === 0 ? 0 : 1,
           };
         }
         throw parsed.error;

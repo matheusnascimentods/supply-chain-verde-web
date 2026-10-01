@@ -21,7 +21,7 @@ export class ReportListComponent {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly offset = signal(0);
-  readonly hasNext = signal(false);
+  readonly totalPages = signal(0);
   readonly canGenerate = () => ['admin', 'manager'].includes(this.session.role() ?? '');
 
   constructor() {
@@ -36,7 +36,7 @@ export class ReportListComponent {
       next: (page) => {
         if (sequence !== this.loadSequence) return;
         this.items.set(page.items);
-        this.hasNext.set(page.hasNext);
+        this.totalPages.set(page.totalPages);
         this.loading.set(false);
       },
       error: () => {
@@ -48,19 +48,19 @@ export class ReportListComponent {
   }
 
   previousPage(): void {
-    if (this.offset() === 0 || this.loading()) return;
+    if (this.pageNumber() <= 1 || this.loading()) return;
     this.offset.update((offset) => Math.max(0, offset - PAGE_SIZE));
     this.reload();
   }
 
   nextPage(): void {
-    if (!this.hasNext() || this.loading()) return;
+    if (this.pageNumber() >= this.totalPages() || this.loading()) return;
     this.offset.update((offset) => offset + PAGE_SIZE);
     this.reload();
   }
 
   pageNumber(): number {
-    return Math.floor(this.offset() / PAGE_SIZE) + 1;
+    return this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages());
   }
 
   period(report: ReportResponseDTO): string {

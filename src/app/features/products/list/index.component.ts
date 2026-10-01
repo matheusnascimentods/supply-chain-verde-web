@@ -19,9 +19,9 @@ export class ProductListComponent {
   readonly error = signal('');
   readonly search = signal('');
   readonly offset = signal(0);
-  readonly hasNext = signal(false);
+  readonly totalPages = signal(0);
   readonly createModalOpen = signal(false);
-  readonly pageNumber = computed(() => Math.floor(this.offset() / PAGE_SIZE) + 1);
+  readonly pageNumber = computed(() => this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages()));
 
   constructor() {
     this.searchChanges.pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed()).subscribe(() => this.load());
@@ -40,7 +40,7 @@ export class ProductListComponent {
       next: (page) => {
         if (sequence !== this.loadSequence) return;
         this.items.set(page.items);
-        this.hasNext.set(page.hasNext);
+        this.totalPages.set(page.totalPages);
         this.loading.set(false);
       },
       error: () => {
@@ -58,13 +58,13 @@ export class ProductListComponent {
   }
 
   previousPage(): void {
-    if (this.offset() === 0) return;
+    if (this.pageNumber() <= 1 || this.loading()) return;
     this.offset.update((offset) => Math.max(0, offset - PAGE_SIZE));
     this.load();
   }
 
   nextPage(): void {
-    if (!this.hasNext()) return;
+    if (this.pageNumber() >= this.totalPages() || this.loading()) return;
     this.offset.update((offset) => offset + PAGE_SIZE);
     this.load();
   }

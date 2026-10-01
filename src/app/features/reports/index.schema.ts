@@ -19,6 +19,7 @@ export const reportPageSchema = z.object({
   limit: z.number(),
   offset: z.number(),
   hasNext: z.boolean(),
+  totalPages: z.number(),
 }).passthrough();
 export type ReportRequestDTO = z.infer<typeof reportRequestSchema>;
 export type ReportResponseDTO = z.infer<typeof reportResponseSchema>;
