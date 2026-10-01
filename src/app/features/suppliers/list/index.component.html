@@ -74,7 +74,7 @@
                   <span class="rounded-full px-3 py-1 text-xs font-semibold" [class.bg-green-50]="index === 0" [class.text-green-800]="index === 0" [class.bg-slate-200]="index === 1" [class.text-slate-800]="index === 1" [class.bg-orange-50]="index === 2" [class.text-orange-800]="index === 2">{{ score(entry.ranking.sustainabilityScore) }} pontos</span>
                 </div>
                 <h3 class="truncate text-lg font-semibold text-slate-900">{{ name(entry.ranking) }}</h3>
-                <p class="mt-1 truncate text-sm text-slate-500">{{ entry.supplier?.address?.city ?? 'Localização não informada' }}@if (entry.supplier?.address?.state) { /{{ entry.supplier?.address?.state }} }</p>
+                <p class="mt-1 truncate text-sm text-slate-500">{{ entry.supplier.address?.city ?? 'Localização não informada' }}@if (entry.supplier.address?.state) { /{{ entry.supplier.address?.state }} }</p>
                 <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm">
                   <div><dt class="text-xs text-slate-500">Certificações ativas</dt><dd class="mt-1 font-semibold text-slate-900">{{ entry.ranking.activeCertificationCount ?? entry.ranking.activeCertifications ?? entry.ranking.activeCertificationsCount ?? 0 }}</dd></div>
                   <div><dt class="text-xs text-slate-500">CO₂ total</dt><dd class="mt-1 font-semibold text-slate-900">{{ co2(entry.ranking.totalCo2Kg) }} kg</dd></div>
@@ -115,8 +115,8 @@
                     }
                   </td>
                   <td class="px-5 py-4 text-right font-semibold text-green-700">{{ score(entry.ranking.sustainabilityScore) }}</td>
-                  <td class="px-5 py-4 text-slate-600">{{ cnpj(entry.supplier?.cnpj) }}</td>
-                  <td class="px-5 py-4 text-slate-600">{{ entry.supplier?.phone ?? '—' }}</td>
+                  <td class="px-5 py-4 text-slate-600">{{ cnpj(entry.supplier.cnpj) }}</td>
+                  <td class="px-5 py-4 text-slate-600">{{ entry.supplier.phone ?? '—' }}</td>
                   <td class="px-5 py-4">
                     <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-red-50]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'expired'" [class.text-red-700]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'expired'" [class.bg-green-50]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'active'" [class.text-green-700]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'active'" [class.bg-slate-100]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'none'" [class.text-slate-600]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'none'">{{ certificationLabel(entry.ranking.supplierId, entry.ranking) }}</span>
                   </td>
