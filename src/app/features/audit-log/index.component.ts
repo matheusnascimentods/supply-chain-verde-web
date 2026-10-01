@@ -80,7 +80,7 @@ export class AuditLogComponent {
   detailsLabel(value: unknown): string {
     return value == null ? '—' : typeof value === 'string' ? value : JSON.stringify(value) ?? String(value);
   }
-  displayedRangeEnd(): number { return this.pageOffset() + this.logs().length; }
+  pageNumber(): number { return Math.floor(this.pageOffset() / 20) + 1; }
   actionClass(value: string): string {
     const classes: Record<string, string> = {
       INSERT: 'bg-emerald-50 text-emerald-700', UPDATE: 'bg-blue-50 text-blue-700',
