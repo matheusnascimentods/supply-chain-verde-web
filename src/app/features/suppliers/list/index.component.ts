@@ -31,7 +31,7 @@ export class SupplierListComponent {
   readonly canManage = computed(() => ['admin', 'manager'].includes(this.session.role() ?? ''));
   readonly rankedSuppliers = computed(() => this.ranking().map((item) => ({
     ranking: item,
-    supplier: this.items().find((supplier) => supplier.supplierId === item.supplierId),
+    supplier: item,
   })));
   readonly fallbackSuppliers = computed(() => {
     const term = this.search().trim().toLocaleLowerCase('pt-BR');
@@ -58,17 +58,16 @@ export class SupplierListComponent {
       ranking: this.service
         .loadRanking({ limit: PAGE_SIZE, offset: this.offset(), search: this.search() })
         .pipe(catchError(() => of(null))),
-      suppliers: this.service.load(),
       expiringSupplierIds: this.service
         .loadExpiringCertificationSupplierIds()
         .pipe(catchError(() => of([] as number[]))),
     }).subscribe({
-      next: ({ ranking, suppliers, expiringSupplierIds }) => {
+      next: ({ ranking, expiringSupplierIds }) => {
         if (sequence !== this.loadSequence) return;
         this.rankingAvailable.set(ranking !== null);
         const rankingItems = ranking === null ? [] : Array.isArray(ranking) ? ranking : ranking.items;
         this.ranking.set(rankingItems);
-        this.items.set(suppliers);
+        this.items.set([]);
         this.expiringSupplierIds.set(expiringSupplierIds);
         this.totalPages.set(ranking === null || Array.isArray(ranking) ? 0 : ranking.totalPages);
         this.loading.set(false);

@@ -133,7 +133,7 @@ export const routes: Routes = [
 - `authGuard` — bloqueia se não houver sessão válida, redireciona pro `/login`.
 - `roleGuard` — lê `route.data['roles']` e compara com a `role` da sessão; um guard genérico reaproveitado, não um por feature.
 - Rotas sem `data.roles` mas dentro do bloco protegido = qualquer perfil autenticado (ex: `batches`, `reports`, cujo acesso varia por *dado* — o próprio ou todos —, não por rota).
-- No destino do redesign, ranking é apresentado junto da listagem em `/suppliers`; a timeline do lote fica nos cards de `/batches`, sem rota de detalhe de etapas; `/reports/:reportId` apresenta a consulta individual do relatório.
+- No destino do redesign, ranking é apresentado junto da listagem em `/suppliers`; a API recebe `ranked=true` para o ranking e `supplierId` para consultar fornecedor; a timeline do lote fica nos cards de `/batches`, sem rota de detalhe de etapas; `/reports/:reportId` apresenta o detalhe buscado por `GET /reports?reportId={id}`.
 
 ---
 
@@ -257,9 +257,9 @@ load() {
 
 ### Listagens paginadas e filtros
 
-- Fornecedores/ranking, produtos, usuários, auditoria e relatórios usam `limit`/`offset` com `hasNext`; as telas iniciam em `limit=20`, avançam ou recuam 20 itens e não presumem total de páginas.
+- Fornecedores/ranking, produtos, usuários, auditoria e relatórios usam `limit`/`offset`, `hasNext` e `totalPages`; as telas iniciam em `limit=20`, avançam ou recuam 20 itens e exibem `Página X de Y`.
 - Certificações e lotes usam `page`/`size` com metadados `totalPages`; certificações enviam `onlyExpiring=true` para filtrar vencimentos e lotes podem enviar `supplierId` quando permitido pelo perfil.
-- A listagem geral de relatórios usa `GET /reports` paginada, com filtro opcional por fornecedor; fornecedores só podem consultar seus próprios dados. A tela de detalhe usa `GET /reports/{reportId}`.
+- A listagem geral de relatórios usa `GET /reports` paginada, com filtro opcional por fornecedor; fornecedores só podem consultar seus próprios dados. A tela de detalhe usa `GET /reports?reportId={reportId}`.
 - Serviços validam o envelope e os itens paginados com schemas Zod antes de atualizar os signals; mudanças de contrato devem ser sincronizadas com as tasks e a especificação da API.
 
 ---

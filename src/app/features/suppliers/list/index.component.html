@@ -27,7 +27,7 @@
     } @else {
       @if (!rankingAvailable()) {
         <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
-          O ranking está indisponível no momento. A lista de fornecedores continua disponível.
+          Não foi possível carregar o ranking dos fornecedores. Tente novamente.
         </div>
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-labelledby="supplier-list-heading">
           <div class="px-5 py-5 sm:px-6">
@@ -56,7 +56,7 @@
                     <td class="px-5 py-4 text-slate-600">{{ supplier.phone ?? '—' }}</td>
                   </tr>
                 } @empty {
-                  <tr><td class="px-5 py-12 text-center text-slate-500" colspan="3">{{ search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado.' }}</td></tr>
+                  <tr><td class="px-5 py-12 text-center text-slate-500" colspan="3">{{ rankingAvailable() ? (search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado.') : 'Ranking indisponível.' }}</td></tr>
                 }
               </tbody>
             </table>

@@ -86,7 +86,7 @@ O backend (`supply-chain-verde-api`) já expõe a API completa de rastreabilidad
 > Como manager, quero ver os fornecedores ranqueados por desempenho ambiental, para decidir com quem priorizar parceria.
 
 **Critérios de aceitação:**
-- Lista ordenável por score de sustentabilidade, nº de certificações ativas, e CO₂ total (`GET /suppliers/ranking`).
+- Lista ordenável por score de sustentabilidade, nº de certificações ativas, e CO₂ total (`GET /suppliers?ranked=true`).
 
 #### Produtos
 > Como manager, quero cadastrar os produtos que a cadeia rastreia, para que cada lote possa ser vinculado a um produto conhecido.
@@ -99,7 +99,7 @@ O backend (`supply-chain-verde-api`) já expõe a API completa de rastreabilidad
 
 **Critérios de aceitação:**
 - Formulário de geração (fornecedor + período) → `POST /suppliers/{id}/reports`.
-- Lista de relatórios já gerados, com total de CO₂ e produtos rastreados.
+- Lista paginada de relatórios já gerados (`GET /reports`), com total de CO₂ e produtos rastreados; consulta individual por `GET /reports?reportId={id}`.
 
 ---
 
@@ -158,7 +158,7 @@ O backend (`supply-chain-verde-api`) já expõe a API completa de rastreabilidad
 > Como fornecedor, quero consultar os relatórios de sustentabilidade gerados sobre minha operação, para acompanhar meu próprio desempenho.
 
 **Critérios de aceitação:**
-- Lista somente leitura dos próprios relatórios (`GET /suppliers/{id}/reports`).
+- Lista somente leitura dos próprios relatórios por `GET /reports`; a API limita os resultados ao fornecedor autenticado.
 
 ---
 
@@ -172,11 +172,11 @@ O backend (`supply-chain-verde-api`) já expõe a API completa de rastreabilidad
 | Usuários | admin | `POST /users`, `GET /users/me`, `PATCH /users/{id}/role` |
 | Auditoria do Sistema | admin, auditor | `GET /audit-logs` |
 | Fornecedores | admin, manager | `POST/PUT/GET /suppliers` |
-| Ranking de Fornecedores | admin, manager, auditor, supplier | `GET /suppliers/ranking` |
+| Ranking de Fornecedores | admin, manager, auditor, supplier | `GET /suppliers?ranked=true&limit=20&offset=0` |
 | Produtos | admin, manager | `POST/PUT/GET /products` |
-| Relatórios | manager (gerar), auditor (consulta), supplier (próprios) | `POST/GET /suppliers/{id}/reports` |
+| Relatórios | manager (gerar), auditor (consulta), supplier (próprios) | `POST /suppliers/{id}/reports`, `GET /reports`, `GET /reports?reportId={id}` |
 | Certificações | auditor (validar), supplier (próprias) | `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status`, `GET /certifications/expiring` |
-| Meu Perfil (Fornecedor) | supplier | `GET/PUT /suppliers/{id}` |
+| Meu Perfil (Fornecedor) | supplier | `GET /suppliers?supplierId={id}`, `PUT /suppliers/{id}` |
 | Meus Lotes | supplier, admin, manager, auditor (consulta) | `POST /batches`, `GET /suppliers/{id}/batches` |
 | Etapas da Cadeia | supplier, manager, admin | `POST/GET /batches/{id}/stages`, `POST /stages/{id}/transport`, `POST /stages/{id}/emission` |
 
