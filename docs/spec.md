@@ -69,7 +69,28 @@ O backend (`supply-chain-verde-api`) já expõe a API completa de rastreabilidad
 > Como admin, quero consultar o histórico de ações realizadas no sistema, para investigar qualquer inconsistência.
 
 **Critérios de aceitação:**
-- Lista somente leitura de `AuditLog` (`GET /audit-logs`), com filtro por usuário/ação/tabela afetada.
+- Lista somente leitura dos eventos retornados por `GET /audit-logs`, filtrável por intervalo inclusivo, operação e fragmento de email do ator.
+- Cada evento mostra ator, ação, data/hora, tabela e detalhes; quando disponíveis, os detalhes apresentam `affectedEntityId` e os deltas de `beforeData`/`afterData` em linguagem legível, sem exibir JSON bruto.
+- Eventos são produzidos por triggers PostgreSQL e não pelo frontend. A UI não envia nem escolhe o `userId` que identifica o ator; apenas apresenta `userId` e `userEmail` da resposta da API.
+- Registros anteriores sem snapshots ou ID da entidade mostram `Detalhes indisponíveis`, sem inferir valores. O mesmo resumo é usado na exportação CSV.
+
+Resposta esperada por item (além do envelope paginado `items`, `limit`, `offset`, `hasNext`, `totalPages`):
+
+```json
+{
+  "logId": 981,
+  "userId": 7,
+  "userEmail": "ana.souza@empresa.com",
+  "action": "UPDATE",
+  "affectedTable": "supplier",
+  "affectedEntityId": 42,
+  "beforeData": { "name": "Fazenda Verde" },
+  "afterData": { "name": "Fazenda Verde Ltda" },
+  "performedAt": "2026-09-30T14:32:10"
+}
+```
+
+O resumo exibido pode ser `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Verde Ltda`. Para eventos antigos sem snapshots, a interface mostra que os detalhes não estão disponíveis.
 
 ---
 

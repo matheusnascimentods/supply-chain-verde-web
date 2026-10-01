@@ -77,9 +77,28 @@ export class AuditLogComponent {
   nextPage(): void { if (this.pageNumber() < this.totalPages() && !this.loading()) { this.pageOffset.update((offset) => offset + 20); this.load(); } }
   actionLabel(value: string): string { return this.actions.find((option) => option.value === value)?.label ?? value; }
   userEmail(log: AuditLogResponseDTO): string | null { return log.userEmail ?? log.email ?? null; }
-  detailsLabel(value: unknown): string {
-    return value == null ? '—' : typeof value === 'string' ? value : JSON.stringify(value) ?? String(value);
+  detailsLabel(log: AuditLogResponseDTO): string {
+    const entity = this.entityLabel(log.affectedTable);
+    const identity = log.affectedEntityId == null ? entity : `${entity} #${log.affectedEntityId}`;
+    const before = log.beforeData ?? {};
+    const after = log.afterData ?? {};
+    const keys = [...new Set([...Object.keys(before), ...Object.keys(after)])];
+    const changes = keys.flatMap((key) => {
+      const hasBefore = Object.hasOwn(before, key);
+      const hasAfter = Object.hasOwn(after, key);
+      if (hasBefore && hasAfter && JSON.stringify(before[key]) === JSON.stringify(after[key])) return [];
+      const field = this.fieldLabel(key);
+      if (log.action === 'INSERT') return hasAfter ? [`${field}: ${this.valueLabel(after[key])}`] : [];
+      if (log.action === 'DELETE') return hasBefore ? [`${field}: ${this.valueLabel(before[key])}`] : [];
+      if (hasBefore && hasAfter) return [`${field}: ${this.valueLabel(before[key])} → ${this.valueLabel(after[key])}`];
+      return hasAfter ? [`${field}: ${this.valueLabel(after[key])}`] : [`${field}: ${this.valueLabel(before[key])}`];
+    });
+    const heading = log.action === 'INSERT' ? `${identity} cadastrado` : log.action === 'DELETE' ? `${identity} removido` : identity;
+    return changes.length ? `${heading} — ${changes.join('; ')}` : log.affectedEntityId == null ? 'Detalhes indisponíveis' : heading;
   }
+  private entityLabel(table?: string | null): string { return ({ suppliers: 'Fornecedor', supplier: 'Fornecedor', users: 'Usuário', user: 'Usuário', products: 'Produto', product: 'Produto', batch: 'Lote', batches: 'Lote', chain: 'Etapa', certification: 'Certificação', report: 'Relatório', transport: 'Transporte', address: 'Endereço', carbon_emission: 'Emissão' } as Record<string, string>)[table ?? ''] ?? 'Registro'; }
+  private fieldLabel(field: string): string { const labels: Record<string, string> = { name: 'Nome', cnpj: 'CNPJ', email: 'Email', role: 'Perfil', status: 'Status', quantity: 'Quantidade', producedAt: 'Data de produção', produced_at: 'Data de produção', certification: 'Certificação', issuingBody: 'Órgão emissor', issuing_body: 'Órgão emissor', phone: 'Telefone', description: 'Descrição', stageType: 'Etapa', stage_type: 'Etapa', started_at: 'Início', ended_at: 'Término', expires_at: 'Validade', issued_at: 'Emissão', created_at: 'Criado em', registered_at: 'Cadastro', address_id: 'Endereço (ID)', supplier_id: 'Fornecedor (ID)', product_id: 'Produto (ID)', responsible_user_id: 'Responsável (ID)', batch_id: 'Lote (ID)', chain_id: 'Etapa (ID)' }; const readable = field.replaceAll('_', ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (letter) => letter.toUpperCase()); return labels[field] ?? readable; }
+  private valueLabel(value: unknown): string { if (value == null) return 'vazio'; if (typeof value === 'object') return Object.values(value as Record<string, unknown>).join(', '); return String(value); }
   pageNumber(): number { return this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.pageOffset() / 20) + 1, this.totalPages()); }
   actionClass(value: string): string {
     const classes: Record<string, string> = {
@@ -131,7 +150,7 @@ export class AuditLogComponent {
       next: (logs) => {
         console.info('[Auditoria CSV] Registros carregados.', { count: logs.length });
         const columns = ['Email do usuário', 'Operação', 'Data e hora', 'Tabela afetada', 'Detalhes'];
-        const rows = logs.map((log) => [log.userEmail ?? log.email ?? '', log.action, log.performedAt, log.affectedTable ?? '', log.details ?? '']);
+        const rows = logs.map((log) => [log.userEmail ?? log.email ?? '', log.action, log.performedAt, log.affectedTable ?? '', this.detailsLabel(log)]);
         const csv = [columns, ...rows].map((row) => row.map((value) => this.csvCell(value)).join(',')).join('\r\n');
         const blob = new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);

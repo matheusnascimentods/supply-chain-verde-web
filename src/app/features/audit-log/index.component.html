@@ -52,7 +52,7 @@
                   <td class="px-5 py-4"><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" [class]="'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ' + actionClass(log.action)">{{ actionLabel(log.action) }}</span></td>
                   <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</td>
                   <td class="px-5 py-4 text-slate-600">{{ log.affectedTable ?? '—' }}</td>
-                  <td class="max-w-sm px-5 py-4 text-slate-600">{{ detailsLabel(log.details) }}</td>
+                  <td class="max-w-sm whitespace-normal px-5 py-4 text-slate-600"><span class="block break-words">{{ detailsLabel(log) }}</span></td>
                 </tr>
               } @empty {
                 <tr><td class="px-5 py-14 text-center text-slate-500" colspan="5">Nenhum registro de auditoria encontrado para este período e filtros.</td></tr>
