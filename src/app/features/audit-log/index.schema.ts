@@ -7,6 +7,9 @@ export const auditLogResponseSchema = z.object({
   email: z.string().nullable().optional(),
   action: z.enum(['INSERT', 'UPDATE', 'DELETE', 'STATUS_CHANGE']),
   affectedTable: z.string().nullable().optional(),
+  affectedEntityId: z.number().nullable().optional(),
+  beforeData: z.record(z.string(), z.unknown()).nullable().optional(),
+  afterData: z.record(z.string(), z.unknown()).nullable().optional(),
   performedAt: z.string(),
   details: z.unknown().optional(),
 }).passthrough();

@@ -103,6 +103,10 @@ cypress/
 
 ---
 
+### Auditoria
+
+A feature `audit-log` é somente leitora. Ela chama `GET /api/v1/audit-logs`, valida a paginação e os eventos com Zod, apresenta ator/operação/tabela/entidade/deltas e reutiliza o mesmo resumo legível na exportação CSV. Não envia `userId` para identificar o autor de uma mudança; essa identidade é contexto interno da API para a transação PostgreSQL. O banco produz os eventos por triggers e a API os consulta. O frontend não conhece `set_config`, triggers, migrations ou a estratégia de início vazio do histórico. Contrato de origem: [ADR 0001 da API](../../supply-chain-verde-api/docs/adr/0001-auditoria-no-postgresql.md).
+
 ## 5. Roteamento
 
 Rotas lazy-loaded, mapeando diretamente as telas do `spec.md`:

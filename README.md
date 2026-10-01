@@ -144,6 +144,12 @@ Novo lote → nova etapa → transporte (quando aplicável) → cálculo de emis
 | Lotes | supplier, admin, manager, auditor | `POST /batches`, `GET /suppliers/{id}/batches` |
 | Etapas da cadeia | supplier, manager, admin | `POST/GET /batches/{id}/stages`, `POST /stages/{id}/transport`, `POST /stages/{id}/emission` |
 
+### Consumo da auditoria
+
+A tela de auditoria é somente leitora: carrega `GET /audit-logs` com intervalo inclusivo, operação/email opcionais e paginação `limit`/`offset`. Cada item pode incluir `affectedEntityId`, `beforeData` e `afterData`; a UI formata esses campos para mostrar o ID da entidade e somente os valores alterados. Eventos sem snapshots permanecem consultáveis e exibem que os detalhes não estão disponíveis. O CSV reutiliza a mesma descrição da tabela e escapa delimitadores, aspas e quebras de linha.
+
+A identidade do ator não é enviada pelo navegador em chamadas de escrita. A API obtém o `userId` da sessão JWT e o propaga internamente para a transação PostgreSQL; triggers do banco persistem os eventos. O frontend não é responsável por criar ou atribuir logs. A decisão e os limites de confiança estão descritos na [ADR de auditoria da API](../supply-chain-verde-api/docs/adr/0001-auditoria-no-postgresql.md).
+
 ## Arquitetura planejada
 
 O projeto usa organização por feature e componentes standalone:
