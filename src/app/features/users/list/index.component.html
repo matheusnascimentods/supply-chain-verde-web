@@ -12,12 +12,11 @@
       }
     </header>
 
-    <form class="mb-5 grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-[1fr_auto]" (ngSubmit)="search()">
+    <div class="mb-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="users-email-search">Buscar por email
-        <input #searchInput id="users-email-search" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="search" name="email" autocomplete="off" placeholder="Digite um email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
+        <input id="users-email-search" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="search" name="email" autocomplete="off" placeholder="Digite um email" [ngModel]="email()" (ngModelChange)="searchFor($event)" />
       </label>
-      <button class="self-end rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" type="submit">Buscar</button>
-    </form>
+    </div>
 
     @if (error()) {
       <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
@@ -27,9 +26,8 @@
       <div class="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando usuários…</div>
     } @else {
       @if (roleError()) { <p class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">{{ roleError() }}</p> }
-      <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-label="Lista de usuários">
-        <div class="overflow-x-auto">
-          <table class="w-full min-w-[720px] text-left text-sm">
+      <section class="overflow-visible rounded-2xl border border-slate-200 bg-white shadow-sm" aria-label="Lista de usuários">
+        <table class="w-full min-w-[720px] text-left text-sm">
             <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500"><tr class="border-b border-slate-200">
               <th scope="col" class="px-5 py-4">Nome</th><th scope="col" class="px-5 py-4">Email</th><th scope="col" class="px-5 py-4">Role</th><th scope="col" class="px-5 py-4">Criado em</th>
             </tr></thead>
@@ -61,8 +59,7 @@
                 <tr><td class="px-5 py-14 text-center text-slate-500" colspan="4">Nenhum usuário encontrado.</td></tr>
               }
             </tbody>
-          </table>
-        </div>
+        </table>
       </section>
       <nav class="mt-3 grid grid-cols-3 items-center py-2" aria-label="Paginação de usuários">
         <button type="button" class="justify-self-start rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="offset() === 0 || loading()" (click)="previousPage()">Anterior</button>
