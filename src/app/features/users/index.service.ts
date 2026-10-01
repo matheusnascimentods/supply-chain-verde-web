@@ -42,5 +42,10 @@ export class UsersService {
       map((raw) => userResponseSchema.parse(raw)),
     );
   }
-  updateRole(id: number, role: string): Observable<UserResponseDTO> { return this.http.patch<unknown>(`${this.base}/${id}/role`, updateUserRoleSchema.parse({ role })).pipe(map((raw) => userResponseSchema.parse(raw))); }
+  updateRole(id: number, role: string): Observable<UserResponseDTO> {
+    const parsedRole = updateUserRoleSchema.parse({ role }).role;
+    return this.http.patch<unknown>(`${this.base}/${id}/role`, { role: parsedRole.toUpperCase() }).pipe(
+      map((raw) => userResponseSchema.parse(raw)),
+    );
+  }
 }
