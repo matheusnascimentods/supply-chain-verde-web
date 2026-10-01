@@ -46,6 +46,7 @@ export class UserListComponent {
   readonly totalPages = signal<number | null>(null);
   readonly createModalOpen = signal(false);
   readonly updatingRoleId = signal<number | null>(null);
+  readonly roleMenuPosition = signal({ top: 0, left: 0 });
   readonly roles = USER_ROLES;
   readonly canManage = () => this.session.role() === 'admin';
 
@@ -153,6 +154,21 @@ export class UserListComponent {
     this.roleMenus?.forEach(({ nativeElement: menu }) => {
       if (!menu.contains(target)) menu.open = false;
     });
+  }
+
+  positionRoleMenu(event: Event): void {
+    const menu = event.currentTarget as HTMLDetailsElement;
+    if (!menu.open) return;
+
+    const summary = menu.querySelector('summary');
+    if (!summary) return;
+    const bounds = summary.getBoundingClientRect();
+    const menuHeight = 176;
+    const menuWidth = 192;
+    const placeBelow = window.innerHeight - bounds.bottom >= menuHeight + 12;
+    const top = placeBelow ? bounds.bottom + 8 : Math.max(8, bounds.top - menuHeight - 8);
+    const left = Math.max(8, Math.min(bounds.left, window.innerWidth - menuWidth - 8));
+    this.roleMenuPosition.set({ top, left });
   }
 
   onRoleMenuKeydown(event: KeyboardEvent, menu: HTMLDetailsElement): void {
