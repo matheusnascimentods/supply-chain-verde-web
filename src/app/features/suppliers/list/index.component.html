@@ -52,7 +52,7 @@
                         <span class="font-semibold text-slate-800">{{ supplier.name }}</span>
                       }
                     </td>
-                    <td class="px-5 py-4 text-slate-600">{{ supplier.cnpj ?? '—' }}</td>
+                    <td class="px-5 py-4 text-slate-600">{{ cnpj(supplier.cnpj) }}</td>
                     <td class="px-5 py-4 text-slate-600">{{ supplier.phone ?? '—' }}</td>
                   </tr>
                 } @empty {
@@ -115,7 +115,7 @@
                     }
                   </td>
                   <td class="px-5 py-4 text-right font-semibold text-green-700">{{ score(entry.ranking.sustainabilityScore) }}</td>
-                  <td class="px-5 py-4 text-slate-600">{{ entry.supplier?.cnpj ?? '—' }}</td>
+                  <td class="px-5 py-4 text-slate-600">{{ cnpj(entry.supplier?.cnpj) }}</td>
                   <td class="px-5 py-4 text-slate-600">{{ entry.supplier?.phone ?? '—' }}</td>
                   <td class="px-5 py-4">
                     <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-green-50]="certificationLabel(entry.ranking.supplierId, entry.ranking) !== 'Sem certificação'" [class.text-green-700]="certificationLabel(entry.ranking.supplierId, entry.ranking) !== 'Sem certificação'" [class.bg-slate-100]="certificationLabel(entry.ranking.supplierId, entry.ranking) === 'Sem certificação'" [class.text-slate-600]="certificationLabel(entry.ranking.supplierId, entry.ranking) === 'Sem certificação'">{{ certificationLabel(entry.ranking.supplierId, entry.ranking) }}</span>
