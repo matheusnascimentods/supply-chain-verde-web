@@ -36,7 +36,9 @@ export class ReportsService {
     );
   }
   get(reportId: number): Observable<ReportResponseDTO> {
-    return this.http.get<unknown>(`${environment.apiUrl}/reports/${reportId}`).pipe(
+    return this.http.get<unknown>(`${environment.apiUrl}/reports`, {
+      params: { reportId: String(reportId) },
+    }).pipe(
       map((raw) => reportResponseSchema.parse(raw)),
     );
   }

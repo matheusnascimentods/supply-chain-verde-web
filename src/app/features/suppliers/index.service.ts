@@ -18,16 +18,20 @@ export class SuppliersService {
   load(): Observable<SupplierResponseDTO[]> {
     return this.http.get<unknown>(this.base).pipe(map((raw) => z.array(supplierResponseSchema).parse(raw)), tap((items) => this._suppliers.set(items)));
   }
-  get(id: number): Observable<SupplierResponseDTO> { return this.http.get<unknown>(`${this.base}/${id}`).pipe(map((raw) => supplierResponseSchema.parse(raw))); }
+  get(id: number): Observable<SupplierResponseDTO> {
+    return this.http.get<unknown>(this.base, { params: { supplierId: String(id) } })
+      .pipe(map((raw) => supplierResponseSchema.parse(raw)));
+  }
   create(data: SupplierRequestDTO): Observable<SupplierResponseDTO> { return this.http.post<unknown>(this.base, data).pipe(map((raw) => supplierResponseSchema.parse(raw))); }
   update(id: number, data: SupplierRequestDTO): Observable<SupplierResponseDTO> { return this.http.put<unknown>(`${this.base}/${id}`, data).pipe(map((raw) => supplierResponseSchema.parse(raw))); }
   loadRanking(params: { limit?: number; offset?: number; search?: string } = {}): Observable<SupplierRankingPageDTO> {
     const query = {
+      ranked: 'true',
       limit: String(params.limit ?? 20),
       offset: String(params.offset ?? 0),
       ...(params.search?.trim() ? { search: params.search.trim() } : {}),
     };
-    return this.http.get<unknown>(`${this.base}/ranking`, { params: query }).pipe(
+    return this.http.get<unknown>(this.base, { params: query }).pipe(
       map((raw) => supplierRankingPageSchema.parse(raw)),
       tap((page) => this._ranking.set(page)),
     );
@@ -39,7 +43,7 @@ export class SuppliersService {
     );
   }
 
-  loadExpiringCertificationSupplierIds(): Observable<number[]> {
+  loadExpiredCertificationCounts(): Observable<Map<number, number>> {
     const pageSize = 100;
     const loadPage = (page: number) =>
       this.http
@@ -60,7 +64,10 @@ export class SuppliersService {
         return forkJoin([of(firstPage), ...remainingPages]);
       }),
       map((pages) =>
-        [...new Set(pages.flatMap((page) => page.items.map((item) => item.supplierId)))],
+        pages.flatMap((page) => page.items).reduce((counts, item) => {
+          counts.set(item.supplierId, (counts.get(item.supplierId) ?? 0) + 1);
+          return counts;
+        }, new Map<number, number>()),
       ),
     );
   }

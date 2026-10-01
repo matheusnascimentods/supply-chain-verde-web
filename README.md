@@ -136,10 +136,10 @@ Novo lote → nova etapa → transporte (quando aplicável) → cálculo de emis
 | Dashboard | Autenticados | Conteúdo por perfil |
 | Usuários | admin | `POST /users`, `GET /users/me`, `PATCH /users/{id}/role` |
 | Auditoria | admin, auditor | `GET /audit-logs` |
-| Fornecedores | admin, manager | `POST/PUT/GET /suppliers` |
-| Ranking | admin, manager, auditor, supplier | `GET /suppliers/ranking` |
+| Fornecedores | admin, manager | `POST/PUT/GET /suppliers`, `GET /suppliers?supplierId={id}` |
+| Ranking | admin, manager, auditor, supplier | `GET /suppliers?ranked=true&limit=20&offset=0` |
 | Produtos | admin, manager | `POST/PUT/GET /products` |
-| Relatórios | manager, auditor, supplier | `POST/GET /suppliers/{id}/reports` |
+| Relatórios | manager, auditor, supplier | `POST /suppliers/{id}/reports`, `GET /reports`, `GET /reports?reportId={id}` |
 | Certificações | auditor, supplier | `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status` |
 | Lotes | supplier, admin, manager, auditor | `POST /batches`, `GET /suppliers/{id}/batches` |
 | Etapas da cadeia | supplier, manager, admin | `POST/GET /batches/{id}/stages`, `POST /stages/{id}/transport`, `POST /stages/{id}/emission` |

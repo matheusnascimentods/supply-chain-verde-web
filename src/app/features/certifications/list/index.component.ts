@@ -46,7 +46,7 @@ export class CertificationListComponent {
   );
   readonly filterOptions: { value: CertificationFilter; label: string; status: CertificationStatus | null }[] = [
     { value: 'all', label: 'Todas as certificações', status: null },
-    { value: 'expiring', label: 'Apenas expirando', status: 'expired' },
+    { value: 'expiring', label: 'Apenas expiradas', status: 'expired' },
     { value: 'active', label: 'Ativas', status: 'active' },
     { value: 'suspended', label: 'Suspensas', status: 'suspended' },
     { value: 'underReview', label: 'Em análise', status: 'underReview' },

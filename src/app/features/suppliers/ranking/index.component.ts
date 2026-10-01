@@ -1,13 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { SuppliersService } from '../index.service';
-import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
+import { SupplierRankingResponseDTO } from '../index.schema';
 
 @Component({ selector: 'app-supplier-ranking', templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierRankingComponent {
   private readonly service = inject(SuppliersService);
   readonly items = signal<SupplierRankingResponseDTO[]>([]); readonly sort = signal('sustainabilityScore'); readonly error = signal('');
-  readonly suppliers = signal<SupplierResponseDTO[]>([]);
   readonly loading = signal(true);
 
   constructor() { this.load(); }
@@ -15,10 +13,9 @@ export class SupplierRankingComponent {
   load(): void {
     this.loading.set(true);
     this.error.set('');
-    forkJoin({ page: this.service.loadRanking({ limit: 20 }), suppliers: this.service.load() }).subscribe({
-      next: ({ page, suppliers }) => {
+    this.service.loadRanking({ limit: 20 }).subscribe({
+      next: (page) => {
         this.items.set(Array.isArray(page) ? page : page.items);
-        this.suppliers.set(suppliers);
         this.loading.set(false);
       },
       error: () => {
@@ -31,8 +28,8 @@ export class SupplierRankingComponent {
   setSort(value: string): void { this.sort.set(value); this.load(); }
   name(item: SupplierRankingResponseDTO): string { return item.supplierName ?? item.name ?? `Fornecedor ${item.supplierId}`; }
   certifications(item: SupplierRankingResponseDTO): number { return item.activeCertificationCount ?? item.activeCertifications ?? item.activeCertificationsCount ?? 0; }
-  location(supplierId: number): string {
-    const address = this.suppliers().find((supplier) => supplier.supplierId === supplierId)?.address;
+  location(item: SupplierRankingResponseDTO): string {
+    const address = item.address;
     return [address?.city, address?.state].filter(Boolean).join('/') || 'Localização não informada';
   }
   scorePercent(score: number): number { return Math.max(0, Math.min(100, score)); }
