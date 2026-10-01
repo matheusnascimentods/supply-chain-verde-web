@@ -16,7 +16,14 @@ export const supplierResponseSchema = z.object({
   address: addressResponseSchema.nullable().optional(), phone: z.string().nullable().optional(),
   registeredAt: z.string().nullable().optional(),
 }).passthrough();
-export const supplierRankingResponseSchema = z.object({ supplierId: z.number(), supplierName: z.string().optional(), name: z.string().optional(), sustainabilityScore: z.number(), activeCertificationCount: z.number().optional(), activeCertifications: z.number().optional(), activeCertificationsCount: z.number().optional(), totalCo2Kg: z.number().optional() }).passthrough();
+export const supplierRankingResponseSchema = z.object({
+  supplierId: z.number(), supplierName: z.string().optional(), name: z.string().optional(),
+  cnpj: z.string().nullable().optional(), address: addressResponseSchema.nullable().optional(),
+  phone: z.string().nullable().optional(), registeredAt: z.string().nullable().optional(),
+  sustainabilityScore: z.number(), activeCertificationCount: z.number().optional(),
+  activeCertifications: z.number().optional(), activeCertificationsCount: z.number().optional(),
+  totalCo2Kg: z.number().optional(),
+}).passthrough();
 export const supplierRankingPageSchema = z.object({
   items: z.array(supplierRankingResponseSchema),
   limit: z.number(),
