@@ -468,3 +468,50 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
   "hasNext": true
 }
 ```
+
+
+## Task 22 — Paginação com total de páginas nas telas de gestão
+
+- [ ] Atualizar os componentes de paginação das telas de Fornecedores, Produtos, Relatórios, Usuários e Auditoria para exibir a página atual e o total de páginas no formato `Página X de Y`, conforme a referência `docs/references/reference-04.png`.
+  - **Dados:** usar `totalPages` retornado pela API, conforme a Task 20 da API, e calcular a página atual a partir de `offset`/`limit` nas rotas que usam offset ou de `page` nas rotas que usam índice de página. Exibir números iniciados em 1 para o usuário.
+  - **Navegação:** manter os botões Anterior e Próxima; desativar Anterior na primeira página e Próxima na última página, usando `totalPages` e a página atual, sem permitir navegação para páginas fora do intervalo.
+  - **Casos sem resultados:** exibir `Página 0 de 0` quando `totalPages` for 0 e manter ambos os botões desativados.
+  - **Consistência:** aplicar o mesmo padrão visual e comportamento nas cinco telas, preservando os filtros ativos ao navegar entre páginas.
+
+
+## Task 23 — Atualização dos consumidores para as rotas consolidadas da API
+
+- [ ] Atualizar os consumidores do frontend após as Tasks 21 e 22 da API para usar os parâmetros das rotas consolidadas, preservando contratos, filtros, paginação e permissões atuais.
+  - **Fornecedores — serviço e chamadas:** em `src/app/features/suppliers/index.service.ts`, manter `load()` em `GET /api/v1/suppliers` sem parâmetros; alterar `get(id)` de `GET /api/v1/suppliers/{supplierId}` para `GET /api/v1/suppliers?supplierId={id}`; alterar `loadRanking()` de `GET /api/v1/suppliers/ranking` para `GET /api/v1/suppliers?ranked=true`, preservando `limit`, `offset` e `search` como query parameters.
+  - **Fornecedores — chamadores:** `get(id)` é chamado por `SupplierFormComponent` em `src/app/features/suppliers/form/index.component.ts`; `load()` e `loadRanking()` são chamados por `SupplierListComponent` em `src/app/features/suppliers/list/index.component.ts`; `load()` e `loadRanking()` também são chamados por `SupplierRankingComponent` em `src/app/features/suppliers/ranking/index.component.ts`. Manter o comportamento de cada tela e validar cada resposta com o schema correspondente: lista de fornecedores, fornecedor individual ou página de ranking.
+  - **Ranking — resposta e navegação:** preservar na chamada `ranked=true` a resposta paginada usada hoje (`items`, `limit`, `offset`, `hasNext`), além de `totalPages` se disponibilizado conforme a Task 20 da API. Manter busca, ordenação e paginação do ranking; não mudar as rotas de criação/atualização de fornecedores.
+  - **Relatórios — serviço e chamadas:** em `src/app/features/reports/index.service.ts`, manter `loadPage()` em `GET /api/v1/reports` sem `reportId`, preservando `limit` e `offset`; alterar `get(reportId)` de `GET /api/v1/reports/{reportId}` para `GET /api/v1/reports?reportId={reportId}`. Validar cada resposta com o schema atual de página ou de relatório individual, respectivamente.
+  - **Relatórios — chamadores:** `loadPage()` é chamado por `ReportListComponent` em `src/app/features/reports/list/index.component.ts`; `get(reportId)` é chamado por `ReportDetailComponent` em `src/app/features/reports/detail/index.component.ts`. Preservar a navegação entre listagem e detalhe e o tratamento de erro existente. A listagem paginada continua em `GET /api/v1/reports`; somente o detalhe muda para o parâmetro `reportId`, conforme a Task 21 da API.
+  - **Chamadas sem uso atual:** `ReportsService.load(supplierId)` em `src/app/features/reports/index.service.ts` chama `GET /api/v1/suppliers/{supplierId}/reports`, mas não possui chamadores no frontend atual; não migrar nem remover como parte desta task. `generate()` usa `POST /api/v1/suppliers/{supplierId}/reports` e deve permanecer inalterado.
+  - **Documentação e compatibilidade:** atualizar os contratos e exemplos do frontend para as URLs e query parameters finais. Eliminar chamadas às antigas rotas GET de detalhe de fornecedor, ranking e detalhe de relatório; preservar os formatos de resposta, filtros e permissões definidos nas Tasks 21 e 22 da API.
+
+
+## Task 24 — Exibição dos detalhes dos eventos de auditoria
+
+- [ ] Preencher a coluna **Detalhes** da tela de Auditoria com a entidade afetada e o que mudou, usando os campos definidos na Task 23 da API (`affectedEntityId`, `beforeData` e `afterData`).
+  - **Contrato frontend:** atualizar `src/app/features/audit-log/index.schema.ts` para tipar `affectedEntityId` como número ou `null`, e `beforeData`/`afterData` como objeto JSON ou `null`; refletir esses campos em `AuditLogResponseDTO`. Não depender do campo legado `details` para montar a descrição.
+  - **Chamador e renderização:** consumir os dados já recebidos por `AuditLogService.load()` em `src/app/features/audit-log/index.service.ts` e substituir a apresentação atual de `detailsLabel(log.details)` em `src/app/features/audit-log/index.component.html` por um resumo formatado a partir de `action`, `affectedEntityId`, `beforeData` e `afterData`. A coluna deve indicar o ID da entidade afetada, quando disponível, e descrever os campos e valores relevantes em linguagem legível.
+  - **Atualização (`UPDATE`):** mostrar o ID do registro e somente os campos alterados, com valor anterior e novo, por exemplo: `Registro #42 — Nome: Fazenda Verde → Fazenda Verde Ltda`. Não exibir campos que não mudaram.
+  - **Cadastro (`INSERT`):** mostrar o ID do novo registro e os dados retornados em `afterData`, por exemplo: `Registro #42 cadastrado — Nome: Fazenda Verde; CNPJ: ...`. Não inventar valores que não estejam no payload.
+  - **Mudança de status (`STATUS_CHANGE`):** mostrar o ID do registro e a transição de status usando `beforeData` e `afterData`, por exemplo: `Lote #17 — Status: Em processamento → Concluído`. Não apresentar essa ação como atualização genérica.
+  - **Exclusão (`DELETE`):** mostrar o ID e identificar o registro como removido; quando houver `beforeData`, incluir os dados anteriores disponíveis.
+  - **Dados antigos ou incompletos:** para eventos históricos sem ID ou snapshots, apresentar somente as informações disponíveis e uma indicação como `Detalhes indisponíveis`; nunca inferir nem fabricar ID ou valores. Tratar objetos nulos e vazios sem quebrar a tabela.
+  - **Privacidade e formato:** respeitar a lista de campos já sanitizada pela API, nunca renderizar segredos; formatar nomes de campos e valores para leitura em vez de mostrar JSON bruto. Preservar a responsividade e permitir leitura de detalhes extensos sem alargar ou quebrar a tabela.
+  - **Exportação:** usar o mesmo resumo legível na coluna `Detalhes` do CSV gerado pela tela, incluindo ID e alterações; escapar corretamente vírgulas, aspas e quebras de linha.
+  - **Exemplo de resposta da API:**
+    ```json
+    {
+      "logId": 981,
+      "action": "UPDATE",
+      "affectedTable": "suppliers",
+      "affectedEntityId": 42,
+      "beforeData": { "name": "Fazenda Verde" },
+      "afterData": { "name": "Fazenda Verde Ltda" }
+    }
+    ```
+    A coluna deve apresentar `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Verde Ltda` (ou rótulo equivalente em português), sem exibir o objeto JSON bruto.
