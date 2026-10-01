@@ -296,8 +296,8 @@ _Unifique as telas de fornecedores e ranking em uma experiência de gestão e de
 - [x] Combinar listagem de fornecedores e ranking em uma única tela, mantendo as informações e funcionalidades relevantes de ambas e evitando duas opções de navegação para a mesma área
 - [x] No cabeçalho da área, dispor a busca de fornecedores e o botão de adicionar fornecedor na mesma linha, cada um ocupando 50% da largura disponível
 - [x] Apresentar os três fornecedores mais bem ranqueados em cards próprios, seguindo a composição da referência e destacando sua posição e dados reais do ranking
-- [x] Consumir `GET /api/v1/suppliers/ranking` de forma paginada com `limit=20` e `offset` iniciado em `0`, avançando o offset em 20 itens ao buscar páginas seguintes e usando o `hasNext` da resposta para controlar a navegação
-- [x] Usar `docs/references/reference-04.png` como base visual para paginação e exibir página atual com botões Anterior/Próxima; desativar visualmente Anterior quando `offset=0` e Próxima quando `hasNext=false` (sem total de itens, não exibir total de páginas nem botão de última página)
+- [x] Consumir `GET /api/v1/suppliers?ranked=true` de forma paginada com `limit=20` e `offset` iniciado em `0`, avançando o offset em 20 itens ao buscar páginas seguintes e usando o `hasNext` da resposta para controlar a navegação
+- [x] Usar `docs/references/reference-04.png` como base visual para paginação e exibir página atual e total de páginas com botões Anterior/Próxima; desativar Anterior na primeira página e Próxima na última página
 - [x] Preservar a ordenação e os dados atuais do ranking, incluindo score, certificações e CO₂ total; na listagem ranqueada abaixo do top 3, substituir a barra verde de score pelas colunas CNPJ e telefone
 - [x] Remover a badge “Ordenar por: Score” do cabeçalho da tela
 - [x] Implementar a busca de fornecedores pela API, permitindo localizar fornecedores fora do top 3 por nome (full-text) ou CNPJ (correspondência parcial); enviar o termo junto à paginação, reiniciar o offset ao alterar a busca e preservar a busca ao navegar entre páginas
@@ -442,7 +442,7 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 - [x] Exibir os relatórios em uma tabela com as colunas CNPJ, Razão social, Período, CO₂ total, Total de lotes e Data de geração; formatar CNPJ, datas e valores numéricos para leitura, sem trocar os valores retornados pela API
 - [x] Consumir a nova listagem geral `GET /api/v1/reports` definida na **Task 17 da API**, com `limit=20` e `offset` inicial `0`; a rota atual `GET /api/v1/suppliers/{supplierId}/reports` lista somente relatórios de um fornecedor e não é paginada
 - [x] Implementar a paginação no padrão das telas anteriores: exibir página atual e botões Anterior/Próxima, avançar o offset em 20 itens e desativar Próxima quando `hasNext=false`; desativar Anterior no offset `0`
-- [x] Ao selecionar uma linha ou ação de um relatório, navegar para uma tela de detalhe dedicada usando `GET /api/v1/reports/{reportId}`; apresentar os dados do relatório separadamente, incluindo identificação do fornecedor, período, totais e data de geração, sem oferecer edição se não houver operação de edição na API
+- [x] Ao selecionar uma linha ou ação de um relatório, navegar para uma tela de detalhe dedicada usando `GET /api/v1/reports?reportId={reportId}`; apresentar os dados do relatório separadamente, incluindo identificação do fornecedor, período, totais e data de geração, sem oferecer edição se não houver operação de edição na API
 - [x] Manter a ação de geração de relatório e o formulário existentes, preservando suas permissões, validações, estados de carregamento/erro/sucesso e associação ao fornecedor
 - [x] Tratar carregamento, erro e lista vazia; manter tabela e detalhe acessíveis e responsivos, respeitando a navegação e identidade visual compartilhadas
 
@@ -472,7 +472,7 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 
 ## Task 22 — Paginação com total de páginas nas telas de gestão
 
-- [ ] Atualizar os componentes de paginação das telas de Fornecedores, Produtos, Relatórios, Usuários e Auditoria para exibir a página atual e o total de páginas no formato `Página X de Y`, conforme a referência `docs/references/reference-04.png`.
+- [x] Atualizar os componentes de paginação das telas de Fornecedores, Produtos, Relatórios, Usuários e Auditoria para exibir a página atual e o total de páginas no formato `Página X de Y`, conforme a referência `docs/references/reference-04.png`.
   - **Dados:** usar `totalPages` retornado pela API, conforme a Task 20 da API, e calcular a página atual a partir de `offset`/`limit` nas rotas que usam offset ou de `page` nas rotas que usam índice de página. Exibir números iniciados em 1 para o usuário.
   - **Navegação:** manter os botões Anterior e Próxima; desativar Anterior na primeira página e Próxima na última página, usando `totalPages` e a página atual, sem permitir navegação para páginas fora do intervalo.
   - **Casos sem resultados:** exibir `Página 0 de 0` quando `totalPages` for 0 e manter ambos os botões desativados.
@@ -481,7 +481,7 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 
 ## Task 23 — Atualização dos consumidores para as rotas consolidadas da API
 
-- [ ] Atualizar os consumidores do frontend após as Tasks 21 e 22 da API para usar os parâmetros das rotas consolidadas, preservando contratos, filtros, paginação e permissões atuais.
+- [x] Atualizar os consumidores do frontend após as Tasks 21 e 22 da API para usar os parâmetros das rotas consolidadas, preservando contratos, filtros, paginação e permissões atuais.
   - **Fornecedores — serviço e chamadas:** em `src/app/features/suppliers/index.service.ts`, manter `load()` em `GET /api/v1/suppliers` sem parâmetros; alterar `get(id)` de `GET /api/v1/suppliers/{supplierId}` para `GET /api/v1/suppliers?supplierId={id}`; alterar `loadRanking()` de `GET /api/v1/suppliers/ranking` para `GET /api/v1/suppliers?ranked=true`, preservando `limit`, `offset` e `search` como query parameters.
   - **Fornecedores — chamadores:** `get(id)` é chamado por `SupplierFormComponent` em `src/app/features/suppliers/form/index.component.ts`; `load()` e `loadRanking()` são chamados por `SupplierListComponent` em `src/app/features/suppliers/list/index.component.ts`; `load()` e `loadRanking()` também são chamados por `SupplierRankingComponent` em `src/app/features/suppliers/ranking/index.component.ts`. Manter o comportamento de cada tela e validar cada resposta com o schema correspondente: lista de fornecedores, fornecedor individual ou página de ranking.
   - **Ranking — resposta e navegação:** preservar na chamada `ranked=true` a resposta paginada usada hoje (`items`, `limit`, `offset`, `hasNext`), além de `totalPages` se disponibilizado conforme a Task 20 da API. Manter busca, ordenação e paginação do ranking; não mudar as rotas de criação/atualização de fornecedores.
