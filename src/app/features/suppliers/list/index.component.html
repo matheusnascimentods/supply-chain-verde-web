@@ -118,7 +118,7 @@
                   <td class="px-5 py-4 text-slate-600">{{ cnpj(entry.supplier?.cnpj) }}</td>
                   <td class="px-5 py-4 text-slate-600">{{ entry.supplier?.phone ?? '—' }}</td>
                   <td class="px-5 py-4">
-                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-green-50]="certificationLabel(entry.ranking.supplierId, entry.ranking) !== 'Sem certificação'" [class.text-green-700]="certificationLabel(entry.ranking.supplierId, entry.ranking) !== 'Sem certificação'" [class.bg-slate-100]="certificationLabel(entry.ranking.supplierId, entry.ranking) === 'Sem certificação'" [class.text-slate-600]="certificationLabel(entry.ranking.supplierId, entry.ranking) === 'Sem certificação'">{{ certificationLabel(entry.ranking.supplierId, entry.ranking) }}</span>
+                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-red-50]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'expired'" [class.text-red-700]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'expired'" [class.bg-green-50]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'active'" [class.text-green-700]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'active'" [class.bg-slate-100]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'none'" [class.text-slate-600]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'none'">{{ certificationLabel(entry.ranking.supplierId, entry.ranking) }}</span>
                   </td>
                   <td class="px-5 py-4 text-right text-slate-700">{{ co2(entry.ranking.totalCo2Kg) }} kg</td>
                 </tr>
