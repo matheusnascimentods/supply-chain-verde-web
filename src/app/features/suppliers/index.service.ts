@@ -43,7 +43,7 @@ export class SuppliersService {
     );
   }
 
-  loadExpiringCertificationSupplierIds(): Observable<number[]> {
+  loadExpiredCertificationCounts(): Observable<Map<number, number>> {
     const pageSize = 100;
     const loadPage = (page: number) =>
       this.http
@@ -64,7 +64,10 @@ export class SuppliersService {
         return forkJoin([of(firstPage), ...remainingPages]);
       }),
       map((pages) =>
-        [...new Set(pages.flatMap((page) => page.items.map((item) => item.supplierId)))],
+        pages.flatMap((page) => page.items).reduce((counts, item) => {
+          counts.set(item.supplierId, (counts.get(item.supplierId) ?? 0) + 1);
+          return counts;
+        }, new Map<number, number>()),
       ),
     );
   }
