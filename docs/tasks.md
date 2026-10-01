@@ -493,7 +493,7 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 
 ## Task 24 — Exibição dos detalhes dos eventos de auditoria
 
-- [ ] Integrar a coluna **Detalhes** e a exportação CSV com o contrato produzido pela Task 23 da API (`affectedEntityId`, `beforeData` e `afterData`). A formatação de tela/CSV está implementada; validar integração quando a API migrar a captura para triggers PostgreSQL.
+- [x] Integrar a coluna **Detalhes** e a exportação CSV com o contrato produzido pela Task 23 da API (`affectedEntityId`, `beforeData` e `afterData`). A formatação de tela/CSV foi implementada e validada com o contrato da API.
   - **Responsabilidade:** a web não grava eventos nem envia o ator em campos de negócio. O JWT identifica a sessão para a API; a API propaga o `userId` autenticado para a transação PostgreSQL e o banco cria o evento. Ver a [ADR de auditoria da API](../../supply-chain-verde-api/docs/adr/0001-auditoria-no-postgresql.md).
   - **Contrato frontend:** atualizar `src/app/features/audit-log/index.schema.ts` para tipar `affectedEntityId` como número ou `null`, e `beforeData`/`afterData` como objeto JSON ou `null`; refletir esses campos em `AuditLogResponseDTO`. Não depender do campo legado `details` para montar a descrição.
   - **Chamador e renderização:** consumir os dados já recebidos por `AuditLogService.load()` em `src/app/features/audit-log/index.service.ts` e substituir a apresentação atual de `detailsLabel(log.details)` em `src/app/features/audit-log/index.component.html` por um resumo formatado a partir de `action`, `affectedEntityId`, `beforeData` e `afterData`. A coluna deve indicar o ID da entidade afetada, quando disponível, e descrever os campos e valores relevantes em linguagem legível.
