@@ -25,9 +25,9 @@ export class SupplierListComponent {
   readonly rankingAvailable = signal(true);
   readonly search = signal('');
   readonly offset = signal(0);
-  readonly hasNext = signal(false);
+  readonly totalPages = signal(0);
   readonly createModalOpen = signal(false);
-  readonly pageNumber = computed(() => Math.floor(this.offset() / PAGE_SIZE) + 1);
+  readonly pageNumber = computed(() => this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages()));
   readonly canManage = computed(() => ['admin', 'manager'].includes(this.session.role() ?? ''));
   readonly rankedSuppliers = computed(() => this.ranking().map((item) => ({
     ranking: item,
@@ -70,7 +70,7 @@ export class SupplierListComponent {
         this.ranking.set(rankingItems);
         this.items.set(suppliers);
         this.expiringSupplierIds.set(expiringSupplierIds);
-        this.hasNext.set(ranking === null || Array.isArray(ranking) ? false : ranking.hasNext);
+        this.totalPages.set(ranking === null || Array.isArray(ranking) ? 0 : ranking.totalPages);
         this.loading.set(false);
       },
       error: () => {
@@ -88,13 +88,13 @@ export class SupplierListComponent {
   }
 
   previousPage(): void {
-    if (this.offset() === 0) return;
+    if (this.pageNumber() <= 1 || this.loading()) return;
     this.offset.update((offset) => Math.max(0, offset - PAGE_SIZE));
     this.load();
   }
 
   nextPage(): void {
-    if (!this.hasNext()) return;
+    if (this.pageNumber() >= this.totalPages() || this.loading()) return;
     this.offset.update((offset) => offset + PAGE_SIZE);
     this.load();
   }

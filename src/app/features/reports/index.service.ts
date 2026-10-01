@@ -17,17 +17,18 @@ export class ReportsService {
         const parsed = reportPageSchema.safeParse(raw);
         if (parsed.success) return parsed.data;
         if (typeof raw === 'object' && raw !== null && 'content' in raw) {
-          const response = raw as { content: unknown; hasNext?: unknown };
+          const response = raw as { content: unknown; hasNext?: unknown; totalPages?: unknown };
           return {
             items: z.array(reportResponseSchema).parse(response.content),
             limit,
             offset,
             hasNext: response.hasNext === true,
+            totalPages: typeof response.totalPages === 'number' ? response.totalPages : 0,
           };
         }
         if (Array.isArray(raw)) {
           const items = z.array(reportResponseSchema).parse(raw);
-          return { items, limit, offset, hasNext: items.length === limit };
+          return { items, limit, offset, hasNext: items.length === limit, totalPages: items.length === 0 ? 0 : 1 };
         }
         throw parsed.error;
       }),

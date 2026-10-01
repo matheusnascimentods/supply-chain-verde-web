@@ -14,18 +14,20 @@ export const auditLogResponseSchema = z.object({
 const contentAuditLogPageSchema = z.object({
   content: z.array(auditLogResponseSchema),
   hasNext: z.boolean(),
+  totalPages: z.number(),
 }).passthrough();
 
 const itemsAuditLogPageSchema = z.object({
   items: z.array(auditLogResponseSchema),
   hasNext: z.boolean(),
-}).passthrough().transform(({ items, hasNext }) => ({ content: items, hasNext }));
+  totalPages: z.number(),
+}).passthrough().transform(({ items, hasNext, totalPages }) => ({ content: items, hasNext, totalPages }));
 
 // Accept the API's paginated `items` envelope and normalize it for the component.
 export const auditLogPageSchema = z.union([
   itemsAuditLogPageSchema,
   contentAuditLogPageSchema,
-  z.array(auditLogResponseSchema).transform((content) => ({ content, hasNext: content.length === 20 })),
+  z.array(auditLogResponseSchema).transform((content) => ({ content, hasNext: content.length === 20, totalPages: content.length === 0 ? 0 : 1 })),
 ]);
 
 export type AuditLogResponseDTO = z.infer<typeof auditLogResponseSchema>;

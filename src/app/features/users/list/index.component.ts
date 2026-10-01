@@ -42,8 +42,7 @@ export class UserListComponent {
   readonly roleError = signal('');
   readonly email = signal('');
   readonly offset = signal(0);
-  readonly hasNext = signal(false);
-  readonly totalPages = signal<number | null>(null);
+  readonly totalPages = signal(0);
   readonly createModalOpen = signal(false);
   readonly updatingRoleId = signal<number | null>(null);
   readonly roleMenuPosition = signal({ top: 0, left: 0 });
@@ -65,8 +64,7 @@ export class UserListComponent {
       next: (page) => {
         if (sequence !== this.loadSequence) return;
         this.items.set(page.items);
-        this.hasNext.set(page.hasNext);
-        this.totalPages.set(page.totalPages ?? null);
+        this.totalPages.set(page.totalPages);
         this.loading.set(false);
       },
       error: () => {
@@ -84,19 +82,19 @@ export class UserListComponent {
   }
 
   previousPage(): void {
-    if (this.offset() === 0 || this.loading()) return;
+    if (this.pageNumber() <= 1 || this.loading()) return;
     this.offset.update((offset) => Math.max(0, offset - PAGE_SIZE));
     this.reload();
   }
 
   nextPage(): void {
-    if (!this.hasNext() || this.loading()) return;
+    if (this.pageNumber() >= this.totalPages() || this.loading()) return;
     this.offset.update((offset) => offset + PAGE_SIZE);
     this.reload();
   }
 
   pageNumber(): number {
-    return Math.floor(this.offset() / PAGE_SIZE) + 1;
+    return this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages());
   }
 
   openCreateModal(): void {

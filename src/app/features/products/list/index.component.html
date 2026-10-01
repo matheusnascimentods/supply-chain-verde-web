@@ -52,9 +52,9 @@
         }
       </section>
       <nav class="mt-6 flex items-center justify-between px-1 py-4" aria-label="Paginação de produtos">
-        <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="offset() === 0 || loading()" (click)="previousPage()">Anterior</button>
-        <span class="text-sm text-slate-500">Página {{ pageNumber() }}</span>
-        <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="!hasNext() || loading()" (click)="nextPage()">Próxima</button>
+        <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="pageNumber() <= 1 || loading()" (click)="previousPage()">Anterior</button>
+        <span class="text-sm text-slate-500">Página {{ pageNumber() }} de {{ totalPages() }}</span>
+        <button type="button" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="pageNumber() >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
       </nav>
     }
   </div>

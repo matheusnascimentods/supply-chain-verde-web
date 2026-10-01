@@ -21,7 +21,7 @@ export class AuditLogComponent {
   readonly startDate = signal(this.dateDaysAgo(6));
   readonly endDate = signal(this.dateDaysAgo(0));
   readonly pageOffset = signal(0);
-  readonly hasNext = signal(false);
+  readonly totalPages = signal(0);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly filterError = signal('');
@@ -53,7 +53,7 @@ export class AuditLogComponent {
     }).subscribe({
       next: (page) => {
         this.logs.set(page.content);
-        this.hasNext.set(page.hasNext);
+        this.totalPages.set(page.totalPages);
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -73,14 +73,14 @@ export class AuditLogComponent {
     this.pageOffset.set(0);
     this.load();
   }
-  previousPage(): void { if (this.pageOffset() > 0) { this.pageOffset.update((offset) => Math.max(0, offset - 20)); this.load(); } }
-  nextPage(): void { if (this.hasNext()) { this.pageOffset.update((offset) => offset + 20); this.load(); } }
+  previousPage(): void { if (this.pageNumber() > 1 && !this.loading()) { this.pageOffset.update((offset) => Math.max(0, offset - 20)); this.load(); } }
+  nextPage(): void { if (this.pageNumber() < this.totalPages() && !this.loading()) { this.pageOffset.update((offset) => offset + 20); this.load(); } }
   actionLabel(value: string): string { return this.actions.find((option) => option.value === value)?.label ?? value; }
   userEmail(log: AuditLogResponseDTO): string | null { return log.userEmail ?? log.email ?? null; }
   detailsLabel(value: unknown): string {
     return value == null ? '—' : typeof value === 'string' ? value : JSON.stringify(value) ?? String(value);
   }
-  pageNumber(): number { return Math.floor(this.pageOffset() / 20) + 1; }
+  pageNumber(): number { return this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.pageOffset() / 20) + 1, this.totalPages()); }
   actionClass(value: string): string {
     const classes: Record<string, string> = {
       INSERT: 'bg-emerald-50 text-emerald-700', UPDATE: 'bg-blue-50 text-blue-700',
