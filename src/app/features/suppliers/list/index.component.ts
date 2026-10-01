@@ -19,7 +19,7 @@ export class SupplierListComponent {
 
   readonly items = signal<SupplierResponseDTO[]>([]);
   readonly ranking = signal<SupplierRankingResponseDTO[]>([]);
-  readonly expiringSupplierIds = signal<number[]>([]);
+  readonly expiredCertificationCounts = signal<Map<number, number>>(new Map());
   readonly loading = signal(true);
   readonly error = signal('');
   readonly rankingAvailable = signal(true);
@@ -58,17 +58,17 @@ export class SupplierListComponent {
       ranking: this.service
         .loadRanking({ limit: PAGE_SIZE, offset: this.offset(), search: this.search() })
         .pipe(catchError(() => of(null))),
-      expiringSupplierIds: this.service
-        .loadExpiringCertificationSupplierIds()
-        .pipe(catchError(() => of([] as number[]))),
+      expiredCertificationCounts: this.service
+        .loadExpiredCertificationCounts()
+        .pipe(catchError(() => of(new Map<number, number>()))),
     }).subscribe({
-      next: ({ ranking, expiringSupplierIds }) => {
+      next: ({ ranking, expiredCertificationCounts }) => {
         if (sequence !== this.loadSequence) return;
         this.rankingAvailable.set(ranking !== null);
         const rankingItems = ranking === null ? [] : Array.isArray(ranking) ? ranking : ranking.items;
         this.ranking.set(rankingItems);
         this.items.set([]);
-        this.expiringSupplierIds.set(expiringSupplierIds);
+        this.expiredCertificationCounts.set(expiredCertificationCounts);
         this.totalPages.set(ranking === null || Array.isArray(ranking) ? 0 : ranking.totalPages);
         this.loading.set(false);
       },
@@ -112,9 +112,16 @@ export class SupplierListComponent {
   }
 
   certificationLabel(supplierId: number, item: SupplierRankingResponseDTO): string {
-    if (this.expiringSupplierIds().includes(supplierId)) return 'Expirando';
+    const expiredCount = this.expiredCertificationCounts().get(supplierId) ?? 0;
+    if (expiredCount > 0) return `${expiredCount} ${expiredCount === 1 ? 'expirada' : 'expiradas'}`;
     const count = item.activeCertificationCount ?? item.activeCertifications ?? item.activeCertificationsCount ?? 0;
-    return count > 0 ? `${count} ativas` : 'Sem certificação';
+    return count > 0 ? `${count} ${count === 1 ? 'ativa' : 'ativas'}` : 'Nenhuma ativa';
+  }
+
+  certificationTone(supplierId: number, item: SupplierRankingResponseDTO): 'expired' | 'active' | 'none' {
+    if ((this.expiredCertificationCounts().get(supplierId) ?? 0) > 0) return 'expired';
+    const count = item.activeCertificationCount ?? item.activeCertifications ?? item.activeCertificationsCount ?? 0;
+    return count > 0 ? 'active' : 'none';
   }
 
   name(item: SupplierRankingResponseDTO): string {
