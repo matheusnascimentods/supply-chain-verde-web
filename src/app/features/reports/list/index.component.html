@@ -1,3 +1,60 @@
-<main class="mx-auto max-w-6xl p-6"><header class="mb-6 flex items-center justify-between"><h1 class="text-2xl font-bold text-slate-900">Relatórios de sustentabilidade</h1><a class="rounded-lg bg-emerald-700 px-4 py-2 text-white" routerLink="new">Novo</a></header>
-@if (error()) { <p role="alert" class="rounded-lg bg-red-50 p-4 text-red-700">{{ error() }}</p> }
-@if (loading()) { <p aria-live="polite">Carregando…</p> } @else { <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table class="w-full text-left text-sm"><thead class="bg-slate-50"><tr><th class="p-3">ID</th><th class="p-3">totalCo2Kg</th><th class="p-3">Ações</th></tr></thead><tbody>@for (item of items(); track item['reportId']) { <tr class="border-t"><td class="p-3">{{ item['reportId'] }}</td><td class="p-3">{{ item['totalCo2Kg'] }}</td><td class="p-3"><a class="text-emerald-700 underline" [routerLink]="[item['reportId'], 'edit']">Editar</a></td></tr> } @empty { <tr><td class="p-3 text-slate-500" colspan="3">Nenhum registro encontrado.</td></tr> }</tbody></table></div> }</main>
+<main class="min-h-screen min-w-0 flex-1 bg-slate-50 px-4 py-6 text-slate-800 sm:px-8 sm:py-8">
+  <div class="mx-auto max-w-7xl">
+    <header class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Relatórios</h1>
+        <p class="mt-1 text-sm text-slate-500">Consulte os relatórios de sustentabilidade gerados.</p>
+      </div>
+      @if (canGenerate()) {
+        <a routerLink="new" class="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2">+ Gerar relatório</a>
+      }
+    </header>
+
+    @if (error()) {
+      <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+        <p>{{ error() }}</p>
+        <button class="mt-2 font-semibold underline" type="button" (click)="reload()">Tentar novamente</button>
+      </div>
+    } @else if (loading()) {
+      <div class="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando relatórios…</div>
+    } @else {
+      <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-label="Relatórios de sustentabilidade">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[980px] text-left text-sm">
+            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <tr class="border-b border-slate-200">
+                <th scope="col" class="px-5 py-4">CNPJ</th>
+                <th scope="col" class="px-5 py-4">Razão social</th>
+                <th scope="col" class="px-5 py-4">Período</th>
+                <th scope="col" class="px-5 py-4 text-right">CO₂ total</th>
+                <th scope="col" class="px-5 py-4 text-right">Total de lotes</th>
+                <th scope="col" class="px-5 py-4">Data de geração</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (report of items(); track report.reportId) {
+                <tr class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70">
+                  <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ cnpj(report.supplierCnpj) }}</td>
+                  <td class="px-5 py-4 font-medium text-slate-800">
+                    <a class="hover:text-green-700 hover:underline focus:outline-none focus:ring-2 focus:ring-green-600" [routerLink]="[report.reportId]">{{ report.supplierName ?? 'Fornecedor #' + report.supplierId }}</a>
+                  </td>
+                  <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ period(report) }}</td>
+                  <td class="whitespace-nowrap px-5 py-4 text-right font-medium text-slate-700">{{ co2(report.totalCo2Kg) }}</td>
+                  <td class="px-5 py-4 text-right text-slate-600">{{ batchCount(report) ?? '—' }}</td>
+                  <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ date(report.generatedAt) }}</td>
+                </tr>
+              } @empty {
+                <tr><td class="px-5 py-14 text-center text-slate-500" colspan="6">Nenhum relatório encontrado.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <nav class="mt-3 grid grid-cols-3 items-center py-2" aria-label="Paginação de relatórios">
+        <button type="button" class="justify-self-start rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="offset() === 0 || loading()" (click)="previousPage()">Anterior</button>
+        <span class="text-center text-xs text-slate-500">Página {{ pageNumber() }}</span>
+        <button type="button" class="justify-self-end rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="!hasNext() || loading()" (click)="nextPage()">Próxima</button>
+      </nav>
+    }
+  </div>
+</main>

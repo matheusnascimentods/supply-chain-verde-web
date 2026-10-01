@@ -439,12 +439,12 @@ Gerar uma imagem por tipo de etapa, mantendo o estilo consistente entre os seis 
 
 _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de gestão já estabelecidas, especialmente a Task 19 de Usuários. A tela deve facilitar a consulta dos relatórios existentes; a geração de relatório permanece disponível pelas ações e permissões atuais._
 
-- [ ] Exibir os relatórios em uma tabela com as colunas CNPJ, Razão social, Período, CO₂ total, Total de lotes e Data de geração; formatar CNPJ, datas e valores numéricos para leitura, sem trocar os valores retornados pela API
-- [ ] Consumir a nova listagem geral `GET /api/v1/reports` definida na **Task 17 da API**, com `limit=20` e `offset` inicial `0`; a rota atual `GET /api/v1/suppliers/{supplierId}/reports` lista somente relatórios de um fornecedor e não é paginada
-- [ ] Implementar a paginação no padrão das telas anteriores: exibir página atual e botões Anterior/Próxima, avançar o offset em 20 itens e desativar Próxima quando `hasNext=false`; desativar Anterior no offset `0`
-- [ ] Ao selecionar uma linha ou ação de um relatório, navegar para uma tela de detalhe dedicada usando `GET /api/v1/reports/{reportId}`; apresentar os dados do relatório separadamente, incluindo identificação do fornecedor, período, totais e data de geração, sem oferecer edição se não houver operação de edição na API
-- [ ] Manter a ação de geração de relatório e o formulário existentes, preservando suas permissões, validações, estados de carregamento/erro/sucesso e associação ao fornecedor
-- [ ] Tratar carregamento, erro e lista vazia; manter tabela e detalhe acessíveis e responsivos, respeitando a navegação e identidade visual compartilhadas
+- [x] Exibir os relatórios em uma tabela com as colunas CNPJ, Razão social, Período, CO₂ total, Total de lotes e Data de geração; formatar CNPJ, datas e valores numéricos para leitura, sem trocar os valores retornados pela API
+- [x] Consumir a nova listagem geral `GET /api/v1/reports` definida na **Task 17 da API**, com `limit=20` e `offset` inicial `0`; a rota atual `GET /api/v1/suppliers/{supplierId}/reports` lista somente relatórios de um fornecedor e não é paginada
+- [x] Implementar a paginação no padrão das telas anteriores: exibir página atual e botões Anterior/Próxima, avançar o offset em 20 itens e desativar Próxima quando `hasNext=false`; desativar Anterior no offset `0`
+- [x] Ao selecionar uma linha ou ação de um relatório, navegar para uma tela de detalhe dedicada usando `GET /api/v1/reports/{reportId}`; apresentar os dados do relatório separadamente, incluindo identificação do fornecedor, período, totais e data de geração, sem oferecer edição se não houver operação de edição na API
+- [x] Manter a ação de geração de relatório e o formulário existentes, preservando suas permissões, validações, estados de carregamento/erro/sucesso e associação ao fornecedor
+- [x] Tratar carregamento, erro e lista vazia; manter tabela e detalhe acessíveis e responsivos, respeitando a navegação e identidade visual compartilhadas
 
 ### Contrato esperado para a listagem
 
