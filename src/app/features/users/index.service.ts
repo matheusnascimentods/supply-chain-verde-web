@@ -37,6 +37,10 @@ export class UsersService {
     );
   }
   loadCurrentUser(): Observable<UserResponseDTO> { return this.http.get<unknown>(`${this.base}/me`).pipe(map((raw) => userResponseSchema.parse(raw))); }
-  create(data: UserRequestDTO): Observable<UserResponseDTO> { return this.http.post<unknown>(this.base, data).pipe(map((raw) => userResponseSchema.parse(raw))); }
+  create(data: UserRequestDTO): Observable<UserResponseDTO> {
+    return this.http.post<unknown>(this.base, { ...data, role: data.role.toUpperCase() }).pipe(
+      map((raw) => userResponseSchema.parse(raw)),
+    );
+  }
   updateRole(id: number, role: string): Observable<UserResponseDTO> { return this.http.patch<unknown>(`${this.base}/${id}/role`, updateUserRoleSchema.parse({ role })).pipe(map((raw) => userResponseSchema.parse(raw))); }
 }

@@ -10,6 +10,8 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { SessionService } from '../../../core/session/index.service';
 import { USER_ROLES, UserResponseDTO, UserRole } from '../index.schema';
 import { UsersService } from '../index.service';
@@ -27,6 +29,7 @@ const PAGE_SIZE = 20;
 export class UserListComponent {
   private readonly service = inject(UsersService);
   private readonly session = inject(SessionService);
+  private readonly emailChanges = new Subject<string>();
   private loadSequence = 0;
 
   @ViewChild('createTrigger') private createTrigger?: ElementRef<HTMLButtonElement>;
@@ -47,6 +50,9 @@ export class UserListComponent {
   readonly canManage = () => this.session.role() === 'admin';
 
   constructor() {
+    this.emailChanges
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed())
+      .subscribe(() => this.reload());
     this.reload();
   }
 
@@ -70,9 +76,10 @@ export class UserListComponent {
     });
   }
 
-  search(): void {
+  searchFor(value: string): void {
+    this.email.set(value);
     this.offset.set(0);
-    this.reload();
+    this.emailChanges.next(value.trim());
   }
 
   previousPage(): void {
