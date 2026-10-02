@@ -79,6 +79,14 @@
                   <div><dt class="text-xs text-slate-500">Certificações ativas</dt><dd class="mt-1 font-semibold text-slate-900">{{ entry.ranking.activeCertificationCount ?? entry.ranking.activeCertifications ?? entry.ranking.activeCertificationsCount ?? 0 }}</dd></div>
                   <div><dt class="text-xs text-slate-500">CO₂ total</dt><dd class="mt-1 font-semibold text-slate-900">{{ co2(entry.ranking.totalCo2Kg) }} kg</dd></div>
                 </dl>
+                <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-sm">
+                  <span class="text-xs text-slate-500">Relatórios</span>
+                  @if (canOpenReports(entry.ranking)) {
+                    <button type="button" class="inline-flex min-w-9 items-center justify-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" [attr.aria-label]="'Abrir ' + entry.ranking.reportCount + ' relatórios de ' + name(entry.ranking)" (click)="openReports(entry.ranking)">{{ entry.ranking.reportCount }}</button>
+                  } @else {
+                    <span class="inline-flex min-w-9 items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ entry.ranking.reportCount }}</span>
+                  }
+                </div>
               </article>
             }
           </div>
@@ -91,7 +99,7 @@
       </div>
       <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-labelledby="supplier-ranking-heading">
         <div class="overflow-x-auto">
-          <table class="w-full min-w-[850px] text-left text-sm">
+          <table class="w-full min-w-[980px] text-left text-sm">
             <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
                 <th scope="col" class="px-5 py-4">Posição</th>
@@ -101,6 +109,7 @@
                 <th scope="col" class="px-5 py-4">Telefone</th>
                 <th scope="col" class="px-5 py-4">Certificações</th>
                 <th scope="col" class="px-5 py-4 text-right">CO₂ total</th>
+                <th scope="col" class="px-5 py-4 text-center">Relatórios</th>
               </tr>
             </thead>
             <tbody>
@@ -118,12 +127,19 @@
                   <td class="px-5 py-4 text-slate-600">{{ cnpj(entry.supplier.cnpj) }}</td>
                   <td class="px-5 py-4 text-slate-600">{{ entry.supplier.phone ?? '—' }}</td>
                   <td class="px-5 py-4">
-                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-red-50]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'expired'" [class.text-red-700]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'expired'" [class.bg-green-50]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'active'" [class.text-green-700]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'active'" [class.bg-slate-100]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'none'" [class.text-slate-600]="certificationTone(entry.ranking.supplierId, entry.ranking) === 'none'">{{ certificationLabel(entry.ranking.supplierId, entry.ranking) }}</span>
+                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium" [class.bg-red-50]="certificationTone(entry.ranking) === 'expired'" [class.text-red-700]="certificationTone(entry.ranking) === 'expired'" [class.bg-green-50]="certificationTone(entry.ranking) === 'active'" [class.text-green-700]="certificationTone(entry.ranking) === 'active'" [class.bg-slate-100]="certificationTone(entry.ranking) === 'none'" [class.text-slate-600]="certificationTone(entry.ranking) === 'none'">{{ certificationLabel(entry.ranking) }}</span>
                   </td>
                   <td class="px-5 py-4 text-right text-slate-700">{{ co2(entry.ranking.totalCo2Kg) }} kg</td>
+                  <td class="px-5 py-4 text-center">
+                    @if (canOpenReports(entry.ranking)) {
+                      <button type="button" class="inline-flex min-w-9 items-center justify-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" [attr.aria-label]="'Abrir ' + entry.ranking.reportCount + ' relatórios de ' + name(entry.ranking)" (click)="openReports(entry.ranking)">{{ entry.ranking.reportCount }}</button>
+                    } @else {
+                      <span class="inline-flex min-w-9 items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ entry.ranking.reportCount }}</span>
+                    }
+                  </td>
                 </tr>
               } @empty {
-                <tr><td class="px-5 py-12 text-center text-slate-500" colspan="7">{{ ranking().length ? 'Todos os resultados desta página estão nos destaques.' : (search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado no ranking.') }}</td></tr>
+                <tr><td class="px-5 py-12 text-center text-slate-500" colspan="8">{{ ranking().length ? 'Todos os resultados desta página estão nos destaques.' : (search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado no ranking.') }}</td></tr>
               }
             </tbody>
           </table>
@@ -139,5 +155,8 @@
   </div>
   @if (createModalOpen()) {
     <app-suppliers-form [modal]="true" (saved)="supplierCreated()" (dismissed)="dismissCreateModal()" />
+  }
+  @if (reportsSupplier(); as supplier) {
+    <app-supplier-reports-modal [supplierId]="supplier.supplierId" [supplierName]="name(supplier)" [canGenerate]="canGenerateReports()" (generated)="reportsUpdated()" (dismissed)="closeReports()" />
   }
 </main>
