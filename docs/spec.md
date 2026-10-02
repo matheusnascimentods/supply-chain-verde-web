@@ -116,11 +116,11 @@ O resumo exibido pode ser `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Ve
 - Lista + formulário de cadastro/edição, com `category` e `unit` como `<select>` (refletindo os ENUMs do backend).
 
 #### Relatórios
-> Como manager, quero gerar e consultar relatórios de sustentabilidade por fornecedor e período, para acompanhar a evolução ambiental da cadeia.
+> Como manager, quero gerar e consultar relatórios de sustentabilidade no contexto do fornecedor, para acompanhar a evolução ambiental da cadeia.
 
 **Critérios de aceitação:**
-- Formulário de geração (fornecedor + período) → `POST /suppliers/{id}/reports`.
-- Lista paginada de relatórios já gerados (`GET /reports`), com total de CO₂ e produtos rastreados; consulta individual por `GET /reports?reportId={id}`.
+- Na lista de fornecedores, a coluna Relatórios mostra a quantidade e abre um modal contextual.
+- O modal oferece geração por período (`POST /suppliers/{id}/reports`) e lista paginada do fornecedor (`GET /reports?supplierId={id}`), com CO₂ total, quantidade de lotes e data de geração. Não há tela individual de detalhe nesta versão.
 
 ---
 
@@ -134,10 +134,10 @@ O resumo exibido pode ser `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Ve
 - Ação de alterar status (`active`, `expired`, `suspended`, `underReview`) via `PATCH /certifications/{id}/status`.
 
 #### Relatórios (consulta)
-> Como auditor, quero consultar os relatórios de sustentabilidade gerados, para validar se os dados sustentam uma certificação externa.
+> Como auditor, quero consultar os relatórios de sustentabilidade no contexto de cada fornecedor, para validar se os dados sustentam uma certificação externa.
 
 **Critérios de aceitação:**
-- Mesma tela de listagem de relatórios do manager, em modo somente leitura para o auditor.
+- Acessar os relatórios pelo badge de cada fornecedor; a geração respeita as permissões da API.
 
 #### Auditoria do Sistema
 - Mesma tela do admin (seção 3.3) — auditor também tem acesso, conforme a tabela de rotas.
@@ -179,7 +179,7 @@ O resumo exibido pode ser `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Ve
 > Como fornecedor, quero consultar os relatórios de sustentabilidade gerados sobre minha operação, para acompanhar meu próprio desempenho.
 
 **Critérios de aceitação:**
-- Lista somente leitura dos próprios relatórios por `GET /reports`; a API limita os resultados ao fornecedor autenticado.
+- Consultar somente os próprios relatórios no modal contextual da gestão de fornecedores; a API limita os resultados ao fornecedor autenticado.
 
 ---
 
@@ -195,7 +195,7 @@ O resumo exibido pode ser `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Ve
 | Fornecedores | admin, manager | `POST/PUT/GET /suppliers` |
 | Ranking de Fornecedores | admin, manager, auditor, supplier | `GET /suppliers?ranked=true&limit=20&offset=0` |
 | Produtos | admin, manager | `POST/PUT/GET /products` |
-| Relatórios | manager (gerar), auditor (consulta), supplier (próprios) | `POST /suppliers/{id}/reports`, `GET /reports`, `GET /reports?reportId={id}` |
+| Relatórios (modal em Fornecedores) | admin, manager, auditor; supplier (próprios) | `GET /reports?supplierId={id}`, `POST /suppliers/{id}/reports` |
 | Certificações | auditor (validar), supplier (próprias) | `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status`, `GET /certifications/expiring` |
 | Meu Perfil (Fornecedor) | supplier | `GET /suppliers?supplierId={id}`, `PUT /suppliers/{id}` |
 | Meus Lotes | supplier, admin, manager, auditor (consulta) | `POST /batches`, `GET /suppliers/{id}/batches` |

@@ -1,0 +1,78 @@
+<div class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/50 p-3 sm:p-6" (click)="close()">
+  <section #dialog class="mx-auto my-3 max-h-[calc(100vh-1.5rem)] w-full max-w-[650px] overflow-y-auto rounded-2xl bg-white shadow-2xl outline-none sm:my-6 sm:max-h-[calc(100vh-3rem)]" role="dialog" aria-modal="true" aria-labelledby="supplier-reports-title" aria-describedby="supplier-reports-description" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="handleKeydown($event)">
+    <header class="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-100 bg-white px-5 py-5 sm:px-7">
+      <div>
+        <h2 id="supplier-reports-title" class="text-xl font-bold text-slate-900">Relatórios de {{ supplierName() }}</h2>
+        <p id="supplier-reports-description" class="mt-1 text-sm text-slate-500">Gere e consulte relatórios de sustentabilidade deste fornecedor.</p>
+      </div>
+      <button type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600 disabled:opacity-50" aria-label="Fechar relatórios" [disabled]="saving()" (click)="close()">&times;</button>
+    </header>
+
+    <div class="space-y-7 px-5 py-5 sm:px-7 sm:py-6">
+      @if (canGenerate()) {
+        <section aria-labelledby="generate-report-heading">
+          <h3 id="generate-report-heading" class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">Gerar relatório</h3>
+          <form [formGroup]="form" (ngSubmit)="submit()" class="grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end sm:p-5">
+            <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="report-start-date">Início do período
+              <input id="report-start-date" class="rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" formControlName="startDate" required />
+              @if (form.controls.startDate.touched && form.controls.startDate.invalid) { <span class="text-xs font-normal text-red-700">Informe a data inicial.</span> }
+            </label>
+            <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="report-end-date">Fim do período
+              <input id="report-end-date" class="rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" formControlName="endDate" required />
+              @if (form.controls.endDate.touched && form.controls.endDate.invalid) { <span class="text-xs font-normal text-red-700">Informe a data final.</span> }
+            </label>
+            <button type="submit" class="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" [disabled]="form.invalid || invalidPeriod() || saving()">{{ saving() ? 'Gerando…' : 'Gerar relatório' }}</button>
+            @if (invalidPeriod()) { <p class="text-sm text-red-700 sm:col-span-3" role="alert">A data inicial deve ser anterior ou igual à data final.</p> }
+            @if (saveError()) { <p class="text-sm text-red-700 sm:col-span-3" role="alert">{{ saveError() }}</p> }
+            @if (success()) { <p class="text-sm text-green-800 sm:col-span-3" role="status" aria-live="polite">{{ success() }}</p> }
+          </form>
+        </section>
+      }
+
+      <section aria-labelledby="supplier-report-list-heading">
+        <div class="mb-3 flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h3 id="supplier-report-list-heading" class="text-sm font-semibold uppercase tracking-wide text-slate-500">Relatórios gerados</h3>
+            <p class="mt-1 text-xs text-slate-500">{{ totalPages() > 0 ? 'Página ' + (page() + 1) + ' de ' + totalPages() : 'Nenhuma página' }}</p>
+          </div>
+        </div>
+        @if (loadingError()) {
+          <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+            <p>{{ loadingError() }}</p>
+            <button type="button" class="mt-2 font-semibold underline" (click)="loadReports()">Tentar novamente</button>
+          </div>
+        } @else if (loading()) {
+          <p class="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500" role="status" aria-live="polite">Carregando relatórios…</p>
+        } @else {
+          <div class="space-y-3" aria-label="Relatórios do fornecedor">
+            @for (report of items(); track report.reportId) {
+              <article class="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-5 sm:px-5">
+                <div class="min-w-0">
+                  <h4 class="truncate font-semibold text-slate-900">Relatório #{{ report.reportId }}</h4>
+                  <p class="mt-1 text-sm text-slate-500">{{ period(report) }}</p>
+                </div>
+                <dl class="grid grid-cols-2 gap-3 text-sm sm:grid-cols-2">
+                  <div><dt class="text-xs text-slate-500">CO₂ total</dt><dd class="mt-0.5 font-semibold text-slate-800">{{ co2(report.totalCo2Kg) }}</dd></div>
+                  <div><dt class="text-xs text-slate-500">Total de lotes</dt><dd class="mt-0.5 font-semibold text-slate-800">{{ batchCount(report) }}</dd></div>
+                </dl>
+                <div class="text-sm sm:text-right">
+                  <p class="text-xs text-slate-500">Data de geração</p>
+                  <p class="mt-0.5 font-medium text-slate-700">{{ date(report.generatedAt) }}</p>
+                </div>
+              </article>
+            } @empty {
+              <p class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500" role="status">Nenhum relatório gerado para este fornecedor.</p>
+            }
+          </div>
+          @if (totalPages() > 1) {
+            <nav class="mt-4 grid grid-cols-3 items-center" aria-label="Paginação dos relatórios do fornecedor">
+              <button type="button" class="justify-self-start rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40" [disabled]="page() === 0 || loading()" (click)="previousPage()">Anterior</button>
+              <span class="text-center text-xs text-slate-500">{{ page() + 1 }} / {{ totalPages() }}</span>
+              <button type="button" class="justify-self-end rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40" [disabled]="page() + 1 >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
+            </nav>
+          }
+        }
+      </section>
+    </div>
+  </section>
+</div>

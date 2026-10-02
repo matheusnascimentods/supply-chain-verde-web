@@ -1,5 +1,5 @@
 import { z } from 'zod';
-export const reportRequestSchema = z.object({ startDate: z.string(), endDate: z.string() }).passthrough();
+export const reportRequestSchema = z.object({ periodStartAt: z.string(), periodEndAt: z.string() }).passthrough();
 export const reportResponseSchema = z.object({
   reportId: z.number(),
   supplierId: z.number(),
