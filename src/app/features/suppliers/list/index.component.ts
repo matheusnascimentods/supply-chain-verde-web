@@ -2,15 +2,16 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { catchError, forkJoin, of, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { catchError, of, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { SessionService } from '../../../core/session/index.service';
 import { SuppliersService } from '../index.service';
 import { SupplierFormComponent } from '../form/index.component';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
+import { SupplierReportsModalComponent } from './reports-modal/index.component';
 
 const PAGE_SIZE = 20;
 
-@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierFormComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierFormComponent, SupplierReportsModalComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierListComponent {
   private readonly service = inject(SuppliersService);
   private readonly session = inject(SessionService);
@@ -19,7 +20,6 @@ export class SupplierListComponent {
 
   readonly items = signal<SupplierResponseDTO[]>([]);
   readonly ranking = signal<SupplierRankingResponseDTO[]>([]);
-  readonly expiredCertificationCounts = signal<Map<number, number>>(new Map());
   readonly loading = signal(true);
   readonly error = signal('');
   readonly rankingAvailable = signal(true);
@@ -27,8 +27,10 @@ export class SupplierListComponent {
   readonly offset = signal(0);
   readonly totalPages = signal(0);
   readonly createModalOpen = signal(false);
+  readonly reportsSupplier = signal<SupplierRankingResponseDTO | null>(null);
   readonly pageNumber = computed(() => this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages()));
   readonly canManage = computed(() => ['admin', 'manager'].includes(this.session.role() ?? ''));
+  readonly canGenerateReports = computed(() => ['admin', 'manager', 'auditor'].includes(this.session.role() ?? ''));
   readonly rankedSuppliers = computed(() => this.ranking().map((item) => ({
     ranking: item,
     supplier: item,
@@ -54,21 +56,15 @@ export class SupplierListComponent {
     const sequence = ++this.loadSequence;
     this.loading.set(true);
     this.error.set('');
-    forkJoin({
-      ranking: this.service
-        .loadRanking({ limit: PAGE_SIZE, offset: this.offset(), search: this.search() })
-        .pipe(catchError(() => of(null))),
-      expiredCertificationCounts: this.service
-        .loadExpiredCertificationCounts()
-        .pipe(catchError(() => of(new Map<number, number>()))),
-    }).subscribe({
-      next: ({ ranking, expiredCertificationCounts }) => {
+    this.service.loadRanking({ limit: PAGE_SIZE, offset: this.offset(), search: this.search() })
+      .pipe(catchError(() => of(null)))
+      .subscribe({
+      next: (ranking) => {
         if (sequence !== this.loadSequence) return;
         this.rankingAvailable.set(ranking !== null);
         const rankingItems = ranking === null ? [] : Array.isArray(ranking) ? ranking : ranking.items;
         this.ranking.set(rankingItems);
         this.items.set([]);
-        this.expiredCertificationCounts.set(expiredCertificationCounts);
         this.totalPages.set(ranking === null || Array.isArray(ranking) ? 0 : ranking.totalPages);
         this.loading.set(false);
       },
@@ -106,20 +102,38 @@ export class SupplierListComponent {
     this.createModalOpen.set(false);
   }
 
+  openReports(supplier: SupplierRankingResponseDTO): void {
+    this.reportsSupplier.set(supplier);
+  }
+
+  canOpenReports(supplier: SupplierRankingResponseDTO): boolean {
+    const role = this.session.role();
+    if (role === 'supplier') return this.currentUserId() === supplier.supplierId;
+    return ['admin', 'manager', 'auditor'].includes(role ?? '');
+  }
+
+  closeReports(): void {
+    this.reportsSupplier.set(null);
+  }
+
+  reportsUpdated(): void {
+    this.load();
+  }
+
   supplierCreated(): void {
     this.createModalOpen.set(false);
     this.load();
   }
 
-  certificationLabel(supplierId: number, item: SupplierRankingResponseDTO): string {
-    const expiredCount = this.expiredCertificationCounts().get(supplierId) ?? 0;
+  certificationLabel(item: SupplierRankingResponseDTO): string {
+    const expiredCount = item.certifications.filter((certification) => certification.status === 'EXPIRED').length;
     if (expiredCount > 0) return `${expiredCount} ${expiredCount === 1 ? 'expirada' : 'expiradas'}`;
     const count = item.activeCertificationCount ?? item.activeCertifications ?? item.activeCertificationsCount ?? 0;
     return count > 0 ? `${count} ${count === 1 ? 'ativa' : 'ativas'}` : 'Nenhuma ativa';
   }
 
-  certificationTone(supplierId: number, item: SupplierRankingResponseDTO): 'expired' | 'active' | 'none' {
-    if ((this.expiredCertificationCounts().get(supplierId) ?? 0) > 0) return 'expired';
+  certificationTone(item: SupplierRankingResponseDTO): 'expired' | 'active' | 'none' {
+    if (item.certifications.some((certification) => certification.status === 'EXPIRED')) return 'expired';
     const count = item.activeCertificationCount ?? item.activeCertifications ?? item.activeCertificationsCount ?? 0;
     return count > 0 ? 'active' : 'none';
   }
@@ -141,5 +155,17 @@ export class SupplierListComponent {
     const digits = value.replace(/\D/g, '');
     if (digits.length !== 14) return value;
     return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  }
+
+  private currentUserId(): number | null {
+    const payload = this.session.token?.split('.')[1];
+    if (!payload) return null;
+    try {
+      const claims = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as { userId?: unknown };
+      const userId = Number(claims.userId);
+      return Number.isInteger(userId) && userId > 0 ? userId : null;
+    } catch {
+      return null;
+    }
   }
 }
