@@ -516,3 +516,14 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
     }
     ```
     A coluna deve apresentar `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Verde Ltda` (ou rótulo equivalente em português), sem exibir o objeto JSON bruto.
+
+## Task 25 — Relatórios dentro da gestão de fornecedores
+
+- [x] Remover a tela dedicada de relatórios e concentrar a consulta e geração de relatórios no contexto de cada fornecedor.
+  - **Fornecedores:** adicionar, após a coluna CO₂, uma coluna **Relatórios** com badge exibindo a quantidade de relatórios do fornecedor. A lista de fornecedores precisa receber essa contagem e as certificações associadas no contrato da API; alinhar schemas e tipos do frontend à resposta atualizada.
+  - **Acesso aos relatórios:** ao clicar no badge/ação da coluna, abrir modal no padrão dos modais existentes. No topo, apresentar o formulário de geração de relatório para aquele fornecedor, com período e validações já definidos pelo contrato atual de `POST /api/v1/suppliers/{supplierId}/reports`.
+  - **Listagem no modal:** abaixo do formulário, mostrar um card horizontal por linha para cada relatório do fornecedor, seguindo a hierarquia de informação dos cards da tela de Produtos: incluir identificação, período, CO₂ total, total de lotes e data de geração. Não usar imagem no card.
+  - **Consulta e atualização:** carregar os relatórios filtrando pelo `supplierId` selecionado, preservar paginação caso necessária e atualizar a contagem e a lista após a geração bem-sucedida. Tratar carregamento, lista vazia, falhas, envio e sucesso; manter modal acessível e responsivo.
+  - **Remoção da tela dedicada:** remover o link de Relatórios da navegação, rota(s) e componentes de listagem/formulário/detalhe exclusivamente dedicados à gestão de relatórios. Não criar nem manter uma tela de detalhe individual de relatório nesta entrega. Reutilizar o contrato de detalhe só se alguma integração existente ainda depender dele.
+  - **Permissões:** respeitar as permissões existentes da API para listar e gerar relatórios, exibindo ações conforme perfil e fornecedor associado; não permitir solicitar relatórios de outro fornecedor quando a sessão estiver limitada ao próprio.
+  - **Contrato da API:** a Task 24 do backend deve enriquecer `GET /api/v1/suppliers` com as certificações e a quantidade de relatórios por fornecedor. Consumir esses campos sem chamadas individuais por fornecedor; manter explícita a diferença entre contagem e coleção de relatórios, que é carregada sob demanda no modal.
