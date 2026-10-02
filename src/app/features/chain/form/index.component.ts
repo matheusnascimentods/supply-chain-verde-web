@@ -1,25 +1,84 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { SessionService } from '../../../core/session/index.service';
 import { EnumSelectComponent } from '../../../shared/components/enum-select/index.component';
-import { stageTypeSchema, transportModeSchema, fuelTypeSchema, calculationMethodSchema } from '../../traceability/index.schema';
+import { UsersService } from '../../users/index.service';
+import { calculationMethodSchema, fuelTypeSchema, stageTypeSchema, transportModeSchema } from '../../traceability/index.schema';
 import { ChainService } from '../index.service';
-@Component({ selector: 'app-chain-form', imports: [ReactiveFormsModule, RouterLink, EnumSelectComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+
+@Component({
+  selector: 'app-chain-form',
+  imports: [ReactiveFormsModule, RouterLink, EnumSelectComponent],
+  templateUrl: './index.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
 export class ChainFormComponent {
-  private readonly fb=inject(FormBuilder); private readonly service=inject(ChainService); readonly route=inject(ActivatedRoute); private readonly router=inject(Router);
-  readonly stageTypes=stageTypeSchema.options; readonly transportModes=transportModeSchema.options; readonly fuelTypes=fuelTypeSchema.options; readonly calculationMethods=calculationMethodSchema.options;
-  readonly saving=signal(false); readonly error=signal(''); readonly stageId=signal<number|null>(null);
-  readonly form=this.fb.group({stageType:['',Validators.required],startedAt:['',Validators.required],endedAt:[''],originStreet:[''],originNumber:[''],originCity:[''],originState:[''],destinationStreet:[''],destinationNumber:[''],destinationCity:[''],destinationState:[''],transportMode:[''],distance:[0],fuelType:[''],capacity:[0],calculationMethod:['DEFRA',Validators.required]});
-  get isTransport(): boolean { return this.form.controls.stageType.value==='TRANSPORT'; }
+  private readonly fb = inject(FormBuilder);
+  private readonly service = inject(ChainService);
+  private readonly users = inject(UsersService);
+  private readonly session = inject(SessionService);
+  readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  readonly stageTypes = stageTypeSchema.options;
+  readonly transportModes = transportModeSchema.options;
+  readonly fuelTypes = fuelTypeSchema.options;
+  readonly calculationMethods = calculationMethodSchema.options;
+  readonly saving = signal(false);
+  readonly error = signal('');
+  readonly stageId = signal<number | null>(null);
+  readonly canCalculateEmission = ['admin', 'manager'].includes(this.session.role() ?? '');
+  readonly form = this.fb.group({
+    stageType: ['', Validators.required], startedAt: ['', Validators.required], endedAt: [''],
+    originAddressId: [''], destinationAddressId: [''], transportMode: [''], distance: [0],
+    fuelType: [''], capacity: [0], calculationMethod: ['DEFRA', Validators.required],
+  });
+
+  get isTransport(): boolean { return this.form.controls.stageType.value === 'TRANSPORT'; }
+
   submit(): void {
-    if(this.form.invalid){this.form.markAllAsTouched();return;} this.saving.set(true); this.error.set(''); const v=this.form.getRawValue(); const id=Number(this.route.snapshot.paramMap.get('batchId'));
-    const address=(prefix:'origin'|'destination')=>{const street=v[`${prefix}Street` as 'originStreet'] as string;return street?{street,number:v[`${prefix}Number` as 'originNumber'] as string,neighborhood:'',complement:'',zipCode:'',city:v[`${prefix}City` as 'originCity'] as string,state:v[`${prefix}State` as 'originState'] as string}:undefined;};
-    this.service.createStage(id,{stageType:v.stageType as any,startedAt:v.startedAt!,endedAt:v.endedAt||undefined,originAddress:address('origin'),destinationAddress:address('destination')}).subscribe({next:(stage)=>{
-      const saveEmission=()=>this.service.calculateEmission(stage.chainId,{calculationMethod:v.calculationMethod as any}).subscribe({next:()=>this.finish(id),error:()=>this.fail()});
-      this.stageId.set(stage.chainId);
-      if(this.isTransport){this.service.createTransport(stage.chainId,{transportMode:v.transportMode as any,distance:Number(v.distance),fuelType:v.fuelType as any,capacity:Number(v.capacity)}).subscribe({next:saveEmission,error:()=>this.fail()});}else saveEmission();
-    },error:()=>this.fail()});
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    this.saving.set(true);
+    this.error.set('');
+    const value = this.form.getRawValue();
+    const batchId = Number(this.route.snapshot.paramMap.get('batchId'));
+
+    this.users.loadCurrentUser().subscribe({
+      error: () => this.fail(),
+      next: (user) => this.service.createStage(batchId, user.userId, {
+        batchId,
+        originAddressId: value.originAddressId ? Number(value.originAddressId) : null,
+        destinationAddressId: value.destinationAddressId ? Number(value.destinationAddressId) : null,
+        stageType: value.stageType as (typeof stageTypeSchema.options)[number],
+        startedAt: this.toApiDateTime(value.startedAt!),
+        endedAt: value.endedAt ? this.toApiDateTime(value.endedAt) : null,
+      }).subscribe({
+        error: () => this.fail(),
+        next: (stage) => {
+          this.stageId.set(stage.chainId);
+          const calculateEmission = () => {
+            if (!this.canCalculateEmission) { this.finish(batchId); return; }
+            this.service.calculateEmission(stage.chainId, {
+              chainId: stage.chainId,
+              calculationMethod: value.calculationMethod as (typeof calculationMethodSchema.options)[number],
+            }).subscribe({ next: () => this.finish(batchId), error: () => this.fail() });
+          };
+          if (this.isTransport) {
+            this.service.createTransport(stage.chainId, {
+              chainId: stage.chainId,
+              transportMode: value.transportMode as (typeof transportModeSchema.options)[number],
+              distance: Number(value.distance),
+              fuelType: value.fuelType as (typeof fuelTypeSchema.options)[number],
+              capacity: Number(value.capacity),
+            }).subscribe({ next: calculateEmission, error: () => this.fail() });
+          } else calculateEmission();
+        },
+      }),
+    });
   }
-  private finish(batchId:number):void{this.saving.set(false);this.router.navigate(['/batches',batchId,'stages']);}
-  private fail():void{this.saving.set(false);this.error.set('Não foi possível registrar a etapa, transporte ou emissão. Confira os dados e tente novamente.');}
+
+  private toApiDateTime(value: string): string { return value.length === 16 ? `${value}:00` : value; }
+  private finish(batchId: number): void { this.saving.set(false); this.router.navigate(['/batches', batchId, 'stages']); }
+  private fail(): void { this.saving.set(false); this.error.set('Não foi possível registrar a etapa, transporte ou emissão. Confira os dados e tente novamente.'); }
 }
