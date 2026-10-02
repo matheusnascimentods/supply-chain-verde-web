@@ -61,12 +61,6 @@ export const routes: Routes = [
         loadChildren: () => import('./features/chain/routes').then((module) => module.routes),
       },
       {
-        path: 'reports',
-        canActivate: [roleGuard],
-        data: { roles: ['admin', 'manager', 'auditor', 'supplier'] },
-        loadChildren: () => import('./features/reports/routes').then((module) => module.routes),
-      },
-      {
         path: 'users',
         canActivate: [roleGuard],
         data: { roles: ['admin'] },
