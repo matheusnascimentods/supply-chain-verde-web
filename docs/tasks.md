@@ -527,3 +527,12 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
   - **Remoção da tela dedicada:** remover o link de Relatórios da navegação, rota(s) e componentes de listagem/formulário/detalhe exclusivamente dedicados à gestão de relatórios. Não criar nem manter uma tela de detalhe individual de relatório nesta entrega. Reutilizar o contrato de detalhe só se alguma integração existente ainda depender dele.
   - **Permissões:** respeitar as permissões existentes da API para listar e gerar relatórios, exibindo ações conforme perfil e fornecedor associado; não permitir solicitar relatórios de outro fornecedor quando a sessão estiver limitada ao próprio.
   - **Contrato da API:** a Task 24 do backend deve enriquecer `GET /api/v1/suppliers` com as certificações e a quantidade de relatórios por fornecedor. Consumir esses campos sem chamadas individuais por fornecedor; manter explícita a diferença entre contagem e coleção de relatórios, que é carregada sob demanda no modal.
+
+## Task 26 — Footer global
+
+- [x] Adicionar um footer compartilhado seguindo a referência visual fornecida na solicitação, exibido em todas as telas da aplicação exceto Login. O footer deve ser integrado no layout raiz para também aparecer em rotas públicas fora do shell autenticado.
+  - **Identidade visual:** usar fundo verde e marca centralizada com ícone de folha e nome “Supply Chain Verde”. Na faixa inferior, separar o conteúdo com uma linha clara; exibir à esquerda `© 2026 Supply Chain Verde — Projeto acadêmico sem fins comerciais, desenvolvido por Matheus Nascimento e Brenno Alves.` e à direita `UC Banco de Dados · Anhembi Morumbi`.
+  - **Exclusão do login:** ocultar o footer na rota `/login`, inclusive em navegação client-side entre login e outras rotas. Mantê-lo visível nas telas autenticadas e nas rotas públicas, como rastreabilidade.
+  - **Posicionamento:** em páginas curtas, manter o footer no fim da janela; em páginas longas, posicioná-lo após o conteúdo, sem cobrir ou reduzir a área rolável da tela.
+  - **Responsividade:** em telas estreitas, permitir que os textos inferiores quebrem/reorganizem em linhas legíveis, preservando marca, hierarquia e espaçamento sem overflow horizontal.
+  - **Acessibilidade e consistência:** usar elemento semântico `<footer>`, contraste legível, texto selecionável e descrição acessível para o ícone quando necessário. Evitar duplicar o footer em componentes de tela ou no shell autenticado.
