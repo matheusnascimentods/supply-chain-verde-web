@@ -1,3 +1,127 @@
-<main class="mx-auto max-w-6xl p-6"><header class="mb-6 flex items-center justify-between"><h1 class="text-2xl font-bold text-slate-900">Lotes</h1><a class="rounded-lg bg-emerald-700 px-4 py-2 text-white" routerLink="new">Novo</a></header>
-@if (error()) { <p role="alert" class="rounded-lg bg-red-50 p-4 text-red-700">{{ error() }}</p> }
-@if (loading()) { <p aria-live="polite">Carregando…</p> } @else { <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white"><table class="w-full text-left text-sm"><thead class="bg-slate-50"><tr><th class="p-3">ID</th><th class="p-3">productId</th><th class="p-3">Ações</th></tr></thead><tbody>@for (item of items(); track item['batchId']) { <tr class="border-t"><td class="p-3">{{ item['batchId'] }}</td><td class="p-3">{{ item['productId'] }}</td><td class="flex gap-3 p-3"><a class="text-emerald-700 underline" [routerLink]="[item['batchId'], 'edit']">Editar</a><a class="text-emerald-700 underline" [routerLink]="['/', 'batches', item['batchId'], 'stages']">Etapas</a></td></tr> } @empty { <tr><td class="p-3 text-slate-500" colspan="3">Nenhum registro encontrado.</td></tr> }</tbody></table></div> }</main>
+<main class="min-h-[calc(100vh-4rem)] bg-slate-50 px-4 py-6 text-slate-800 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-screen-2xl">
+    <header class="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h1 class="text-2xl font-bold tracking-tight text-slate-900">Lotes</h1>
+          <p class="text-sm text-slate-500">{{ totalElements() }} {{ totalElements() === 1 ? 'lote cadastrado' : 'lotes cadastrados' }}</p>
+        </div>
+        <p class="mt-1 text-sm text-slate-500">Acompanhe a jornada dos produtos pela cadeia de suprimentos.</p>
+      </div>
+      @if (canCreate()) {
+        <button type="button" class="inline-flex min-h-10 items-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" (click)="openCreateModal()">
+          <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3Z" clip-rule="evenodd"/></svg>
+          Novo lote
+        </button>
+      }
+    </header>
+
+    @if (error()) {
+      <section role="alert" class="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <span>{{ error() }}</span>
+        <button type="button" class="font-semibold underline underline-offset-2" (click)="load()">Tentar novamente</button>
+      </section>
+    }
+
+    @if (loading()) {
+      <section class="grid gap-4 xl:grid-cols-2" aria-label="Carregando lotes" aria-live="polite">
+        @for (skeleton of [1, 2, 3, 4]; track skeleton) { <div class="h-56 animate-pulse rounded-xl border border-slate-200 bg-white"></div> }
+      </section>
+    } @else if (items().length) {
+      <section class="grid items-start gap-4 xl:grid-cols-2" aria-label="Lotes">
+        @for (batch of items(); track batch.batchId) {
+          <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md">
+            <div class="grid sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.25fr)]">
+              <section class="flex min-w-0 flex-col p-4 sm:p-5">
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full" [class.bg-emerald-500]="batch.currentStage !== null" [class.bg-blue-500]="batch.currentStage === null" aria-hidden="true"></span>
+                  <span class="text-xs font-semibold" [class.text-emerald-800]="batch.currentStage !== null" [class.text-blue-800]="batch.currentStage === null">{{ statusLabel(batch) }}</span>
+                  @if (batch.currentStage) { <span class="text-xs text-slate-400">·</span><span class="truncate text-xs text-slate-500">{{ stageLabel(batch.currentStage) }}</span> }
+                </div>
+
+                <p class="mt-3 font-mono text-sm font-bold tracking-wide text-slate-700">LOTE #{{ batch.batchId }}</p>
+                <h2 class="mt-1 line-clamp-2 text-lg font-bold leading-snug text-slate-900">{{ batch.productName ?? 'Produto não identificado' }}</h2>
+                <p class="mt-1 truncate text-sm text-slate-500">{{ batch.supplierName ?? 'Fornecedor não identificado' }}</p>
+
+                <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
+                  <div>
+                    <dt class="text-[11px] font-medium uppercase tracking-wide text-slate-400">Quantidade</dt>
+                    <dd class="mt-1 text-sm font-semibold text-slate-900">{{ quantity(batch) }}</dd>
+                  </div>
+                  <div>
+                    <dt class="text-[11px] font-medium uppercase tracking-wide text-slate-400">Produzido em</dt>
+                    <dd class="mt-1 text-sm font-semibold text-slate-900">{{ formatDate(batch.producedAt) }}</dd>
+                  </div>
+                </dl>
+                @if (canAddStage()) {
+                  <button type="button" class="mt-auto inline-flex w-fit items-center gap-1.5 pt-5 text-xs font-semibold text-emerald-800 hover:text-emerald-950 focus-visible:rounded focus-visible:outline-2 focus-visible:outline-emerald-700" (click)="openStageModal(batch)">
+                    <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3Z" clip-rule="evenodd"/></svg>
+                    Adicionar etapa
+                  </button>
+                }
+              </section>
+
+              <section class="min-w-0 border-t border-slate-100 bg-slate-50/75 p-4 sm:border-l sm:border-t-0 sm:p-5" aria-label="Jornada do lote">
+                <div class="flex min-w-0 items-start justify-between gap-3">
+                  <div class="min-w-0 flex-1">
+                    <h3 class="text-xs font-bold text-slate-800">{{ routeOrigin(batch) }} <span class="px-1 text-emerald-700" aria-hidden="true">→</span></h3>
+                    <p class="mt-0.5 truncate text-xs text-slate-600">{{ routeDestination(batch) }}</p>
+                  </div>
+                </div>
+
+                @if (batch.stages.length) {
+                  <ol class="mt-4 max-h-48 space-y-0 overflow-y-auto pr-1">
+                    @for (stage of batch.stages; track stage.chainId; let last = $last) {
+                      <li class="relative grid grid-cols-[12px_minmax(0,1fr)] gap-x-2.5 pb-3 last:pb-0">
+                        @if (!last) { <span class="absolute bottom-0 left-[5px] top-3 w-px bg-emerald-200" aria-hidden="true"></span> }
+                        <span class="relative z-10 mt-1 h-[11px] w-[11px] rounded-full border-2 border-emerald-600 bg-white" aria-hidden="true"></span>
+                        <div class="min-w-0">
+                          <div class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                            <span class="text-xs font-semibold text-slate-800">{{ stageLabel(stage.stageType) }}</span>
+                            <time class="text-[10px] text-slate-500" [attr.datetime]="stage.startedAt">{{ formatDate(stage.startedAt, true) }}</time>
+                          </div>
+                          <p class="mt-0.5 truncate text-[11px] text-slate-500">{{ stageAddress(stage) }}</p>
+                          @if (stage.transport || stage.emission) {
+                            <p class="mt-0.5 text-[10px] text-slate-500">
+                              @if (stage.transport; as transport) { {{ transportModeLabel(transport.transportMode) }} · {{ transport.distance }} km · {{ transport.fuelType }} }
+                              @if (stage.transport && stage.emission) { <span aria-hidden="true"> · </span> }
+                              @if (stage.emission; as emission) { {{ emission.co2Kg }} kg CO₂e }
+                            </p>
+                          }
+                        </div>
+                      </li>
+                    }
+                  </ol>
+                } @else {
+                  <div class="mt-4 flex min-h-20 items-center rounded-lg border border-dashed border-slate-300 bg-white/70 px-3 text-xs leading-relaxed text-slate-500">
+                    Nenhuma etapa registrada. A jornada aparecerá aqui quando começar.
+                  </div>
+                }
+              </section>
+            </div>
+          </article>
+        }
+      </section>
+    } @else {
+      <section class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
+        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-800" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4.3 7.7 7.7 4.4 7.7-4.4M12 12v9"/></svg>
+        </span>
+        <h2 class="mt-4 text-base font-bold text-slate-900">Nenhum lote por aqui ainda</h2>
+        <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">Quando um lote for cadastrado, você poderá acompanhar cada etapa da cadeia nesta tela.</p>
+        @if (canCreate()) { <button type="button" class="mt-5 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800" (click)="openCreateModal()">Cadastrar primeiro lote</button> }
+      </section>
+    }
+
+    <nav class="mt-5 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between" aria-label="Paginação dos lotes">
+      <p class="text-xs text-slate-500" aria-live="polite">Página {{ pageNumber() }} de {{ totalPages() }} <span class="px-1 text-slate-300">·</span> {{ totalElements() }} {{ totalElements() === 1 ? 'lote' : 'lotes' }}</p>
+      <div class="flex gap-2">
+        <button type="button" class="min-h-9 rounded-lg border border-slate-300 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="page() === 0 || loading()" (click)="previousPage()">Anterior</button>
+        <button type="button" class="min-h-9 rounded-lg border border-slate-300 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="page() + 1 >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
+      </div>
+    </nav>
+  </div>
+</main>
+
+@if (createModalOpen()) { <app-batch-create-modal (dismiss)="dismissCreateModal()" (created)="batchCreated()" /> }
+@if (stageBatch(); as batch) { <app-batch-stage-modal [batchId]="batch.batchId" (dismiss)="dismissStageModal()" (changed)="load()" (created)="stageCreated()" /> }

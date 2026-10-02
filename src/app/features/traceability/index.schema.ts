@@ -19,6 +19,7 @@ export const calculationMethodSchema = z.enum(['DEFRA', 'GHG_PROTOCOL', 'IPCC', 
 export const stageTypeSchema = z.enum([
   'PRODUCTION', 'STORAGE', 'PROCESSING', 'TRANSPORT', 'DISTRIBUTION', 'RETAIL',
 ]);
+export type StageType = z.infer<typeof stageTypeSchema>;
 
 export const transportResponseSchema = z.object({
   transportId: z.number(),
