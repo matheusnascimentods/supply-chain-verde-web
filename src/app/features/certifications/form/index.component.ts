@@ -44,7 +44,7 @@ export class CertificationFormComponent implements AfterViewInit, OnDestroy {
   });
 
   ngAfterViewInit(): void {
-    if (!this.modal()) return;
+    if (!this.modal() || this.embedded()) return;
     this.previousFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
     queueMicrotask(() => this.firstField?.nativeElement.focus());

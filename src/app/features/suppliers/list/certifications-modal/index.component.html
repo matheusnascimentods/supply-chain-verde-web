@@ -8,7 +8,7 @@
       <button type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100" aria-label="Fechar certificações" (click)="close()">&times;</button>
     </header>
 
-    <div class="space-y-5 px-5 py-5 sm:px-7 sm:py-6">
+    <div class="space-y-7 px-5 py-5 sm:px-7 sm:py-6">
       @if (canCreate()) {
         <app-certifications-form class="block" [supplierId]="supplierId()" [modal]="true" [embedded]="true" (saved)="updated.emit()" />
       }
