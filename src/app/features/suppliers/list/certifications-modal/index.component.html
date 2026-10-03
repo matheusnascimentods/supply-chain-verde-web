@@ -9,15 +9,12 @@
     </header>
 
     <div class="space-y-5 px-5 py-5 sm:px-7 sm:py-6">
-      @if (canCreate() && !formOpen()) {
-        <button type="button" class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800" (click)="formOpen.set(true)">+ Nova certificação</button>
-      }
-      @if (formOpen()) {
-        <app-certifications-form [supplierId]="supplierId()" [modal]="true" (saved)="certificationCreated()" (dismissed)="formOpen.set(false)" />
+      @if (canCreate()) {
+        <app-certifications-form class="block" [supplierId]="supplierId()" [modal]="true" [embedded]="true" (saved)="updated.emit()" />
       }
       @if (error()) { <p class="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">{{ error() }}</p> }
 
-      <section aria-label="Lista de certificações" class="space-y-3">
+      <section class="space-y-3" aria-label="Lista de certificações">
         @for (item of items(); track item.certificationId) {
           <article class="grid gap-3 rounded-xl border border-slate-200 p-4 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
             <div>
