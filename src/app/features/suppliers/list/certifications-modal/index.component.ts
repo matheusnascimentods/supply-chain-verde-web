@@ -21,7 +21,6 @@ export class SupplierCertificationsModalComponent implements AfterViewInit, OnDe
   readonly canUpdateStatus = input(false);
   readonly updated = output<void>();
   readonly dismissed = output<void>();
-  readonly formOpen = signal(false);
   readonly updatingStatusId = signal<number | null>(null);
   readonly error = signal('');
   readonly items = computed(() => this.certifications());
@@ -95,8 +94,4 @@ export class SupplierCertificationsModalComponent implements AfterViewInit, OnDe
     });
   }
 
-  certificationCreated(): void {
-    this.formOpen.set(false);
-    this.updated.emit();
-  }
 }
