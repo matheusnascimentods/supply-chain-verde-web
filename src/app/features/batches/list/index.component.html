@@ -28,7 +28,7 @@
         @for (skeleton of [1, 2, 3, 4]; track skeleton) { <div class="h-56 animate-pulse rounded-xl border border-slate-200 bg-white"></div> }
       </section>
     } @else if (items().length) {
-      <section class="grid items-start gap-4 xl:grid-cols-2" aria-label="Lotes">
+      <section class="grid gap-4 xl:grid-cols-2" aria-label="Lotes">
         @for (batch of items(); track batch.batchId) {
           <article class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md">
             <div class="grid sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.25fr)]">
@@ -70,7 +70,7 @@
                 </div>
 
                 @if (batch.stages.length) {
-                  <ol class="mt-4 max-h-48 space-y-0 overflow-y-auto pr-1">
+                  <ol class="mt-4 space-y-0">
                     @for (stage of batch.stages; track stage.chainId; let last = $last) {
                       <li class="relative grid grid-cols-[12px_minmax(0,1fr)] gap-x-2.5 pb-3 last:pb-0">
                         @if (!last) { <span class="absolute bottom-0 left-[5px] top-3 w-px bg-emerald-200" aria-hidden="true"></span> }
