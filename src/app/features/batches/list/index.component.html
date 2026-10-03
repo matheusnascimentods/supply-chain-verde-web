@@ -83,7 +83,7 @@
                     </dd>
                   </div>
                 </dl>
-                @if (canAddStage()) {
+                @if (canAddStage() && batch.currentStage !== 'RETAIL') {
                   <button
                     type="button"
                     class="mt-auto inline-flex w-fit items-center gap-1.5 pt-5 text-xs font-semibold focus-visible:rounded focus-visible:outline-2"
