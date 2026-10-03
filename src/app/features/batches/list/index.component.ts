@@ -30,14 +30,19 @@ export class BatchListComponent {
   readonly createModalOpen = signal(false);
   readonly stageBatch = signal<BatchResponseDTO | null>(null);
   readonly productUnits = signal(new Map<number, ProductUnit>());
-  readonly pageNumber = computed(() => this.totalPages() === 0 ? 0 : this.page() + 1);
+  readonly pageNumber = computed(() => (this.totalPages() === 0 ? 0 : this.page() + 1));
   readonly canCreate = computed(() => ['admin', 'supplier'].includes(this.session.role() ?? ''));
-  readonly canAddStage = computed(() => ['admin', 'manager', 'supplier'].includes(this.session.role() ?? ''));
+  readonly canAddStage = computed(() =>
+    ['admin', 'manager', 'supplier'].includes(this.session.role() ?? ''),
+  );
 
   constructor() {
     this.load();
     this.productsService.loadAll().subscribe({
-      next: (products) => this.productUnits.set(new Map(products.map((product) => [product.productId, product.unit]))),
+      next: (products) =>
+        this.productUnits.set(
+          new Map(products.map((product) => [product.productId, product.unit])),
+        ),
       error: () => this.productUnits.set(new Map()),
     });
   }
@@ -75,8 +80,12 @@ export class BatchListComponent {
     this.load();
   }
 
-  openCreateModal(): void { this.createModalOpen.set(true); }
-  dismissCreateModal(): void { this.createModalOpen.set(false); }
+  openCreateModal(): void {
+    this.createModalOpen.set(true);
+  }
+  dismissCreateModal(): void {
+    this.createModalOpen.set(false);
+  }
 
   batchCreated(): void {
     this.createModalOpen.set(false);
@@ -84,9 +93,16 @@ export class BatchListComponent {
     this.load();
   }
 
-  openStageModal(batch: BatchResponseDTO): void { this.stageBatch.set(batch); }
-  dismissStageModal(): void { this.stageBatch.set(null); }
-  stageCreated(): void { this.stageBatch.set(null); this.load(); }
+  openStageModal(batch: BatchResponseDTO): void {
+    this.stageBatch.set(batch);
+  }
+  dismissStageModal(): void {
+    this.stageBatch.set(null);
+  }
+  stageCreated(): void {
+    this.stageBatch.set(null);
+    this.load();
+  }
 
   statusLabel(batch: BatchResponseDTO): string {
     if (!batch.currentStage) return 'Criado';
@@ -95,37 +111,60 @@ export class BatchListComponent {
 
   statusStyle(batch: BatchResponseDTO): string {
     if (!batch.currentStage) return 'bg-blue-50 text-blue-800 ring-blue-200';
-    return batch.currentStage === 'RETAIL' ? 'bg-emerald-50 text-emerald-800 ring-emerald-200' : 'bg-green-50 text-green-800 ring-green-200';
+    return batch.currentStage === 'RETAIL'
+      ? 'bg-emerald-50 text-emerald-800 ring-emerald-200'
+      : 'bg-green-50 text-green-800 ring-green-200';
   }
 
   stageLabel(type: StageType): string {
     const labels: Record<StageType, string> = {
-      PRODUCTION: 'Produção', STORAGE: 'Armazenagem', PROCESSING: 'Processamento',
-      TRANSPORT: 'Transporte', DISTRIBUTION: 'Distribuição', RETAIL: 'Varejo',
+      PRODUCTION: 'Produção',
+      STORAGE: 'Armazenagem',
+      PROCESSING: 'Processamento',
+      TRANSPORT: 'Transporte',
+      DISTRIBUTION: 'Distribuição',
+      RETAIL: 'Varejo',
     };
     return labels[type];
   }
 
   quantity(batch: BatchResponseDTO): string {
     const unit = batch.productId === null ? undefined : this.productUnits().get(batch.productId);
-    const units: Record<ProductUnit, string> = { KG: 'kg', TON: 't', LITER: 'L', UNIT: 'un', M3: 'm³' };
-    const amount = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(batch.quantity);
+    const units: Record<ProductUnit, string> = {
+      KG: 'kg',
+      TON: 't',
+      LITER: 'L',
+      UNIT: 'un',
+      M3: 'm³',
+    };
+    const amount = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(
+      batch.quantity,
+    );
     return `${amount}${unit ? ` ${units[unit]}` : ''}`;
   }
 
   formatDate(value: string, includeTime = false): string {
     const date = /^\d{4}-\d{2}-\d{2}$/.test(value)
-      ? new Date(Number(value.slice(0, 4)), Number(value.slice(5, 7)) - 1, Number(value.slice(8, 10)))
+      ? new Date(
+          Number(value.slice(0, 4)),
+          Number(value.slice(5, 7)) - 1,
+          Number(value.slice(8, 10)),
+        )
       : new Date(value);
     if (Number.isNaN(date.getTime())) return value;
-    return new Intl.DateTimeFormat('pt-BR', includeTime
-      ? { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }
-      : { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+    return new Intl.DateTimeFormat(
+      'pt-BR',
+      includeTime
+        ? { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }
+        : { day: '2-digit', month: 'short', year: 'numeric' },
+    ).format(date);
   }
 
   routeOrigin(batch: BatchResponseDTO): string {
     const first = batch.stages[0];
-    return first ? this.addressLabel(first.originAddress, batch.supplierName ?? 'Fornecedor não identificado') : batch.supplierName ?? 'Fornecedor não identificado';
+    return first
+      ? this.addressLabel(first.originAddress, batch.supplierName ?? 'Fornecedor não identificado')
+      : (batch.supplierName ?? 'Fornecedor não identificado');
   }
 
   routeDestination(batch: BatchResponseDTO): string {
@@ -136,7 +175,9 @@ export class BatchListComponent {
 
   stageAddress(stage: ChainResponseDTO): string {
     const origin = this.addressLabel(stage.originAddress, 'Local não informado');
-    const destination = stage.destinationAddress ? this.addressLabel(stage.destinationAddress, '') : '';
+    const destination = stage.destinationAddress
+      ? this.addressLabel(stage.destinationAddress, '')
+      : '';
     return destination && destination !== origin ? `${origin} → ${destination}` : origin;
   }
 
