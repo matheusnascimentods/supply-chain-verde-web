@@ -390,12 +390,12 @@ _Use `docs/references/reference-09.png` como referência visual para a gestão d
 
 _Redesenhe a tela de lotes usando `docs/references/reference-10.png` como referência principal para a grade de cards com timeline e `docs/references/reference-11.png` como referência secundária para a hierarquia de informações do lote. Adapte ambas ao layout do Supply Chain Verde. Não criar uma página separada de detalhes: os dados e etapas devem ser apresentados nos próprios cards._
 
-- [ ] Substituir a listagem atual por cards em duas colunas em telas largas, responsivos para uma coluna em telas menores; exibir em cada card o ID do lote, produto, fornecedor, quantidade, data de produção, status/etapa atual e uma timeline cronológica das etapas registradas
-- [ ] Usar `GET /api/v1/batches` com `page` iniciado em `0` e `size=20`; renderizar a paginação com página atual e botões Anterior/Próxima, desativando Anterior na primeira página e Próxima quando `page + 1 >= totalPages`
-- [ ] A listagem paginada já está prevista na **Task 12 da API**, com acesso para `ADMIN`, `MANAGER` e `AUDITOR`, query `page`/`size` e resposta contendo `content`, `page`, `size`, `totalElements` e `totalPages`; a task da API ainda está pendente
-- [ ] Obter etapas e emissões pela rota existente `GET /api/v1/batches/{batchId}/traceability`, exibindo-as na timeline sem navegar para outra tela; antes da implementação, confirmar como o status atual deve ser representado, pois o contrato atual da listagem paginada não inclui status nem etapas. Se necessário, atualizar a Task 12 da API para retornar esses dados de forma eficiente, evitando uma chamada de rastreabilidade por card
-- [ ] Manter somente a ação “Novo lote” no cabeçalho, sem searchbar; mostrar a ação apenas para `ADMIN` e `SUPPLIER`, perfis autorizados a criar lotes, e abrir um modal baseado em `docs/references/reference-03.png`
-- [ ] No modal de lote, usar o contrato de `POST /api/v1/batches`: `productId` e `supplierId` (selecionados por nome na interface e enviados como IDs), `quantity` positiva e `producedAt` em formato de data. Não incluir validade ou descrição, pois esses campos não fazem parte do `BatchRequestDTO` atual
+- [x] Substituir a listagem por cards em duas colunas em telas largas e uma coluna em telas menores; cada card mostra ID, produto, fornecedor, quantidade, data de produção, status derivado de `currentStage` e timeline cronológica com transporte e emissões
+- [x] Usar `GET /api/v1/batches` com `page=0` e `size=20`; exibir página atual, total de páginas e botões Anterior/Próxima, desativando os limites de navegação
+- [x] Consumir o contrato paginado concluído na Task 12 da API (`content`, `page`, `size`, `totalElements`, `totalPages`), enriquecido com `currentStage` e `stages` pela Task 25 da API
+- [x] Renderizar as etapas e emissões já incluídas em cada lote pela API, sem requisição individual por card nem navegação para uma tela de detalhes. A etapa mais recente define `currentStage`; lotes sem etapas são apresentados como “Criado”
+- [x] Manter somente a ação “Novo lote” no cabeçalho, sem searchbar; exibir para `ADMIN` e `SUPPLIER` e abrir modal com hierarquia visual baseada em `docs/references/reference-03.png`
+- [x] No modal de lote, usar `POST /api/v1/batches` com `productId` e `supplierId` selecionados por nome e enviados como IDs, `quantity` positiva e `producedAt` como data. O cadastro não inclui validade nem descrição
   - **Payload esperado:**
     ```json
     {
@@ -405,8 +405,8 @@ _Redesenhe a tela de lotes usando `docs/references/reference-10.png` como refer�
       "producedAt": "2026-09-20"
     }
     ```
-- [ ] Em cada card, oferecer a ação “Adicionar etapa”, que abre um modal. Usar `docs/screenshots/12-chain-form-no-transport.png` e `docs/screenshots/13-chain-form-transport.png` como referências para os campos e `docs/screenshots/14-chain-form-calculate-emission.png` e `docs/screenshots/15-chain-form-emission-calculated.png` para o fluxo de cálculo de emissão
-- [ ] No modal de etapa, incluir tipo da etapa, início e fim, origem/destino opcionais e, para etapas do tipo transporte, modal, distância, combustível e capacidade. Criar a etapa por `POST /api/v1/batches/{batchId}/stages`; depois, quando aplicável, registrar transporte e calcular emissão com as rotas existentes. Alinhar o payload ao contrato da API (`batchId`, `originAddressId`, `destinationAddressId`, `stageType`, `startedAt`, `endedAt`), sem enviar objetos de endereço aninhados se a API continuar esperando IDs
+- [x] Em cada card, oferecer a ação “Adicionar etapa” em modal, usando como referência os formulários de etapa/transporte e cálculo de emissão das screenshots indicadas
+- [x] No modal de etapa, incluir tipo, início/fim, origem/destino opcionais selecionados entre endereços cadastrados e dados de transporte condicionais. Criar pela rota `POST /api/v1/batches/{batchId}/stages`, enviando IDs de endereço e o cabeçalho `X-Responsible-User-Id`; registrar transporte com `chainId` no corpo. Oferecer cálculo de emissão somente para `ADMIN` e `MANAGER`, também enviando `chainId` e a metodologia escolhida
   - **Payload da etapa:**
     ```json
     {
@@ -419,10 +419,12 @@ _Redesenhe a tela de lotes usando `docs/references/reference-10.png` como refer�
     }
     ```
   - Para transporte, enviar `transportMode`, `distance`, `fuelType` e `capacity` a `POST /api/v1/stages/{stageId}/transport`; para cálculo de emissão, enviar `calculationMethod` a `POST /api/v1/stages/{stageId}/emission`. Endereços no payload da etapa são IDs de endereços existentes; se o fluxo precisar cadastrar endereços digitados no modal, documentar primeiro a alteração necessária no contrato da API.
-- [ ] Após criar lote ou etapa, fechar o modal correspondente e atualizar o card/listagem; preservar validação, estados de envio, mensagens de erro, acessibilidade de foco/teclado e layout responsivo
-- [ ] Salvar as imagens dos cards em `public/images/batches/`, usando nomes estáveis por tipo de etapa: `production.webp`, `storage.webp`, `processing.webp`, `transport.webp`, `distribution.webp` e `retail.webp`; escolher a imagem pela etapa atual e oferecer fallback se o arquivo não carregar
+- [x] Após criar lote ou etapa, fechar o modal correspondente e atualizar a página; preservar validação, estados de envio, mensagens de erro, fechamento por teclado/backdrop e layout responsivo. Falhas após o registro da etapa permitem retomar transporte ou cálculo sem duplicar a etapa
+- [x] Usar temporariamente as imagens existentes de `public/images/products/`, escolhidas pela categoria do produto, com fallback para `other.webp`. Substituir pelos arquivos específicos das etapas quando forem gerados
 
-### Prompts para gerar as imagens dos cards
+### Prompts para substituir futuramente as imagens provisórias
+
+_Por enquanto, os cards reutilizam as imagens de produtos existentes. Quando as novas imagens forem geradas, estes prompts servem de referência para os arquivos específicos por etapa._
 
 Gerar uma imagem por tipo de etapa, mantendo o estilo consistente entre os seis arquivos. Usar orientação horizontal 3:2, composição simples que permaneça legível em um card pequeno, estética editorial realista e sustentável, paleta natural com detalhes verdes, iluminação suave, sem texto, letras, números, logotipos, marcas d'água ou elementos de interface. Salvar cada resultado no caminho indicado acima.
 
@@ -469,7 +471,6 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 }
 ```
 
-
 ## Task 22 — Paginação com total de páginas nas telas de gestão
 
 - [x] Atualizar os componentes de paginação das telas de Fornecedores, Produtos, Relatórios, Usuários e Auditoria para exibir a página atual e o total de páginas no formato `Página X de Y`, conforme a referência `docs/references/reference-04.png`.
@@ -477,7 +478,6 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
   - **Navegação:** manter os botões Anterior e Próxima; desativar Anterior na primeira página e Próxima na última página, usando `totalPages` e a página atual, sem permitir navegação para páginas fora do intervalo.
   - **Casos sem resultados:** exibir `Página 0 de 0` quando `totalPages` for 0 e manter ambos os botões desativados.
   - **Consistência:** aplicar o mesmo padrão visual e comportamento nas cinco telas, preservando os filtros ativos ao navegar entre páginas.
-
 
 ## Task 23 — Atualização dos consumidores para as rotas consolidadas da API
 
@@ -489,7 +489,6 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
   - **Relatórios — chamadores:** `loadPage()` é chamado por `ReportListComponent` em `src/app/features/reports/list/index.component.ts`; `get(reportId)` é chamado por `ReportDetailComponent` em `src/app/features/reports/detail/index.component.ts`. Preservar a navegação entre listagem e detalhe e o tratamento de erro existente. A listagem paginada continua em `GET /api/v1/reports`; somente o detalhe muda para o parâmetro `reportId`, conforme a Task 21 da API.
   - **Chamadas sem uso atual:** `ReportsService.load(supplierId)` em `src/app/features/reports/index.service.ts` chama `GET /api/v1/suppliers/{supplierId}/reports`, mas não possui chamadores no frontend atual; não migrar nem remover como parte desta task. `generate()` usa `POST /api/v1/suppliers/{supplierId}/reports` e deve permanecer inalterado.
   - **Documentação e compatibilidade:** atualizar os contratos e exemplos do frontend para as URLs e query parameters finais. Eliminar chamadas às antigas rotas GET de detalhe de fornecedor, ranking e detalhe de relatório; preservar os formatos de resposta, filtros e permissões definidos nas Tasks 21 e 22 da API.
-
 
 ## Task 24 — Exibição dos detalhes dos eventos de auditoria
 

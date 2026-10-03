@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, inject, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
@@ -21,6 +21,8 @@ const ROLE_LABELS: Record<UserRole, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopNavComponent {
+  @ViewChild('profileMenu') private profileMenu?: ElementRef<HTMLDetailsElement>;
+
   private readonly session = inject(SessionService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -47,7 +49,16 @@ export class TopNavComponent {
       .subscribe((event) => {
         this.currentUrl.set(event.urlAfterRedirects);
         this.mobileMenuOpen.set(false);
+        this.closeProfileMenu();
       });
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeProfileMenuOnOutsideClick(event: MouseEvent): void {
+    const menu = this.profileMenu?.nativeElement;
+    if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) {
+      this.closeProfileMenu();
+    }
   }
 
   isDashboardActive(): boolean {
@@ -70,6 +81,10 @@ export class TopNavComponent {
 
   logout(): void {
     this.auth.logout();
+  }
+
+  private closeProfileMenu(): void {
+    if (this.profileMenu) this.profileMenu.nativeElement.open = false;
   }
 
   private normalizedUrl(): string {
