@@ -67,6 +67,13 @@ export class SupplierListComponent {
         this.rankingAvailable.set(ranking !== null);
         const rankingItems = ranking === null ? [] : Array.isArray(ranking) ? ranking : ranking.items;
         this.ranking.set(rankingItems);
+        const selectedCertificationsSupplier = this.certificationsSupplier();
+        if (selectedCertificationsSupplier) {
+          const refreshedSupplier = rankingItems.find(
+            (item) => item.supplierId === selectedCertificationsSupplier.supplierId,
+          );
+          if (refreshedSupplier) this.certificationsSupplier.set(refreshedSupplier);
+        }
         this.items.set([]);
         this.totalPages.set(ranking === null || Array.isArray(ranking) ? 0 : ranking.totalPages);
         this.loading.set(false);
