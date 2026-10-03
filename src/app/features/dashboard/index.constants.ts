@@ -8,7 +8,6 @@ export const DASHBOARDS = {
     links: [
       { label: 'Fornecedores', path: '/suppliers' },
       { label: 'Produtos', path: '/products' },
-      { label: 'Certificações', path: '/certifications' },
       { label: 'Lotes', path: '/batches' },
       { label: 'Usuários', path: '/users' },
       { label: 'Auditoria', path: '/audit-log' },
@@ -27,7 +26,6 @@ export const DASHBOARDS = {
     title: 'Acompanhamento de conformidade',
     description: 'Revise certificações e fornecedores e acompanhe os registros de auditoria.',
     links: [
-      { label: 'Certificações', path: '/certifications' },
       { label: 'Auditoria do sistema', path: '/audit-log' },
       { label: 'Fornecedores', path: '/suppliers' },
       { label: 'Lotes', path: '/batches' },
@@ -38,7 +36,6 @@ export const DASHBOARDS = {
     description: 'Acompanhe seus lotes e mantenha suas certificações. Relatórios ficam disponíveis na gestão do fornecedor.',
     links: [
       { label: 'Meus lotes', path: '/batches' },
-      { label: 'Minhas certificações', path: '/certifications' },
       { label: 'Meu perfil', path: '/suppliers/me' },
       { label: 'Fornecedores', path: '/suppliers' },
     ],
