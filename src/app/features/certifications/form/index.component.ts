@@ -29,6 +29,7 @@ export class CertificationFormComponent implements AfterViewInit, OnDestroy {
   @ViewChild('firstField') private firstField?: ElementRef<HTMLInputElement>;
 
   readonly modal = input(false);
+  readonly embedded = input(false);
   readonly supplierId = input.required<number>();
   readonly saved = output<void>();
   readonly dismissed = output<void>();
@@ -57,14 +58,19 @@ export class CertificationFormComponent implements AfterViewInit, OnDestroy {
     if (!this.saving()) this.dismissed.emit();
   }
 
+  backdropClick(): void {
+    if (!this.embedded()) this.closeModal();
+  }
+
   handleDialogKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
+      if (this.embedded()) return;
       event.preventDefault();
       event.stopPropagation();
       this.closeModal();
       return;
     }
-    if (event.key !== 'Tab') return;
+    if (event.key !== 'Tab' || this.embedded()) return;
 
     const focusable = this.dialog?.nativeElement.querySelectorAll<HTMLElement>(
       'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
@@ -117,6 +123,7 @@ export class CertificationFormComponent implements AfterViewInit, OnDestroy {
     this.service.create(this.supplierId(), this.data()).subscribe({
       next: () => {
         this.saving.set(false);
+        this.form.reset();
         if (this.modal()) {
           this.saved.emit();
           return;
