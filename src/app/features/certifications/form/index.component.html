@@ -1,225 +1,40 @@
-@if (modal()) {
-  <div class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/50 p-3 sm:p-6" (click)="closeModal()">
-    <section
-      #dialog
-      class="mx-auto my-4 w-full max-w-2xl rounded-2xl bg-white shadow-2xl outline-none sm:my-10"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="certification-form-title"
-      aria-describedby="certification-form-description"
-      tabindex="-1"
-      (click)="$event.stopPropagation()"
-      (keydown)="handleDialogKeydown($event)"
-    >
-      <ng-container [ngTemplateOutlet]="certificationFormContent"></ng-container>
-    </section>
-  </div>
-} @else {
-  <main class="flex-1 bg-slate-50 px-4 py-8 text-slate-800 sm:px-8">
-    <div class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <ng-container [ngTemplateOutlet]="certificationFormContent"></ng-container>
-    </div>
-  </main>
-}
-
-<ng-template #certificationFormContent>
-  <header
-    class="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-7"
-  >
-    <div>
-      @if (!modal()) {
-        <a
-          routerLink="/certifications"
-          class="mb-3 inline-flex text-sm font-medium text-green-700 hover:underline"
-          >← Voltar para certificações</a
-        >
-      }
-      <h1 id="certification-form-title" class="text-xl font-bold text-slate-900">
-        Nova certificação
-      </h1>
-      <p id="certification-form-description" class="mt-1 text-sm text-slate-500">
-        Informe os dados do certificado do fornecedor.
-      </p>
-    </div>
-    @if (modal()) {
-      <button
-        type="button"
-        class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600 disabled:opacity-50"
-        aria-label="Fechar cadastro de certificação"
-        [disabled]="saving()"
-        (click)="closeModal()"
-      >
-        &times;
-      </button>
-    }
-  </header>
-
-  @if (error()) {
-    <p
-      class="mx-5 mt-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 sm:mx-7"
-      role="alert"
-    >
-      {{ error() }}
-    </p>
-  }
-
-  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5 px-5 py-5 sm:px-7 sm:py-6">
-    <div class="grid gap-4 sm:grid-cols-2">
-      <div class="grid gap-1.5 sm:col-span-2">
-        <label for="certification-name" class="text-sm font-medium text-slate-700"
-          >Nome da certificação <span class="text-red-600" aria-hidden="true">*</span></label
-        >
-        <input
-          #firstField
-          id="certification-name"
-          class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100 aria-invalid:border-red-500"
-          type="text"
-          formControlName="name"
-          required
-          [attr.aria-invalid]="!!fieldError('name')"
-          [attr.aria-describedby]="fieldError('name') ? 'certification-name-error' : null"
-        />
-        @if (fieldError('name')) {
-          <p id="certification-name-error" class="text-xs text-red-700" role="alert">
-            {{ fieldError('name') }}
-          </p>
-        }
+<div class="fixed inset-0 z-[60] overflow-y-auto bg-slate-950/50 p-3 sm:p-6" (click)="closeModal()">
+  <section #dialog class="mx-auto my-6 w-full max-w-xl rounded-2xl bg-white shadow-2xl outline-none" role="dialog" aria-modal="true" aria-labelledby="certification-form-title" aria-describedby="certification-form-description" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="handleDialogKeydown($event)">
+    <header class="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-7">
+      <div>
+        <h2 id="certification-form-title" class="text-xl font-bold text-slate-900">Nova certificação</h2>
+        <p id="certification-form-description" class="mt-1 text-sm text-slate-500">Informe os dados definidos para o cadastro.</p>
       </div>
-
-      <div class="grid gap-1.5 sm:col-span-2">
-        <label for="certification-issuer" class="text-sm font-medium text-slate-700"
-          >Organização emissora <span class="text-red-600" aria-hidden="true">*</span></label
-        >
-        <input
-          id="certification-issuer"
-          class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100 aria-invalid:border-red-500"
-          type="text"
-          formControlName="issuingOrganization"
-          required
-          [attr.aria-invalid]="!!fieldError('issuingOrganization')"
-          [attr.aria-describedby]="
-            fieldError('issuingOrganization') ? 'certification-issuer-error' : null
-          "
-        />
-        @if (fieldError('issuingOrganization')) {
-          <p id="certification-issuer-error" class="text-xs text-red-700" role="alert">
-            {{ fieldError('issuingOrganization') }}
-          </p>
-        }
-      </div>
-
-      <div class="grid gap-1.5 sm:col-span-2">
-        <label for="certification-number" class="text-sm font-medium text-slate-700"
-          >Número da certificação <span class="text-red-600" aria-hidden="true">*</span></label
-        >
-        <input
-          id="certification-number"
-          class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100 aria-invalid:border-red-500"
-          type="text"
-          formControlName="certificationNumber"
-          required
-          [attr.aria-invalid]="!!fieldError('certificationNumber')"
-          [attr.aria-describedby]="
-            fieldError('certificationNumber') ? 'certification-number-error' : null
-          "
-        />
-        @if (fieldError('certificationNumber')) {
-          <p id="certification-number-error" class="text-xs text-red-700" role="alert">
-            {{ fieldError('certificationNumber') }}
-          </p>
-        }
-      </div>
-
+      <button type="button" class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100" aria-label="Fechar cadastro de certificação" [disabled]="saving()" (click)="closeModal()">&times;</button>
+    </header>
+    @if (error()) { <p class="mx-5 mt-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 sm:mx-7" role="alert">{{ error() }}</p> }
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4 px-5 py-5 sm:px-7 sm:py-6">
       <div class="grid gap-1.5">
-        <label for="certification-issued-at" class="text-sm font-medium text-slate-700"
-          >Data de emissão <span class="text-red-600" aria-hidden="true">*</span></label
-        >
-        <input
-          id="certification-issued-at"
-          class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100 aria-invalid:border-red-500"
-          type="date"
-          formControlName="issuedAt"
-          required
-          [attr.aria-invalid]="!!fieldError('issuedAt')"
-          [attr.aria-describedby]="fieldError('issuedAt') ? 'certification-issued-at-error' : null"
-        />
-        @if (fieldError('issuedAt')) {
-          <p id="certification-issued-at-error" class="text-xs text-red-700" role="alert">
-            {{ fieldError('issuedAt') }}
-          </p>
-        }
+        <label for="certification-name" class="text-sm font-medium text-slate-700">Certificação *</label>
+        <input #firstField id="certification-name" class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="name" required />
+        @if (fieldError('name')) { <p class="text-xs text-red-700" role="alert">{{ fieldError('name') }}</p> }
       </div>
-
       <div class="grid gap-1.5">
-        <label for="certification-expires-at" class="text-sm font-medium text-slate-700"
-          >Data de validade <span class="text-red-600" aria-hidden="true">*</span></label
-        >
-        <input
-          id="certification-expires-at"
-          class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100 aria-invalid:border-red-500"
-          type="date"
-          formControlName="expiresAt"
-          required
-          [attr.aria-invalid]="!!fieldError('expiresAt')"
-          [attr.aria-describedby]="
-            fieldError('expiresAt') ? 'certification-expires-at-error' : null
-          "
-        />
-        @if (fieldError('expiresAt')) {
-          <p id="certification-expires-at-error" class="text-xs text-red-700" role="alert">
-            {{ fieldError('expiresAt') }}
-          </p>
-        }
+        <label for="certification-issuer" class="text-sm font-medium text-slate-700">Órgão emissor *</label>
+        <input id="certification-issuer" class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" formControlName="issuingOrganization" required />
+        @if (fieldError('issuingOrganization')) { <p class="text-xs text-red-700" role="alert">{{ fieldError('issuingOrganization') }}</p> }
       </div>
-
-      <div class="grid gap-1.5 sm:col-span-2">
-        <label for="certification-document-url" class="text-sm font-medium text-slate-700"
-          >URL do documento <span class="font-normal text-slate-400">(opcional)</span></label
-        >
-        <input
-          id="certification-document-url"
-          class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100 aria-invalid:border-red-500"
-          type="url"
-          formControlName="documentUrl"
-          placeholder="https://"
-          [attr.aria-invalid]="!!fieldError('documentUrl')"
-          [attr.aria-describedby]="
-            fieldError('documentUrl') ? 'certification-document-url-error' : null
-          "
-        />
-        @if (fieldError('documentUrl')) {
-          <p id="certification-document-url-error" class="text-xs text-red-700" role="alert">
-            {{ fieldError('documentUrl') }}
-          </p>
-        }
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="grid gap-1.5">
+          <label for="certification-issued-at" class="text-sm font-medium text-slate-700">Data de emissão *</label>
+          <input id="certification-issued-at" class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" formControlName="issuedAt" required />
+          @if (fieldError('issuedAt')) { <p class="text-xs text-red-700" role="alert">{{ fieldError('issuedAt') }}</p> }
+        </div>
+        <div class="grid gap-1.5">
+          <label for="certification-expires-at" class="text-sm font-medium text-slate-700">Data de validade *</label>
+          <input id="certification-expires-at" class="rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" formControlName="expiresAt" required />
+          @if (fieldError('expiresAt')) { <p class="text-xs text-red-700" role="alert">{{ fieldError('expiresAt') }}</p> }
+        </div>
       </div>
-    </div>
-
-    <footer
-      class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end"
-    >
-      @if (modal()) {
-        <button
-          type="button"
-          class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-          [disabled]="saving()"
-          (click)="closeModal()"
-        >
-          Cancelar
-        </button>
-      } @else {
-        <a
-          routerLink="/certifications"
-          class="rounded-lg border border-slate-300 px-5 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >Cancelar</a
-        >
-      }
-      <button
-        class="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-wait disabled:opacity-50"
-        [disabled]="saving()"
-      >
-        {{ saving() ? 'Salvando…' : 'Salvar certificação' }}
-      </button>
-    </footer>
-  </form>
-</ng-template>
+      <footer class="flex justify-end gap-3 border-t border-slate-100 pt-5">
+        <button type="button" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" [disabled]="saving()" (click)="closeModal()">Cancelar</button>
+        <button class="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-wait disabled:opacity-50" [disabled]="saving()">{{ saving() ? 'Salvando…' : 'Salvar certificação' }}</button>
+      </footer>
+    </form>
+  </section>
+</div>
