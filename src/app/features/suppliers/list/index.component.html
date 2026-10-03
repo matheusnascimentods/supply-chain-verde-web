@@ -76,7 +76,7 @@
                 <h3 class="truncate text-lg font-semibold text-slate-900">{{ name(entry.ranking) }}</h3>
                 <p class="mt-1 truncate text-sm text-slate-500">{{ entry.supplier.address?.city ?? 'Localização não informada' }}@if (entry.supplier.address?.state) { /{{ entry.supplier.address?.state }} }</p>
                 <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm">
-                  <div><dt class="text-xs text-slate-500">Certificações ativas</dt><dd class="mt-1 font-semibold text-slate-900">{{ entry.ranking.activeCertificationCount ?? entry.ranking.activeCertifications ?? entry.ranking.activeCertificationsCount ?? 0 }}</dd></div>
+                  <div><dt class="text-xs text-slate-500">Certificações ativas</dt><dd class="mt-1"><button type="button" class="inline-flex min-w-8 items-center justify-center rounded-full bg-green-100 px-2.5 py-1 text-sm font-semibold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" [attr.aria-label]="'Abrir certificações de ' + name(entry.ranking)" (click)="openCertifications(entry.ranking)">{{ entry.ranking.activeCertificationCount ?? entry.ranking.activeCertifications ?? entry.ranking.activeCertificationsCount ?? 0 }}</button></dd></div>
                   <div><dt class="text-xs text-slate-500">CO₂ total</dt><dd class="mt-1 font-semibold text-slate-900">{{ co2(entry.ranking.totalCo2Kg) }} kg</dd></div>
                 </dl>
                 <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-sm">
