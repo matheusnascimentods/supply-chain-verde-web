@@ -1,0 +1,318 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/45 p-4 sm:p-6"
+  role="presentation"
+  (click)="backdropClick($event)"
+>
+  <section
+    #dialog
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="stage-modal-title"
+    class="my-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl focus:outline-none"
+  >
+    <header class="flex items-start justify-between border-b border-slate-100 px-6 py-5 sm:px-7">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+          Lote #{{ batchId() }}
+        </p>
+        <h2 id="stage-modal-title" class="mt-1 text-xl font-bold tracking-tight text-slate-900">
+          Adicionar etapa
+        </h2>
+        <p class="mt-1 text-sm text-slate-500">Registre o próximo ponto da jornada deste lote.</p>
+      </div>
+      <button
+        type="button"
+        class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-700"
+        aria-label="Fechar formulário de etapa"
+        [disabled]="saving()"
+        (click)="requestDismiss()"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          class="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg>
+      </button>
+    </header>
+
+    @if (loadingChoices()) {
+      <p class="px-6 py-10 text-center text-sm text-slate-500" aria-live="polite">
+        Carregando endereços disponíveis…
+      </p>
+    } @else {
+      <form
+        [formGroup]="form"
+        (ngSubmit)="submit()"
+        class="grid gap-5 px-6 py-6 sm:grid-cols-2 sm:px-7"
+      >
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700">
+          Tipo da etapa
+          <select
+            formControlName="stageType"
+            class="min-h-11 rounded-lg border border-slate-300 bg-white px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          >
+            <option value="">Selecione o tipo</option>
+            @for (type of stageTypes; track type) {
+              <option [value]="type">
+                {{
+                  type === 'PRODUCTION'
+                    ? 'Produção'
+                    : type === 'STORAGE'
+                      ? 'Armazenagem'
+                      : type === 'PROCESSING'
+                        ? 'Processamento'
+                        : type === 'TRANSPORT'
+                          ? 'Transporte'
+                          : type === 'DISTRIBUTION'
+                            ? 'Distribuição'
+                            : 'Varejo'
+                }}
+              </option>
+            }
+          </select>
+          @if (form.controls.stageType.touched && form.controls.stageType.invalid) {
+            <span class="text-xs font-normal text-red-700">Selecione o tipo da etapa.</span>
+          }
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700">
+          Início
+          <input
+            formControlName="startedAt"
+            type="datetime-local"
+            class="min-h-11 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          />
+          @if (form.controls.startedAt.touched && form.controls.startedAt.invalid) {
+            <span class="text-xs font-normal text-red-700">Informe quando a etapa começou.</span>
+          }
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2">
+          Fim <span class="font-normal text-slate-400">(opcional)</span>
+          <input
+            formControlName="endedAt"
+            type="datetime-local"
+            class="min-h-11 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          />
+        </label>
+
+        <fieldset class="grid gap-1.5">
+          <legend class="mb-1 text-sm font-semibold text-slate-800">
+            Origem <span class="font-normal text-slate-400">(opcional)</span>
+          </legend>
+          <select
+            formControlName="originAddressId"
+            class="min-h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          >
+            <option value="">Não informar origem</option>
+            @for (address of addresses(); track address.addressId) {
+              <option [value]="address.addressId">{{ address.label }}</option>
+            }
+          </select>
+          @if (addresses().length === 0) {
+            <span class="text-xs font-normal text-slate-500"
+              >Nenhum endereço cadastrado está disponível.</span
+            >
+          }
+        </fieldset>
+        <fieldset class="grid gap-1.5">
+          <legend class="mb-1 text-sm font-semibold text-slate-800">
+            Destino <span class="font-normal text-slate-400">(opcional)</span>
+          </legend>
+          <select
+            formControlName="destinationAddressId"
+            class="min-h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+          >
+            <option value="">Não informar destino</option>
+            @for (address of addresses(); track address.addressId) {
+              <option [value]="address.addressId">{{ address.label }}</option>
+            }
+          </select>
+        </fieldset>
+
+        @if (isTransport) {
+          <section
+            class="grid gap-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 sm:col-span-2 sm:grid-cols-2"
+            aria-labelledby="transport-heading"
+          >
+            <div class="sm:col-span-2">
+              <h3 id="transport-heading" class="text-sm font-bold text-slate-900">
+                Dados do transporte
+              </h3>
+              <p class="mt-0.5 text-xs text-slate-500">
+                Informe os dados usados para calcular a pegada logística.
+              </p>
+            </div>
+            <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+              >Modal
+              <select
+                formControlName="transportMode"
+                class="min-h-11 rounded-lg border border-slate-300 bg-white px-3"
+              >
+                <option value="">Selecione</option>
+                @for (mode of transportModes; track mode) {
+                  <option [value]="mode">
+                    {{
+                      mode === 'ROAD'
+                        ? 'Rodoviário'
+                        : mode === 'RAIL'
+                          ? 'Ferroviário'
+                          : mode === 'MARITIME'
+                            ? 'Marítimo'
+                            : 'Aéreo'
+                    }}
+                  </option>
+                }
+              </select>
+              @if (form.controls.transportMode.touched && form.controls.transportMode.invalid) {
+                <span class="text-xs font-normal text-red-700">Selecione o modal.</span>
+              }
+            </label>
+            <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+              >Distância (km)
+              <input
+                formControlName="distance"
+                type="number"
+                min="0.000001"
+                step="any"
+                class="min-h-11 rounded-lg border border-slate-300 px-3"
+              />
+              @if (form.controls.distance.touched && form.controls.distance.invalid) {
+                <span class="text-xs font-normal text-red-700"
+                  >Informe uma distância maior que zero.</span
+                >
+              }
+            </label>
+            <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+              >Combustível
+              <select
+                formControlName="fuelType"
+                class="min-h-11 rounded-lg border border-slate-300 bg-white px-3"
+              >
+                <option value="">Selecione</option>
+                @for (fuel of fuelTypes; track fuel) {
+                  <option [value]="fuel">
+                    {{
+                      fuel === 'DIESEL'
+                        ? 'Diesel'
+                        : fuel === 'BIODIESEL'
+                          ? 'Biodiesel'
+                          : fuel === 'ELECTRIC'
+                            ? 'Elétrico'
+                            : fuel === 'GASOLINE'
+                              ? 'Gasolina'
+                              : fuel === 'ETHANOL'
+                                ? 'Etanol'
+                                : fuel === 'AVIATION_KEROSENE'
+                                  ? 'Querosene de aviação'
+                                  : 'Óleo combustível pesado'
+                    }}
+                  </option>
+                }
+              </select>
+              @if (form.controls.fuelType.touched && form.controls.fuelType.invalid) {
+                <span class="text-xs font-normal text-red-700">Selecione o combustível.</span>
+              }
+            </label>
+            <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+              >Capacidade (kg)
+              <input
+                formControlName="capacity"
+                type="number"
+                min="0.000001"
+                step="any"
+                class="min-h-11 rounded-lg border border-slate-300 px-3"
+              />
+              @if (form.controls.capacity.touched && form.controls.capacity.invalid) {
+                <span class="text-xs font-normal text-red-700"
+                  >Informe uma capacidade maior que zero.</span
+                >
+              }
+            </label>
+          </section>
+        }
+
+        @if (canCalculateEmission) {
+          <section class="grid gap-3 rounded-xl border border-slate-200 p-4 sm:col-span-2">
+            <label class="flex items-start gap-3 text-sm text-slate-800"
+              ><input
+                formControlName="calculateEmission"
+                type="checkbox"
+                class="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600"
+              /><span
+                ><span class="font-semibold">Calcular emissão desta etapa</span
+                ><span class="mt-0.5 block text-xs text-slate-500"
+                  >Você pode registrar a etapa agora e calcular a emissão em outro momento.</span
+                ></span
+              ></label
+            >
+            @if (form.controls.calculateEmission.value) {
+              <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+                >Metodologia
+                <select
+                  formControlName="calculationMethod"
+                  class="min-h-11 rounded-lg border border-slate-300 bg-white px-3"
+                >
+                  @for (method of calculationMethods; track method) {
+                    <option [value]="method">
+                      {{
+                        method === 'DEFRA'
+                          ? 'DEFRA'
+                          : method === 'GHG_PROTOCOL'
+                            ? 'GHG Protocol'
+                            : method === 'IPCC'
+                              ? 'IPCC'
+                              : 'EMEP/EEA'
+                      }}
+                    </option>
+                  }
+                </select>
+              </label>
+            }
+          </section>
+        } @else {
+          <p class="rounded-lg bg-slate-50 px-4 py-3 text-xs text-slate-600 sm:col-span-2">
+            O cálculo de emissão está disponível para perfis de gestor e administrador.
+          </p>
+        }
+
+        @if (error()) {
+          <p role="alert" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 sm:col-span-2">
+            {{ error() }}
+          </p>
+        }
+        <footer
+          class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:col-span-2 sm:flex-row sm:justify-end"
+        >
+          <button
+            type="button"
+            class="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            [disabled]="saving()"
+            (click)="requestDismiss()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="min-h-11 rounded-lg bg-emerald-700 px-5 text-sm font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+            [disabled]="form.invalid || saving()"
+          >
+            {{
+              saving()
+                ? savedStageId()
+                  ? 'Finalizando etapa…'
+                  : 'Registrando etapa…'
+                : savedStageId()
+                  ? 'Tentar novamente'
+                  : 'Registrar etapa'
+            }}
+          </button>
+        </footer>
+      </form>
+    }
+  </section>
+</div>
