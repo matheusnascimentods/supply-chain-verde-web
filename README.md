@@ -46,9 +46,7 @@ As telas foram exportadas para [`screenshots/`](screenshots/) usando o MCP do Co
 
 ![Formulário de produto](/docs/screenshots/08-product-form.png)
 
-### Lista de certificações
-
-![Lista de certificações](/docs/screenshots/09-certifications-list.png)
+As certificações são consultadas e gerenciadas no modal aberto pelo badge de certificações na lista de fornecedores.
 
 ### Lista de lotes
 
@@ -140,7 +138,7 @@ Novo lote → nova etapa → transporte (quando aplicável) → cálculo de emis
 | Ranking | admin, manager, auditor, supplier | `GET /suppliers?ranked=true&limit=20&offset=0` |
 | Produtos | admin, manager | `POST/PUT/GET /products` |
 | Relatórios (modal na gestão de fornecedores) | admin, manager, auditor; supplier somente os próprios | `GET /reports?supplierId={id}`, `POST /suppliers/{id}/reports` |
-| Certificações | auditor, supplier | `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status` |
+| Certificações (modal de fornecedores) | admin, manager, auditor, supplier | ranking com certificações embutidas, `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status` |
 | Lotes | supplier, admin, manager, auditor | `POST /batches`, `GET /suppliers/{id}/batches` |
 | Etapas da cadeia | supplier, manager, admin | `POST/GET /batches/{id}/stages`, `POST /stages/{id}/transport`, `POST /stages/{id}/emission` |
 

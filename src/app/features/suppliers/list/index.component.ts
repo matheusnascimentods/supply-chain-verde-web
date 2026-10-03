@@ -8,10 +8,11 @@ import { SuppliersService } from '../index.service';
 import { SupplierFormComponent } from '../form/index.component';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
 import { SupplierReportsModalComponent } from './reports-modal/index.component';
+import { SupplierCertificationsModalComponent } from './certifications-modal/index.component';
 
 const PAGE_SIZE = 20;
 
-@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierFormComponent, SupplierReportsModalComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierFormComponent, SupplierReportsModalComponent, SupplierCertificationsModalComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierListComponent {
   private readonly service = inject(SuppliersService);
   private readonly session = inject(SessionService);
@@ -28,9 +29,11 @@ export class SupplierListComponent {
   readonly totalPages = signal(0);
   readonly createModalOpen = signal(false);
   readonly reportsSupplier = signal<SupplierRankingResponseDTO | null>(null);
+  readonly certificationsSupplier = signal<SupplierRankingResponseDTO | null>(null);
   readonly pageNumber = computed(() => this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages()));
   readonly canManage = computed(() => ['admin', 'manager'].includes(this.session.role() ?? ''));
   readonly canGenerateReports = computed(() => ['admin', 'manager', 'auditor'].includes(this.session.role() ?? ''));
+  readonly canUpdateCertificationStatus = computed(() => ['admin', 'auditor'].includes(this.session.role() ?? ''));
   readonly rankedSuppliers = computed(() => this.ranking().map((item) => ({
     ranking: item,
     supplier: item,
@@ -118,6 +121,23 @@ export class SupplierListComponent {
 
   reportsUpdated(): void {
     this.load();
+  }
+
+  openCertifications(supplier: SupplierRankingResponseDTO): void {
+    this.certificationsSupplier.set(supplier);
+  }
+
+  closeCertifications(): void {
+    this.certificationsSupplier.set(null);
+  }
+
+  certificationsUpdated(): void {
+    this.load();
+  }
+
+  canCreateCertificationFor(supplier: SupplierRankingResponseDTO): boolean {
+    const role = this.session.role();
+    return role === 'admin' || (role === 'supplier' && this.currentUserId() === supplier.supplierId);
   }
 
   supplierCreated(): void {

@@ -123,7 +123,6 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./features/dashboard').then(m => m.DashboardComponent) },
       { path: 'suppliers', data: { roles: ['admin', 'manager'] }, canActivate: [roleGuard], loadChildren: () => import('./features/suppliers/routes') },
       { path: 'products', data: { roles: ['admin', 'manager'] }, canActivate: [roleGuard], loadChildren: () => import('./features/products/routes') },
-      { path: 'certifications', data: { roles: ['auditor', 'supplier'] }, canActivate: [roleGuard], loadChildren: () => import('./features/certifications/routes') },
       { path: 'batches', loadChildren: () => import('./features/batches/routes') },
       { path: 'users', data: { roles: ['admin'] }, canActivate: [roleGuard], loadChildren: () => import('./features/users/routes') },
       { path: 'audit-log', data: { roles: ['admin', 'auditor'] }, canActivate: [roleGuard], loadComponent: () => import('./features/audit-log').then(m => m.AuditLogComponent) },
@@ -260,7 +259,7 @@ load() {
 ### Listagens paginadas e filtros
 
 - Fornecedores/ranking, produtos, usuários, auditoria e relatórios usam `limit`/`offset`, `hasNext` e `totalPages`; as telas iniciam em `limit=20`, avançam ou recuam 20 itens e exibem `Página X de Y`.
-- Certificações e lotes usam `page`/`size` com metadados `totalPages`; certificações enviam `onlyExpiring=true` para filtrar vencimentos e lotes podem enviar `supplierId` quando permitido pelo perfil.
+- Lotes usam `page`/`size` com metadados `totalPages` e podem enviar `supplierId` quando permitido pelo perfil. Certificações são exibidas no modal contextual com os dados embutidos no ranking de fornecedores.
 - A lista de relatórios do modal usa `GET /reports?supplierId={supplierId}` paginada; fornecedores só podem consultar seus próprios dados. Geração usa `POST /suppliers/{supplierId}/reports`.
 - Serviços validam o envelope e os itens paginados com schemas Zod antes de atualizar os signals; mudanças de contrato devem ser sincronizadas com as tasks e a especificação da API.
 
