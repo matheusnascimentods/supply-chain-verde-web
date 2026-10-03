@@ -9,6 +9,83 @@ import { BatchCreateModalComponent } from './create-modal/index.component';
 import { BatchStageModalComponent } from './stage-modal/index.component';
 
 const PAGE_SIZE = 20;
+
+type BatchStageTone = {
+  dot: string;
+  text: string;
+  action: string;
+  panel: string;
+  arrow: string;
+  line: string;
+  node: string;
+};
+
+const BATCH_STAGE_TONES: Record<StageType | 'CREATED', BatchStageTone> = {
+  CREATED: {
+    dot: 'bg-slate-500',
+    text: 'text-slate-700',
+    action: 'text-slate-700 hover:text-slate-950 focus-visible:outline-slate-600',
+    panel: 'bg-slate-50/75',
+    arrow: 'text-slate-600',
+    line: 'bg-slate-200',
+    node: 'border-slate-400',
+  },
+  PRODUCTION: {
+    dot: 'bg-sky-500',
+    text: 'text-sky-800',
+    action: 'text-sky-800 hover:text-sky-950 focus-visible:outline-sky-700',
+    panel: 'bg-sky-50/50',
+    arrow: 'text-sky-700',
+    line: 'bg-sky-200',
+    node: 'border-sky-500',
+  },
+  STORAGE: {
+    dot: 'bg-indigo-500',
+    text: 'text-indigo-800',
+    action: 'text-indigo-800 hover:text-indigo-950 focus-visible:outline-indigo-700',
+    panel: 'bg-indigo-50/50',
+    arrow: 'text-indigo-700',
+    line: 'bg-indigo-200',
+    node: 'border-indigo-500',
+  },
+  PROCESSING: {
+    dot: 'bg-amber-500',
+    text: 'text-amber-800',
+    action: 'text-amber-800 hover:text-amber-950 focus-visible:outline-amber-700',
+    panel: 'bg-amber-50/50',
+    arrow: 'text-amber-700',
+    line: 'bg-amber-200',
+    node: 'border-amber-500',
+  },
+  TRANSPORT: {
+    dot: 'bg-orange-500',
+    text: 'text-orange-800',
+    action: 'text-orange-800 hover:text-orange-950 focus-visible:outline-orange-700',
+    panel: 'bg-orange-50/50',
+    arrow: 'text-orange-700',
+    line: 'bg-orange-200',
+    node: 'border-orange-500',
+  },
+  DISTRIBUTION: {
+    dot: 'bg-violet-500',
+    text: 'text-violet-800',
+    action: 'text-violet-800 hover:text-violet-950 focus-visible:outline-violet-700',
+    panel: 'bg-violet-50/50',
+    arrow: 'text-violet-700',
+    line: 'bg-violet-200',
+    node: 'border-violet-500',
+  },
+  RETAIL: {
+    dot: 'bg-emerald-500',
+    text: 'text-emerald-800',
+    action: 'text-emerald-800 hover:text-emerald-950 focus-visible:outline-emerald-700',
+    panel: 'bg-emerald-50/50',
+    arrow: 'text-emerald-700',
+    line: 'bg-emerald-200',
+    node: 'border-emerald-600',
+  },
+};
+
 @Component({
   selector: 'app-batches-list',
   imports: [BatchCreateModalComponent, BatchStageModalComponent],
@@ -114,6 +191,10 @@ export class BatchListComponent {
     return batch.currentStage === 'RETAIL'
       ? 'bg-emerald-50 text-emerald-800 ring-emerald-200'
       : 'bg-green-50 text-green-800 ring-green-200';
+  }
+
+  stageTone(batch: BatchResponseDTO): BatchStageTone {
+    return BATCH_STAGE_TONES[batch.currentStage ?? 'CREATED'];
   }
 
   stageLabel(type: StageType): string {
