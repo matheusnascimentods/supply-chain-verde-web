@@ -13,11 +13,22 @@ export const addressResponseSchema = z.object({
 
 export const transportModeSchema = z.enum(['ROAD', 'RAIL', 'MARITIME', 'AIR']);
 export const fuelTypeSchema = z.enum([
-  'DIESEL', 'BIODIESEL', 'ELECTRIC', 'GASOLINE', 'ETHANOL', 'AVIATION_KEROSENE', 'HEAVY_FUEL_OIL',
+  'DIESEL',
+  'BIODIESEL',
+  'ELECTRIC',
+  'GASOLINE',
+  'ETHANOL',
+  'AVIATION_KEROSENE',
+  'HEAVY_FUEL_OIL',
 ]);
 export const calculationMethodSchema = z.enum(['DEFRA', 'GHG_PROTOCOL', 'IPCC', 'EMEP_EEA']);
 export const stageTypeSchema = z.enum([
-  'PRODUCTION', 'STORAGE', 'PROCESSING', 'TRANSPORT', 'DISTRIBUTION', 'RETAIL',
+  'PRODUCTION',
+  'STORAGE',
+  'PROCESSING',
+  'TRANSPORT',
+  'DISTRIBUTION',
+  'RETAIL',
 ]);
 export type StageType = z.infer<typeof stageTypeSchema>;
 

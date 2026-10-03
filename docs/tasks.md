@@ -471,7 +471,6 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 }
 ```
 
-
 ## Task 22 — Paginação com total de páginas nas telas de gestão
 
 - [x] Atualizar os componentes de paginação das telas de Fornecedores, Produtos, Relatórios, Usuários e Auditoria para exibir a página atual e o total de páginas no formato `Página X de Y`, conforme a referência `docs/references/reference-04.png`.
@@ -479,7 +478,6 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
   - **Navegação:** manter os botões Anterior e Próxima; desativar Anterior na primeira página e Próxima na última página, usando `totalPages` e a página atual, sem permitir navegação para páginas fora do intervalo.
   - **Casos sem resultados:** exibir `Página 0 de 0` quando `totalPages` for 0 e manter ambos os botões desativados.
   - **Consistência:** aplicar o mesmo padrão visual e comportamento nas cinco telas, preservando os filtros ativos ao navegar entre páginas.
-
 
 ## Task 23 — Atualização dos consumidores para as rotas consolidadas da API
 
@@ -491,7 +489,6 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
   - **Relatórios — chamadores:** `loadPage()` é chamado por `ReportListComponent` em `src/app/features/reports/list/index.component.ts`; `get(reportId)` é chamado por `ReportDetailComponent` em `src/app/features/reports/detail/index.component.ts`. Preservar a navegação entre listagem e detalhe e o tratamento de erro existente. A listagem paginada continua em `GET /api/v1/reports`; somente o detalhe muda para o parâmetro `reportId`, conforme a Task 21 da API.
   - **Chamadas sem uso atual:** `ReportsService.load(supplierId)` em `src/app/features/reports/index.service.ts` chama `GET /api/v1/suppliers/{supplierId}/reports`, mas não possui chamadores no frontend atual; não migrar nem remover como parte desta task. `generate()` usa `POST /api/v1/suppliers/{supplierId}/reports` e deve permanecer inalterado.
   - **Documentação e compatibilidade:** atualizar os contratos e exemplos do frontend para as URLs e query parameters finais. Eliminar chamadas às antigas rotas GET de detalhe de fornecedor, ranking e detalhe de relatório; preservar os formatos de resposta, filtros e permissões definidos nas Tasks 21 e 22 da API.
-
 
 ## Task 24 — Exibição dos detalhes dos eventos de auditoria
 

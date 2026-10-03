@@ -1,4 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, ViewChild, inject, output, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  ViewChild,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { SessionService } from '../../../../core/session/index.service';
@@ -17,7 +28,8 @@ import { BatchesService } from '../../index.service';
 })
 export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
-  private readonly previousFocus = typeof document === 'undefined' ? null : document.activeElement as HTMLElement;
+  private readonly previousFocus =
+    typeof document === 'undefined' ? null : (document.activeElement as HTMLElement);
   private readonly fb = inject(FormBuilder);
   private readonly batches = inject(BatchesService);
   private readonly productsService = inject(ProductsService);
@@ -46,7 +58,11 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
     const products$ = this.productsService.loadAll();
     const user$ = this.usersService.loadCurrentUser();
     if (this.isAdmin) {
-      forkJoin({ products: products$, user: user$, suppliers: this.suppliersService.load() }).subscribe({
+      forkJoin({
+        products: products$,
+        user: user$,
+        suppliers: this.suppliersService.load(),
+      }).subscribe({
         next: ({ products, user, suppliers }) => this.setChoices(products, user.userId, suppliers),
         error: () => this.failChoices(),
       });
@@ -58,8 +74,12 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit(): void { this.dialog?.nativeElement.focus(); }
-  ngOnDestroy(): void { this.previousFocus?.focus(); }
+  ngAfterViewInit(): void {
+    this.dialog?.nativeElement.focus();
+  }
+  ngOnDestroy(): void {
+    this.previousFocus?.focus();
+  }
 
   @HostListener('keydown', ['$event'])
   keepFocusInDialog(event: KeyboardEvent): void {
@@ -69,16 +89,32 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
       return;
     }
     if (event.key !== 'Tab' || !this.dialog) return;
-    const focusable = Array.from(this.dialog.nativeElement.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-    )).filter((element) => element.offsetParent !== null);
-    if (!focusable.length) { event.preventDefault(); this.dialog.nativeElement.focus(); return; }
+    const focusable = Array.from(
+      this.dialog.nativeElement.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((element) => element.offsetParent !== null);
+    if (!focusable.length) {
+      event.preventDefault();
+      this.dialog.nativeElement.focus();
+      return;
+    }
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    if (event.shiftKey && (document.activeElement === first || !this.dialog.nativeElement.contains(document.activeElement))) {
-      event.preventDefault(); last.focus();
-    } else if (!event.shiftKey && (document.activeElement === last || !this.dialog.nativeElement.contains(document.activeElement))) {
-      event.preventDefault(); first.focus();
+    if (
+      event.shiftKey &&
+      (document.activeElement === first ||
+        !this.dialog.nativeElement.contains(document.activeElement))
+    ) {
+      event.preventDefault();
+      last.focus();
+    } else if (
+      !event.shiftKey &&
+      (document.activeElement === last ||
+        !this.dialog.nativeElement.contains(document.activeElement))
+    ) {
+      event.preventDefault();
+      first.focus();
     }
   }
 
@@ -95,21 +131,23 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
     }
     this.saving.set(true);
     this.error.set('');
-    this.batches.create({
-      productId: Number(value.productId),
-      supplierId,
-      quantity: Number(value.quantity),
-      producedAt: value.producedAt!,
-    }).subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.created.emit();
-      },
-      error: () => {
-        this.saving.set(false);
-        this.error.set('Não foi possível cadastrar o lote. Confira os dados e tente novamente.');
-      },
-    });
+    this.batches
+      .create({
+        productId: Number(value.productId),
+        supplierId,
+        quantity: Number(value.quantity),
+        producedAt: value.producedAt!,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.created.emit();
+        },
+        error: () => {
+          this.saving.set(false);
+          this.error.set('Não foi possível cadastrar o lote. Confira os dados e tente novamente.');
+        },
+      });
   }
 
   requestDismiss(): void {
@@ -120,7 +158,11 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
     if (event.target === event.currentTarget) this.requestDismiss();
   }
 
-  private setChoices(products: ProductResponseDTO[], userId: number, suppliers: SupplierResponseDTO[]): void {
+  private setChoices(
+    products: ProductResponseDTO[],
+    userId: number,
+    suppliers: SupplierResponseDTO[],
+  ): void {
     this.products.set(products);
     this.suppliers.set(suppliers);
     this.currentUserId = userId;
@@ -128,7 +170,9 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
   }
 
   private failChoices(): void {
-    this.error.set('Não foi possível carregar produtos e fornecedores. Tente fechar e abrir o formulário novamente.');
+    this.error.set(
+      'Não foi possível carregar produtos e fornecedores. Tente fechar e abrir o formulário novamente.',
+    );
     this.loadingChoices.set(false);
   }
 }

@@ -4,7 +4,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../../core/session/index.service';
 import { EnumSelectComponent } from '../../../shared/components/enum-select/index.component';
 import { UsersService } from '../../users/index.service';
-import { calculationMethodSchema, fuelTypeSchema, stageTypeSchema, transportModeSchema } from '../../traceability/index.schema';
+import {
+  calculationMethodSchema,
+  fuelTypeSchema,
+  stageTypeSchema,
+  transportModeSchema,
+} from '../../traceability/index.schema';
 import { ChainService } from '../index.service';
 
 @Component({
@@ -30,15 +35,27 @@ export class ChainFormComponent {
   readonly stageId = signal<number | null>(null);
   readonly canCalculateEmission = ['admin', 'manager'].includes(this.session.role() ?? '');
   readonly form = this.fb.group({
-    stageType: ['', Validators.required], startedAt: ['', Validators.required], endedAt: [''],
-    originAddressId: [''], destinationAddressId: [''], transportMode: [''], distance: [0],
-    fuelType: [''], capacity: [0], calculationMethod: ['DEFRA', Validators.required],
+    stageType: ['', Validators.required],
+    startedAt: ['', Validators.required],
+    endedAt: [''],
+    originAddressId: [''],
+    destinationAddressId: [''],
+    transportMode: [''],
+    distance: [0],
+    fuelType: [''],
+    capacity: [0],
+    calculationMethod: ['DEFRA', Validators.required],
   });
 
-  get isTransport(): boolean { return this.form.controls.stageType.value === 'TRANSPORT'; }
+  get isTransport(): boolean {
+    return this.form.controls.stageType.value === 'TRANSPORT';
+  }
 
   submit(): void {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.saving.set(true);
     this.error.set('');
     const value = this.form.getRawValue();
@@ -46,39 +63,63 @@ export class ChainFormComponent {
 
     this.users.loadCurrentUser().subscribe({
       error: () => this.fail(),
-      next: (user) => this.service.createStage(batchId, user.userId, {
-        batchId,
-        originAddressId: value.originAddressId ? Number(value.originAddressId) : null,
-        destinationAddressId: value.destinationAddressId ? Number(value.destinationAddressId) : null,
-        stageType: value.stageType as (typeof stageTypeSchema.options)[number],
-        startedAt: this.toApiDateTime(value.startedAt!),
-        endedAt: value.endedAt ? this.toApiDateTime(value.endedAt) : null,
-      }).subscribe({
-        error: () => this.fail(),
-        next: (stage) => {
-          this.stageId.set(stage.chainId);
-          const calculateEmission = () => {
-            if (!this.canCalculateEmission) { this.finish(batchId); return; }
-            this.service.calculateEmission(stage.chainId, {
-              chainId: stage.chainId,
-              calculationMethod: value.calculationMethod as (typeof calculationMethodSchema.options)[number],
-            }).subscribe({ next: () => this.finish(batchId), error: () => this.fail() });
-          };
-          if (this.isTransport) {
-            this.service.createTransport(stage.chainId, {
-              chainId: stage.chainId,
-              transportMode: value.transportMode as (typeof transportModeSchema.options)[number],
-              distance: Number(value.distance),
-              fuelType: value.fuelType as (typeof fuelTypeSchema.options)[number],
-              capacity: Number(value.capacity),
-            }).subscribe({ next: calculateEmission, error: () => this.fail() });
-          } else calculateEmission();
-        },
-      }),
+      next: (user) =>
+        this.service
+          .createStage(batchId, user.userId, {
+            batchId,
+            originAddressId: value.originAddressId ? Number(value.originAddressId) : null,
+            destinationAddressId: value.destinationAddressId
+              ? Number(value.destinationAddressId)
+              : null,
+            stageType: value.stageType as (typeof stageTypeSchema.options)[number],
+            startedAt: this.toApiDateTime(value.startedAt!),
+            endedAt: value.endedAt ? this.toApiDateTime(value.endedAt) : null,
+          })
+          .subscribe({
+            error: () => this.fail(),
+            next: (stage) => {
+              this.stageId.set(stage.chainId);
+              const calculateEmission = () => {
+                if (!this.canCalculateEmission) {
+                  this.finish(batchId);
+                  return;
+                }
+                this.service
+                  .calculateEmission(stage.chainId, {
+                    chainId: stage.chainId,
+                    calculationMethod:
+                      value.calculationMethod as (typeof calculationMethodSchema.options)[number],
+                  })
+                  .subscribe({ next: () => this.finish(batchId), error: () => this.fail() });
+              };
+              if (this.isTransport) {
+                this.service
+                  .createTransport(stage.chainId, {
+                    chainId: stage.chainId,
+                    transportMode:
+                      value.transportMode as (typeof transportModeSchema.options)[number],
+                    distance: Number(value.distance),
+                    fuelType: value.fuelType as (typeof fuelTypeSchema.options)[number],
+                    capacity: Number(value.capacity),
+                  })
+                  .subscribe({ next: calculateEmission, error: () => this.fail() });
+              } else calculateEmission();
+            },
+          }),
     });
   }
 
-  private toApiDateTime(value: string): string { return value.length === 16 ? `${value}:00` : value; }
-  private finish(batchId: number): void { this.saving.set(false); this.router.navigate(['/batches', batchId, 'stages']); }
-  private fail(): void { this.saving.set(false); this.error.set('Não foi possível registrar a etapa, transporte ou emissão. Confira os dados e tente novamente.'); }
+  private toApiDateTime(value: string): string {
+    return value.length === 16 ? `${value}:00` : value;
+  }
+  private finish(batchId: number): void {
+    this.saving.set(false);
+    this.router.navigate(['/batches', batchId, 'stages']);
+  }
+  private fail(): void {
+    this.saving.set(false);
+    this.error.set(
+      'Não foi possível registrar a etapa, transporte ou emissão. Confira os dados e tente novamente.',
+    );
+  }
 }

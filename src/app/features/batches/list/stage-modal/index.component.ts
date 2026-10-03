@@ -1,4 +1,16 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, input, OnDestroy, output, signal, ViewChild, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostListener,
+  input,
+  OnDestroy,
+  output,
+  signal,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, of, catchError, map, switchMap } from 'rxjs';
@@ -6,7 +18,12 @@ import { SessionService } from '../../../../core/session/index.service';
 import { UsersService } from '../../../users/index.service';
 import { SuppliersService } from '../../../suppliers/index.service';
 import { ChainService } from '../../../chain/index.service';
-import { calculationMethodSchema, fuelTypeSchema, stageTypeSchema, transportModeSchema } from '../../../traceability/index.schema';
+import {
+  calculationMethodSchema,
+  fuelTypeSchema,
+  stageTypeSchema,
+  transportModeSchema,
+} from '../../../traceability/index.schema';
 import { SupplierResponseDTO } from '../../../suppliers/index.schema';
 
 interface AddressOption {
@@ -22,7 +39,8 @@ interface AddressOption {
 })
 export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
-  private readonly previousFocus = typeof document === 'undefined' ? null : document.activeElement as HTMLElement;
+  private readonly previousFocus =
+    typeof document === 'undefined' ? null : (document.activeElement as HTMLElement);
   private readonly fb = inject(FormBuilder);
   private readonly chainService = inject(ChainService);
   private readonly usersService = inject(UsersService);
@@ -65,14 +83,23 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
     this.form.controls.stageType.valueChanges.pipe(takeUntilDestroyed()).subscribe((stageType) => {
       this.updateTransportValidators(stageType === 'TRANSPORT');
     });
-    const choices$ = this.session.role() === 'supplier'
-      ? this.usersService.loadCurrentUser().pipe(
-          switchMap((user) => this.suppliersService.get(user.userId).pipe(map((supplier) => ({ user, suppliers: [supplier] })))),
-        )
-      : forkJoin({
-          user: this.usersService.loadCurrentUser(),
-          suppliers: this.suppliersService.load().pipe(catchError(() => of([] as SupplierResponseDTO[]))),
-        });
+    const choices$ =
+      this.session.role() === 'supplier'
+        ? this.usersService
+            .loadCurrentUser()
+            .pipe(
+              switchMap((user) =>
+                this.suppliersService
+                  .get(user.userId)
+                  .pipe(map((supplier) => ({ user, suppliers: [supplier] }))),
+              ),
+            )
+        : forkJoin({
+            user: this.usersService.loadCurrentUser(),
+            suppliers: this.suppliersService
+              .load()
+              .pipe(catchError(() => of([] as SupplierResponseDTO[]))),
+          });
     choices$.subscribe({
       next: ({ user, suppliers }) => {
         this.responsibleUserId = user.userId;
@@ -86,8 +113,12 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngAfterViewInit(): void { this.dialog?.nativeElement.focus(); }
-  ngOnDestroy(): void { this.previousFocus?.focus(); }
+  ngAfterViewInit(): void {
+    this.dialog?.nativeElement.focus();
+  }
+  ngOnDestroy(): void {
+    this.previousFocus?.focus();
+  }
 
   @HostListener('keydown', ['$event'])
   keepFocusInDialog(event: KeyboardEvent): void {
@@ -97,16 +128,32 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
       return;
     }
     if (event.key !== 'Tab' || !this.dialog) return;
-    const focusable = Array.from(this.dialog.nativeElement.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-    )).filter((element) => element.offsetParent !== null);
-    if (!focusable.length) { event.preventDefault(); this.dialog.nativeElement.focus(); return; }
+    const focusable = Array.from(
+      this.dialog.nativeElement.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((element) => element.offsetParent !== null);
+    if (!focusable.length) {
+      event.preventDefault();
+      this.dialog.nativeElement.focus();
+      return;
+    }
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    if (event.shiftKey && (document.activeElement === first || !this.dialog.nativeElement.contains(document.activeElement))) {
-      event.preventDefault(); last.focus();
-    } else if (!event.shiftKey && (document.activeElement === last || !this.dialog.nativeElement.contains(document.activeElement))) {
-      event.preventDefault(); first.focus();
+    if (
+      event.shiftKey &&
+      (document.activeElement === first ||
+        !this.dialog.nativeElement.contains(document.activeElement))
+    ) {
+      event.preventDefault();
+      last.focus();
+    } else if (
+      !event.shiftKey &&
+      (document.activeElement === last ||
+        !this.dialog.nativeElement.contains(document.activeElement))
+    ) {
+      event.preventDefault();
+      first.focus();
     }
   }
 
@@ -135,21 +182,26 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
     const stageType = value.stageType as (typeof stageTypeSchema.options)[number];
     this.saving.set(true);
     this.error.set('');
-    this.chainService.createStage(this.batchId(), this.responsibleUserId, {
-      batchId: this.batchId(),
-      originAddressId: value.originAddressId ? Number(value.originAddressId) : null,
-      destinationAddressId: value.destinationAddressId ? Number(value.destinationAddressId) : null,
-      stageType,
-      startedAt: this.toApiDateTime(value.startedAt!),
-      endedAt: value.endedAt ? this.toApiDateTime(value.endedAt) : null,
-    }).subscribe({
-      next: (stage) => {
-        this.savedStageId.set(stage.chainId);
-        this.changed.emit();
-        this.saveRemainingSteps();
-      },
-      error: () => this.fail('Não foi possível registrar a etapa. Confira os dados e tente novamente.'),
-    });
+    this.chainService
+      .createStage(this.batchId(), this.responsibleUserId, {
+        batchId: this.batchId(),
+        originAddressId: value.originAddressId ? Number(value.originAddressId) : null,
+        destinationAddressId: value.destinationAddressId
+          ? Number(value.destinationAddressId)
+          : null,
+        stageType,
+        startedAt: this.toApiDateTime(value.startedAt!),
+        endedAt: value.endedAt ? this.toApiDateTime(value.endedAt) : null,
+      })
+      .subscribe({
+        next: (stage) => {
+          this.savedStageId.set(stage.chainId);
+          this.changed.emit();
+          this.saveRemainingSteps();
+        },
+        error: () =>
+          this.fail('Não foi possível registrar a etapa. Confira os dados e tente novamente.'),
+      });
   }
 
   requestDismiss(): void {
@@ -168,35 +220,46 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
     }
     if (this.isTransport && !this.transportSaved) {
       const value = this.form.getRawValue();
-      this.chainService.createTransport(chainId, {
-        chainId,
-        transportMode: value.transportMode as (typeof transportModeSchema.options)[number],
-        distance: Number(value.distance),
-        fuelType: value.fuelType as (typeof fuelTypeSchema.options)[number],
-        capacity: Number(value.capacity),
-      }).subscribe({
-        next: () => {
-          this.transportSaved = true;
-          this.changed.emit();
-          this.saveRemainingSteps();
-        },
-        error: () => this.fail('A etapa foi registrada, mas não foi possível salvar os dados do transporte. Você pode tentar novamente.'),
-      });
+      this.chainService
+        .createTransport(chainId, {
+          chainId,
+          transportMode: value.transportMode as (typeof transportModeSchema.options)[number],
+          distance: Number(value.distance),
+          fuelType: value.fuelType as (typeof fuelTypeSchema.options)[number],
+          capacity: Number(value.capacity),
+        })
+        .subscribe({
+          next: () => {
+            this.transportSaved = true;
+            this.changed.emit();
+            this.saveRemainingSteps();
+          },
+          error: () =>
+            this.fail(
+              'A etapa foi registrada, mas não foi possível salvar os dados do transporte. Você pode tentar novamente.',
+            ),
+        });
       return;
     }
     const value = this.form.getRawValue();
     if (this.canCalculateEmission && value.calculateEmission && !this.emissionSaved) {
-      this.chainService.calculateEmission(chainId, {
-        chainId,
-        calculationMethod: value.calculationMethod as (typeof calculationMethodSchema.options)[number],
-      }).subscribe({
-        next: () => {
-          this.emissionSaved = true;
-          this.changed.emit();
-          this.saveRemainingSteps();
-        },
-        error: () => this.fail('A etapa foi registrada, mas não foi possível calcular a emissão. Você pode tentar novamente.'),
-      });
+      this.chainService
+        .calculateEmission(chainId, {
+          chainId,
+          calculationMethod:
+            value.calculationMethod as (typeof calculationMethodSchema.options)[number],
+        })
+        .subscribe({
+          next: () => {
+            this.emissionSaved = true;
+            this.changed.emit();
+            this.saveRemainingSteps();
+          },
+          error: () =>
+            this.fail(
+              'A etapa foi registrada, mas não foi possível calcular a emissão. Você pode tentar novamente.',
+            ),
+        });
       return;
     }
     this.saving.set(false);
@@ -209,9 +272,23 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
   }
 
   private updateTransportValidators(required: boolean): void {
-    const controls = [this.form.controls.transportMode, this.form.controls.distance, this.form.controls.fuelType, this.form.controls.capacity];
+    const controls = [
+      this.form.controls.transportMode,
+      this.form.controls.distance,
+      this.form.controls.fuelType,
+      this.form.controls.capacity,
+    ];
     for (const control of controls) {
-      control.setValidators(required ? [Validators.required, ...(control === this.form.controls.distance || control === this.form.controls.capacity ? [Validators.min(0.000001)] : [])] : []);
+      control.setValidators(
+        required
+          ? [
+              Validators.required,
+              ...(control === this.form.controls.distance || control === this.form.controls.capacity
+                ? [Validators.min(0.000001)]
+                : []),
+            ]
+          : [],
+      );
       control.updateValueAndValidity({ emitEvent: false });
     }
   }
@@ -224,6 +301,8 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
     const address = supplier.address;
     if (!address?.addressId) return [];
     const place = [address.city, address.state].filter(Boolean).join('/');
-    return [{ addressId: address.addressId, label: `${supplier.name}${place ? ` — ${place}` : ''}` }];
+    return [
+      { addressId: address.addressId, label: `${supplier.name}${place ? ` — ${place}` : ''}` },
+    ];
   }
 }

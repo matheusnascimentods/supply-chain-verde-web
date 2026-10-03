@@ -1,9 +1,31 @@
 import { z } from 'zod';
-import { stageTypeSchema, transportModeSchema, fuelTypeSchema, calculationMethodSchema, chainResponseSchema } from '../traceability/index.schema';
-export const stageRequestSchema = z.object({ batchId: z.number().int().positive(), originAddressId: z.number().int().positive().nullable(), destinationAddressId: z.number().int().positive().nullable(), stageType: stageTypeSchema, startedAt: z.string(), endedAt: z.string().nullable() });
+import {
+  stageTypeSchema,
+  transportModeSchema,
+  fuelTypeSchema,
+  calculationMethodSchema,
+  chainResponseSchema,
+} from '../traceability/index.schema';
+export const stageRequestSchema = z.object({
+  batchId: z.number().int().positive(),
+  originAddressId: z.number().int().positive().nullable(),
+  destinationAddressId: z.number().int().positive().nullable(),
+  stageType: stageTypeSchema,
+  startedAt: z.string(),
+  endedAt: z.string().nullable(),
+});
 export const stageResponseSchema = chainResponseSchema;
-export const transportRequestSchema = z.object({ chainId: z.number().int().positive(), transportMode: transportModeSchema, distance: z.number().positive(), fuelType: fuelTypeSchema, capacity: z.number().positive() });
-export const emissionCalculationRequestSchema = z.object({ chainId: z.number().int().positive(), calculationMethod: calculationMethodSchema });
+export const transportRequestSchema = z.object({
+  chainId: z.number().int().positive(),
+  transportMode: transportModeSchema,
+  distance: z.number().positive(),
+  fuelType: fuelTypeSchema,
+  capacity: z.number().positive(),
+});
+export const emissionCalculationRequestSchema = z.object({
+  chainId: z.number().int().positive(),
+  calculationMethod: calculationMethodSchema,
+});
 export type StageRequestDTO = z.infer<typeof stageRequestSchema>;
 export type StageResponseDTO = z.infer<typeof stageResponseSchema>;
 export type TransportRequestDTO = z.infer<typeof transportRequestSchema>;
