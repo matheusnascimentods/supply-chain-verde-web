@@ -57,26 +57,7 @@
           >
             <div class="grid sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.25fr)] h-full">
               <section class="flex min-w-0 flex-col p-4 sm:p-5">
-                <div class="flex items-center gap-2">
-                  <span
-                    class="h-2 w-2 rounded-full"
-                    [class]="stageTone(batch).dot"
-                    aria-hidden="true"
-                  ></span>
-                  <span
-                    class="text-xs font-semibold"
-                    [class]="stageTone(batch).text"
-                    >{{ statusLabel(batch) }}</span
-                  >
-                  @if (batch.currentStage) {
-                    <span class="text-xs text-slate-400">·</span
-                    ><span class="truncate text-xs text-slate-500">{{
-                      stageLabel(batch.currentStage)
-                    }}</span>
-                  }
-                </div>
-
-                <p class="mt-3 font-mono text-sm font-bold tracking-wide text-slate-700">
+                <p class="font-mono text-sm font-bold tracking-wide text-slate-700">
                   LOTE #{{ batch.batchId }}
                 </p>
                 <h2 class="mt-1 line-clamp-2 text-lg font-bold leading-snug text-slate-900">
