@@ -344,7 +344,7 @@ _Substitua a navegação para a página separada de cadastro por um modal aberto
 
 ---
 
-## Task 17 — Redesign da tela de Certificações
+## Task 17 — Redesign da tela de Certificações (substituída)
 
 _Redesenhe a listagem conforme `docs/screenshots/09-certifications-list.png`, seguindo o padrão visual dos screenshots do projeto. O screenshot define o alvo da listagem; para o cadastro, use `docs/references/reference-03.png` como referência de modal, pois não há screenshot específico para esse fluxo._
 
@@ -355,6 +355,8 @@ _Redesenhe a listagem conforme `docs/screenshots/09-certifications-list.png`, se
 - [x] No modal, manter os campos atuais de nome, organização emissora, número, emissão, validade e URL do documento, além da associação correta ao fornecedor autenticado
 - [x] Preservar validações, permissões, estados de carregamento/erro/sucesso e atualizar a listagem após a criação
 - [x] Garantir acessibilidade dos dropdowns e do modal, além de adaptar a listagem e o formulário para telas menores
+
+> A tela dedicada foi removida posteriormente. Consulta, cadastro e alteração de status agora acontecem no modal aberto pelo badge de certificações na lista de fornecedores.
 
 ---
 

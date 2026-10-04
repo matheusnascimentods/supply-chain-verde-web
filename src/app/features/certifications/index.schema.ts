@@ -18,12 +18,9 @@ export const certificationRequestSchema = z
   .object({
     name: z.string().min(1),
     issuingOrganization: z.string().min(1),
-    certificationNumber: z.string(),
     issuedAt: z.string(),
     expiresAt: z.string(),
-    documentUrl: z.string().optional(),
-  })
-  .passthrough();
+  });
 
 const certificationApiResponseSchema = z
   .object({
@@ -52,31 +49,6 @@ const certificationApiResponseSchema = z
 
 export const certificationResponseSchema = certificationApiResponseSchema;
 
-const certificationArraySchema = z.array(certificationResponseSchema);
-const certificationPageSchema = z
-  .object({
-    content: certificationArraySchema.optional(),
-    items: certificationArraySchema.optional(),
-    totalPages: z.number().optional(),
-    number: z.number().optional(),
-    page: z.number().optional(),
-  })
-  .passthrough();
-
-export const certificationListResponseSchema = z
-  .union([certificationArraySchema, certificationPageSchema])
-  .transform((response) => {
-    if (Array.isArray(response)) {
-      return { items: response, totalPages: 1, page: 0 };
-    }
-    return {
-      items: response.content ?? response.items ?? [],
-      totalPages: response.totalPages ?? 1,
-      page: response.number ?? response.page ?? 0,
-    };
-  });
-
 export type CertificationRequestDTO = z.infer<typeof certificationRequestSchema>;
 export type CertificationResponseDTO = z.infer<typeof certificationResponseSchema>;
 export type CertificationStatus = z.infer<typeof certificationStatusSchema>;
-export type CertificationPageDTO = z.infer<typeof certificationListResponseSchema>;

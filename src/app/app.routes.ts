@@ -45,12 +45,6 @@ export const routes: Routes = [
         loadChildren: () => import('./features/products/routes').then((module) => module.routes),
       },
       {
-        path: 'certifications',
-        canActivate: [roleGuard],
-        data: { roles: ['admin', 'auditor', 'supplier'] },
-        loadChildren: () => import('./features/certifications/routes').then((module) => module.routes),
-      },
-      {
         path: 'batches',
         loadChildren: () => import('./features/batches/routes').then((module) => module.routes),
       },

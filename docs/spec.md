@@ -126,12 +126,13 @@ O resumo exibido pode ser `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Ve
 
 ### 3.5 Auditor
 
-#### Certificações
-> Como auditor, quero validar o status das certificações enviadas pelos fornecedores, para garantir que só certificações legítimas fiquem ativas.
+#### Certificações (modal de fornecedores)
+> Como auditor, quero consultar as certificações de um fornecedor e validar seus status no contexto do fornecedor.
 
 **Critérios de aceitação:**
-- Lista de certificações com filtro "expirando em breve" (`GET /certifications/expiring`).
-- Ação de alterar status (`active`, `expired`, `suspended`, `underReview`) via `PATCH /certifications/{id}/status`.
+- O badge de certificações na lista de fornecedores abre um modal com as certificações retornadas no ranking.
+- Admin e auditor podem alterar status via `PATCH /certifications/{id}/status`.
+- Admin pode cadastrar para qualquer fornecedor e fornecedor pode cadastrar para si via `POST /suppliers/{id}/certifications`; o status é definido pela API.
 
 #### Relatórios (consulta)
 > Como auditor, quero consultar os relatórios de sustentabilidade no contexto de cada fornecedor, para validar se os dados sustentam uma certificação externa.
@@ -152,12 +153,12 @@ O resumo exibido pode ser `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Ve
 **Critérios de aceitação:**
 - Exibe dados do próprio `Supplier`; edição via `PUT /suppliers/{id}` (o próprio, não qualquer um).
 
-#### Minhas Certificações
-> Como fornecedor, quero cadastrar minhas certificações ambientais, para comprovar práticas sustentáveis.
+#### Certificações
+> Como fornecedor, quero consultar e cadastrar minhas certificações ambientais junto aos dados do meu fornecedor.
 
 **Critérios de aceitação:**
-- Lista das próprias certificações com status visível.
-- Formulário de cadastro (`POST /suppliers/{id}/certifications`) — sem campo de status (definido só pelo auditor).
+- O badge na lista de fornecedores abre a lista de certificações com status visível.
+- O formulário cadastra a certificação pela API sem campo de status.
 
 #### Meus Lotes
 > Como fornecedor, quero registrar um novo lote de produto, para iniciar o rastreamento da cadeia.
@@ -196,7 +197,7 @@ O resumo exibido pode ser `Fornecedor #42 — Nome: Fazenda Verde → Fazenda Ve
 | Ranking de Fornecedores | admin, manager, auditor, supplier | `GET /suppliers?ranked=true&limit=20&offset=0` |
 | Produtos | admin, manager | `POST/PUT/GET /products` |
 | Relatórios (modal em Fornecedores) | admin, manager, auditor; supplier (próprios) | `GET /reports?supplierId={id}`, `POST /suppliers/{id}/reports` |
-| Certificações | auditor (validar), supplier (próprias) | `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status`, `GET /certifications/expiring` |
+| Certificações (modal de fornecedores) | admin (cadastrar/validar), manager (consultar), auditor (validar), supplier (próprias) | ranking inclui certificações; `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status` |
 | Meu Perfil (Fornecedor) | supplier | `GET /suppliers?supplierId={id}`, `PUT /suppliers/{id}` |
 | Meus Lotes | supplier, admin, manager, auditor (consulta) | `POST /batches`, `GET /suppliers/{id}/batches` |
 | Etapas da Cadeia | supplier, manager, admin | `POST/GET /batches/{id}/stages`, `POST /stages/{id}/transport`, `POST /stages/{id}/emission` |
