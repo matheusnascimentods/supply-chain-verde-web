@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild, computed, inject, input, output, signal } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, QueryList, ViewChild, ViewChildren, computed, inject, input, output, signal } from '@angular/core';
 import { SupplierCertificationDTO } from '../../index.schema';
 import { CertificationsService } from '../../../certifications/index.service';
 import { CertificationStatus } from '../../../certifications/index.schema';
@@ -9,11 +9,13 @@ import { CertificationFormComponent } from '../../../certifications/form/index.c
   imports: [CertificationFormComponent],
   templateUrl: './index.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:click)': 'closeStatusMenusOnOutsideClick($event)' },
 })
 export class SupplierCertificationsModalComponent implements AfterViewInit, OnDestroy {
   private readonly service = inject(CertificationsService);
   private previousFocus: HTMLElement | null = null;
   @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
+  @ViewChildren('certificationStatusMenu') private statusMenus?: QueryList<ElementRef<HTMLDetailsElement>>;
   readonly supplierId = input.required<number>();
   readonly supplierName = input.required<string>();
   readonly certifications = input.required<SupplierCertificationDTO[]>();
@@ -22,6 +24,7 @@ export class SupplierCertificationsModalComponent implements AfterViewInit, OnDe
   readonly updated = output<void>();
   readonly dismissed = output<void>();
   readonly updatingStatusId = signal<number | null>(null);
+  readonly statusMenuPosition = signal({ top: 0, left: 0 });
   readonly error = signal('');
   readonly items = computed(() => this.certifications());
   readonly statuses: { value: CertificationStatus; label: string }[] = [
@@ -83,8 +86,9 @@ export class SupplierCertificationsModalComponent implements AfterViewInit, OnDe
     return ({ ACTIVE: 'bg-green-50 text-green-700 ring-green-600/20', EXPIRED: 'bg-red-50 text-red-700 ring-red-600/20', SUSPENDED: 'bg-slate-100 text-slate-700 ring-slate-600/20', UNDER_REVIEW: 'bg-blue-50 text-blue-700 ring-blue-600/20' })[value];
   }
 
-  setStatus(item: SupplierCertificationDTO, value: string): void {
-    const status = value as CertificationStatus;
+  setStatus(item: SupplierCertificationDTO, status: CertificationStatus, menu: HTMLDetailsElement): void {
+    menu.open = false;
+    menu.querySelector('summary')?.focus();
     if (!this.canUpdateStatus() || status === this.status(item.status)) return;
     this.error.set('');
     this.updatingStatusId.set(item.certificationId);
@@ -92,6 +96,46 @@ export class SupplierCertificationsModalComponent implements AfterViewInit, OnDe
       next: () => { this.updatingStatusId.set(null); this.updated.emit(); },
       error: () => { this.updatingStatusId.set(null); this.error.set(`Não foi possível atualizar o status de ${item.certification}.`); },
     });
+  }
+
+  positionStatusMenu(event: Event): void {
+    const menu = event.currentTarget as HTMLDetailsElement;
+    if (!menu.open) return;
+    const summary = menu.querySelector('summary');
+    if (!summary) return;
+    const bounds = summary.getBoundingClientRect();
+    const menuHeight = 176;
+    const menuWidth = 176;
+    const placeBelow = window.innerHeight - bounds.bottom >= menuHeight + 12;
+    const top = placeBelow ? bounds.bottom + 8 : Math.max(8, bounds.top - menuHeight - 8);
+    const left = Math.max(8, Math.min(bounds.right - menuWidth, window.innerWidth - menuWidth - 8));
+    this.statusMenuPosition.set({ top, left });
+  }
+
+  closeStatusMenusOnOutsideClick(event: MouseEvent): void {
+    const target = event.target as Node;
+    this.statusMenus?.forEach(({ nativeElement: menu }) => {
+      if (!menu.contains(target)) menu.open = false;
+    });
+  }
+
+  handleStatusMenuKeydown(event: KeyboardEvent, menu: HTMLDetailsElement): void {
+    if (!menu.open) return;
+    const options = Array.from(menu.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]'));
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    } else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+      event.preventDefault();
+      const currentIndex = options.indexOf(event.target as HTMLButtonElement);
+      const nextIndex = currentIndex < 0
+        ? event.key === 'ArrowUp' ? options.length - 1 : 0
+        : event.key === 'Home' ? 0
+          : event.key === 'End' ? options.length - 1
+            : (currentIndex + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+      options[nextIndex]?.focus();
+    }
   }
 
 }
