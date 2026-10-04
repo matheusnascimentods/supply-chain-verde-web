@@ -6,12 +6,13 @@ import { AppShellComponent } from './shared/components/app-shell/index.component
 export const routes: Routes = [
   {
     path: 'rastreio/:batchId',
-    title: "Rastreio",
-    loadComponent: () => import('./features/traceability').then((module) => module.TraceabilityComponent),
+    title: 'Rastreio',
+    loadComponent: () =>
+      import('./features/traceability').then((module) => module.TraceabilityComponent),
   },
   {
     path: 'login',
-    title: "Login",
+    title: 'Login',
     loadComponent: () => import('./features/auth/login').then((module) => module.LoginComponent),
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -22,8 +23,9 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        title: "Dashboard",
-        loadComponent: () => import('./features/dashboard').then((module) => module.DashboardComponent),
+        title: 'Supply Chain | Dashboard',
+        loadComponent: () =>
+          import('./features/dashboard').then((module) => module.DashboardComponent),
       },
       {
         path: 'suppliers/me',
@@ -36,16 +38,19 @@ export const routes: Routes = [
       },
       {
         path: 'suppliers',
+        title: 'Supply Chain | Fornecedores',
         loadChildren: () => import('./features/suppliers/routes').then((module) => module.routes),
       },
       {
         path: 'products',
+        title: 'Supply Chain | Produtos',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'manager'] },
         loadChildren: () => import('./features/products/routes').then((module) => module.routes),
       },
       {
         path: 'batches',
+        title: 'Supply Chain | Lotes',
         loadChildren: () => import('./features/batches/routes').then((module) => module.routes),
       },
       {
@@ -56,12 +61,14 @@ export const routes: Routes = [
       },
       {
         path: 'users',
+        title: 'Supply Chain | Usuários',
         canActivate: [roleGuard],
         data: { roles: ['admin'] },
         loadChildren: () => import('./features/users/routes').then((module) => module.routes),
       },
       {
         path: 'audit-log',
+        title: 'Supply Chain | Autidoria',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'auditor'] },
         loadComponent: () =>
@@ -69,7 +76,7 @@ export const routes: Routes = [
       },
       {
         path: '**',
-        redirectTo: 'dashboard'
+        redirectTo: 'dashboard',
       },
     ],
   },
