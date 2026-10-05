@@ -5,14 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { catchError, of, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { SessionService } from '../../../core/session/index.service';
 import { SuppliersService } from '../index.service';
-import { SupplierFormComponent } from '../form/index.component';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
 import { SupplierReportsModalComponent } from './reports-modal/index.component';
 import { SupplierCertificationsModalComponent } from './certifications-modal/index.component';
 
 const PAGE_SIZE = 20;
 
-@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierFormComponent, SupplierReportsModalComponent, SupplierCertificationsModalComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierReportsModalComponent, SupplierCertificationsModalComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierListComponent {
   private readonly service = inject(SuppliersService);
   private readonly session = inject(SessionService);
@@ -27,7 +26,6 @@ export class SupplierListComponent {
   readonly search = signal('');
   readonly offset = signal(0);
   readonly totalPages = signal(0);
-  readonly createModalOpen = signal(false);
   readonly reportsSupplier = signal<SupplierRankingResponseDTO | null>(null);
   readonly certificationsSupplier = signal<SupplierRankingResponseDTO | null>(null);
   readonly pageNumber = computed(() => this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages()));
@@ -104,14 +102,6 @@ export class SupplierListComponent {
     this.load();
   }
 
-  openCreateModal(): void {
-    this.createModalOpen.set(true);
-  }
-
-  dismissCreateModal(): void {
-    this.createModalOpen.set(false);
-  }
-
   openReports(supplier: SupplierRankingResponseDTO): void {
     this.reportsSupplier.set(supplier);
   }
@@ -145,11 +135,6 @@ export class SupplierListComponent {
   canCreateCertificationFor(supplier: SupplierRankingResponseDTO): boolean {
     const role = this.session.role();
     return role === 'admin' || (role === 'supplier' && this.currentUserId() === supplier.supplierId);
-  }
-
-  supplierCreated(): void {
-    this.createModalOpen.set(false);
-    this.load();
   }
 
   certificationLabel(item: SupplierRankingResponseDTO): string {

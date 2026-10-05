@@ -6,6 +6,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { catchError, distinctUntilChanged, finalize, map, of, startWith, switchMap, tap, timer } from 'rxjs';
 import { SuppliersService } from '../index.service';
 import { SupplierRequestDTO, ViaCepResponseDTO } from '../index.schema';
+import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../index.utils';
 
 @Component({
   selector: 'app-suppliers-form',
@@ -44,6 +45,7 @@ export class SupplierFormComponent implements AfterViewInit, OnDestroy {
   });
 
   constructor() {
+    this.watchInputFormatting();
     const id = this.route.snapshot.paramMap.get('id')
       ?? (this.route.snapshot.routeConfig?.path === 'suppliers/me' ? sessionStorage.getItem('supplierId') : null);
 
@@ -145,8 +147,8 @@ export class SupplierFormComponent implements AfterViewInit, OnDestroy {
     const value = this.form.getRawValue();
     return {
       name: value.name,
-      cnpj: value.cnpj,
-      phone: value.phone,
+      cnpj: digitsOnly(value.cnpj),
+      phone: digitsOnly(value.phone),
       address: {
         street: value.street,
         number: value.number,
@@ -185,6 +187,20 @@ export class SupplierFormComponent implements AfterViewInit, OnDestroy {
       }),
       takeUntilDestroyed(),
     ).subscribe();
+  }
+
+  private watchInputFormatting(): void {
+    const fields = [
+      [this.form.controls.cnpj, formatCnpj],
+      [this.form.controls.phone, formatPhone],
+      [this.form.controls.zipCode, formatZipCode],
+    ] as const;
+    for (const [control, formatter] of fields) {
+      control.valueChanges.pipe(startWith(control.value), distinctUntilChanged(), takeUntilDestroyed()).subscribe((value) => {
+        const formatted = formatter(value);
+        if (formatted !== value) control.setValue(formatted, { emitEvent: false });
+      });
+    }
   }
 
   private applyZipCodeResponse(response: ViaCepResponseDTO | null): void {
