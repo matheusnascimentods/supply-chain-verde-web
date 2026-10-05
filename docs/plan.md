@@ -82,9 +82,9 @@ npm run cypress:run
 - Indicadores e gráficos da dashboard respeitam a amostra e agregações realmente fornecidas pela API; não estimam séries ou totais ausentes.
 - Endpoints, regras de permissão e formatos de payload pertencem ao contrato do backend e podem evoluir independentemente; mantenha os schemas e [`spec.md`](spec.md) sincronizados quando isso ocorrer.
 
-## 8. Task 28 — fluxo multi-step de lote (planejado)
+## 8. Fluxo multi-step de lote (Task 28)
 
-O modal de criação de lote será o ponto de entrada para selecionar ou cadastrar produto e fornecedor. A implementação deve manter seleções e formulários no estado local do wizard até a revisão final e só então persistir os recursos novos, nesta ordem: produto, fornecedor e lote. IDs de respostas bem-sucedidas devem ser retidos para retomada após falhas subsequentes; não há atomicidade entre requests no contrato atual.
+O modal de criação de lote é o ponto de entrada para selecionar ou cadastrar produto e fornecedor. Seleções e formulários ficam no estado local do wizard até a revisão final e então os recursos novos são persistidos nesta ordem: produto, fornecedor e lote. IDs de respostas bem-sucedidas são retidos para retomada após falhas subsequentes. Se houver persistência parcial, o modal permanece aberto e bloqueia fechamento; é possível voltar para ajustar quantidade/data e os cadastros já salvos ficam travados para reutilização, pois não há atomicidade entre requests no contrato atual.
 
 ### Contratos e implicações de interface
 
@@ -99,4 +99,6 @@ O modal de criação de lote será o ponto de entrada para selecionar ou cadastr
 2. **Fornecedor:** formulário inline de cadastro, listagem selecionável e busca; paginação remota com `ranked=true`, seguindo a ordenação por ranking da resposta.
 3. **Revisão:** resumo editável dos dados escolhidos e confirmação de criação.
 
-Seguir os padrões dos modais existentes para acessibilidade, foco, teclado, backdrop, carregamento, validação, erros e layout responsivo. Remover a rota/entrada de navegação da tela Produtos e o modal de criação de fornecedor da gestão de fornecedores após o novo fluxo assumir esses cadastros; conservar serviços e modelos utilizados por outros fluxos.
+O modal segue os padrões existentes para acessibilidade, foco, teclado, backdrop, carregamento, validação, erros e layout responsivo. A rota/entrada de navegação da tela Produtos e o modal de criação de fornecedor na gestão de fornecedores foram removidos; os serviços e modelos continuam disponíveis para os lotes e outros fluxos.
+
+Com a remoção da tela de Produtos, os seis assets exclusivos em `public/images/products/` foram removidos após confirmar que não havia outras referências no frontend.
