@@ -1,241 +1,261 @@
-# Supply Chain Verde — Frontend
+# 🌱 Supply Chain Verde — Frontend de Rastreabilidade & Sustentabilidade
 
-SPA Angular para rastreabilidade de cadeias de suprimentos sustentáveis. A aplicação consome a API REST do projeto `supply-chain-verde-api` e atende consumidores públicos, fornecedores, auditores, gestores e administradores.
+![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-22-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![License](https://img.shields.io/badge/License-Acad%C3%AAmica-yellow?style=for-the-badge)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)
 
-## Status
+> Rastreabilidade pública de lotes, gestão de fornecedores e acompanhamento da sustentabilidade da cadeia de suprimentos.
 
-O frontend implementa autenticação, rastreabilidade pública, dashboards por perfil e as principais áreas de domínio. O andamento e as próximas etapas estão no checklist [`docs/tasks.md`](docs/tasks.md).
+O **Supply Chain Verde Web** é uma Single Page Application desenvolvida em Angular que consome a [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api). A interface conecta consumidores, fornecedores, gestores, auditores e administradores aos fluxos de rastreabilidade e sustentabilidade do sistema.
 
-O conceito visual e os fluxos principais estão no arquivo do Figma:
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Operador / Consumidor
+    participant Web as Frontend Angular
+    participant API as API REST
+    participant DB as PostgreSQL
 
-[Supply Chain Verde — Login](https://www.figma.com/design/RwTUc1H65VlQ0qsKmBu48A/Supply-Chain-Verde---Login?node-id=0-1)
+    User->>Web: Abre rastreio público ou área autenticada
+    Web->>API: GET /api/v1/batches/{batchId}/traceability
+    API->>DB: Consulta lote, etapas e emissões
+    DB-->>API: Dados consolidados
+    API-->>Web: JSON da jornada e pegada de carbono
+    Web->>Web: Valida resposta com Zod e apresenta timeline
 
-As telas foram exportadas para [`screenshots/`](screenshots/) usando o MCP do Composio.
-
-## Telas
-
-### Login
-
-![Tela de login](/docs/screenshots/01-login.png)
-
-### Rastreabilidade pública
-
-![Tela de rastreabilidade pública](/docs/screenshots/02-traceability.png)
-
-### Dashboard
-
-![Dashboard](/docs/screenshots/03-dashboard.png)
-
-### Lista de fornecedores
-
-![Lista de fornecedores](/docs/screenshots/04-suppliers-list.png)
-
-### Ranking de fornecedores
-
-![Ranking de fornecedores](/docs/screenshots/05-suppliers-ranking.png)
-
-### Formulário de fornecedor
-
-![Formulário de fornecedor](/docs/screenshots/06-supplier-form.png)
-
-### Lista de produtos
-
-![Lista de produtos](/docs/screenshots/07-products-list.png)
-
-### Formulário de produto
-
-![Formulário de produto](/docs/screenshots/08-product-form.png)
-
-As certificações são consultadas e gerenciadas no modal aberto pelo badge de certificações na lista de fornecedores.
-
-### Lista de lotes
-
-![Lista de lotes](/docs/screenshots/10-batches-list.png)
-
-### Etapas da cadeia
-
-![Etapas da cadeia](/docs/screenshots/11-chain-stages-list.png)
-
-### Nova etapa sem transporte
-
-![Nova etapa sem transporte](/docs/screenshots/12-chain-form-no-transport.png)
-
-### Nova etapa com transporte
-
-![Nova etapa com transporte](/docs/screenshots/13-chain-form-transport.png)
-
-### Cálculo de emissão
-
-![Cálculo de emissão](/docs/screenshots/14-chain-form-calculate-emission.png)
-
-### Emissão calculada
-
-![Emissão calculada](/docs/screenshots/15-chain-form-emission-calculated.png)
-
-### Lista de relatórios
-
-![Lista de relatórios](/docs/screenshots/16-reports-list.png)
-
-### Lista de usuários
-
-![Lista de usuários](/docs/screenshots/17-users-list.png)
-
-As imagens documentam uma aplicação desktop de 1440 px de largura, com navegação lateral nas telas autenticadas, cartões e tabelas para os dados operacionais e fluxo progressivo para registro de etapas e cálculo de emissões.
-
-## Objetivo do produto
-
-Permitir que cada lote tenha uma jornada rastreável, desde a produção até o varejo, com fornecedores, certificações, etapas logísticas e pegada de carbono associados. Consumidores consultam a origem por uma URL pública ou QR Code; usuários internos trabalham conforme o perfil de acesso.
-
-## Perfis de acesso
-
-| Perfil | Responsabilidades |
-| --- | --- |
-| **Público** | Consulta a rastreabilidade de um lote sem autenticação |
-| **admin** | Administração de usuários, fornecedores, produtos e auditoria |
-| **manager** | Fornecedores, produtos, ranking e geração de relatórios |
-| **auditor** | Validação de certificações, relatórios e auditoria do sistema |
-| **supplier** | Perfil próprio, certificações, lotes, etapas e relatórios próprios |
-
-## Telas e fluxos principais
-
-### Autenticação
-
-- Tela de login com email e senha.
-- Requisição `POST /auth/login`.
-- Mensagem genérica para credenciais inválidas, sem revelar qual campo falhou.
-- Sessão armazenada em `sessionStorage`, com o papel do usuário derivado do JWT.
-- Expiração do JWT encerra a sessão e redireciona para `/login`.
-
-### Rastreabilidade pública
-
-Disponível em `/rastreio/:batchId`, sem autenticação. Exibe produto, fornecedor, linha do tempo da cadeia, endereços de origem e destino, transporte e emissões de carbono por etapa e no total. Um lote inexistente deve gerar uma mensagem amigável.
-
-### Área autenticada
-
-Após o login, o usuário acessa um dashboard adaptado ao papel:
-
-- **admin:** usuários e auditoria do sistema;
-- **manager:** fornecedores, ranking, produtos e relatórios;
-- **auditor:** certificações, relatórios e auditoria;
-- **supplier:** perfil, certificações, lotes, etapas e relatórios próprios.
-
-O fluxo operacional do fornecedor é:
-
-```text
-Novo lote → nova etapa → transporte (quando aplicável) → cálculo de emissão
+    User->>Web: Envia email e senha
+    Web->>API: POST /api/v1/auth/login
+    API-->>Web: JWT e dados do usuário
+    Web->>Web: Persiste sessão em sessionStorage
+    Web->>API: Requisições com Authorization: Bearer <token>
 ```
 
-## Sitemap e API principal
+---
 
-| Rota/tela | Perfis | Endpoint(s) |
-| --- | --- | --- |
-| Rastreabilidade do lote | Público | `GET /batches/{id}/traceability`, `GET /batches/{id}/carbon-footprint` |
-| Login | Todos | `POST /auth/login` |
-| Dashboard | Autenticados | Conteúdo por perfil |
-| Usuários | admin | `POST /users`, `GET /users/me`, `PATCH /users/{id}/role` |
-| Auditoria | admin, auditor | `GET /audit-logs` |
-| Fornecedores | admin, manager | `POST/PUT/GET /suppliers`, `GET /suppliers?supplierId={id}` |
-| Ranking | admin, manager, auditor, supplier | `GET /suppliers?ranked=true&limit=20&offset=0` |
-| Produtos | admin, manager | `POST/PUT/GET /products` |
-| Relatórios (modal na gestão de fornecedores) | admin, manager, auditor; supplier somente os próprios | `GET /reports?supplierId={id}`, `POST /suppliers/{id}/reports` |
-| Certificações (modal de fornecedores) | admin, manager, auditor, supplier | ranking com certificações embutidas, `POST /suppliers/{id}/certifications`, `PATCH /certifications/{id}/status` |
-| Lotes | supplier, admin, manager, auditor | `POST /batches`, `GET /suppliers/{id}/batches` |
-| Etapas da cadeia | supplier, manager, admin | `POST/GET /batches/{id}/stages`, `POST /stages/{id}/transport`, `POST /stages/{id}/emission` |
+## ✨ O Problema
 
-### Consumo da auditoria
+Informações sobre origem, transporte, certificações e emissões costumam ficar espalhadas entre sistemas e documentos. Isso dificulta acompanhar a trajetória de um produto, comparar fornecedores e apresentar dados de sustentabilidade de forma acessível ao consumidor.
 
-A tela de auditoria é somente leitora: carrega `GET /audit-logs` com intervalo inclusivo, operação/email opcionais e paginação `limit`/`offset`. Cada item pode incluir `affectedEntityId`, `beforeData` e `afterData`; a UI formata esses campos para mostrar o ID da entidade e somente os valores alterados. Eventos sem snapshots permanecem consultáveis e exibem que os detalhes não estão disponíveis. O CSV reutiliza a mesma descrição da tabela e escapa delimitadores, aspas e quebras de linha.
+## 🚀 A Solução
 
-A identidade do ator não é enviada pelo navegador em chamadas de escrita. A API obtém o `userId` da sessão JWT e o propaga internamente para a transação PostgreSQL; triggers do banco persistem os eventos. O frontend não é responsável por criar ou atribuir logs. A decisão e os limites de confiança estão descritos na [ADR de auditoria da API](../supply-chain-verde-api/docs/adr/0001-auditoria-no-postgresql.md).
+O frontend oferece uma interface integrada à API para acompanhar lotes da produção ao varejo e operar os principais recursos da cadeia:
 
-## Arquitetura planejada
+- **Rastreabilidade pública:** consulta de lote sem autenticação, incluindo etapas, transporte e pegada de carbono.
+- **Visão operacional:** dashboard com indicadores e lotes recentes fornecidos pela API.
+- **Gestão de fornecedores:** busca, ranking, certificações e relatórios no contexto de cada fornecedor.
+- **Gestão da cadeia:** produtos, lotes, timelines de etapas, dados de transporte e emissões.
+- **Governança:** gestão de usuários e consulta de auditoria com exportação CSV.
 
-O projeto usa organização por feature e componentes standalone:
+## 🎯 Diferenciais
+
+- **Consulta acessível ao consumidor:** página pública de rastreabilidade, acessível pela rota `/rastreio/:batchId`.
+- **Dados validados na entrada:** schemas Zod verificam respostas da API antes de atualizarem as telas.
+- **Experiência por perfil:** guards e navegação apresentam as áreas adequadas a cada papel; a API valida as permissões efetivas.
+- **Informação contextual:** certificações e relatórios são consultados em modais associados ao fornecedor; o ranking integra a própria listagem.
+- **Auditoria compreensível:** eventos e snapshots retornados pela API são formatados para leitura humana na interface e no CSV.
+- **Interface responsiva:** navegação superior compartilhada, modais e cards adaptáveis a diferentes larguras.
+
+## 🛠️ Stack Tecnológica
+
+![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?style=flat-square&logo=vitest&logoColor=white)
+![Cypress](https://img.shields.io/badge/Cypress-16-17202C?style=flat-square&logo=cypress&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-4-3E67B1?style=flat-square)
+
+| Camada | Tecnologia |
+|---|---|
+| Framework | Angular 21 (standalone components e router) |
+| Linguagem | TypeScript 5.9 |
+| Estilos | Tailwind CSS 4 |
+| Formulários | Angular Reactive Forms |
+| Contratos e validação | Zod 4 |
+| HTTP | Angular `HttpClient` e interceptor funcional |
+| Estado | Angular Signals e services por feature |
+| Testes unitários | Vitest |
+| Testes ponta a ponta | Cypress |
+
+## 🏛️ Arquitetura (Feature-based)
+
+O frontend organiza a aplicação por domínio. Cada feature reúne seus componentes, serviços, schemas e testes; funcionalidades transversais ficam em `core` e `shared`. O roteador carrega as features sob demanda.
+
+```mermaid
+flowchart LR
+    Browser[Navegador] --> Routes[Angular Router]
+    Routes --> Guards[Auth Guard / Role Guard]
+    Guards --> Features[Features]
+    Features --> Services[Services por feature]
+    Services --> HTTP[HttpClient]
+    HTTP --> Interceptor[Auth Interceptor]
+    Interceptor --> API[Supply Chain Verde API]
+    Services --> Zod[Validação Zod]
+    Zod --> Signals[Angular Signals]
+    Signals --> Features
+```
+
+### Status de Implementação
+
+- **Funcionalidades principais concluídas:** autenticação, dashboard, rastreabilidade pública, fornecedores/ranking, produtos, lotes/etapas, usuários, certificações, relatórios e auditoria.
+- **Interface atual:** navegação superior responsiva, footer compartilhado, cards de lotes com timeline e modais contextuais.
+- **Qualidade automatizada:** specs unitários, cenários Cypress e CI para testes, build, auditoria de dependências e lint.
+- **Validação manual pendente:** navegação com contas de cada papel requer API e credenciais de demonstração disponíveis.
+
+### Principais Áreas da Aplicação
+
+- **`auth`**: login e integração com a sessão.
+- **`dashboard`**: indicadores globais e lotes recentes.
+- **`traceability`**: consulta pública e gráficos da pegada de carbono.
+- **`suppliers`**: fornecedores, ranking e modais de certificações/relatórios.
+- **`products`**: catálogo e formulários de produto.
+- **`batches` e `chain`**: lotes, etapas, transporte e emissões.
+- **`users` e `audit-log`**: gestão de usuários e consulta de eventos.
+
+## 📁 Estrutura do Projeto
 
 ```text
 src/app/
-├── core/       # sessão, guards e interceptors
-├── shared/     # componentes reutilizáveis
-├── features/   # auth, traceability, dashboard e domínios
-└── environments/
+├── core/                       # sessão, guards e interceptor
+├── shared/components/          # shell, navegação, footer e componentes comuns
+├── features/
+│   ├── auth/                   # autenticação
+│   ├── dashboard/              # indicadores e lotes recentes
+│   ├── traceability/            # rastreabilidade pública
+│   ├── suppliers/               # fornecedores, ranking e modais contextuais
+│   ├── products/                # catálogo e formulários
+│   ├── batches/                 # listagem e criação de lotes
+│   ├── chain/                   # etapas, transporte e emissão
+│   ├── certifications/          # schemas e serviço de certificações
+│   ├── reports/                 # schemas e serviço de relatórios
+│   ├── users/                   # gestão de usuários
+│   └── audit-log/               # auditoria e exportação CSV
+└── environments/                # URL da API por ambiente
+
+cypress/e2e/                     # fluxos ponta a ponta
+docs/                            # especificação, arquitetura e histórico de tasks
 ```
 
-Decisões técnicas:
+## 📚 Documentação do Projeto
 
-- Angular 21 com standalone components e sem `NgModule`;
-- Signals e services por feature, sem NgRx;
-- Reactive Forms;
-- Tailwind CSS;
-- Zod para validar respostas da API em runtime e derivar tipos/enums;
-- `HttpInterceptorFn` para anexar o JWT e tratar `401`/`403`;
-- guards funcionais para autenticação e autorização por papel;
-- lazy loading nas rotas de features;
-- Cypress para os fluxos E2E principais.
+| Documento | Conteúdo |
+|---|---|
+| [`docs/spec.md`](docs/spec.md) | Funcionalidades, perfis, rotas e fluxos atuais |
+| [`docs/plan.md`](docs/plan.md) | Arquitetura técnica e decisões atuais |
+| [`docs/tasks.md`](docs/tasks.md) | Histórico de implementação e pendências |
 
-## Como executar
+### Pipeline de Qualidade
+
+O workflow de GitHub Actions roda em pull requests e em pushes para `main`:
+
+- instalação reproduzível com `npm ci`;
+- testes unitários;
+- build de produção;
+- auditoria de dependências (`npm audit`);
+- análise estática com ESLint.
+
+## ⚡ Quick Start (Frontend + API)
 
 ### Pré-requisitos
 
-- Node.js compatível com Angular 21;
-- npm 10 ou superior;
-- API backend disponível, quando forem implementadas as chamadas reais.
+- [Node.js 22](https://nodejs.org/) e npm 10 ou superior;
+- API Supply Chain Verde em execução localmente;
+- PostgreSQL configurado para a API (veja o [Quick Start do backend](https://github.com/matheusnascimentods/supply-chain-verde-api#-quick-start-com-docker-compose)).
 
-### Instalação
+### 1. Clonar o repositório
 
 ```bash
-npm install
+git clone https://github.com/matheusnascimentods/supply-chain-verde-web.git
+cd supply-chain-verde-web
 ```
 
-### Servidor de desenvolvimento
+### 2. Iniciar a API
+
+Siga as instruções de execução e configuração no [README da API](https://github.com/matheusnascimentods/supply-chain-verde-api#-quick-start-com-docker-compose). Por padrão, o frontend espera a API em `http://localhost:8080/api/v1`.
+
+### 3. Instalar dependências e executar o frontend
 
 ```bash
+npm ci
 npm start
 ```
 
-A aplicação fica disponível em `http://localhost:4200/`.
+A aplicação ficará disponível em **`http://localhost:4200`**.
 
-### Build de produção
+### Usuários Seed
+
+As migrations seed da API criam usuários para desenvolvimento e demonstração. A senha de todos os usuários seed é:
+
+```text
+rolocompressor06
+```
+
+Use um dos emails cadastrados nas migrations seed do backend. Essa credencial é exclusiva para desenvolvimento/demonstração e não deve ser usada em ambientes compartilhados ou de produção. Consulte a seção [Usuários Seed](https://github.com/matheusnascimentods/supply-chain-verde-api#usu%C3%A1rios-seed) do README da API.
+
+## 💻 Comandos Úteis de Desenvolvimento
 
 ```bash
+# Iniciar o servidor Angular
+npm start
+
+# Criar build de produção
 npm run build
-```
 
-### Testes unitários
-
-```bash
+# Rodar testes unitários
 npm test
-```
 
-### Testes E2E (Cypress)
+# Rodar lint
+npm run lint
 
-Inicie o servidor em um terminal:
-
-```bash
-npm start
-```
-
-Em outro terminal, execute a suíte ou abra o Cypress interativo:
-
-```bash
+# Executar testes E2E (com o servidor iniciado em outro terminal)
 npm run cypress:run
+
+# Abrir Cypress interativo
 npm run cypress:open
 ```
 
-Os cenários E2E simulam os endpoints do backend para cobrir login, rastreabilidade pública e o fluxo de lote, etapa, transporte e emissão.
+## 🔌 API Reference (Principais Recursos)
 
-## Documentação do projeto
+O frontend consome os endpoints versionados sob `/api/v1`. Os contratos completos, permissões e parâmetros estão no [Swagger UI](http://localhost:8080/swagger-ui.html) da API em execução.
 
-- [`docs/spec.md`](docs/spec.md): requisitos funcionais, perfis, telas, sitemap e fluxos.
-- [`docs/plan.md`](docs/plan.md): arquitetura Angular, estado, autenticação, contratos e convenções.
-- [`docs/tasks.md`](docs/tasks.md): checklist de implementação por fases.
+| Recurso/tela | Integrações principais |
+|---|---|
+| Dashboard | Resumo de indicadores e lotes recentes |
+| Autenticação | `POST /auth/login`, usuário atual |
+| Fornecedores e ranking | Busca, CRUD e ranking paginado |
+| Produtos | Busca paginada, cadastro e atualização |
+| Certificações | Listagem contextual e cadastro/atualização de status |
+| Lotes e rastreabilidade | CRUD de lotes; jornada pública e pegada de carbono |
+| Etapas da cadeia | Etapas, transporte e cálculo de emissões |
+| Relatórios ESG | Geração e listagem paginada por fornecedor |
+| Usuários | Listagem, cadastro, usuário atual e alteração de perfil |
+| Auditoria | Consulta paginada com filtros e exportação CSV no navegador |
 
-## Fora do escopo do MVP
+As certificações e relatórios são exibidos em modais da área de fornecedores. A interface de lotes exibe timeline e ações da cadeia nos fluxos associados ao lote; os detalhes de autorização continuam definidos pela API.
 
-- Exportação de relatórios em PDF ou CSV;
-- dashboards com múltiplos gráficos elaborados;
-- autocadastro público de fornecedores;
-- refresh token e renovação automática de sessão.
+## 🗂️ Variáveis de Ambiente & Configuração
 
-## Licença
+| Configuração | Descrição | Valor local |
+|---|---|---|
+| `src/environments/environment.ts` → `apiUrl` | URL base da API no desenvolvimento | `http://localhost:8080/api/v1` |
+| `src/environments/environment.prod.ts` → `apiUrl` | URL base da API em produção | Definida conforme o ambiente de deploy |
+| `CORS_ALLOWED_ORIGINS` (API) | Origem permitida para o frontend | `http://localhost:4200` |
+
+## 🔒 Segurança & Boas Práticas
+
+- **Sessão JWT:** o token fica em `sessionStorage` e é enviado como Bearer token pelo interceptor HTTP.
+- **Tratamento de sessão inválida:** respostas `401`/`403` encerram a sessão e encaminham o usuário ao login.
+- **Controle por papel:** guards e navegação limitam a experiência por perfil; a API aplica a autorização final.
+- **Sem refresh token:** depois que o JWT expira, o usuário precisa autenticar novamente.
+- **Auditoria somente leitura:** o frontend apresenta eventos fornecidos pela API; não cria logs nem define a identidade do ator.
+- **Credenciais seed:** a senha de demonstração só deve ser usada localmente, nunca em ambiente compartilhado ou produtivo.
+
+## 🤝 Contribuindo
+
+1. Crie uma branch para a alteração (`git checkout -b feature/nome-da-feature`).
+2. Implemente a mudança e atualize a documentação relacionada.
+3. Rode `npm test`, `npm run build` e `npm run lint`.
+4. Envie a branch e abra um pull request descrevendo contexto e validações realizadas.
+
+## 📄 Licença
 
 Projeto acadêmico do grupo Supply Chain Verde.
