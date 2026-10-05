@@ -20,7 +20,8 @@ describe('Login', () => {
     cy.location('pathname').should('eq', '/dashboard');
     cy.contains('h1', 'Bem-vindo(a)').should('be.visible');
     cy.contains('Gestor').should('be.visible');
-    cy.contains('a', 'Produtos').should('be.visible');
+    cy.contains('a', 'Produtos').should('not.exist');
+    cy.contains('a', 'Lotes').should('be.visible');
   });
 
   it('shows a generic message when credentials are rejected', () => {
