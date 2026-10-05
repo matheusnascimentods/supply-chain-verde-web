@@ -11,8 +11,8 @@ Oferecer uma interface para acompanhar a jornada de lotes e as informações de 
 | Perfil | Capacidades na interface |
 |---|---|
 | Público | Consultar rastreabilidade e pegada de carbono por lote, sem autenticação |
-| `admin` | Gerenciar usuários, fornecedores, produtos, lotes, etapas e auditoria |
-| `manager` | Gerenciar fornecedores e produtos, consultar ranking/relatórios e operar lotes/etapas conforme a API |
+| `admin` | Gerenciar usuários, fornecedores, produtos inline no fluxo de lote, lotes, etapas e auditoria |
+| `manager` | Consultar/editar fornecedores, consultar ranking/relatórios e operar etapas conforme a API; criação de lote indisponível pelo contrato atual |
 | `auditor` | Consultar auditoria, ranking, certificações, relatórios e lotes; validar certificações conforme a API |
 | `supplier` | Consultar/editar o perfil próprio, gerenciar certificações próprias e operar seus lotes/etapas permitidos |
 
@@ -32,10 +32,10 @@ Em `/rastreio/:batchId`, sem login, exibe produto, fornecedor, etapas em linha d
 
 ### 3.3 Gestão operacional
 
-- **Fornecedores:** listagem com busca e paginação, cards dos três primeiros do ranking, edição e acesso contextual a certificações e relatórios. Criação/edição ocorre em modal quando disponível na interface.
+- **Fornecedores:** listagem com busca e paginação, cards dos três primeiros do ranking, edição e acesso contextual a certificações e relatórios. Os formulários formatam CNPJ e telefone durante a digitação e enviam esses campos somente com dígitos. O CEP é consultado no ViaCEP para preencher logradouro, bairro, cidade e UF no cadastro inline do lote e no formulário de cadastro; o usuário pode revisar os campos. A edição permanece na gestão de fornecedores.
 - **Certificações:** consulta no modal do fornecedor; criação e atualização de status aparecem de acordo com perfil e resposta da API. Não há tela dedicada de certificações.
-- **Produtos:** cards responsivos, imagens por categoria, busca/paginação e criação em modal.
-- **Lotes:** cards paginados com etapa atual e timeline completa, transporte e emissões. Criação de lote e inclusão de etapa ocorrem em modais; transporte é condicional ao tipo/fluxo da etapa e o cálculo de emissão segue as ações disponíveis para o perfil.
+- **Produtos:** não há tela dedicada. O produto existente é escolhido pela busca/listagem paginada ou cadastrado inline no primeiro passo da criação de lote.
+- **Lotes:** cards paginados com etapa atual e timeline completa, transporte e emissões. A criação usa um modal multi-step com produto, fornecedor e revisão; inclusão de etapa permanece em modal. Transporte é condicional ao tipo/fluxo da etapa e o cálculo de emissão segue as ações disponíveis para o perfil.
 - **Relatórios:** geração por período e consulta paginada no modal do fornecedor. A contagem exibida na listagem vem do resumo de fornecedores; a coleção é carregada sob demanda. Não há página dedicada nem detalhe individual.
 - **Usuários:** listagem paginada, busca por email, criação em modal e alteração de papel para administradores.
 - **Auditoria:** consulta somente leitura com período, operação e email opcionais, paginação e exportação CSV. A tabela e o CSV apresentam resumo legível dos snapshots disponibilizados pela API; o frontend não cria eventos nem envia a identidade do ator.
@@ -53,7 +53,6 @@ As telas autenticadas compartilham navegação superior e footer. O footer apare
 | `/dashboard` | Autenticado | Indicadores e atividade recente |
 | `/suppliers` | Perfis conforme autorização | Fornecedores, ranking, certificações e relatórios contextuais |
 | `/suppliers/me` | `supplier` | Perfil do fornecedor autenticado |
-| `/products` | Perfis conforme autorização | Catálogo e cadastro de produtos |
 | `/batches` | Autenticado; ações condicionadas | Lotes e fluxo de etapas |
 | `/batches/:batchId/stages` | `admin`, `manager`, `supplier` | Etapas do lote |
 | `/users` | `admin` | Gestão de usuários |
@@ -64,5 +63,15 @@ O ranking está integrado a `/suppliers`; certificações e relatórios são mod
 ## 5. Integrações principais
 
 O frontend consome autenticação, dashboard, fornecedores/ranking, produtos, certificações, lotes, etapas/transporte/emissões, relatórios, usuários, auditoria e rastreabilidade pública da API REST. A base de desenvolvimento é configurada em `src/environments/environment.ts`; os schemas Zod das features validam as respostas usadas pela aplicação.
+
+## 6. Fluxo multi-step de criação de lote (Task 28)
+
+O modal de lote tem três passos: **Produto**, **Fornecedor** e **Revisão**. Os dois primeiros combinam formulário de cadastro inline, busca e seleção de itens existentes; a seleção fica em memória até a confirmação. O formulário do produto inclui os dados cadastrais definidos pela API e, no contexto do lote, data de produção e quantidade. O passo de fornecedor reutiliza os campos cadastrais e de endereço do formulário atual. Para o perfil `supplier`, o fornecedor vinculado à sessão é carregado e fixado. A revisão apresenta produto, fornecedor, data e quantidade antes do envio.
+
+Na confirmação, criar primeiro o produto se for novo, depois o fornecedor se for novo e, com os IDs retornados, enviar `POST /api/v1/batches` com `productId`, `supplierId`, `quantity` e `producedAt`. Cada criação é uma request independente: a API não oferece transação que englobe produto, fornecedor e lote. Se uma etapa posterior falhar, manter os IDs e seleções já confirmados no estado do wizard e indicar o recurso persistido. É possível voltar para ajustar os dados do lote; recursos já criados ficam travados para reutilização. A janela não permite descartar os dados parciais até concluir ou retentar o lote, evitando duplicações. O lote só é considerado criado quando sua request retorna sucesso.
+
+**Limites do contrato e permissões atuais:** `GET /api/v1/products` aceita `limit`, `offset` e `search`, oferecendo busca e paginação no servidor. Para fornecedores, usar `GET /api/v1/suppliers?ranked=true&limit=20&offset=0` (com `search` opcional): esse modo retorna itens paginados e ranqueados, incluindo os dados de fornecedor necessários à seleção. O endpoint padrão `GET /api/v1/suppliers` sem `ranked=true` continua retornando a coleção sem envelope paginado. A lista do wizard seguirá a ordenação de ranking nesse modo. `POST /api/v1/products` e `POST /api/v1/suppliers` aceitam os respectivos DTOs atuais; `POST /api/v1/batches` recebe os quatro campos acima. As permissões atuais permitem cadastrar produto/fornecedor a `ADMIN` e `MANAGER`, mas criar lote a `ADMIN` e `SUPPLIER`; portanto, somente `ADMIN` consegue executar as três criações em sequência. O fluxo deve respeitar os perfis e expor apenas ações autorizadas, sem presumir compatibilidade de permissões entre endpoints.
+
+O modal segue os padrões existentes de overlay, cabeçalho, cartões/bordas discretas, foco contido, fechamento por teclado/backdrop e responsividade. A tela Produtos e sua rota/entrada de navegação foram removidas; os serviços e schemas permanecem para o wizard e outros fluxos. O modal de criação de fornecedor também foi removido da gestão de fornecedores. Os arquivos de imagem exclusivos dos cards de Produtos foram eliminados por não terem mais consumidores.
 
 Para detalhes atualizados de payloads, permissões e paginação, consulte a documentação da API. O checklist e a evolução das telas estão em [`tasks.md`](tasks.md).
