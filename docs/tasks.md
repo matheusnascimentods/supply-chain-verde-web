@@ -1,10 +1,10 @@
-# tasks.md — Supply Chain Verde (Frontend)
+# Histórico de implementação — Supply Chain Verde Web
 
-> Checklist de implementação, derivado do `plan.md`, ordenado por dependência. Marque `[x]` conforme for concluindo. Contratos de schema em `plan.md` (seção 8); rotas e perfis em `spec.md` (seção 4).
+> Registro cumulativo das entregas. As fases iniciais e Tasks 12–26 foram implementadas; as descrições de design abaixo preservam o contexto original e as referências usadas na época. Para o estado funcional e técnico atual, consulte [`spec.md`](spec.md) e [`plan.md`](plan.md).
 
 **Como usar em dupla:** a partir do fim da Fase 2 (Core + Shared), as features das Fases 4 e 6 não dependem umas das outras — só de `core`/`shared` — então dá pra dividir por pessoa a partir daí. `traceability` (pública) também pode ser feita em paralelo com `auth`, já que não depende de sessão.
 
-**Sobre wireframes/design visual:** por decisão do time, o desenho de tela fica para o final — este checklist cobre a implementação funcional; o polimento visual entra depois de tudo aqui estar de pé.
+**Status atual:** funcionalidades, redesigns, navegação, modais contextuais, paginação, auditoria legível e footer global estão implementados. A validação manual ponta a ponta com usuários de cada perfil continua pendente, pois depende de API e sessões de cada papel.
 
 ---
 
@@ -227,6 +227,8 @@ _Depende de: todas as features da Fase 6 existirem para o roteamento fazer senti
 - [ ] Testar manualmente a navegação com um usuário de cada `role`
 
 _A navegação manual por perfil requer sessão/API e navegador, indisponíveis neste ambiente; a compilação de produção foi verificada._
+
+> Pendência operacional: validar manualmente com uma conta de cada papel quando API e credenciais estiverem disponíveis.
 
 ---
 
@@ -537,3 +539,13 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
   - **Posicionamento:** em páginas curtas, manter o footer no fim da janela; em páginas longas, posicioná-lo após o conteúdo, sem cobrir ou reduzir a área rolável da tela.
   - **Responsividade:** em telas estreitas, permitir que os textos inferiores quebrem/reorganizem em linhas legíveis, preservando marca, hierarquia e espaçamento sem overflow horizontal.
   - **Acessibilidade e consistência:** usar elemento semântico `<footer>`, contraste legível, texto selecionável e descrição acessível para o ícone quando necessário. Evitar duplicar o footer em componentes de tela ou no shell autenticado.
+
+---
+
+## Task 27 — Consolidação da documentação (branch `chore/docs`)
+
+- [x] Atualizar o README para descrever o produto e as funcionalidades implementadas, seguindo a organização do README da API.
+- [x] Remover capturas de tela do README; documentação visual permanece fora da página inicial do projeto.
+- [x] Alinhar a especificação funcional a rotas, perfis e fluxos atuais, incluindo ranking integrado, modais contextuais de certificações/relatórios, cards de lotes e auditoria/CSV.
+- [x] Atualizar o plano técnico para refletir estrutura Angular atual, stack, autenticação, validação, paginação e testes.
+- [x] Preservar neste arquivo o histórico das tasks e destacar a única pendência conhecida: navegação manual por perfil com API disponível.
