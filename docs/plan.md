@@ -81,3 +81,22 @@ npm run cypress:run
 - Sem refresh token: quando a sessão expira, o usuário precisa autenticar novamente.
 - Indicadores e gráficos da dashboard respeitam a amostra e agregações realmente fornecidas pela API; não estimam séries ou totais ausentes.
 - Endpoints, regras de permissão e formatos de payload pertencem ao contrato do backend e podem evoluir independentemente; mantenha os schemas e [`spec.md`](spec.md) sincronizados quando isso ocorrer.
+
+## 8. Task 28 — fluxo multi-step de lote (planejado)
+
+O modal de criação de lote será o ponto de entrada para selecionar ou cadastrar produto e fornecedor. A implementação deve manter seleções e formulários no estado local do wizard até a revisão final e só então persistir os recursos novos, nesta ordem: produto, fornecedor e lote. IDs de respostas bem-sucedidas devem ser retidos para retomada após falhas subsequentes; não há atomicidade entre requests no contrato atual.
+
+### Contratos e implicações de interface
+
+- Produtos: `GET /products?limit=&offset=&search=` oferece paginação/busca remotas; `POST /products` recebe `name`, `category`, `unit` e `description` e retorna o produto com `productId`.
+- Fornecedores: usar `GET /suppliers?ranked=true&limit=20&offset=0` e `search` opcional para obter a listagem paginada no servidor. A resposta é ranqueada e inclui os dados do fornecedor; o step deve aceitar essa ordenação. `GET /suppliers` sem `ranked=true` permanece uma coleção simples, sem envelope paginado.
+- Criação: `POST /suppliers` recebe `name`, `cnpj`, `address` e `phone`; `POST /batches` recebe `productId`, `supplierId`, `quantity` e `producedAt`.
+- Permissões da configuração atual da API: produto/fornecedor podem ser criados por `ADMIN` e `MANAGER`; lote, por `ADMIN` e `SUPPLIER`. O controle da interface precisa refletir cada endpoint, e não presumir que quem pode criar cadastros pode criar lote. Fluxo completo com criação dos três recursos é permitido somente a `ADMIN` hoje.
+
+### Estrutura do modal
+
+1. **Produto:** formulário de cadastro inline e campos do lote `producedAt`/`quantity`, seguidos da listagem selecionável com busca e paginação; usar paginação remota para produtos existentes.
+2. **Fornecedor:** formulário inline de cadastro, listagem selecionável e busca; paginação remota com `ranked=true`, seguindo a ordenação por ranking da resposta.
+3. **Revisão:** resumo editável dos dados escolhidos e confirmação de criação.
+
+Seguir os padrões dos modais existentes para acessibilidade, foco, teclado, backdrop, carregamento, validação, erros e layout responsivo. Remover a rota/entrada de navegação da tela Produtos e o modal de criação de fornecedor da gestão de fornecedores após o novo fluxo assumir esses cadastros; conservar serviços e modelos utilizados por outros fluxos.
