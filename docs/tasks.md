@@ -549,3 +549,33 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 - [x] Alinhar a especificação funcional a rotas, perfis e fluxos atuais, incluindo ranking integrado, modais contextuais de certificações/relatórios, cards de lotes e auditoria/CSV.
 - [x] Atualizar o plano técnico para refletir estrutura Angular atual, stack, autenticação, validação, paginação e testes.
 - [x] Preservar neste arquivo o histórico das tasks e destacar a única pendência conhecida: navegação manual por perfil com API disponível.
+
+---
+
+## Task 28 — Criação de lote em fluxo multi-step
+
+- [x] Substituir o modal atual por um wizard de três passos, seguindo o estilo dos modais existentes: Produto, Fornecedor e Revisão. Preservar acessibilidade, foco, teclado, backdrop, responsividade e estados de carregamento/erro.
+- [x] **Produto:** apresentar primeiro o formulário de criação inline com nome, descrição, categoria e unidade conforme `ProductRequestDTO`; incluir data de produção e quantidade, que pertencem ao lote e não ao DTO de produto. Abaixo, apresentar busca, listagem paginada de produtos existentes e seleção. Consumir `GET /api/v1/products?limit=&offset=&search=`.
+- [x] Guardar os dados de lote e produto selecionado/em criação em memória ao avançar. Permitir voltar para corrigir dados sem perder os valores.
+- [x] **Fornecedor:** apresentar formulário inline conforme `SupplierRequestDTO` (nome, CNPJ, endereço e telefone), seguido da busca, listagem e seleção de fornecedores existentes. Consumir `GET /api/v1/suppliers?ranked=true&limit=20&offset=0`, enviando `search` quando preenchida. A resposta é paginada e ranqueada; manter essa ordenação na seleção. O endpoint padrão sem `ranked=true` retorna uma coleção simples.
+- [x] **Revisão:** exibir produto, fornecedor, quantidade e data de produção; permitir retornar aos passos anteriores e só persistir recursos novos após confirmação explícita.
+- [x] Na confirmação, enviar requests em sequência: `POST /api/v1/products` se necessário; `POST /api/v1/suppliers` se necessário; por fim `POST /api/v1/batches` com `productId`, `supplierId`, `quantity` e `producedAt`. Usar IDs retornados pelas respostas, validar payloads e fechar/atualizar a listagem de lotes apenas após sucesso na criação do lote.
+- [x] Como a API não fornece transação entre esses endpoints, preservar no estado do wizard as criações já bem-sucedidas se uma chamada posterior falhar. Informar qual recurso foi salvo e retomar do ponto necessário sem repetir sua criação; permitir nova tentativa da criação do lote sem duplicar produto/fornecedor.
+- [x] Respeitar as permissões atuais: `POST /products` e `POST /suppliers` aceitam `ADMIN`/`MANAGER`; `POST /batches` aceita `ADMIN`/`SUPPLIER`. Ocultar/bloquear ações não autorizadas e validar a compatibilidade do fluxo por perfil. Hoje apenas `ADMIN` pode criar os três recursos em sequência; `SUPPLIER` pode criar lote vinculado ao fornecedor da sessão, mas não cadastrar produto/fornecedor; `MANAGER` pode cadastrar produto/fornecedor, mas não criar lote.
+- [x] Remover a tela e entrada de navegação de Produtos conforme escopo da task, mantendo os services/schemas usados pelo wizard e por eventuais fluxos existentes. Remover também o modal de criação de fornecedor da tela de Fornecedores para evitar dois pontos de entrada; preservar edição e demais ações.
+- [x] Após remover as referências visuais às imagens de produtos, verificar o uso de `public/images/` no código e eliminar os arquivos que ficarem sem consumidores. Não remover imagens ainda referenciadas por outras telas ou fluxos.
+- [x] Atualizar testes unitários/E2E relevantes para seleção, navegação entre passos, payload final e falhas parciais. Atualizar `docs/spec.md`, `docs/plan.md` e README conforme implementação concluída.
+
+### Contrato de listagem de fornecedores
+
+O modo `ranked=true` já oferece busca e paginação no servidor para fornecedores. A resposta tem os campos da listagem de ranking, que incluem os dados cadastrais necessários à seleção; o wizard deve usar esses dados sem solicitar paginação local. A listagem sem `ranked=true` continua retornando coleção simples.
+
+---
+
+## Task 29 — Máscaras e preenchimento de endereço de fornecedor
+
+- [x] Formatar CNPJ durante a digitação nos formulários de fornecedor e enviar o valor somente com dígitos para a API.
+- [x] Formatar telefones brasileiros durante a digitação e remover parênteses, espaços e hífen ao enviar para a API.
+- [x] Formatar CEP e consultar ViaCEP no formulário de cadastro inline do wizard; preencher logradouro, bairro, cidade e UF, mantendo os dados editáveis e exibindo estados de consulta/erro.
+- [x] Aplicar os mesmos formatadores ao formulário de cadastro/edição de fornecedor e manter o preenchimento automático de endereço no cadastro.
+- [x] Cobrir máscaras, normalização do payload e preenchimento pelo CEP com testes unitários.

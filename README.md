@@ -46,7 +46,7 @@ O frontend oferece uma interface integrada à API para acompanhar lotes da produ
 - **Rastreabilidade pública:** consulta de lote sem autenticação, incluindo etapas, transporte e pegada de carbono.
 - **Visão operacional:** dashboard com indicadores e lotes recentes fornecidos pela API.
 - **Gestão de fornecedores:** busca, ranking, certificações e relatórios no contexto de cada fornecedor.
-- **Gestão da cadeia:** produtos, lotes, timelines de etapas, dados de transporte e emissões.
+- **Gestão da cadeia:** criação de lotes em fluxo multi-step com seleção/cadastro inline de produto e fornecedor, timelines de etapas, dados de transporte e emissões.
 - **Governança:** gestão de usuários e consulta de auditoria com exportação CSV.
 
 ## 🎯 Diferenciais
@@ -96,10 +96,11 @@ flowchart LR
 
 ### Status de Implementação
 
-- **Funcionalidades principais concluídas:** autenticação, dashboard, rastreabilidade pública, fornecedores/ranking, produtos, lotes/etapas, usuários, certificações, relatórios e auditoria.
+- **Funcionalidades principais concluídas:** autenticação, dashboard, rastreabilidade pública, gestão de fornecedores, seleção/cadastro inline de produtos durante a criação de lotes, lotes/etapas, usuários, certificações, relatórios e auditoria.
 - **Interface atual:** navegação superior responsiva, footer compartilhado, cards de lotes com timeline e modais contextuais.
 - **Qualidade automatizada:** specs unitários, cenários Cypress e CI para testes, build, auditoria de dependências e lint.
 - **Validação manual pendente:** navegação com contas de cada papel requer API e credenciais de demonstração disponíveis.
+- **Criação de lotes:** modal multi-step com busca paginada de produtos e fornecedores, cadastro inline conforme permissões, revisão e criação sequencial via API.
 
 ### Principais Áreas da Aplicação
 
@@ -107,8 +108,8 @@ flowchart LR
 - **`dashboard`**: indicadores globais e lotes recentes.
 - **`traceability`**: consulta pública e gráficos da pegada de carbono.
 - **`suppliers`**: fornecedores, ranking e modais de certificações/relatórios.
-- **`products`**: catálogo e formulários de produto.
-- **`batches` e `chain`**: lotes, etapas, transporte e emissões.
+- **`products`**: schemas e serviço de produto usados no cadastro e na seleção do wizard, sem tela dedicada.
+- **`batches` e `chain`**: lotes, fluxo multi-step de criação, etapas, transporte e emissões.
 - **`users` e `audit-log`**: gestão de usuários e consulta de eventos.
 
 ## 📁 Estrutura do Projeto
@@ -122,7 +123,7 @@ src/app/
 │   ├── dashboard/              # indicadores e lotes recentes
 │   ├── traceability/            # rastreabilidade pública
 │   ├── suppliers/               # fornecedores, ranking e modais contextuais
-│   ├── products/                # catálogo e formulários
+│   ├── products/                # schemas e serviço usados pelos lotes
 │   ├── batches/                 # listagem e criação de lotes
 │   ├── chain/                   # etapas, transporte e emissão
 │   ├── certifications/          # schemas e serviço de certificações
@@ -140,7 +141,7 @@ docs/                            # especificação, arquitetura e histórico de 
 | Documento | Conteúdo |
 |---|---|
 | [`docs/spec.md`](docs/spec.md) | Funcionalidades, perfis, rotas e fluxos atuais |
-| [`docs/plan.md`](docs/plan.md) | Arquitetura técnica e decisões atuais |
+| [`docs/plan.md`](docs/plan.md) | Arquitetura técnica, decisões e fluxo de criação de lote |
 | [`docs/tasks.md`](docs/tasks.md) | Histórico de implementação e pendências |
 
 ### Pipeline de Qualidade
@@ -222,7 +223,7 @@ O frontend consome os endpoints versionados sob `/api/v1`. Os contratos completo
 | Dashboard | Resumo de indicadores e lotes recentes |
 | Autenticação | `POST /auth/login`, usuário atual |
 | Fornecedores e ranking | Busca, CRUD e ranking paginado |
-| Produtos | Busca paginada, cadastro e atualização |
+| Produtos (no wizard de lote) | Busca paginada e cadastro inline |
 | Certificações | Listagem contextual e cadastro/atualização de status |
 | Lotes e rastreabilidade | CRUD de lotes; jornada pública e pegada de carbono |
 | Etapas da cadeia | Etapas, transporte e cálculo de emissões |
