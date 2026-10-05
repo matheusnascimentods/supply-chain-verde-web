@@ -20,7 +20,7 @@ describe('TopNavComponent', () => {
       providers: [
         provideRouter([
           { path: 'dashboard', component: TestPageComponent },
-          { path: 'products', component: TestPageComponent },
+          { path: 'batches', component: TestPageComponent },
           { path: 'suppliers/me', component: TestPageComponent },
         ]),
         SessionService,
@@ -50,10 +50,10 @@ describe('TopNavComponent', () => {
   it('marks the active route and closes the mobile menu after navigation', async () => {
     const fixture = TestBed.createComponent(TopNavComponent);
     const router = TestBed.inject(Router);
-    await router.navigateByUrl('/products');
+    await router.navigateByUrl('/batches');
     fixture.detectChanges();
 
-    expect(fixture.componentInstance.isLinkActive('/products')).toBe(true);
+    expect(fixture.componentInstance.isLinkActive('/batches')).toBe(true);
     fixture.componentInstance.mobileMenuOpen.set(true);
     await router.navigateByUrl('/dashboard');
     expect(fixture.componentInstance.mobileMenuOpen()).toBe(false);
