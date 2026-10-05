@@ -99,15 +99,16 @@
             <div class="mb-4"><h3 id="new-supplier-heading" class="text-sm font-bold uppercase tracking-wide text-slate-700">Cadastrar fornecedor agora</h3><p class="mt-1 text-xs text-slate-500">Os dados serão enviados à API somente após confirmar o lote.</p></div>
             <form [formGroup]="supplierForm" (ngSubmit)="useNewSupplier()" class="grid gap-3 sm:grid-cols-2">
               <label class="grid gap-1 text-xs font-medium text-slate-700">Razão social<input formControlName="name" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
-              <label class="grid gap-1 text-xs font-medium text-slate-700">CNPJ<input formControlName="cnpj" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
-              <label class="grid gap-1 text-xs font-medium text-slate-700">Telefone<input formControlName="phone" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
-              <label class="grid gap-1 text-xs font-medium text-slate-700">CEP<input formControlName="zipCode" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
+              <label class="grid gap-1 text-xs font-medium text-slate-700">CNPJ<input formControlName="cnpj" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
+              <label class="grid gap-1 text-xs font-medium text-slate-700">Telefone<input formControlName="phone" type="tel" inputmode="tel" maxlength="15" placeholder="(00) 00000-0000" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
+              <label class="grid gap-1 text-xs font-medium text-slate-700">CEP<input formControlName="zipCode" inputmode="numeric" maxlength="9" placeholder="00000-000" aria-describedby="batch-supplier-cep-status" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
               <label class="grid gap-1 text-xs font-medium text-slate-700 sm:col-span-2">Rua<input formControlName="street" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
               <label class="grid gap-1 text-xs font-medium text-slate-700">Número<input formControlName="number" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
               <label class="grid gap-1 text-xs font-medium text-slate-700">Bairro<input formControlName="neighborhood" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
               <label class="grid gap-1 text-xs font-medium text-slate-700">Cidade<input formControlName="city" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
               <label class="grid gap-1 text-xs font-medium text-slate-700">Estado<input formControlName="state" maxlength="2" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
               <label class="grid gap-1 text-xs font-medium text-slate-700 sm:col-span-2">Complemento<input formControlName="complement" class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm" /></label>
+              <p id="batch-supplier-cep-status" class="text-xs text-slate-500 sm:col-span-2" aria-live="polite">@if (cepLoading()) { Consultando CEP… } @else if (cepMessage()) { {{ cepMessage() }} } @else { O endereço será preenchido quando o CEP for localizado. }</p>
               <div class="sm:col-span-2"><button type="submit" class="min-h-10 rounded-lg border border-emerald-700 bg-white px-4 text-sm font-semibold text-emerald-800 hover:bg-emerald-50">Usar este fornecedor</button></div>
             </form>
           </section>

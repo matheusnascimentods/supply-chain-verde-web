@@ -32,7 +32,7 @@ Em `/rastreio/:batchId`, sem login, exibe produto, fornecedor, etapas em linha d
 
 ### 3.3 Gestão operacional
 
-- **Fornecedores:** listagem com busca e paginação, cards dos três primeiros do ranking, edição e acesso contextual a certificações e relatórios. O cadastro de novo fornecedor está integrado ao fluxo de criação de lote; a edição permanece na gestão de fornecedores.
+- **Fornecedores:** listagem com busca e paginação, cards dos três primeiros do ranking, edição e acesso contextual a certificações e relatórios. Os formulários formatam CNPJ e telefone durante a digitação e enviam esses campos somente com dígitos. O CEP é consultado no ViaCEP para preencher logradouro, bairro, cidade e UF no cadastro inline do lote e no formulário de cadastro; o usuário pode revisar os campos. A edição permanece na gestão de fornecedores.
 - **Certificações:** consulta no modal do fornecedor; criação e atualização de status aparecem de acordo com perfil e resposta da API. Não há tela dedicada de certificações.
 - **Produtos:** não há tela dedicada. O produto existente é escolhido pela busca/listagem paginada ou cadastrado inline no primeiro passo da criação de lote.
 - **Lotes:** cards paginados com etapa atual e timeline completa, transporte e emissões. A criação usa um modal multi-step com produto, fornecedor e revisão; inclusão de etapa permanece em modal. Transporte é condicional ao tipo/fluxo da etapa e o cálculo de emissão segue as ações disponíveis para o perfil.

@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, debounceTime, distinctUntilChanged, of, Subject, switchMap } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, finalize, map, of, startWith, Subject, switchMap, tap, timer } from 'rxjs';
 import { SessionService } from '../../../../core/session/index.service';
 import { ProductRequestDTO, ProductResponseDTO } from '../../../products/index.schema';
 import { ProductsService } from '../../../products/index.service';
@@ -20,8 +20,10 @@ import {
   SupplierRankingResponseDTO,
   SupplierRequestDTO,
   SupplierResponseDTO,
+  ViaCepResponseDTO,
 } from '../../../suppliers/index.schema';
 import { SuppliersService } from '../../../suppliers/index.service';
+import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../suppliers/index.utils';
 import { UsersService } from '../../../users/index.service';
 import { BatchRequestDTO } from '../../index.schema';
 import { BatchesService } from '../../index.service';
@@ -66,6 +68,8 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
   readonly saving = signal(false);
   readonly error = signal('');
   readonly savedNotice = signal('');
+  readonly cepLoading = signal(false);
+  readonly cepMessage = signal('');
   readonly isAdmin = this.session.role() === 'admin';
   readonly isSupplier = this.session.role() === 'supplier';
 
@@ -99,6 +103,7 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
   private ownSupplierId: number | null = null;
 
   constructor() {
+    this.watchSupplierInputs();
     this.productSearchChanges
       .pipe(
         takeUntilDestroyed(),
@@ -237,8 +242,8 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
     const value = this.supplierForm.getRawValue();
     this.pendingSupplier = {
       name: value.name.trim(),
-      cnpj: value.cnpj,
-      phone: value.phone,
+      cnpj: digitsOnly(value.cnpj),
+      phone: digitsOnly(value.phone),
       address: {
         street: value.street,
         number: value.number,
@@ -425,6 +430,60 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
         this.loadingProducts.set(false);
       },
     });
+  }
+
+  private watchSupplierInputs(): void {
+    const fields = [
+      [this.supplierForm.controls.cnpj, formatCnpj],
+      [this.supplierForm.controls.phone, formatPhone],
+      [this.supplierForm.controls.zipCode, formatZipCode],
+    ] as const;
+    for (const [control, formatter] of fields) {
+      control.valueChanges.pipe(startWith(control.value), distinctUntilChanged(), takeUntilDestroyed()).subscribe((value) => {
+        const formatted = formatter(value);
+        if (formatted !== value) control.setValue(formatted, { emitEvent: false });
+      });
+    }
+
+    this.supplierForm.controls.zipCode.valueChanges.pipe(
+      startWith(this.supplierForm.controls.zipCode.value),
+      map(digitsOnly),
+      distinctUntilChanged(),
+      switchMap((zipCode) => {
+        if (zipCode.length !== 8) {
+          this.cepLoading.set(false);
+          this.cepMessage.set('');
+          return of(null);
+        }
+        this.cepLoading.set(true);
+        this.cepMessage.set('');
+        return timer(350).pipe(
+          switchMap(() => this.suppliersService.lookupZipCode(zipCode)),
+          catchError(() => {
+            this.cepMessage.set('Não foi possível consultar o CEP. Você pode preencher o endereço manualmente.');
+            return of(null);
+          }),
+          tap((response) => this.applyZipCodeResponse(response)),
+          finalize(() => this.cepLoading.set(false)),
+        );
+      }),
+      takeUntilDestroyed(),
+    ).subscribe();
+  }
+
+  private applyZipCodeResponse(response: ViaCepResponseDTO | null): void {
+    if (!response) return;
+    if (response.erro === true || response.erro === 'true') {
+      this.cepMessage.set('CEP não encontrado. Confira o número ou preencha o endereço manualmente.');
+      return;
+    }
+    this.supplierForm.patchValue({
+      street: response.logradouro ?? '',
+      neighborhood: response.bairro ?? '',
+      city: response.localidade ?? '',
+      state: response.uf ?? '',
+    }, { emitEvent: false });
+    this.cepMessage.set('Endereço localizado. Confira os dados antes de salvar.');
   }
 
   private loadSuppliers(): void {

@@ -569,3 +569,13 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 ### Contrato de listagem de fornecedores
 
 O modo `ranked=true` já oferece busca e paginação no servidor para fornecedores. A resposta tem os campos da listagem de ranking, que incluem os dados cadastrais necessários à seleção; o wizard deve usar esses dados sem solicitar paginação local. A listagem sem `ranked=true` continua retornando coleção simples.
+
+---
+
+## Task 29 — Máscaras e preenchimento de endereço de fornecedor
+
+- [x] Formatar CNPJ durante a digitação nos formulários de fornecedor e enviar o valor somente com dígitos para a API.
+- [x] Formatar telefones brasileiros durante a digitação e remover parênteses, espaços e hífen ao enviar para a API.
+- [x] Formatar CEP e consultar ViaCEP no formulário de cadastro inline do wizard; preencher logradouro, bairro, cidade e UF, mantendo os dados editáveis e exibindo estados de consulta/erro.
+- [x] Aplicar os mesmos formatadores ao formulário de cadastro/edição de fornecedor e manter o preenchimento automático de endereço no cadastro.
+- [x] Cobrir máscaras, normalização do payload e preenchimento pelo CEP com testes unitários.
