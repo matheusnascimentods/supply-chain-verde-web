@@ -16,7 +16,7 @@ const supplierPage = { items: [supplier], limit: 20, offset: 0, hasNext: false, 
 describe('BatchCreateModalComponent', () => {
   let fixture: ComponentFixture<BatchCreateModalComponent>;
   let products: { load: ReturnType<typeof vi.fn>; create: ReturnType<typeof vi.fn> };
-  let suppliers: { loadRanking: ReturnType<typeof vi.fn>; create: ReturnType<typeof vi.fn>; get: ReturnType<typeof vi.fn> };
+  let suppliers: { loadRanking: ReturnType<typeof vi.fn>; create: ReturnType<typeof vi.fn>; get: ReturnType<typeof vi.fn>; lookupZipCode: ReturnType<typeof vi.fn> };
   let batches: { create: ReturnType<typeof vi.fn> };
 
   async function setup(role = 'admin') {
@@ -28,6 +28,7 @@ describe('BatchCreateModalComponent', () => {
       loadRanking: vi.fn().mockReturnValue(of(supplierPage)),
       create: vi.fn().mockReturnValue(of(supplierDetail)),
       get: vi.fn().mockReturnValue(of(supplierDetail)),
+      lookupZipCode: vi.fn().mockReturnValue(of({ logradouro: 'Avenida Paulista', bairro: 'Bela Vista', localidade: 'São Paulo', uf: 'SP' })),
     };
     batches = { create: vi.fn().mockReturnValue(of({ batchId: 1 })) };
     await TestBed.configureTestingModule({
@@ -51,13 +52,15 @@ describe('BatchCreateModalComponent', () => {
     component.useNewProduct();
     component.batchForm.setValue({ quantity: 250, producedAt: '2026-10-05' });
     component.next();
-    component.supplierForm.setValue({ name: 'Fazenda Verde', cnpj: '123', phone: '11999999999', street: 'Rua A', number: '10', neighborhood: 'Centro', complement: '', zipCode: '01000000', city: 'São Paulo', state: 'SP' });
+    component.supplierForm.setValue({ name: 'Fazenda Verde', cnpj: '12345678000190', phone: '11999999999', street: 'Rua A', number: '10', neighborhood: 'Centro', complement: '', zipCode: '01000000', city: 'São Paulo', state: 'SP' });
+    expect(component.supplierForm.controls.cnpj.value).toBe('12.345.678/0001-90');
+    expect(component.supplierForm.controls.phone.value).toBe('(11) 99999-9999');
     component.useNewSupplier();
     component.next();
     component.submit();
 
     expect(products.create).toHaveBeenCalledWith({ name: 'Café', description: 'Orgânico', category: 'AGRICULTURE', unit: 'KG' });
-    expect(suppliers.create).toHaveBeenCalledWith({ name: 'Fazenda Verde', cnpj: '123', phone: '11999999999', address: { street: 'Rua A', number: '10', neighborhood: 'Centro', complement: '', zipCode: '01000000', city: 'São Paulo', state: 'SP' } });
+    expect(suppliers.create).toHaveBeenCalledWith({ name: 'Fazenda Verde', cnpj: '12345678000190', phone: '11999999999', address: { street: 'Rua A', number: '10', neighborhood: 'Centro', complement: '', zipCode: '01000-000', city: 'São Paulo', state: 'SP' } });
     expect(batches.create).toHaveBeenCalledWith({ productId: 11, supplierId: 22, quantity: 250, producedAt: '2026-10-05' });
   });
 
@@ -89,5 +92,19 @@ describe('BatchCreateModalComponent', () => {
     expect(suppliers.get).toHaveBeenCalledWith(22);
     expect(component.isAdmin).toBe(false);
     expect(component.ownSupplier()).toEqual(supplierDetail);
+  });
+
+  it('looks up CEP and fills the supplier address while retaining a formatted CEP', async () => {
+    await setup();
+    const component = fixture.componentInstance;
+    component.supplierForm.controls.zipCode.setValue('01000000');
+    expect(component.supplierForm.controls.zipCode.value).toBe('01000-000');
+    await new Promise((resolve) => setTimeout(resolve, 400));
+
+    expect(suppliers.lookupZipCode).toHaveBeenCalledWith('01000000');
+    expect(component.supplierForm.controls.street.value).toBe('Avenida Paulista');
+    expect(component.supplierForm.controls.neighborhood.value).toBe('Bela Vista');
+    expect(component.supplierForm.controls.city.value).toBe('São Paulo');
+    expect(component.supplierForm.controls.state.value).toBe('SP');
   });
 });
