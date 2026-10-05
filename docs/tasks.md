@@ -549,3 +549,22 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 - [x] Alinhar a especificação funcional a rotas, perfis e fluxos atuais, incluindo ranking integrado, modais contextuais de certificações/relatórios, cards de lotes e auditoria/CSV.
 - [x] Atualizar o plano técnico para refletir estrutura Angular atual, stack, autenticação, validação, paginação e testes.
 - [x] Preservar neste arquivo o histórico das tasks e destacar a única pendência conhecida: navegação manual por perfil com API disponível.
+
+---
+
+## Task 28 — Criação de lote em fluxo multi-step
+
+- [ ] Substituir o modal atual por um wizard de três passos, seguindo o estilo dos modais existentes: Produto, Fornecedor e Revisão. Preservar acessibilidade, foco, teclado, backdrop, responsividade e estados de carregamento/erro.
+- [ ] **Produto:** apresentar primeiro o formulário de criação inline com nome, descrição, categoria e unidade conforme `ProductRequestDTO`; incluir data de produção e quantidade, que pertencem ao lote e não ao DTO de produto. Abaixo, apresentar busca, listagem paginada de produtos existentes e seleção. Consumir `GET /api/v1/products?limit=&offset=&search=`.
+- [ ] Guardar os dados de lote e produto selecionado/em criação em memória ao avançar. Permitir voltar para corrigir dados sem perder os valores.
+- [ ] **Fornecedor:** apresentar formulário inline conforme `SupplierRequestDTO` (nome, CNPJ, endereço e telefone), seguido da busca, listagem e seleção de fornecedores existentes. Consumir `GET /api/v1/suppliers?ranked=true&limit=20&offset=0`, enviando `search` quando preenchida. A resposta é paginada e ranqueada; manter essa ordenação na seleção. O endpoint padrão sem `ranked=true` retorna uma coleção simples.
+- [ ] **Revisão:** exibir produto, fornecedor, quantidade e data de produção; permitir retornar aos passos anteriores e só persistir recursos novos após confirmação explícita.
+- [ ] Na confirmação, enviar requests em sequência: `POST /api/v1/products` se necessário; `POST /api/v1/suppliers` se necessário; por fim `POST /api/v1/batches` com `productId`, `supplierId`, `quantity` e `producedAt`. Usar IDs retornados pelas respostas, validar payloads e fechar/atualizar a listagem de lotes apenas após sucesso na criação do lote.
+- [ ] Como a API não fornece transação entre esses endpoints, preservar no estado do wizard as criações já bem-sucedidas se uma chamada posterior falhar. Informar qual recurso foi salvo e retomar do ponto necessário sem repetir sua criação; permitir nova tentativa da criação do lote sem duplicar produto/fornecedor.
+- [ ] Respeitar as permissões atuais: `POST /products` e `POST /suppliers` aceitam `ADMIN`/`MANAGER`; `POST /batches` aceita `ADMIN`/`SUPPLIER`. Ocultar/bloquear ações não autorizadas e validar a compatibilidade do fluxo por perfil. Hoje apenas `ADMIN` pode criar os três recursos em sequência; `SUPPLIER` pode criar lote vinculado ao fornecedor da sessão, mas não cadastrar produto/fornecedor; `MANAGER` pode cadastrar produto/fornecedor, mas não criar lote.
+- [ ] Remover a tela e entrada de navegação de Produtos conforme escopo da task, mantendo os services/schemas usados pelo wizard e por eventuais fluxos existentes. Remover também o modal de criação de fornecedor da tela de Fornecedores para evitar dois pontos de entrada; preservar edição e demais ações.
+- [ ] Atualizar testes unitários/E2E relevantes para seleção, navegação entre passos, payload final e falhas parciais. Atualizar `docs/spec.md`, `docs/plan.md` e README conforme implementação concluída.
+
+### Contrato de listagem de fornecedores
+
+O modo `ranked=true` já oferece busca e paginação no servidor para fornecedores. A resposta tem os campos da listagem de ranking, que incluem os dados cadastrais necessários à seleção; o wizard deve usar esses dados sem solicitar paginação local. A listagem sem `ranked=true` continua retornando coleção simples.

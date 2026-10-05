@@ -46,7 +46,7 @@ O frontend oferece uma interface integrada à API para acompanhar lotes da produ
 - **Rastreabilidade pública:** consulta de lote sem autenticação, incluindo etapas, transporte e pegada de carbono.
 - **Visão operacional:** dashboard com indicadores e lotes recentes fornecidos pela API.
 - **Gestão de fornecedores:** busca, ranking, certificações e relatórios no contexto de cada fornecedor.
-- **Gestão da cadeia:** produtos, lotes, timelines de etapas, dados de transporte e emissões.
+- **Gestão da cadeia:** lotes, timelines de etapas, dados de transporte e emissões. A Task 28 planeja concentrar seleção e cadastro de produto/fornecedor no fluxo multi-step de criação de lote e retirar a tela dedicada de produtos.
 - **Governança:** gestão de usuários e consulta de auditoria com exportação CSV.
 
 ## 🎯 Diferenciais
@@ -100,6 +100,7 @@ flowchart LR
 - **Interface atual:** navegação superior responsiva, footer compartilhado, cards de lotes com timeline e modais contextuais.
 - **Qualidade automatizada:** specs unitários, cenários Cypress e CI para testes, build, auditoria de dependências e lint.
 - **Validação manual pendente:** navegação com contas de cada papel requer API e credenciais de demonstração disponíveis.
+- **Próxima evolução documentada (Task 28):** modal multi-step de lote com seleção/cadastro inline de produto e fornecedor e etapa de revisão. O fluxo ainda não está implementado.
 
 ### Principais Áreas da Aplicação
 
@@ -139,8 +140,8 @@ docs/                            # especificação, arquitetura e histórico de 
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/spec.md`](docs/spec.md) | Funcionalidades, perfis, rotas e fluxos atuais |
-| [`docs/plan.md`](docs/plan.md) | Arquitetura técnica e decisões atuais |
+| [`docs/spec.md`](docs/spec.md) | Funcionalidades, perfis, rotas atuais e proposta da Task 28 |
+| [`docs/plan.md`](docs/plan.md) | Arquitetura técnica, decisões atuais e desenho da Task 28 |
 | [`docs/tasks.md`](docs/tasks.md) | Histórico de implementação e pendências |
 
 ### Pipeline de Qualidade
