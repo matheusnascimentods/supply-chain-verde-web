@@ -7,7 +7,6 @@ export const DASHBOARDS = {
     description: 'Acesse as áreas de gestão e acompanhe a atividade da plataforma.',
     links: [
       { label: 'Fornecedores', path: '/suppliers' },
-      { label: 'Produtos', path: '/products' },
       { label: 'Lotes', path: '/batches' },
       { label: 'Usuários', path: '/users' },
       { label: 'Auditoria', path: '/audit-log' },
@@ -18,7 +17,6 @@ export const DASHBOARDS = {
     description: 'Aqui está o resumo da sua operação hoje',
     links: [
       { label: 'Fornecedores', path: '/suppliers' },
-      { label: 'Produtos', path: '/products' },
       { label: 'Lotes', path: '/batches' },
     ],
   },
