@@ -1,5 +1,5 @@
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/45 p-4 sm:p-6"
+  class="component-style-1"
   role="presentation"
   (click)="backdropClick($event)"
 >
@@ -9,28 +9,28 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="stage-modal-title"
-    class="my-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl focus:outline-none"
+    class="component-style-2"
   >
-    <header class="flex items-start justify-between border-b border-slate-100 px-6 py-5 sm:px-7">
+    <header class="component-style-3">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+        <p class="component-style-4">
           Lote #{{ batchId() }}
         </p>
-        <h2 id="stage-modal-title" class="mt-1 text-xl font-bold tracking-tight text-slate-900">
+        <h2 id="stage-modal-title" class="component-style-5">
           Adicionar etapa
         </h2>
-        <p class="mt-1 text-sm text-slate-500">Registre o próximo ponto da jornada deste lote.</p>
+        <p class="component-style-6">Registre o próximo ponto da jornada deste lote.</p>
       </div>
       <button
         type="button"
-        class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-700"
+        class="component-style-7"
         aria-label="Fechar formulário de etapa"
         [disabled]="saving()"
         (click)="requestDismiss()"
       >
         <svg
           viewBox="0 0 24 24"
-          class="h-5 w-5"
+          class="component-style-8"
           fill="none"
           stroke="currentColor"
           stroke-width="2"
@@ -42,20 +42,20 @@
     </header>
 
     @if (loadingChoices()) {
-      <p class="px-6 py-10 text-center text-sm text-slate-500" aria-live="polite">
+      <p class="component-style-9" aria-live="polite">
         Carregando endereços disponíveis…
       </p>
     } @else {
       <form
         [formGroup]="form"
         (ngSubmit)="submit()"
-        class="grid gap-5 px-6 py-6 sm:grid-cols-2 sm:px-7"
+        class="component-style-10"
       >
-        <label class="grid gap-1.5 text-sm font-medium text-slate-700">
+        <label class="component-style-11">
           Tipo da etapa
           <select
             formControlName="stageType"
-            class="min-h-11 rounded-lg border border-slate-300 bg-white px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            class="component-style-12"
           >
             <option value="">Selecione o tipo</option>
             @for (type of stageTypes; track type) {
@@ -77,36 +77,36 @@
             }
           </select>
           @if (form.controls.stageType.touched && form.controls.stageType.invalid) {
-            <span class="text-xs font-normal text-red-700">Selecione o tipo da etapa.</span>
+            <span class="component-style-13">Selecione o tipo da etapa.</span>
           }
         </label>
-        <label class="grid gap-1.5 text-sm font-medium text-slate-700">
+        <label class="component-style-11">
           Início
           <input
             formControlName="startedAt"
             type="datetime-local"
-            class="min-h-11 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            class="component-style-14"
           />
           @if (form.controls.startedAt.touched && form.controls.startedAt.invalid) {
-            <span class="text-xs font-normal text-red-700">Informe quando a etapa começou.</span>
+            <span class="component-style-13">Informe quando a etapa começou.</span>
           }
         </label>
-        <label class="grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2">
-          Fim <span class="font-normal text-slate-400">(opcional)</span>
+        <label class="component-style-15">
+          Fim <span class="component-style-16">(opcional)</span>
           <input
             formControlName="endedAt"
             type="datetime-local"
-            class="min-h-11 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            class="component-style-14"
           />
         </label>
 
-        <fieldset class="grid gap-1.5">
-          <legend class="mb-1 text-sm font-semibold text-slate-800">
-            Origem <span class="font-normal text-slate-400">(opcional)</span>
+        <fieldset class="component-style-17">
+          <legend class="component-style-18">
+            Origem <span class="component-style-16">(opcional)</span>
           </legend>
           <select
             formControlName="originAddressId"
-            class="min-h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            class="component-style-19"
           >
             <option value="">Não informar origem</option>
             @for (address of addresses(); track address.addressId) {
@@ -114,18 +114,18 @@
             }
           </select>
           @if (addresses().length === 0) {
-            <span class="text-xs font-normal text-slate-500"
+            <span class="component-style-20"
               >Nenhum endereço cadastrado está disponível.</span
             >
           }
         </fieldset>
-        <fieldset class="grid gap-1.5">
-          <legend class="mb-1 text-sm font-semibold text-slate-800">
-            Destino <span class="font-normal text-slate-400">(opcional)</span>
+        <fieldset class="component-style-17">
+          <legend class="component-style-18">
+            Destino <span class="component-style-16">(opcional)</span>
           </legend>
           <select
             formControlName="destinationAddressId"
-            class="min-h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+            class="component-style-19"
           >
             <option value="">Não informar destino</option>
             @for (address of addresses(); track address.addressId) {
@@ -136,22 +136,22 @@
 
         @if (isTransport) {
           <section
-            class="grid gap-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 sm:col-span-2 sm:grid-cols-2"
+            class="component-style-21"
             aria-labelledby="transport-heading"
           >
-            <div class="sm:col-span-2">
-              <h3 id="transport-heading" class="text-sm font-bold text-slate-900">
+            <div class="component-style-22">
+              <h3 id="transport-heading" class="component-style-23">
                 Dados do transporte
               </h3>
-              <p class="mt-0.5 text-xs text-slate-500">
+              <p class="component-style-24">
                 Informe os dados usados para calcular a pegada logística.
               </p>
             </div>
-            <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+            <label class="component-style-11"
               >Modal
               <select
                 formControlName="transportMode"
-                class="min-h-11 rounded-lg border border-slate-300 bg-white px-3"
+                class="component-style-25"
               >
                 <option value="">Selecione</option>
                 @for (mode of transportModes; track mode) {
@@ -169,29 +169,29 @@
                 }
               </select>
               @if (form.controls.transportMode.touched && form.controls.transportMode.invalid) {
-                <span class="text-xs font-normal text-red-700">Selecione o modal.</span>
+                <span class="component-style-13">Selecione o modal.</span>
               }
             </label>
-            <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+            <label class="component-style-11"
               >Distância (km)
               <input
                 formControlName="distance"
                 type="number"
                 min="0.000001"
                 step="any"
-                class="min-h-11 rounded-lg border border-slate-300 px-3"
+                class="component-style-26"
               />
               @if (form.controls.distance.touched && form.controls.distance.invalid) {
-                <span class="text-xs font-normal text-red-700"
+                <span class="component-style-13"
                   >Informe uma distância maior que zero.</span
                 >
               }
             </label>
-            <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+            <label class="component-style-11"
               >Combustível
               <select
                 formControlName="fuelType"
-                class="min-h-11 rounded-lg border border-slate-300 bg-white px-3"
+                class="component-style-25"
               >
                 <option value="">Selecione</option>
                 @for (fuel of fuelTypes; track fuel) {
@@ -215,20 +215,20 @@
                 }
               </select>
               @if (form.controls.fuelType.touched && form.controls.fuelType.invalid) {
-                <span class="text-xs font-normal text-red-700">Selecione o combustível.</span>
+                <span class="component-style-13">Selecione o combustível.</span>
               }
             </label>
-            <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+            <label class="component-style-11"
               >Capacidade (kg)
               <input
                 formControlName="capacity"
                 type="number"
                 min="0.000001"
                 step="any"
-                class="min-h-11 rounded-lg border border-slate-300 px-3"
+                class="component-style-26"
               />
               @if (form.controls.capacity.touched && form.controls.capacity.invalid) {
-                <span class="text-xs font-normal text-red-700"
+                <span class="component-style-13"
                   >Informe uma capacidade maior que zero.</span
                 >
               }
@@ -237,25 +237,25 @@
         }
 
         @if (canCalculateEmission) {
-          <section class="grid gap-3 rounded-xl border border-slate-200 p-4 sm:col-span-2">
-            <label class="flex items-start gap-3 text-sm text-slate-800"
+          <section class="component-style-27">
+            <label class="component-style-28"
               ><input
                 formControlName="calculateEmission"
                 type="checkbox"
-                class="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600"
+                class="component-style-29"
               /><span
-                ><span class="font-semibold">Calcular emissão desta etapa</span
-                ><span class="mt-0.5 block text-xs text-slate-500"
+                ><span class="component-style-30">Calcular emissão desta etapa</span
+                ><span class="component-style-31"
                   >Você pode registrar a etapa agora e calcular a emissão em outro momento.</span
                 ></span
               ></label
             >
             @if (form.controls.calculateEmission.value) {
-              <label class="grid gap-1.5 text-sm font-medium text-slate-700"
+              <label class="component-style-11"
                 >Metodologia
                 <select
                   formControlName="calculationMethod"
-                  class="min-h-11 rounded-lg border border-slate-300 bg-white px-3"
+                  class="component-style-25"
                 >
                   @for (method of calculationMethods; track method) {
                     <option [value]="method">
@@ -275,22 +275,22 @@
             }
           </section>
         } @else {
-          <p class="rounded-lg bg-slate-50 px-4 py-3 text-xs text-slate-600 sm:col-span-2">
+          <p class="component-style-32">
             O cálculo de emissão está disponível para perfis de gestor e administrador.
           </p>
         }
 
         @if (error()) {
-          <p role="alert" class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 sm:col-span-2">
+          <p role="alert" class="component-style-33">
             {{ error() }}
           </p>
         }
         <footer
-          class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:col-span-2 sm:flex-row sm:justify-end"
+          class="component-style-34"
         >
           <button
             type="button"
-            class="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            class="component-style-35"
             [disabled]="saving()"
             (click)="requestDismiss()"
           >
@@ -298,7 +298,7 @@
           </button>
           <button
             type="submit"
-            class="min-h-11 rounded-lg bg-emerald-700 px-5 text-sm font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+            class="component-style-36"
             [disabled]="form.invalid || saving()"
           >
             {{

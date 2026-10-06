@@ -3,7 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsersService } from '../index.service';
 import { EnumSelectComponent } from '../../../shared/components/enum-select/index.component';
 import { userRequestSchema, userRoleSchema } from '../index.schema';
-@Component({ selector:'app-users-form', imports:[ReactiveFormsModule, EnumSelectComponent], templateUrl:'./index.component.html', changeDetection:ChangeDetectionStrategy.OnPush })
+@Component({ selector:'app-users-form', imports:[ReactiveFormsModule, EnumSelectComponent], templateUrl:'./index.component.html',
+  styleUrl: './index.component.css', changeDetection:ChangeDetectionStrategy.OnPush })
 export class UserFormComponent {
   private readonly fb=inject(FormBuilder); private readonly service=inject(UsersService);
   @Output() readonly created = new EventEmitter<void>();

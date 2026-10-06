@@ -1,57 +1,57 @@
-<main class="min-w-0 flex-1 bg-slate-50 px-4 py-6 text-slate-800 sm:px-8 sm:py-8">
-  <div class="mx-auto max-w-7xl">
-    <header class="mb-7">
-      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Fornecedores</h1>
-      <p class="mt-1 text-sm text-slate-500">Desempenho ambiental e gestão de fornecedores</p>
+<main class="component-style-1">
+  <div class="component-style-2">
+    <header class="component-style-3">
+      <h1 class="component-style-4">Fornecedores</h1>
+      <p class="component-style-5">Desempenho ambiental e gestão de fornecedores</p>
     </header>
 
-    <div class="mb-8">
+    <div class="component-style-6">
       <div>
-        <label class="sr-only" for="supplier-search">Buscar por nome ou CNPJ</label>
-        <input id="supplier-search" class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="search" [ngModel]="search()" (ngModelChange)="searchFor($event)" placeholder="Buscar por nome ou CNPJ..." />
+        <label class="component-style-7" for="supplier-search">Buscar por nome ou CNPJ</label>
+        <input id="supplier-search" class="component-style-8" name="search" [ngModel]="search()" (ngModelChange)="searchFor($event)" placeholder="Buscar por nome ou CNPJ..." />
       </div>
     </div>
 
     @if (error()) {
-      <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+      <div class="component-style-9" role="alert">
         <p>{{ error() }}</p>
-        <button class="mt-2 font-semibold underline" type="button" (click)="load()">Tentar novamente</button>
+        <button class="component-style-10" type="button" (click)="load()">Tentar novamente</button>
       </div>
     } @else if (loading()) {
-      <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando fornecedores…</div>
+      <div class="component-style-11" aria-live="polite">Carregando fornecedores…</div>
     } @else {
       @if (!rankingAvailable()) {
-        <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900" role="status">
+        <div class="component-style-12" role="status">
           Não foi possível carregar o ranking dos fornecedores. Tente novamente.
         </div>
-        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-labelledby="supplier-list-heading">
-          <div class="px-5 py-5 sm:px-6">
-            <h2 id="supplier-list-heading" class="text-lg font-semibold text-slate-900">Fornecedores cadastrados</h2>
+        <section class="component-style-13" aria-labelledby="supplier-list-heading">
+          <div class="component-style-14">
+            <h2 id="supplier-list-heading" class="component-style-15">Fornecedores cadastrados</h2>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full min-w-[650px] text-left text-sm">
-              <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          <div class="component-style-16">
+            <table class="component-style-17">
+              <thead class="component-style-18">
                 <tr>
-                  <th scope="col" class="px-5 py-3 font-medium">Fornecedor</th>
-                  <th scope="col" class="px-5 py-3 font-medium">CNPJ</th>
-                  <th scope="col" class="px-5 py-3 font-medium">Telefone</th>
+                  <th scope="col" class="component-style-19">Fornecedor</th>
+                  <th scope="col" class="component-style-19">CNPJ</th>
+                  <th scope="col" class="component-style-19">Telefone</th>
                 </tr>
               </thead>
               <tbody>
                 @for (supplier of fallbackSuppliers(); track supplier.supplierId) {
-                  <tr class="border-t border-slate-100 hover:bg-slate-50">
-                    <td class="px-5 py-4">
+                  <tr class="component-style-20">
+                    <td class="component-style-21">
                       @if (canManage()) {
-                        <a class="font-semibold text-slate-800 hover:text-green-700 hover:underline" [routerLink]="['/', 'suppliers', supplier.supplierId, 'edit']">{{ supplier.name }}</a>
+                        <a class="component-style-22" [routerLink]="['/', 'suppliers', supplier.supplierId, 'edit']">{{ supplier.name }}</a>
                       } @else {
-                        <span class="font-semibold text-slate-800">{{ supplier.name }}</span>
+                        <span class="component-style-23">{{ supplier.name }}</span>
                       }
                     </td>
-                    <td class="px-5 py-4 text-slate-600">{{ cnpj(supplier.cnpj) }}</td>
-                    <td class="px-5 py-4 text-slate-600">{{ supplier.phone ?? '—' }}</td>
+                    <td class="component-style-24">{{ cnpj(supplier.cnpj) }}</td>
+                    <td class="component-style-24">{{ supplier.phone ?? '—' }}</td>
                   </tr>
                 } @empty {
-                  <tr><td class="px-5 py-12 text-center text-slate-500" colspan="3">{{ rankingAvailable() ? (search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado.') : 'Ranking indisponível.' }}</td></tr>
+                  <tr><td class="component-style-25" colspan="3">{{ rankingAvailable() ? (search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado.') : 'Ranking indisponível.' }}</td></tr>
                 }
               </tbody>
             </table>
@@ -59,27 +59,27 @@
         </section>
       } @else {
       @if (podium().length) {
-        <section class="mb-8" aria-labelledby="top-suppliers-heading">
-          <h2 id="top-suppliers-heading" class="mb-4 text-lg font-semibold text-slate-900">Destaques do ranking</h2>
-          <div class="grid gap-4 md:grid-cols-3">
+        <section class="component-style-6" aria-labelledby="top-suppliers-heading">
+          <h2 id="top-suppliers-heading" class="component-style-26">Destaques do ranking</h2>
+          <div class="component-style-27">
             @for (entry of podium(); track entry.ranking.supplierId; let index = $index) {
-              <article class="relative overflow-hidden rounded-2xl border bg-white p-5 shadow-sm" [class.border-amber-300]="index === 0" [class.border-slate-400]="index === 1" [class.bg-slate-50]="index === 1" [class.shadow-md]="index === 1" [class.border-orange-300]="index === 2">
-                <div class="mb-4 flex items-start justify-between gap-3">
-                  <span class="inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold" [class.bg-amber-100]="index === 0" [class.text-amber-800]="index === 0" [class.bg-slate-300]="index === 1" [class.text-slate-800]="index === 1" [class.shadow-sm]="index === 1" [class.bg-orange-100]="index === 2" [class.text-orange-800]="index === 2">{{ index + 1 }}</span>
-                  <span class="rounded-full px-3 py-1 text-xs font-semibold" [class.bg-green-50]="index === 0" [class.text-green-800]="index === 0" [class.bg-slate-200]="index === 1" [class.text-slate-800]="index === 1" [class.bg-orange-50]="index === 2" [class.text-orange-800]="index === 2">{{ score(entry.ranking.sustainabilityScore) }} pontos</span>
+              <article class="component-style-28" [class.border-amber-300]="index === 0" [class.border-slate-400]="index === 1" [class.bg-slate-50]="index === 1" [class.shadow-md]="index === 1" [class.border-orange-300]="index === 2">
+                <div class="component-style-29">
+                  <span class="component-style-30" [class.bg-amber-100]="index === 0" [class.text-amber-800]="index === 0" [class.bg-slate-300]="index === 1" [class.text-slate-800]="index === 1" [class.shadow-sm]="index === 1" [class.bg-orange-100]="index === 2" [class.text-orange-800]="index === 2">{{ index + 1 }}</span>
+                  <span class="component-style-31" [class.bg-green-50]="index === 0" [class.text-green-800]="index === 0" [class.bg-slate-200]="index === 1" [class.text-slate-800]="index === 1" [class.bg-orange-50]="index === 2" [class.text-orange-800]="index === 2">{{ score(entry.ranking.sustainabilityScore) }} pontos</span>
                 </div>
-                <h3 class="truncate text-lg font-semibold text-slate-900">{{ name(entry.ranking) }}</h3>
-                <p class="mt-1 truncate text-sm text-slate-500">{{ entry.supplier.address?.city ?? 'Localização não informada' }}@if (entry.supplier.address?.state) { /{{ entry.supplier.address?.state }} }</p>
-                <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm">
-                  <div><dt class="text-xs text-slate-500">Certificações ativas</dt><dd class="mt-1"><button type="button" class="inline-flex min-w-8 items-center justify-center rounded-full bg-green-100 px-2.5 py-1 text-sm font-semibold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" [attr.aria-label]="'Abrir certificações de ' + name(entry.ranking)" (click)="openCertifications(entry.ranking)">{{ entry.ranking.activeCertificationCount ?? entry.ranking.activeCertifications ?? entry.ranking.activeCertificationsCount ?? 0 }}</button></dd></div>
-                  <div><dt class="text-xs text-slate-500">CO₂ total</dt><dd class="mt-1 font-semibold text-slate-900">{{ co2(entry.ranking.totalCo2Kg) }} kg</dd></div>
+                <h3 class="component-style-32">{{ name(entry.ranking) }}</h3>
+                <p class="component-style-33">{{ entry.supplier.address?.city ?? 'Localização não informada' }}@if (entry.supplier.address?.state) { /{{ entry.supplier.address?.state }} }</p>
+                <dl class="component-style-34">
+                  <div><dt class="component-style-35">Certificações ativas</dt><dd class="component-style-36"><button type="button" class="component-style-37" [attr.aria-label]="'Abrir certificações de ' + name(entry.ranking)" (click)="openCertifications(entry.ranking)">{{ entry.ranking.activeCertificationCount ?? entry.ranking.activeCertifications ?? entry.ranking.activeCertificationsCount ?? 0 }}</button></dd></div>
+                  <div><dt class="component-style-35">CO₂ total</dt><dd class="component-style-38">{{ co2(entry.ranking.totalCo2Kg) }} kg</dd></div>
                 </dl>
-                <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-sm">
-                  <span class="text-xs text-slate-500">Relatórios</span>
+                <div class="component-style-39">
+                  <span class="component-style-35">Relatórios</span>
                   @if (canOpenReports(entry.ranking)) {
-                    <button type="button" class="inline-flex min-w-9 items-center justify-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" [attr.aria-label]="'Abrir ' + entry.ranking.reportCount + ' relatórios de ' + name(entry.ranking)" (click)="openReports(entry.ranking)">{{ entry.ranking.reportCount }}</button>
+                    <button type="button" class="component-style-40" [attr.aria-label]="'Abrir ' + entry.ranking.reportCount + ' relatórios de ' + name(entry.ranking)" (click)="openReports(entry.ranking)">{{ entry.ranking.reportCount }}</button>
                   } @else {
-                    <span class="inline-flex min-w-9 items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ entry.ranking.reportCount }}</span>
+                    <span class="component-style-41">{{ entry.ranking.reportCount }}</span>
                   }
                 </div>
               </article>
@@ -88,62 +88,62 @@
         </section>
       }
 
-      <div class="mb-4">
-        <h2 id="supplier-ranking-heading" class="text-lg font-bold tracking-tight text-slate-900">Ranking de fornecedores</h2>
-        <p class="mt-1 text-sm text-slate-500">Ordenado por score de sustentabilidade</p>
+      <div class="component-style-42">
+        <h2 id="supplier-ranking-heading" class="component-style-43">Ranking de fornecedores</h2>
+        <p class="component-style-5">Ordenado por score de sustentabilidade</p>
       </div>
-      <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-labelledby="supplier-ranking-heading">
-        <div class="overflow-x-auto">
-          <table class="w-full min-w-[980px] text-left text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <section class="component-style-44" aria-labelledby="supplier-ranking-heading">
+        <div class="component-style-16">
+          <table class="component-style-45">
+            <thead class="component-style-46">
               <tr>
-                <th scope="col" class="px-5 py-4">Posição</th>
-                <th scope="col" class="px-5 py-4">Fornecedor</th>
-                <th scope="col" class="px-5 py-4 text-right">Score</th>
-                <th scope="col" class="px-5 py-4">CNPJ</th>
-                <th scope="col" class="px-5 py-4">Telefone</th>
-                <th scope="col" class="px-5 py-4">Certificações</th>
-                <th scope="col" class="px-5 py-4 text-right">CO₂ total</th>
-                <th scope="col" class="px-5 py-4 text-center">Relatórios</th>
+                <th scope="col" class="component-style-21">Posição</th>
+                <th scope="col" class="component-style-21">Fornecedor</th>
+                <th scope="col" class="component-style-47">Score</th>
+                <th scope="col" class="component-style-21">CNPJ</th>
+                <th scope="col" class="component-style-21">Telefone</th>
+                <th scope="col" class="component-style-21">Certificações</th>
+                <th scope="col" class="component-style-47">CO₂ total</th>
+                <th scope="col" class="component-style-48">Relatórios</th>
               </tr>
             </thead>
             <tbody>
               @for (entry of tableItems(); track entry.ranking.supplierId; let index = $index) {
-                <tr class="border-t border-slate-100 hover:bg-slate-50">
-                  <td class="px-5 py-4 font-medium text-slate-500">{{ offset() + (podium().length ? index + 4 : index + 1) }}</td>
-                  <td class="px-5 py-4">
+                <tr class="component-style-20">
+                  <td class="component-style-49">{{ offset() + (podium().length ? index + 4 : index + 1) }}</td>
+                  <td class="component-style-21">
                     @if (canManage()) {
-                      <a class="font-semibold text-slate-800 hover:text-green-700 hover:underline" [routerLink]="['/', 'suppliers', entry.ranking.supplierId, 'edit']">{{ name(entry.ranking) }}</a>
+                      <a class="component-style-22" [routerLink]="['/', 'suppliers', entry.ranking.supplierId, 'edit']">{{ name(entry.ranking) }}</a>
                     } @else {
-                      <span class="font-semibold text-slate-800">{{ name(entry.ranking) }}</span>
+                      <span class="component-style-23">{{ name(entry.ranking) }}</span>
                     }
                   </td>
-                  <td class="px-5 py-4 text-right font-semibold text-green-700">{{ score(entry.ranking.sustainabilityScore) }}</td>
-                  <td class="px-5 py-4 text-slate-600">{{ cnpj(entry.supplier.cnpj) }}</td>
-                  <td class="px-5 py-4 text-slate-600">{{ entry.supplier.phone ?? '—' }}</td>
-                  <td class="px-5 py-4">
-                    <button type="button" class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" [class.bg-red-50]="certificationTone(entry.ranking) === 'expired'" [class.text-red-700]="certificationTone(entry.ranking) === 'expired'" [class.bg-green-50]="certificationTone(entry.ranking) === 'active'" [class.text-green-700]="certificationTone(entry.ranking) === 'active'" [class.bg-slate-100]="certificationTone(entry.ranking) === 'none'" [class.text-slate-600]="certificationTone(entry.ranking) === 'none'" [attr.aria-label]="'Abrir certificações de ' + name(entry.ranking)" (click)="openCertifications(entry.ranking)">{{ certificationLabel(entry.ranking) }}</button>
+                  <td class="component-style-50">{{ score(entry.ranking.sustainabilityScore) }}</td>
+                  <td class="component-style-24">{{ cnpj(entry.supplier.cnpj) }}</td>
+                  <td class="component-style-24">{{ entry.supplier.phone ?? '—' }}</td>
+                  <td class="component-style-21">
+                    <button type="button" class="component-style-51" [class.bg-red-50]="certificationTone(entry.ranking) === 'expired'" [class.text-red-700]="certificationTone(entry.ranking) === 'expired'" [class.bg-green-50]="certificationTone(entry.ranking) === 'active'" [class.text-green-700]="certificationTone(entry.ranking) === 'active'" [class.bg-slate-100]="certificationTone(entry.ranking) === 'none'" [class.text-slate-600]="certificationTone(entry.ranking) === 'none'" [attr.aria-label]="'Abrir certificações de ' + name(entry.ranking)" (click)="openCertifications(entry.ranking)">{{ certificationLabel(entry.ranking) }}</button>
                   </td>
-                  <td class="px-5 py-4 text-right text-slate-700">{{ co2(entry.ranking.totalCo2Kg) }} kg</td>
-                  <td class="px-5 py-4 text-center">
+                  <td class="component-style-52">{{ co2(entry.ranking.totalCo2Kg) }} kg</td>
+                  <td class="component-style-48">
                     @if (canOpenReports(entry.ranking)) {
-                      <button type="button" class="inline-flex min-w-9 items-center justify-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" [attr.aria-label]="'Abrir ' + entry.ranking.reportCount + ' relatórios de ' + name(entry.ranking)" (click)="openReports(entry.ranking)">{{ entry.ranking.reportCount }}</button>
+                      <button type="button" class="component-style-40" [attr.aria-label]="'Abrir ' + entry.ranking.reportCount + ' relatórios de ' + name(entry.ranking)" (click)="openReports(entry.ranking)">{{ entry.ranking.reportCount }}</button>
                     } @else {
-                      <span class="inline-flex min-w-9 items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ entry.ranking.reportCount }}</span>
+                      <span class="component-style-41">{{ entry.ranking.reportCount }}</span>
                     }
                   </td>
                 </tr>
               } @empty {
-                <tr><td class="px-5 py-12 text-center text-slate-500" colspan="8">{{ ranking().length ? 'Todos os resultados desta página estão nos destaques.' : (search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado no ranking.') }}</td></tr>
+                <tr><td class="component-style-25" colspan="8">{{ ranking().length ? 'Todos os resultados desta página estão nos destaques.' : (search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado no ranking.') }}</td></tr>
               }
             </tbody>
           </table>
         </div>
       </section>
-      <nav class="mt-3 grid grid-cols-3 items-center py-2" aria-label="Paginação do ranking">
-        <button type="button" class="justify-self-start rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="pageNumber() <= 1 || loading()" (click)="previousPage()">Anterior</button>
-        <span class="text-center text-xs text-slate-500">Página {{ pageNumber() }} de {{ totalPages() }}</span>
-        <button type="button" class="justify-self-end rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="pageNumber() >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
+      <nav class="component-style-53" aria-label="Paginação do ranking">
+        <button type="button" class="component-style-54" [disabled]="pageNumber() <= 1 || loading()" (click)="previousPage()">Anterior</button>
+        <span class="component-style-55">Página {{ pageNumber() }} de {{ totalPages() }}</span>
+        <button type="button" class="component-style-56" [disabled]="pageNumber() >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
       </nav>
       }
     }

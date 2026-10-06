@@ -8,6 +8,7 @@ import { CertificationFormComponent } from '../../../certifications/form/index.c
   selector: 'app-supplier-certifications-modal',
   imports: [CertificationFormComponent],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:click)': 'closeStatusMenusOnOutsideClick($event)' },
 })

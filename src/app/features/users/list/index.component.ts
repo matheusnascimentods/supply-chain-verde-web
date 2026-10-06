@@ -23,6 +23,7 @@ const PAGE_SIZE = 20;
   selector: 'app-users-list',
   imports: [DatePipe, FormsModule, UserFormComponent],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:click)': 'closeRoleMenusOnOutsideClick($event)' },
 })

@@ -18,6 +18,7 @@ import { CertificationRequestDTO } from '../index.schema';
   selector: 'app-certifications-form',
   imports: [ReactiveFormsModule],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CertificationFormComponent implements AfterViewInit, OnDestroy {

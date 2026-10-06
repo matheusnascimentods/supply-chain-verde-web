@@ -12,6 +12,7 @@ import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../index.uti
   selector: 'app-suppliers-form',
   imports: [ReactiveFormsModule, RouterLink, NgTemplateOutlet],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupplierFormComponent implements AfterViewInit, OnDestroy {

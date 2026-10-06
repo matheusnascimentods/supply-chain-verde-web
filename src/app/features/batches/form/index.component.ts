@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BatchesService } from '../index.service';
-@Component({ selector:'app-batches-form', imports:[ReactiveFormsModule, RouterLink], templateUrl:'./index.component.html', changeDetection:ChangeDetectionStrategy.OnPush })
+@Component({ selector:'app-batches-form', imports:[ReactiveFormsModule, RouterLink], templateUrl:'./index.component.html',
+  styleUrl: './index.component.css', changeDetection:ChangeDetectionStrategy.OnPush })
 export class BatchFormComponent {
   private readonly fb=inject(FormBuilder); private readonly service=inject(BatchesService); private readonly route=inject(ActivatedRoute); private readonly router=inject(Router);
   readonly editing=signal(!!this.route.snapshot.paramMap.get('id')); readonly saving=signal(false); readonly error=signal('');
