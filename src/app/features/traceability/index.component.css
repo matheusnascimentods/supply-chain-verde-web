@@ -1,0 +1,92 @@
+@reference "tailwindcss";
+
+.component-style-1 {
+  @apply flex-1 bg-slate-50 text-slate-800;
+}
+.component-style-2 {
+  @apply flex h-[72px] items-center justify-between border border-slate-200 bg-white px-5 sm:px-10 lg:px-[4.5%];
+}
+.component-style-3 {
+  @apply flex items-center gap-2.5 text-base font-bold tracking-tight text-slate-900;
+}
+.component-style-4 {
+  @apply flex h-8 w-8 items-center justify-center rounded-lg bg-green-600 text-white;
+}
+.component-style-5 {
+  @apply h-5 w-5;
+}
+.component-style-6 {
+  @apply text-sm text-slate-500;
+}
+.component-style-7 {
+  @apply mx-auto my-10 max-w-[960px] bg-white px-6 py-8 sm:px-8 sm:py-9 lg:px-8;
+}
+.component-style-8 {
+  @apply py-20 text-center;
+}
+.component-style-9 {
+  @apply rounded-lg border border-amber-200 bg-amber-50 p-6;
+}
+.component-style-10 {
+  @apply font-semibold text-amber-950;
+}
+.component-style-11 {
+  @apply mt-1 text-sm text-amber-900;
+}
+.component-style-12 {
+  @apply text-[28px] font-bold leading-tight tracking-tight text-slate-900;
+}
+.component-style-13 {
+  @apply mt-5 grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-[180px_90px_1fr] sm:gap-x-6;
+}
+.component-style-14 {
+  @apply text-xs text-slate-500;
+}
+.component-style-15 {
+  @apply mt-1 font-semibold text-slate-900;
+}
+.component-style-16 {
+  @apply mt-12 grid gap-8 sm:mt-[58px] sm:grid-cols-[280px_1fr] sm:items-center sm:gap-6;
+}
+.component-style-17 {
+  @apply mt-1 text-4xl font-bold leading-none tracking-tight text-green-600 sm:text-[38px];
+}
+.component-style-18 {
+  @apply mt-12;
+}
+.component-style-19 {
+  @apply text-lg font-bold text-slate-900;
+}
+.component-style-20 {
+  @apply mt-2;
+}
+.component-style-21 {
+  @apply grid grid-cols-[10px_1fr] gap-x-4 border-b border-slate-200 py-5 last:border-b-0;
+}
+.component-style-22 {
+  @apply mt-1.5 h-2.5 w-2.5 rounded-full bg-green-600;
+}
+.component-style-23 {
+  @apply min-w-0;
+}
+.component-style-24 {
+  @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-2;
+}
+.component-style-25 {
+  @apply rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700;
+}
+.component-style-26 {
+  @apply mt-1.5 text-sm text-slate-700;
+}
+.component-style-27 {
+  @apply mt-0.5 text-sm text-slate-500;
+}
+.component-style-28 {
+  @apply mt-0.5 text-sm font-medium text-slate-900;
+}
+.component-style-29 {
+  @apply mt-4 text-sm text-slate-600;
+}
+.component-style-30 {
+  @apply sr-only;
+}

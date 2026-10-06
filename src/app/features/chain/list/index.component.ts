@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { ChainService } from '../index.service';
-@Component({ selector: 'app-chain-list', imports: [RouterLink], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-chain-list', imports: [RouterLink], templateUrl: './index.component.html',
+  styleUrl: './index.component.css', changeDetection: ChangeDetectionStrategy.OnPush })
 export class ChainListComponent {
   private readonly service = inject(ChainService); private readonly route = inject(ActivatedRoute);
   readonly items = signal<Record<string, any>[]>([]); readonly loading = signal(true); readonly error = signal('');

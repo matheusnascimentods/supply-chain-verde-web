@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink } from '@angular/router';
 import { SessionService } from '../../core/session/index.service';
 import { UsersService } from '../users/index.service';
-import { DashboardStageType, DashboardSummaryResponse, RecentBatchSummary } from './index.api-schema';
+import { DashboardStageType, DashboardSummaryResponse, RecentBatchSummary } from './index.schema';
 import { DASHBOARDS } from './index.constants';
 import { DashboardService } from './index.service';
 
@@ -46,6 +46,7 @@ const STAGE_BADGE_CLASSES: Record<DashboardStageType, string> = {
   selector: 'app-dashboard',
   imports: [RouterLink],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
