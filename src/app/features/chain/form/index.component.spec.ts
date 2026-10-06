@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { SessionService } from '../../../core/session/index.service';
+import { SessionService } from '../../../core/auth/session/index.service';
 import { UsersService } from '../../users/index.service';
 import { ChainService } from '../index.service';
 import { ChainFormComponent } from './index.component';
