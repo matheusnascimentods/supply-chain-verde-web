@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { userRoleSchema } from '../../core/session/index.schema';
-export { USER_ROLES, userRoleSchema } from '../../core/session/index.schema';
-export type { UserRole } from '../../core/session/index.schema';
+import { userRoleSchema } from '../../core/auth/session/index.model';
+export { USER_ROLES, userRoleSchema } from '../../core/auth/session/index.model';
+export type { UserRole } from '../../core/auth/session/index.model';
 export const userRequestSchema = z.object({ name: z.string().min(1), email: z.string().email(), password: z.string().min(1), role: userRoleSchema }).passthrough();
 export const userResponseSchema = z.object({ userId: z.number(), name: z.string(), email: z.string().email(), role: z.preprocess((value) => typeof value === 'string' ? value.toLowerCase() : value, userRoleSchema), createdAt: z.string().nullable().optional() }).passthrough();
 export const userPageSchema = z.object({ items: z.array(userResponseSchema), limit: z.number(), offset: z.number(), hasNext: z.boolean(), totalPages: z.number() });
