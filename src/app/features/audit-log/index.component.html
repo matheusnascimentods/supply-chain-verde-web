@@ -1,109 +1,109 @@
-<main class="min-w-0 flex-1 bg-slate-50 px-4 py-7 text-slate-800 sm:px-8 sm:py-9">
-  <div class="mx-auto max-w-7xl">
-    <header class="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+<main class="component-style-1">
+  <div class="component-style-2">
+    <header class="component-style-3">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Auditoria</h1>
-        <p class="mt-1 text-sm text-slate-500">Consulte e exporte as atividades registradas no sistema.</p>
+        <h1 class="component-style-4">Auditoria</h1>
+        <p class="component-style-5">Consulte e exporte as atividades registradas no sistema.</p>
       </div>
-      <button #exportTrigger type="button" class="inline-flex items-center justify-center gap-2 rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" (click)="openExport()">
+      <button #exportTrigger type="button" class="component-style-6" (click)="openExport()">
         <span aria-hidden="true">↓</span> Exportar logs
       </button>
     </header>
 
-    <form class="mb-5 grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1.5fr_auto] lg:items-end" (ngSubmit)="applyFilters()">
-      <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="audit-start-date">Data inicial
-        <input id="audit-start-date" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" name="startDate" required [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" />
+    <form class="component-style-7" (ngSubmit)="applyFilters()">
+      <label class="component-style-8" for="audit-start-date">Data inicial
+        <input id="audit-start-date" class="component-style-9" type="date" name="startDate" required [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" />
       </label>
-      <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="audit-end-date">Data final
-        <input id="audit-end-date" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" name="endDate" required [ngModel]="endDate()" (ngModelChange)="endDate.set($event)" />
+      <label class="component-style-8" for="audit-end-date">Data final
+        <input id="audit-end-date" class="component-style-9" type="date" name="endDate" required [ngModel]="endDate()" (ngModelChange)="endDate.set($event)" />
       </label>
-      <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="audit-action">Operação
-        <select id="audit-action" class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="action" [ngModel]="action()" (ngModelChange)="action.set($event)">
+      <label class="component-style-8" for="audit-action">Operação
+        <select id="audit-action" class="component-style-10" name="action" [ngModel]="action()" (ngModelChange)="action.set($event)">
           <option value="">Todas as operações</option>
           @for (option of actions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }
         </select>
       </label>
-      <label class="grid gap-1.5 text-xs font-semibold text-slate-600" for="audit-email">Email do usuário
-        <input id="audit-email" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="search" name="email" autocomplete="off" placeholder="Buscar por email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
+      <label class="component-style-8" for="audit-email">Email do usuário
+        <input id="audit-email" class="component-style-9" type="search" name="email" autocomplete="off" placeholder="Buscar por email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
       </label>
-      <button class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2" type="submit">Filtrar</button>
+      <button class="component-style-11" type="submit">Filtrar</button>
     </form>
-    @if (filterError()) { <p class="mb-4 text-sm text-red-700" role="alert">{{ filterError() }}</p> }
+    @if (filterError()) { <p class="component-style-12" role="alert">{{ filterError() }}</p> }
 
     @if (error()) {
-      <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
-        <p>{{ error() }}</p><button class="mt-2 font-semibold underline" type="button" (click)="load()">Tentar novamente</button>
+      <div class="component-style-13" role="alert">
+        <p>{{ error() }}</p><button class="component-style-14" type="button" (click)="load()">Tentar novamente</button>
       </div>
     } @else if (loading()) {
-      <div class="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500" aria-live="polite">Carregando registros de auditoria…</div>
+      <div class="component-style-15" aria-live="polite">Carregando registros de auditoria…</div>
     } @else {
-      <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-label="Registros de auditoria">
-        <div class="overflow-x-auto">
-          <table class="w-full min-w-[820px] text-left text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <section class="component-style-16" aria-label="Registros de auditoria">
+        <div class="component-style-17">
+          <table class="component-style-18">
+            <thead class="component-style-19">
               <tr>
-                <th scope="col" class="px-5 py-4">Usuário / email</th><th scope="col" class="px-5 py-4">Operação</th><th scope="col" class="px-5 py-4">Data e hora</th><th scope="col" class="px-5 py-4">Tabela afetada</th><th scope="col" class="px-5 py-4">Detalhes</th>
+                <th scope="col" class="component-style-20">Usuário / email</th><th scope="col" class="component-style-20">Operação</th><th scope="col" class="component-style-20">Data e hora</th><th scope="col" class="component-style-20">Tabela afetada</th><th scope="col" class="component-style-20">Detalhes</th>
               </tr>
             </thead>
             <tbody>
               @for (log of logs(); track log.logId) {
-                <tr class="border-t border-slate-100 hover:bg-slate-50/70">
-                  <td class="px-5 py-4"><span class="block font-medium text-slate-800">{{ userEmail(log) ?? (log.userId ? 'Usuário #' + log.userId : 'Sistema') }}</span>@if (userEmail(log) && log.userId) { <span class="mt-0.5 block text-xs text-slate-400">ID {{ log.userId }}</span> }</td>
-                  <td class="px-5 py-4"><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" [class]="'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ' + actionClass(log.action)">{{ actionLabel(log.action) }}</span></td>
-                  <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</td>
-                  <td class="px-5 py-4 text-slate-600">{{ log.affectedTable ?? '—' }}</td>
-                  <td class="max-w-sm whitespace-normal px-5 py-4 text-slate-600"><span class="block break-words">{{ detailsLabel(log) }}</span></td>
+                <tr class="component-style-21">
+                  <td class="component-style-20"><span class="component-style-22">{{ userEmail(log) ?? (log.userId ? 'Usuário #' + log.userId : 'Sistema') }}</span>@if (userEmail(log) && log.userId) { <span class="component-style-23">ID {{ log.userId }}</span> }</td>
+                  <td class="component-style-20"><span class="component-style-24" [class]="'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ' + actionClass(log.action)">{{ actionLabel(log.action) }}</span></td>
+                  <td class="component-style-25">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td class="component-style-26">{{ log.affectedTable ?? '—' }}</td>
+                  <td class="component-style-27"><span class="component-style-28">{{ detailsLabel(log) }}</span></td>
                 </tr>
               } @empty {
-                <tr><td class="px-5 py-14 text-center text-slate-500" colspan="5">Nenhum registro de auditoria encontrado para este período e filtros.</td></tr>
+                <tr><td class="component-style-29" colspan="5">Nenhum registro de auditoria encontrado para este período e filtros.</td></tr>
               }
             </tbody>
           </table>
         </div>
       </section>
-      <nav class="mt-3 grid grid-cols-3 items-center py-2" aria-label="Paginação dos registros">
-        <button type="button" class="justify-self-start rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="pageOffset() === 0 || loading()" (click)="previousPage()">Anterior</button>
-        <span class="text-center text-xs text-slate-500">Página {{ pageNumber() }} de {{ totalPages() }}</span>
-        <button type="button" class="justify-self-end rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40" [disabled]="pageNumber() >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
+      <nav class="component-style-30" aria-label="Paginação dos registros">
+        <button type="button" class="component-style-31" [disabled]="pageOffset() === 0 || loading()" (click)="previousPage()">Anterior</button>
+        <span class="component-style-32">Página {{ pageNumber() }} de {{ totalPages() }}</span>
+        <button type="button" class="component-style-33" [disabled]="pageNumber() >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
       </nav>
     }
   </div>
 
   @if (exportOpen()) {
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4" (click)="$event.target === $event.currentTarget ? closeExport() : null" (keydown)="onExportKeydown($event)">
-      <section #exportDialog role="dialog" aria-modal="true" aria-labelledby="export-title" class="w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl sm:p-7">
-        <div class="mb-5 flex items-start justify-between gap-4">
-          <div><h2 id="export-title" class="text-xl font-bold text-slate-900">Exportar logs</h2><p class="mt-1 text-sm text-slate-500">Escolha o intervalo e os filtros do arquivo CSV.</p></div>
-          <button type="button" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600" aria-label="Fechar" [disabled]="exporting()" (click)="closeExport()">✕</button>
+    <div class="component-style-34" (click)="$event.target === $event.currentTarget ? closeExport() : null" (keydown)="onExportKeydown($event)">
+      <section #exportDialog role="dialog" aria-modal="true" aria-labelledby="export-title" class="component-style-35">
+        <div class="component-style-36">
+          <div><h2 id="export-title" class="component-style-37">Exportar logs</h2><p class="component-style-5">Escolha o intervalo e os filtros do arquivo CSV.</p></div>
+          <button type="button" class="component-style-38" aria-label="Fechar" [disabled]="exporting()" (click)="closeExport()">✕</button>
         </div>
         @if (!exportUrl()) {
-        <form class="grid gap-4" (ngSubmit)="exportLogs()">
-          <div class="grid gap-4 sm:grid-cols-2">
-            <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-start-date">Data inicial
-              <input #exportStartInput id="export-start-date" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" name="exportStartDate" required [ngModel]="exportStartDate()" (ngModelChange)="exportStartDate.set($event)" />
+        <form class="component-style-39" (ngSubmit)="exportLogs()">
+          <div class="component-style-40">
+            <label class="component-style-41" for="export-start-date">Data inicial
+              <input #exportStartInput id="export-start-date" class="component-style-42" type="date" name="exportStartDate" required [ngModel]="exportStartDate()" (ngModelChange)="exportStartDate.set($event)" />
             </label>
-            <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-end-date">Data final
-              <input id="export-end-date" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="date" name="exportEndDate" required [ngModel]="exportEndDate()" (ngModelChange)="exportEndDate.set($event)" />
+            <label class="component-style-41" for="export-end-date">Data final
+              <input id="export-end-date" class="component-style-42" type="date" name="exportEndDate" required [ngModel]="exportEndDate()" (ngModelChange)="exportEndDate.set($event)" />
             </label>
           </div>
-          <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-action">Operação
-            <select id="export-action" class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" name="exportAction" [ngModel]="exportAction()" (ngModelChange)="exportAction.set($event)"><option value="">Todas as operações</option>@for (option of actions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select>
+          <label class="component-style-41" for="export-action">Operação
+            <select id="export-action" class="component-style-43" name="exportAction" [ngModel]="exportAction()" (ngModelChange)="exportAction.set($event)"><option value="">Todas as operações</option>@for (option of actions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select>
           </label>
-          <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="export-email">Email do usuário
-            <input id="export-email" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="search" name="exportEmail" placeholder="Buscar por email" [ngModel]="exportEmail()" (ngModelChange)="exportEmail.set($event)" />
+          <label class="component-style-41" for="export-email">Email do usuário
+            <input id="export-email" class="component-style-42" type="search" name="exportEmail" placeholder="Buscar por email" [ngModel]="exportEmail()" (ngModelChange)="exportEmail.set($event)" />
           </label>
-          @if (exportError()) { <p role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ exportError() }}</p> }
-          <div class="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <button type="button" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" [disabled]="exporting()" (click)="closeExport()">Cancelar</button>
-            <button type="submit" class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60" [disabled]="exporting()">{{ exporting() ? 'Preparando CSV…' : 'Preparar CSV' }}</button>
+          @if (exportError()) { <p role="alert" class="component-style-44">{{ exportError() }}</p> }
+          <div class="component-style-45">
+            <button type="button" class="component-style-46" [disabled]="exporting()" (click)="closeExport()">Cancelar</button>
+            <button type="submit" class="component-style-47" [disabled]="exporting()">{{ exporting() ? 'Preparando CSV…' : 'Preparar CSV' }}</button>
           </div>
         </form>
         } @else {
-          <div class="grid gap-4" role="status">
-            <p class="text-sm text-slate-600">Arquivo pronto para baixar.</p>
-            <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <button type="button" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" (click)="clearPreparedExport()">Alterar filtros</button>
-              <a class="rounded-lg bg-green-700 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-green-800" [href]="exportUrl()" [download]="exportFilename()" (click)="logCsvDownloadClick()">Baixar CSV</a>
+          <div class="component-style-39" role="status">
+            <p class="component-style-48">Arquivo pronto para baixar.</p>
+            <div class="component-style-49">
+              <button type="button" class="component-style-50" (click)="clearPreparedExport()">Alterar filtros</button>
+              <a class="component-style-51" [href]="exportUrl()" [download]="exportFilename()" (click)="logCsvDownloadClick()">Baixar CSV</a>
             </div>
           </div>
         }
