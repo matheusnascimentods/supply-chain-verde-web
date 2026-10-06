@@ -27,7 +27,7 @@ describe('SpinnerComponent', () => {
     const svg = compiled.querySelector('[data-testid="spinner-svg"]');
     const srOnly = compiled.querySelector('.sr-only');
 
-    expect(svg?.getAttribute('class')).toContain('h-8 w-8');
+    expect(svg?.getAttribute('class')).toContain('spinner-md');
     expect(srOnly?.textContent?.trim()).toBe('Carregando...');
   });
 
@@ -37,11 +37,11 @@ describe('SpinnerComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     const svg = compiled.querySelector('[data-testid="spinner-svg"]');
-    expect(svg?.getAttribute('class')).toContain('h-4 w-4');
+    expect(svg?.getAttribute('class')).toContain('spinner-sm');
 
     componentRef.setInput('size', 'lg');
     fixture.detectChanges();
-    expect(svg?.getAttribute('class')).toContain('h-12 w-12');
+    expect(svg?.getAttribute('class')).toContain('spinner-lg');
   });
 
   it('should render message when provided', () => {
@@ -65,8 +65,7 @@ describe('SpinnerComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     const container = compiled.querySelector('[data-testid="spinner-container"]');
-    expect(container?.classList.contains('fixed')).toBe(true);
-    expect(container?.classList.contains('inset-0')).toBe(true);
+    expect(container?.classList.contains('spinner-fullscreen')).toBe(true);
   });
 
   it('should satisfy accessibility requirements (role="status" and aria-live="polite")', () => {
