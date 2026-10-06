@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink } from '@angular/router';
 import { SessionService } from '../../core/session/index.service';
 import { UsersService } from '../users/index.service';
-import { DashboardStageType, DashboardSummaryResponse, RecentBatchSummary } from './index.api-schema';
+import { DashboardStageType, DashboardSummaryResponse, RecentBatchSummary } from './index.schema';
 import { DASHBOARDS } from './index.constants';
 import { DashboardService } from './index.service';
 
