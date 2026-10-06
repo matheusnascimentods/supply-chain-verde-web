@@ -7,15 +7,14 @@
 
     <div class="component-style-6">
       <div>
-        <label class="component-style-7" for="supplier-search">Buscar por nome ou CNPJ</label>
-        <input id="supplier-search" class="component-style-8" name="search" [ngModel]="search()" (ngModelChange)="searchFor($event)" placeholder="Buscar por nome ou CNPJ..." />
+        <app-text-field id="supplier-search" label="Buscar por nome ou CNPJ" [labelHidden]="true" type="search" name="search" [ngModel]="search()" (ngModelChange)="searchFor($event)" placeholder="Buscar por nome ou CNPJ..." />
       </div>
     </div>
 
     @if (error()) {
       <div class="component-style-9" role="alert">
         <p>{{ error() }}</p>
-        <button class="component-style-10" type="button" (click)="load()">Tentar novamente</button>
+        <button appButton variant="text" class="component-style-10" type="button" (click)="load()">Tentar novamente</button>
       </div>
     } @else if (loading()) {
       <div class="component-style-11" aria-live="polite">Carregando fornecedores…</div>
@@ -28,7 +27,7 @@
           <div class="component-style-14">
             <h2 id="supplier-list-heading" class="component-style-15">Fornecedores cadastrados</h2>
           </div>
-          <div class="component-style-16">
+            <app-data-table [framed]="false">
             <table class="component-style-17">
               <thead class="component-style-18">
                 <tr>
@@ -55,7 +54,7 @@
                 }
               </tbody>
             </table>
-          </div>
+            </app-data-table>
         </section>
       } @else {
       @if (podium().length) {
@@ -93,7 +92,7 @@
         <p class="component-style-5">Ordenado por score de sustentabilidade</p>
       </div>
       <section class="component-style-44" aria-labelledby="supplier-ranking-heading">
-        <div class="component-style-16">
+        <app-data-table [framed]="false">
           <table class="component-style-45">
             <thead class="component-style-46">
               <tr>
@@ -138,13 +137,9 @@
               }
             </tbody>
           </table>
-        </div>
+        </app-data-table>
       </section>
-      <nav class="component-style-53" aria-label="Paginação do ranking">
-        <button type="button" class="component-style-54" [disabled]="pageNumber() <= 1 || loading()" (click)="previousPage()">Anterior</button>
-        <span class="component-style-55">Página {{ pageNumber() }} de {{ totalPages() }}</span>
-        <button type="button" class="component-style-56" [disabled]="pageNumber() >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
-      </nav>
+      <app-pagination [page]="pageNumber()" [totalPages]="totalPages()" [disabled]="loading()" label="Paginação do ranking" (previous)="previousPage()" (next)="nextPage()" />
       }
     }
   </div>
