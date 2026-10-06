@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { SessionService } from '../../core/session/index.service';
 import { UserRole } from '../../core/session/index.schema';
-import { DashboardSummaryResponse } from './index.api-schema';
+import { DashboardSummaryResponse } from './index.schema';
 import { DashboardService } from './index.service';
 import { UsersService } from '../users/index.service';
 import { DashboardComponent } from './index.component';
