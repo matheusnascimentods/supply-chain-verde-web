@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { SessionService } from '../../core/session/index.service';
-import { UserRole } from '../../core/session/index.schema';
+import { SessionService } from '../../core/auth/session/index.service';
+import { UserRole } from '../../core/auth/session/index.model';
 import { DashboardSummaryResponse } from './index.schema';
 import { DashboardService } from './index.service';
 import { UsersService } from '../users/index.service';

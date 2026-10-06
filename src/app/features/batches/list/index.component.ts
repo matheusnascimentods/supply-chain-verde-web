@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { BatchResponseDTO } from '../index.schema';
 import { BatchesService } from '../index.service';
-import { SessionService } from '../../../core/session/index.service';
+import { SessionService } from '../../../core/auth/session/index.service';
 import { ProductsService } from '../../products/index.service';
 import { ProductUnit } from '../../products/index.schema';
 import { ChainResponseDTO, StageType } from '../../traceability/index.schema';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { userRoleSchema, UserRole } from '../../core/session/index.schema';
+import { userRoleSchema, UserRole } from '../../core/auth/session/index.model';
 
 export const loginRequestSchema = z.object({
   email: z.string().trim().email('Formato de e-mail inválido'),

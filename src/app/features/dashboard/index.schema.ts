@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { userRoleSchema } from '../../core/session/index.schema';
+import { userRoleSchema } from '../../core/auth/session/index.model';
 
 export const dashboardStageTypeSchema = z.enum([
   'PRODUCTION',

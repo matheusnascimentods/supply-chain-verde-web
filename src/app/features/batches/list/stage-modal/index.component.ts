@@ -9,7 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, of, catchError, map, switchMap } from 'rxjs';
-import { SessionService } from '../../../../core/session/index.service';
+import { SessionService } from '../../../../core/auth/session/index.service';
 import { UsersService } from '../../../users/index.service';
 import { SuppliersService } from '../../../suppliers/index.service';
 import { ModalComponent } from '../../../../shared/components/modal/index.component';

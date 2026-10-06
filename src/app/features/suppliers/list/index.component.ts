@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { catchError, of, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
-import { SessionService } from '../../../core/session/index.service';
+import { SessionService } from '../../../core/auth/session/index.service';
 import { SuppliersService } from '../index.service';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
 import { SupplierReportsModalComponent } from './reports-modal/index.component';

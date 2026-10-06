@@ -3,7 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { SessionService } from '../../core/session/index.service';
+import { SessionService } from '../../core/auth/session/index.service';
 import { LoginRequestDTO, LoginResponseDTO, loginResponseSchema } from './index.schema';
 
 @Injectable({ providedIn: 'root' })
