@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { SessionService } from '../../../../core/session/index.service';
+import { SessionService } from '../../../../core/auth/session/index.service';
 import { ProductsService } from '../../../products/index.service';
 import { SuppliersService } from '../../../suppliers/index.service';
 import { UsersService } from '../../../users/index.service';

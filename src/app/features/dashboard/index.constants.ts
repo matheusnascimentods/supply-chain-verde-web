@@ -1,4 +1,4 @@
-import type { UserRole } from '../../core/session/index.schema';
+import type { UserRole } from '../../core/auth/session/index.model';
 import type { RoleDashboard } from './index.schema';
 
 export const DASHBOARDS = {
