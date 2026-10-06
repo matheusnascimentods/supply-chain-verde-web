@@ -18,12 +18,7 @@
 .component-style-6 {
   @apply mb-8;
 }
-.component-style-7 {
-  @apply sr-only;
-}
-.component-style-8 {
-  @apply w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
-}
+
 .component-style-9 {
   @apply rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700;
 }
@@ -45,9 +40,7 @@
 .component-style-15 {
   @apply text-lg font-semibold text-slate-900;
 }
-.component-style-16 {
-  @apply overflow-x-auto;
-}
+
 .component-style-17 {
   @apply w-full min-w-[650px] text-left text-sm;
 }
@@ -155,16 +148,4 @@
 }
 .component-style-52 {
   @apply px-5 py-4 text-right text-slate-700;
-}
-.component-style-53 {
-  @apply mt-3 grid grid-cols-3 items-center py-2;
-}
-.component-style-54 {
-  @apply justify-self-start rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40;
-}
-.component-style-55 {
-  @apply text-center text-xs text-slate-500;
-}
-.component-style-56 {
-  @apply justify-self-end rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40;
 }

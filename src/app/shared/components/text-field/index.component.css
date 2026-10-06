@@ -1,0 +1,10 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+.shared-field { @apply grid w-full gap-1.5; }
+.shared-field-label { @apply text-xs font-semibold text-slate-600; }
+.shared-field-label-hidden { @apply sr-only; }
+.shared-field-required { @apply text-red-600; }
+.shared-field-control { @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-slate-100; }
+.shared-field-search { @apply px-4; }
+.shared-field-error { @apply text-xs font-medium text-red-600; }
