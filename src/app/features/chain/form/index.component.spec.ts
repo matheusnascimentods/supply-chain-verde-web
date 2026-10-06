@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { SessionService } from '../../../core/auth/session/index.service';
-import { UsersService } from '../../users/index.service';
+import { CurrentUserService } from '../../../core/auth/session/current-user/index.service';
 import { ChainService } from '../index.service';
 import { ChainFormComponent } from './index.component';
 
@@ -14,7 +14,7 @@ describe('ChainFormComponent', () => {
       providers: [
         provideRouter([]),
         { provide: ChainService, useValue: {} },
-        { provide: UsersService, useValue: {} },
+        { provide: CurrentUserService, useValue: {} },
         { provide: SessionService, useValue: { role: () => 'supplier' } },
       ],
     }).compileComponents();

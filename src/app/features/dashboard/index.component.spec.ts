@@ -5,7 +5,7 @@ import { SessionService } from '../../core/auth/session/index.service';
 import { UserRole } from '../../core/auth/session/index.model';
 import { DashboardSummaryResponse } from './index.schema';
 import { DashboardService } from './index.service';
-import { UsersService } from '../users/index.service';
+import { CurrentUserService } from '../../core/auth/session/current-user/index.service';
 import { DashboardComponent } from './index.component';
 
 const summary: DashboardSummaryResponse = {
@@ -24,13 +24,13 @@ describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let session: SessionService;
   let dashboardService: { loadSummary: ReturnType<typeof vi.fn> };
-  let usersService: { loadCurrentUser: ReturnType<typeof vi.fn> };
+  let currentUserService: { load: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     sessionStorage.clear();
     dashboardService = { loadSummary: vi.fn().mockReturnValue(of(summary)) };
-    usersService = {
-      loadCurrentUser: vi.fn().mockReturnValue(
+    currentUserService = {
+      load: vi.fn().mockReturnValue(
         of({ userId: 5, name: 'Maria Gabriela Brito', email: 'maria@example.com', role: 'manager' }),
       ),
     };
@@ -40,7 +40,7 @@ describe('DashboardComponent', () => {
         provideRouter([]),
         SessionService,
         { provide: DashboardService, useValue: dashboardService },
-        { provide: UsersService, useValue: usersService },
+        { provide: CurrentUserService, useValue: currentUserService },
       ],
     }).compileComponents();
     session = TestBed.inject(SessionService);
@@ -66,7 +66,7 @@ describe('DashboardComponent', () => {
     expect(page.textContent).toContain('8');
     expect(page.textContent).toContain('42,5 kg CO₂e');
     expect(page.textContent).toContain('Olá, Maria Gabriela Brito');
-    expect(usersService.loadCurrentUser).toHaveBeenCalledOnce();
+    expect(currentUserService.load).toHaveBeenCalledOnce();
   });
 
   it('renders charts from the real status distribution in the latest batches', () => {

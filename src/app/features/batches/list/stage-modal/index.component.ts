@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, of, catchError, map, switchMap } from 'rxjs';
 import { SessionService } from '../../../../core/auth/session/index.service';
-import { UsersService } from '../../../users/index.service';
+import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { SuppliersService } from '../../../suppliers/index.service';
 import { ModalComponent } from '../../../../shared/components/modal/index.component';
 import { ChainService } from '../../../chain/index.service';
@@ -37,7 +37,7 @@ interface AddressOption {
 export class BatchStageModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly chainService = inject(ChainService);
-  private readonly usersService = inject(UsersService);
+  private readonly currentUserService = inject(CurrentUserService);
   private readonly suppliersService = inject(SuppliersService);
   private readonly session = inject(SessionService);
 
@@ -79,8 +79,8 @@ export class BatchStageModalComponent {
     });
     const choices$ =
       this.session.role() === 'supplier'
-        ? this.usersService
-            .loadCurrentUser()
+        ? this.currentUserService
+            .load()
             .pipe(
               switchMap((user) =>
                 this.suppliersService
@@ -89,7 +89,7 @@ export class BatchStageModalComponent {
               ),
             )
         : forkJoin({
-            user: this.usersService.loadCurrentUser(),
+            user: this.currentUserService.load(),
             suppliers: this.suppliersService
               .load()
               .pipe(catchError(() => of([] as SupplierResponseDTO[]))),
