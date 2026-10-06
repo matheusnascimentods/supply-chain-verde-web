@@ -3,7 +3,7 @@ import { of, throwError } from 'rxjs';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { ProductsService } from '../../../products/index.service';
 import { SuppliersService } from '../../../suppliers/index.service';
-import { UsersService } from '../../../users/index.service';
+import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { BatchesService } from '../../index.service';
 import { BatchCreateModalComponent } from './index.component';
 
@@ -37,7 +37,7 @@ describe('BatchCreateModalComponent', () => {
         { provide: SessionService, useValue: { role: () => role } },
         { provide: ProductsService, useValue: products },
         { provide: SuppliersService, useValue: suppliers },
-        { provide: UsersService, useValue: { loadCurrentUser: vi.fn().mockReturnValue(of({ userId: 22, name: 'Fazenda', email: 'f@example.com', role: 'supplier' })) } },
+        { provide: CurrentUserService, useValue: { load: vi.fn().mockReturnValue(of({ userId: 22, name: 'Fazenda', email: 'f@example.com', role: 'supplier' })) } },
         { provide: BatchesService, useValue: batches },
       ],
     }).compileComponents();
