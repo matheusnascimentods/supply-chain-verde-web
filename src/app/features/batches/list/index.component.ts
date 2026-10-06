@@ -90,6 +90,7 @@ const BATCH_STAGE_TONES: Record<StageType | 'CREATED', BatchStageTone> = {
   selector: 'app-batches-list',
   imports: [BatchCreateModalComponent, BatchStageModalComponent],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BatchListComponent {

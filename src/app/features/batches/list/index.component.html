@@ -1,25 +1,25 @@
-<main class="min-h-[calc(100vh-4rem)] bg-slate-50 px-4 py-6 text-slate-800 sm:px-6 lg:px-8">
-  <div class="mx-auto max-w-screen-2xl">
-    <header class="mb-6 flex flex-wrap items-center justify-between gap-4">
+<main class="component-style-1">
+  <div class="component-style-2">
+    <header class="component-style-3">
       <div>
-        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h1 class="text-2xl font-bold tracking-tight text-slate-900">Lotes</h1>
-          <p class="text-sm text-slate-500">
+        <div class="component-style-4">
+          <h1 class="component-style-5">Lotes</h1>
+          <p class="component-style-6">
             {{ totalElements() }}
             {{ totalElements() === 1 ? 'lote cadastrado' : 'lotes cadastrados' }}
           </p>
         </div>
-        <p class="mt-1 text-sm text-slate-500">
+        <p class="component-style-7">
           Acompanhe a jornada dos produtos pela cadeia de suprimentos.
         </p>
       </div>
       @if (canCreate()) {
         <button
           type="button"
-          class="inline-flex min-h-10 items-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+          class="component-style-8"
           (click)="openCreateModal()"
         >
-          <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true">
+          <svg viewBox="0 0 20 20" class="component-style-9" fill="currentColor" aria-hidden="true">
             <path
               fill-rule="evenodd"
               d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3Z"
@@ -34,51 +34,51 @@
     @if (error()) {
       <section
         role="alert"
-        class="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+        class="component-style-10"
       >
         <span>{{ error() }}</span>
-        <button type="button" class="font-semibold underline underline-offset-2" (click)="load()">
+        <button type="button" class="component-style-11" (click)="load()">
           Tentar novamente
         </button>
       </section>
     }
 
     @if (loading()) {
-      <section class="grid gap-4 xl:grid-cols-2" aria-label="Carregando lotes" aria-live="polite">
+      <section class="component-style-12" aria-label="Carregando lotes" aria-live="polite">
         @for (skeleton of [1, 2, 3, 4]; track skeleton) {
-          <div class="h-56 animate-pulse rounded-xl border border-slate-200 bg-white"></div>
+          <div class="component-style-13"></div>
         }
       </section>
     } @else if (items().length) {
-      <section class="grid gap-4 xl:grid-cols-2" aria-label="Lotes">
+      <section class="component-style-12" aria-label="Lotes">
         @for (batch of items(); track batch.batchId) {
           <article
-            class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md"
+            class="component-style-14"
           >
-            <div class="grid sm:grid-cols-[minmax(0,0.88fr)_minmax(0,1.25fr)] h-full">
-              <section class="flex min-w-0 flex-col p-4 sm:p-5">
-                <p class="font-mono text-sm font-bold tracking-wide text-slate-700">
+            <div class="component-style-15">
+              <section class="component-style-16">
+                <p class="component-style-17">
                   LOTE #{{ batch.batchId }}
                 </p>
-                <h2 class="mt-1 line-clamp-2 text-lg font-bold leading-snug text-slate-900">
+                <h2 class="component-style-18">
                   {{ batch.productName ?? 'Produto não identificado' }}
                 </h2>
-                <p class="mt-1 truncate text-sm text-slate-500">
+                <p class="component-style-19">
                   {{ batch.supplierName ?? 'Fornecedor não identificado' }}
                 </p>
 
-                <dl class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
+                <dl class="component-style-20">
                   <div>
-                    <dt class="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                    <dt class="component-style-21">
                       Quantidade
                     </dt>
-                    <dd class="mt-1 text-sm font-semibold text-slate-900">{{ quantity(batch) }}</dd>
+                    <dd class="component-style-22">{{ quantity(batch) }}</dd>
                   </div>
                   <div>
-                    <dt class="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                    <dt class="component-style-21">
                       Produzido em
                     </dt>
-                    <dd class="mt-1 text-sm font-semibold text-slate-900">
+                    <dd class="component-style-22">
                       {{ formatDate(batch.producedAt) }}
                     </dd>
                   </div>
@@ -86,11 +86,11 @@
                 @if (canAddStage() && batch.currentStage !== 'RETAIL') {
                   <button
                     type="button"
-                    class="mt-auto inline-flex w-fit items-center gap-1.5 pt-5 text-xs font-semibold focus-visible:rounded focus-visible:outline-2"
+                    class="component-style-23"
                     [class]="stageTone(batch).action"
                     (click)="openStageModal(batch)"
                   >
-                    <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" class="component-style-9" fill="currentColor" aria-hidden="true">
                       <path
                         fill-rule="evenodd"
                         d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3Z"
@@ -103,58 +103,58 @@
               </section>
 
               <section
-                class="min-w-0 border-t border-slate-100 p-4 sm:border-l sm:border-t-0 sm:p-5"
+                class="component-style-24"
                 [class]="stageTone(batch).panel"
                 aria-label="Jornada do lote"
               >
-                <div class="flex min-w-0 items-start justify-between gap-3">
-                  <div class="min-w-0 flex-1">
-                    <h3 class="text-xs font-bold text-slate-800">
+                <div class="component-style-25">
+                  <div class="component-style-26">
+                    <h3 class="component-style-27">
                       {{ routeOrigin(batch) }}
-                      <span class="px-1" [class]="stageTone(batch).arrow" aria-hidden="true">→</span>
+                      <span class="component-style-28" [class]="stageTone(batch).arrow" aria-hidden="true">→</span>
                     </h3>
-                    <p class="mt-0.5 truncate text-xs text-slate-600">
+                    <p class="component-style-29">
                       {{ routeDestination(batch) }}
                     </p>
                   </div>
                 </div>
 
                 @if (batch.stages.length) {
-                  <ol class="mt-4 space-y-0">
+                  <ol class="component-style-30">
                     @for (stage of batch.stages; track stage.chainId; let last = $last) {
                       <li
-                        class="relative grid grid-cols-[12px_minmax(0,1fr)] gap-x-2.5 pb-3 last:pb-0"
+                        class="component-style-31"
                       >
                         @if (!last) {
                           <span
-                            class="absolute bottom-0 left-[5px] top-3 w-px"
+                            class="component-style-32"
                             [class]="stageTone(batch).line"
                             aria-hidden="true"
                           ></span>
                         }
                         <span
-                          class="relative z-10 mt-1 h-[11px] w-[11px] rounded-full border-2 bg-white"
+                          class="component-style-33"
                           [class]="stageTone(batch).node"
                           aria-hidden="true"
                         ></span>
-                        <div class="min-w-0">
+                        <div class="component-style-34">
                           <div
-                            class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5"
+                            class="component-style-35"
                           >
-                            <span class="text-xs font-semibold text-slate-800">{{
+                            <span class="component-style-36">{{
                               stageLabel(stage.stageType)
                             }}</span>
                             <time
-                              class="text-[10px] text-slate-500"
+                              class="component-style-37"
                               [attr.datetime]="stage.startedAt"
                               >{{ formatDate(stage.startedAt, true) }}</time
                             >
                           </div>
-                          <p class="mt-0.5 truncate text-[11px] text-slate-500">
+                          <p class="component-style-38">
                             {{ stageAddress(stage) }}
                           </p>
                           @if (stage.transport || stage.emission) {
-                            <p class="mt-0.5 text-[10px] text-slate-500">
+                            <p class="component-style-39">
                               @if (stage.transport; as transport) {
                                 {{ transportModeLabel(transport.transportMode) }} ·
                                 {{ transport.distance }} km · {{ transport.fuelType }}
@@ -173,7 +173,7 @@
                   </ol>
                 } @else {
                   <div
-                    class="mt-4 flex min-h-20 items-center rounded-lg border border-dashed border-slate-300 bg-white/70 px-3 text-xs leading-relaxed text-slate-500"
+                    class="component-style-40"
                   >
                     Nenhuma etapa registrada. A jornada aparecerá aqui quando começar.
                   </div>
@@ -185,15 +185,15 @@
       </section>
     } @else {
       <section
-        class="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center"
+        class="component-style-41"
       >
         <span
-          class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-800"
+          class="component-style-42"
           aria-hidden="true"
         >
           <svg
             viewBox="0 0 24 24"
-            class="h-6 w-6"
+            class="component-style-43"
             fill="none"
             stroke="currentColor"
             stroke-width="1.7"
@@ -202,14 +202,14 @@
             <path d="m4.3 7.7 7.7 4.4 7.7-4.4M12 12v9" />
           </svg>
         </span>
-        <h2 class="mt-4 text-base font-bold text-slate-900">Nenhum lote por aqui ainda</h2>
-        <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">
+        <h2 class="component-style-44">Nenhum lote por aqui ainda</h2>
+        <p class="component-style-45">
           Quando um lote for cadastrado, você poderá acompanhar cada etapa da cadeia nesta tela.
         </p>
         @if (canCreate()) {
           <button
             type="button"
-            class="mt-5 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
+            class="component-style-46"
             (click)="openCreateModal()"
           >
             Cadastrar primeiro lote
@@ -219,23 +219,23 @@
     }
 
     <nav
-      class="mt-5 grid grid-cols-3 items-center gap-2"
+      class="component-style-47"
       aria-label="Paginação dos lotes"
     >
       <button
         type="button"
-        class="min-h-9 w-fit justify-self-start rounded-lg border border-slate-300 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+        class="component-style-48"
         [disabled]="page() === 0 || loading()"
         (click)="previousPage()"
       >
         Anterior
       </button>
-      <p class="text-center text-xs text-slate-500" aria-live="polite">
+      <p class="component-style-49" aria-live="polite">
         Página {{ pageNumber() }} de {{ totalPages() }}
       </p>
       <button
         type="button"
-        class="min-h-9 w-fit justify-self-end rounded-lg border border-slate-300 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+        class="component-style-50"
         [disabled]="page() + 1 >= totalPages() || loading()"
         (click)="nextPage()"
       >

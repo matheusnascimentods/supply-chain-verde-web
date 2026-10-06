@@ -1,28 +1,28 @@
-<form [formGroup]="form" (ngSubmit)="submit()" class="grid gap-4">
-  <div class="grid gap-4 sm:grid-cols-2">
-    <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="user-name">Nome
-      <input id="user-name" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="text" autocomplete="name" formControlName="name" />
-      @if (form.controls.name.touched && form.controls.name.hasError('required')) { <span class="text-xs font-normal text-red-700">Informe o nome.</span> }
+<form [formGroup]="form" (ngSubmit)="submit()" class="component-style-1">
+  <div class="component-style-2">
+    <label class="component-style-3" for="user-name">Nome
+      <input id="user-name" class="component-style-4" type="text" autocomplete="name" formControlName="name" />
+      @if (form.controls.name.touched && form.controls.name.hasError('required')) { <span class="component-style-5">Informe o nome.</span> }
     </label>
-    <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="user-email">Email
-      <input id="user-email" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="email" autocomplete="email" formControlName="email" />
-      @if (form.controls.email.touched && form.controls.email.hasError('required')) { <span class="text-xs font-normal text-red-700">Informe o email.</span> }
-      @else if (form.controls.email.touched && form.controls.email.hasError('email')) { <span class="text-xs font-normal text-red-700">Informe um email válido.</span> }
+    <label class="component-style-3" for="user-email">Email
+      <input id="user-email" class="component-style-4" type="email" autocomplete="email" formControlName="email" />
+      @if (form.controls.email.touched && form.controls.email.hasError('required')) { <span class="component-style-5">Informe o email.</span> }
+      @else if (form.controls.email.touched && form.controls.email.hasError('email')) { <span class="component-style-5">Informe um email válido.</span> }
     </label>
   </div>
-  <div class="grid gap-4 sm:grid-cols-2">
-    <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="user-password">Senha
-      <input id="user-password" class="rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100" type="password" autocomplete="new-password" formControlName="password" />
-      @if (form.controls.password.touched && form.controls.password.hasError('required')) { <span class="text-xs font-normal text-red-700">Informe a senha.</span> }
+  <div class="component-style-2">
+    <label class="component-style-3" for="user-password">Senha
+      <input id="user-password" class="component-style-4" type="password" autocomplete="new-password" formControlName="password" />
+      @if (form.controls.password.touched && form.controls.password.hasError('required')) { <span class="component-style-5">Informe a senha.</span> }
     </label>
-    <label class="grid gap-1.5 text-sm font-medium text-slate-700" for="user-role">Role
+    <label class="component-style-3" for="user-role">Role
       <app-enum-select id="user-role" [options]="userRoleSchema.options" [formControlName]="'role'" />
-      @if (form.controls.role.touched && form.controls.role.hasError('required')) { <span class="text-xs font-normal text-red-700">Selecione um perfil.</span> }
+      @if (form.controls.role.touched && form.controls.role.hasError('required')) { <span class="component-style-5">Selecione um perfil.</span> }
     </label>
   </div>
-  @if (error()) { <p role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ error() }}</p> }
-  <div class="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-    <button type="button" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50" [disabled]="saving()" (click)="cancelled.emit()">Cancelar</button>
-    <button type="submit" class="rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50" [disabled]="form.invalid || saving()">{{ saving() ? 'Salvando…' : 'Adicionar usuário' }}</button>
+  @if (error()) { <p role="alert" class="component-style-6">{{ error() }}</p> }
+  <div class="component-style-7">
+    <button type="button" class="component-style-8" [disabled]="saving()" (click)="cancelled.emit()">Cancelar</button>
+    <button type="submit" class="component-style-9" [disabled]="form.invalid || saving()">{{ saving() ? 'Salvando…' : 'Adicionar usuário' }}</button>
   </div>
 </form>

@@ -9,6 +9,7 @@ const PAGE_SIZE = 20;
   selector: 'app-supplier-reports-modal',
   imports: [ReactiveFormsModule],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupplierReportsModalComponent implements OnInit, AfterViewInit, OnDestroy {

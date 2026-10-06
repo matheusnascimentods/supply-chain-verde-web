@@ -1,32 +1,32 @@
-<main class="flex min-h-screen items-center justify-center bg-[#f8f9fb] px-4 py-10">
+<main class="component-style-1">
   <section
-    class="w-full max-w-[570px] rounded-2xl border border-slate-100 bg-white px-8 pt-10 pb-8 shadow-[0_8px_22px_rgba(15,23,42,0.08)] sm:px-10"
+    class="component-style-2"
     aria-labelledby="login-title"
   >
-    <header class="text-center">
-      <div class="flex items-center justify-center gap-2">
-        <span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#16a34a] text-white" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <header class="component-style-3">
+      <div class="component-style-4">
+        <span class="component-style-5" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="component-style-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 4c-7 0-12 2-13 7-1 4 2 7 6 6 5-1 7-6 7-13Z" />
             <path d="M4 21c2-5 5-8 11-11" />
           </svg>
         </span>
-        <span class="text-base font-bold tracking-tight text-slate-900">Supply Chain Verde</span>
+        <span class="component-style-7">Supply Chain Verde</span>
       </div>
-      <h1 id="login-title" class="mt-7 text-2xl font-bold tracking-tight text-slate-900">
+      <h1 id="login-title" class="component-style-8">
         Bem-vindo de volta
       </h1>
-      <p class="mt-4 text-sm text-slate-500">Entre com suas credenciais para acessar o sistema</p>
+      <p class="component-style-9">Entre com suas credenciais para acessar o sistema</p>
     </header>
 
     @if (errorMessage()) {
       <div
         role="alert"
         aria-live="assertive"
-        class="mt-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+        class="component-style-10"
         data-testid="error-alert"
       >
-        <p class="font-medium" data-testid="error-message">{{ errorMessage() }}</p>
+        <p class="component-style-11" data-testid="error-message">{{ errorMessage() }}</p>
       </div>
     }
 
@@ -35,10 +35,10 @@
       (ngSubmit)="onSubmit()"
       novalidate
       aria-label="Formulário de login"
-      class="mt-5 space-y-5"
+      class="component-style-12"
     >
       <div>
-        <label for="email" class="block text-sm font-medium text-slate-800">Email</label>
+        <label for="email" class="component-style-13">Email</label>
         <input
           id="email"
           type="email"
@@ -47,19 +47,19 @@
           placeholder="thiago.mendes@empresa.com"
           [attr.aria-invalid]="isFieldInvalid('email')"
           [attr.aria-describedby]="isFieldInvalid('email') ? 'email-error' : null"
-          class="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-600/15"
+          class="component-style-14"
           data-testid="email-input"
         />
         @if (isFieldInvalid('email')) {
-          <p id="email-error" role="alert" class="mt-1.5 text-xs font-medium text-red-600" data-testid="email-error">
+          <p id="email-error" role="alert" class="component-style-15" data-testid="email-error">
             {{ getEmailErrorMessage() }}
           </p>
         }
       </div>
 
       <div>
-        <label for="password" class="block text-sm font-medium text-slate-800">Senha</label>
-        <div class="relative mt-2">
+        <label for="password" class="component-style-13">Senha</label>
+        <div class="component-style-16">
           <input
             id="password"
             [type]="showPassword() ? 'text' : 'password'"
@@ -68,21 +68,21 @@
             placeholder="••••••••"
             [attr.aria-invalid]="isFieldInvalid('password')"
             [attr.aria-describedby]="isFieldInvalid('password') ? 'password-error' : null"
-            class="h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-600/15"
+            class="component-style-17"
             data-testid="password-input"
           />
           <button
             type="button"
             (click)="togglePasswordVisibility()"
             [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Exibir senha'"
-            class="sr-only focus:not-sr-only focus:absolute focus:right-2 focus:top-1/2 focus:-translate-y-1/2 focus:rounded focus:bg-white focus:px-2 focus:py-1 focus:text-xs focus:text-green-800"
+            class="component-style-18"
             data-testid="toggle-password-visibility"
           >
             {{ showPassword() ? 'Ocultar' : 'Exibir' }}
           </button>
         </div>
         @if (isFieldInvalid('password')) {
-          <p id="password-error" role="alert" class="mt-1.5 text-xs font-medium text-red-600" data-testid="password-error">
+          <p id="password-error" role="alert" class="component-style-15" data-testid="password-error">
             {{ getPasswordErrorMessage() }}
           </p>
         }
@@ -91,11 +91,11 @@
       <button
         type="submit"
         [disabled]="isLoading()"
-        class="flex h-10 w-full items-center justify-center rounded-lg bg-[#16a34a] px-4 text-sm font-semibold text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+        class="component-style-19"
         data-testid="submit-button"
       >
         @if (isLoading()) {
-          <span class="flex items-center gap-2">
+          <span class="component-style-20">
             <app-spinner size="sm" ariaLabel="Autenticando..." />
             <span>Entrando...</span>
           </span>

@@ -4,6 +4,7 @@ import { CarbonEmissionResponseDTO, ChainResponseDTO } from '../index.schema';
 @Component({
   selector: 'app-carbon-chart',
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CarbonChartComponent {

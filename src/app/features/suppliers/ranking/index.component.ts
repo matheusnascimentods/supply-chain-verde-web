@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { SuppliersService } from '../index.service';
 import { SupplierRankingResponseDTO } from '../index.schema';
 
-@Component({ selector: 'app-supplier-ranking', templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-supplier-ranking', templateUrl: './index.component.html',
+  styleUrl: './index.component.css', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierRankingComponent {
   private readonly service = inject(SuppliersService);
   readonly items = signal<SupplierRankingResponseDTO[]>([]); readonly sort = signal('sustainabilityScore'); readonly error = signal('');

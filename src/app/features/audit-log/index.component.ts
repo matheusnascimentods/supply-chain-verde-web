@@ -8,6 +8,7 @@ import { AuditLogResponseDTO } from './index.schema';
   selector: 'app-audit-log',
   imports: [DatePipe, FormsModule],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuditLogComponent {

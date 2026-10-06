@@ -11,6 +11,7 @@ import { BatchTraceabilityResponseDTO, CarbonFootprintResponseDTO } from './inde
   selector: 'app-traceability',
   imports: [DatePipe, SpinnerComponent, CarbonChartComponent],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TraceabilityComponent {
