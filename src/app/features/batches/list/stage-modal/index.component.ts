@@ -1,14 +1,9 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
-  HostListener,
   input,
-  OnDestroy,
   output,
   signal,
-  ViewChild,
   inject,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,6 +12,7 @@ import { forkJoin, of, catchError, map, switchMap } from 'rxjs';
 import { SessionService } from '../../../../core/session/index.service';
 import { UsersService } from '../../../users/index.service';
 import { SuppliersService } from '../../../suppliers/index.service';
+import { ModalComponent } from '../../../../shared/components/modal/index.component';
 import { ChainService } from '../../../chain/index.service';
 import {
   calculationMethodSchema,
@@ -33,15 +29,12 @@ interface AddressOption {
 
 @Component({
   selector: 'app-batch-stage-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ModalComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
-  private readonly previousFocus =
-    typeof document === 'undefined' ? null : (document.activeElement as HTMLElement);
+export class BatchStageModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly chainService = inject(ChainService);
   private readonly usersService = inject(UsersService);
@@ -114,50 +107,6 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngAfterViewInit(): void {
-    this.dialog?.nativeElement.focus();
-  }
-  ngOnDestroy(): void {
-    this.previousFocus?.focus();
-  }
-
-  @HostListener('keydown', ['$event'])
-  keepFocusInDialog(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.requestDismiss();
-      return;
-    }
-    if (event.key !== 'Tab' || !this.dialog) return;
-    const focusable = Array.from(
-      this.dialog.nativeElement.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-      ),
-    ).filter((element) => element.offsetParent !== null);
-    if (!focusable.length) {
-      event.preventDefault();
-      this.dialog.nativeElement.focus();
-      return;
-    }
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (
-      event.shiftKey &&
-      (document.activeElement === first ||
-        !this.dialog.nativeElement.contains(document.activeElement))
-    ) {
-      event.preventDefault();
-      last.focus();
-    } else if (
-      !event.shiftKey &&
-      (document.activeElement === last ||
-        !this.dialog.nativeElement.contains(document.activeElement))
-    ) {
-      event.preventDefault();
-      first.focus();
-    }
-  }
-
   get isTransport(): boolean {
     return this.form.controls.stageType.value === 'TRANSPORT';
   }
@@ -207,10 +156,6 @@ export class BatchStageModalComponent implements AfterViewInit, OnDestroy {
 
   requestDismiss(): void {
     if (!this.saving()) this.dismiss.emit();
-  }
-
-  backdropClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget) this.requestDismiss();
   }
 
   private saveRemainingSteps(): void {

@@ -6,16 +6,14 @@
         <p class="component-style-5">Gerencie os usuários e os perfis de acesso ao sistema.</p>
       </div>
       @if (canManage()) {
-        <button #createTrigger type="button" class="component-style-6" (click)="openCreateModal()">
+        <button appButton type="button" variant="primary" (click)="openCreateModal()">
           + Adicionar usuário
         </button>
       }
     </header>
 
     <div class="component-style-7">
-      <label class="component-style-8" for="users-email-search">Buscar por email
-        <input id="users-email-search" class="component-style-9" type="search" name="email" autocomplete="off" placeholder="Digite um email" [ngModel]="email()" (ngModelChange)="searchFor($event)" />
-      </label>
+      <app-text-field id="users-email-search" label="Buscar por email" type="search" name="email" autocomplete="off" placeholder="Digite um email" [ngModel]="email()" (ngModelChange)="searchFor($event)" />
     </div>
 
     @if (error()) {
@@ -26,7 +24,7 @@
       <div class="component-style-12" aria-live="polite">Carregando usuários…</div>
     } @else {
       @if (roleError()) { <p class="component-style-13" role="alert">{{ roleError() }}</p> }
-      <section class="component-style-14" aria-label="Lista de usuários">
+      <app-data-table aria-label="Lista de usuários">
         <table class="component-style-15">
             <thead class="component-style-16"><tr class="component-style-17">
               <th scope="col" class="component-style-18">Nome</th><th scope="col" class="component-style-18">Email</th><th scope="col" class="component-style-18">Role</th><th scope="col" class="component-style-18">Criado em</th>
@@ -60,24 +58,18 @@
               }
             </tbody>
         </table>
-      </section>
-      <nav class="component-style-28" aria-label="Paginação de usuários">
-        <button type="button" class="component-style-29" [disabled]="offset() === 0 || loading()" (click)="previousPage()">Anterior</button>
-        <span class="component-style-30">Página {{ pageNumber() }} de {{ totalPages() }}</span>
-        <button type="button" class="component-style-31" [disabled]="pageNumber() >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
-      </nav>
+      </app-data-table>
+      <app-pagination [page]="pageNumber()" [totalPages]="totalPages()" [disabled]="loading()" label="Paginação de usuários" (previous)="previousPage()" (next)="nextPage()" />
     }
   </div>
 
   @if (createModalOpen()) {
-    <div class="component-style-32" (click)="$event.target === $event.currentTarget ? dismissCreateModal() : null" (keydown)="onDialogKeydown($event)">
-      <section #createDialog role="dialog" aria-modal="true" aria-labelledby="user-create-title" class="component-style-33">
+    <app-modal labelledBy="user-create-title" size="lg" initialFocusSelector="input" (dismissed)="dismissCreateModal()">
         <div class="component-style-34">
           <div><h2 id="user-create-title" class="component-style-35">Adicionar usuário</h2><p class="component-style-5">Informe os dados e o perfil de acesso.</p></div>
           <button type="button" class="component-style-36" aria-label="Fechar" (click)="dismissCreateModal()">✕</button>
         </div>
         <app-users-form (created)="userCreated()" (cancelled)="dismissCreateModal()" />
-      </section>
-    </div>
+    </app-modal>
   }
 </main>

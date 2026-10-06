@@ -6,6 +6,7 @@ import { TopNavComponent } from '../top-nav/index.component';
   selector: 'app-shell',
   imports: [TopNavComponent, RouterOutlet],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShellComponent {}

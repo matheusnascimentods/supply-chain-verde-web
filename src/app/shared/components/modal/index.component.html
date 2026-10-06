@@ -1,0 +1,19 @@
+<div class="shared-modal-backdrop" (click)="onBackdropClick($event)" (keydown)="onKeydown($event)">
+  <section
+    #dialog
+    class="shared-modal-panel"
+    [class.shared-modal-sm]="size() === 'sm'"
+    [class.shared-modal-md]="size() === 'md'"
+    [class.shared-modal-lg]="size() === 'lg'"
+    [class.shared-modal-2xl]="size() === '2xl'"
+    [class.shared-modal-xl]="size() === 'xl'"
+    [class.shared-modal-flush]="flush()"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="labelledBy()"
+    [attr.aria-describedby]="describedBy()"
+    tabindex="-1"
+  >
+    <ng-content />
+  </section>
+</div>
