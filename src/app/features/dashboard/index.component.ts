@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { SessionService } from '../../core/auth/session/index.service';
-import { UsersService } from '../users/index.service';
+import { CurrentUserService } from '../../core/auth/session/current-user/index.service';
 import { DashboardStageType, DashboardSummaryResponse, RecentBatchSummary } from './index.schema';
 import { DASHBOARDS } from './index.constants';
 import { DashboardService } from './index.service';
@@ -52,7 +52,7 @@ const STAGE_BADGE_CLASSES: Record<DashboardStageType, string> = {
 export class DashboardComponent {
   private readonly session = inject(SessionService);
   private readonly dashboardService = inject(DashboardService);
-  private readonly usersService = inject(UsersService);
+  private readonly currentUserService = inject(CurrentUserService);
 
   readonly role = this.session.role;
   readonly summary = signal<DashboardSummaryResponse | null>(null);
@@ -103,7 +103,7 @@ export class DashboardComponent {
   }
 
   private loadUserName(): void {
-    this.usersService.loadCurrentUser().subscribe({
+    this.currentUserService.load().subscribe({
       next: (user) => this.userName.set(user.name),
       error: () => this.userName.set(''),
     });
