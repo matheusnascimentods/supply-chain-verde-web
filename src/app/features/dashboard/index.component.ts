@@ -46,6 +46,7 @@ const STAGE_BADGE_CLASSES: Record<DashboardStageType, string> = {
   selector: 'app-dashboard',
   imports: [RouterLink],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
