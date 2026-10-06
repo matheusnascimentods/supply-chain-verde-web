@@ -8,6 +8,7 @@ import { ErrorToastService } from './index.service';
 @Component({
   selector: 'app-error-toast',
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ErrorToastComponent {
