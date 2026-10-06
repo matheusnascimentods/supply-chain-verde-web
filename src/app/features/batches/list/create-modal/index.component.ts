@@ -1,16 +1,12 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
-  HostListener,
-  OnDestroy,
-  ViewChild,
   inject,
   output,
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, debounceTime, distinctUntilChanged, finalize, map, of, startWith, Subject, switchMap, tap, timer } from 'rxjs';
 import { SessionService } from '../../../../core/session/index.service';
@@ -27,20 +23,20 @@ import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../sup
 import { UsersService } from '../../../users/index.service';
 import { BatchRequestDTO } from '../../index.schema';
 import { BatchesService } from '../../index.service';
+import { PaginationComponent } from '../../../../shared/components/pagination/index.component';
+import { TextFieldComponent } from '../../../../shared/components/text-field/index.component';
+import { ModalComponent } from '../../../../shared/components/modal/index.component';
 
 const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-batch-create-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormsModule, PaginationComponent, TextFieldComponent, ModalComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
-  private readonly previousFocus =
-    typeof document === 'undefined' ? null : (document.activeElement as HTMLElement);
+export class BatchCreateModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly batches = inject(BatchesService);
   private readonly productsService = inject(ProductsService);
@@ -150,49 +146,6 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
     this.loadProducts();
     if (this.isAdmin) this.loadSuppliers();
     else if (this.isSupplier) this.loadOwnSupplier();
-  }
-
-  ngAfterViewInit(): void {
-    this.dialog?.nativeElement.focus();
-  }
-
-  ngOnDestroy(): void {
-    this.previousFocus?.focus();
-  }
-
-  @HostListener('keydown', ['$event'])
-  keepFocusInDialog(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.requestDismiss();
-      return;
-    }
-    if (event.key !== 'Tab' || !this.dialog) return;
-    const focusable = Array.from(
-      this.dialog.nativeElement.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-      ),
-    ).filter((element) => element.offsetParent !== null);
-    if (!focusable.length) {
-      event.preventDefault();
-      this.dialog.nativeElement.focus();
-      return;
-    }
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (
-      event.shiftKey &&
-      (document.activeElement === first || !this.dialog.nativeElement.contains(document.activeElement))
-    ) {
-      event.preventDefault();
-      last.focus();
-    } else if (
-      !event.shiftKey &&
-      (document.activeElement === last || !this.dialog.nativeElement.contains(document.activeElement))
-    ) {
-      event.preventDefault();
-      first.focus();
-    }
   }
 
   selectProduct(product: ProductResponseDTO): void {
@@ -361,10 +314,6 @@ export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {
 
   requestDismiss(): void {
     if (!this.saving() && !this.hasPartialCreation()) this.dismiss.emit();
-  }
-
-  backdropClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget) this.requestDismiss();
   }
 
   productName(): string {

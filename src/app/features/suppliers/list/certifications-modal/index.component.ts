@@ -1,21 +1,20 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, QueryList, ViewChild, ViewChildren, computed, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, QueryList, ViewChildren, computed, inject, input, output, signal } from '@angular/core';
 import { SupplierCertificationDTO } from '../../index.schema';
 import { CertificationsService } from '../../../certifications/index.service';
 import { CertificationStatus } from '../../../certifications/index.schema';
 import { CertificationFormComponent } from '../../../certifications/form/index.component';
+import { ModalComponent } from '../../../../shared/components/modal/index.component';
 
 @Component({
   selector: 'app-supplier-certifications-modal',
-  imports: [CertificationFormComponent],
+  imports: [CertificationFormComponent, ModalComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(document:click)': 'closeStatusMenusOnOutsideClick($event)' },
 })
-export class SupplierCertificationsModalComponent implements AfterViewInit, OnDestroy {
+export class SupplierCertificationsModalComponent {
   private readonly service = inject(CertificationsService);
-  private previousFocus: HTMLElement | null = null;
-  @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
   @ViewChildren('certificationStatusMenu') private statusMenus?: QueryList<ElementRef<HTMLDetailsElement>>;
   readonly supplierId = input.required<number>();
   readonly supplierName = input.required<string>();
@@ -35,40 +34,7 @@ export class SupplierCertificationsModalComponent implements AfterViewInit, OnDe
     { value: 'underReview', label: 'Em análise' },
   ];
 
-  ngAfterViewInit(): void {
-    this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    queueMicrotask(() => this.dialog?.nativeElement.focus());
-  }
-
-  ngOnDestroy(): void { this.previousFocus?.focus(); }
-
   close(): void { this.dismissed.emit(); }
-
-  handleKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.close();
-      return;
-    }
-    if (event.key !== 'Tab') return;
-    const elements = this.dialog?.nativeElement.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    );
-    if (!elements?.length) {
-      event.preventDefault();
-      this.dialog?.nativeElement.focus();
-      return;
-    }
-    const first = elements[0];
-    const last = elements[elements.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }
 
   date(value: string): string {
     const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);

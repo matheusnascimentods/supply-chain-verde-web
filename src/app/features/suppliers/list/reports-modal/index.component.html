@@ -1,5 +1,4 @@
-<div class="component-style-1" (click)="close()">
-  <section #dialog class="component-style-2" role="dialog" aria-modal="true" aria-labelledby="supplier-reports-title" aria-describedby="supplier-reports-description" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="handleKeydown($event)">
+<app-modal labelledBy="supplier-reports-title" describedBy="supplier-reports-description" size="lg" (dismissed)="close()">
     <header class="component-style-3">
       <div>
         <h2 id="supplier-reports-title" class="component-style-4">Relatórios de {{ supplierName() }}</h2>
@@ -65,14 +64,9 @@
             }
           </div>
           @if (totalPages() > 1) {
-            <nav class="component-style-32" aria-label="Paginação dos relatórios do fornecedor">
-              <button type="button" class="component-style-33" [disabled]="page() === 0 || loading()" (click)="previousPage()">Anterior</button>
-              <span class="component-style-34">{{ page() + 1 }} / {{ totalPages() }}</span>
-              <button type="button" class="component-style-35" [disabled]="page() + 1 >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
-            </nav>
+            <app-pagination [page]="page() + 1" [totalPages]="totalPages()" [disabled]="loading()" label="Paginação dos relatórios do fornecedor" (previous)="previousPage()" (next)="nextPage()" />
           }
         }
       </section>
     </div>
-  </section>
-</div>
+</app-modal>
