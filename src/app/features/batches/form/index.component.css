@@ -1,0 +1,24 @@
+.component-style-1 {
+  @apply mx-auto max-w-2xl p-6;
+}
+.component-style-2 {
+  @apply text-emerald-700 underline;
+}
+.component-style-3 {
+  @apply my-5 text-2xl font-bold;
+}
+.component-style-4 {
+  @apply grid gap-4 rounded-xl border border-slate-200 bg-white p-6;
+}
+.component-style-5 {
+  @apply grid gap-1 text-sm font-medium;
+}
+.component-style-6 {
+  @apply rounded-lg border border-slate-300 px-3 py-2;
+}
+.component-style-7 {
+  @apply text-red-700;
+}
+.component-style-8 {
+  @apply rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white disabled:opacity-50;
+}

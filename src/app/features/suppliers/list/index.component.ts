@@ -11,7 +11,8 @@ import { SupplierCertificationsModalComponent } from './certifications-modal/ind
 
 const PAGE_SIZE = 20;
 
-@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierReportsModalComponent, SupplierCertificationsModalComponent], templateUrl: './index.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierReportsModalComponent, SupplierCertificationsModalComponent], templateUrl: './index.component.html',
+  styleUrl: './index.component.css', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierListComponent {
   private readonly service = inject(SuppliersService);
   private readonly session = inject(SessionService);

@@ -35,6 +35,7 @@ interface AddressOption {
   selector: 'app-batch-stage-modal',
   imports: [ReactiveFormsModule],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BatchStageModalComponent implements AfterViewInit, OnDestroy {

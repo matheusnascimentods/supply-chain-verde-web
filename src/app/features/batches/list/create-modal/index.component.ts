@@ -34,6 +34,7 @@ const PAGE_SIZE = 20;
   selector: 'app-batch-create-modal',
   imports: [ReactiveFormsModule],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BatchCreateModalComponent implements AfterViewInit, OnDestroy {

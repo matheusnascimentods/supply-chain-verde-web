@@ -16,6 +16,7 @@ import { ChainService } from '../index.service';
   selector: 'app-chain-form',
   imports: [ReactiveFormsModule, RouterLink, EnumSelectComponent],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChainFormComponent {
