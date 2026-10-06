@@ -16,6 +16,7 @@ import { AuthService } from '../index.service';
   selector: 'app-login',
   imports: [ReactiveFormsModule, SpinnerComponent, ErrorToastComponent],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
