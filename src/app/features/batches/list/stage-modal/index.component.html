@@ -1,16 +1,4 @@
-<div
-  class="component-style-1"
-  role="presentation"
-  (click)="backdropClick($event)"
->
-  <section
-    #dialog
-    tabindex="-1"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="stage-modal-title"
-    class="component-style-2"
-  >
+<app-modal labelledBy="stage-modal-title" size="2xl" [flush]="true" (dismissed)="requestDismiss()">
     <header class="component-style-3">
       <div>
         <p class="component-style-4">
@@ -314,5 +302,4 @@
         </footer>
       </form>
     }
-  </section>
-</div>
+</app-modal>

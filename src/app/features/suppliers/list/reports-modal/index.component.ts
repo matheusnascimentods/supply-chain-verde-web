@@ -1,23 +1,22 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ReportsService } from '../../../reports/index.service';
 import { ReportResponseDTO } from '../../../reports/index.schema';
+import { ModalComponent } from '../../../../shared/components/modal/index.component';
+import { PaginationComponent } from '../../../../shared/components/pagination/index.component';
 
 const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-supplier-reports-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ModalComponent, PaginationComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SupplierReportsModalComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SupplierReportsModalComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly reports = inject(ReportsService);
-  private previousFocus: HTMLElement | null = null;
-
-  @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
 
   readonly supplierId = input.required<number>();
   readonly supplierName = input.required<string>();
@@ -42,43 +41,8 @@ export class SupplierReportsModalComponent implements OnInit, AfterViewInit, OnD
     this.loadReports();
   }
 
-  ngAfterViewInit(): void {
-    this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    queueMicrotask(() => this.dialog?.nativeElement.focus());
-  }
-
-  ngOnDestroy(): void {
-    this.previousFocus?.focus();
-  }
-
   close(): void {
     if (!this.saving()) this.dismissed.emit();
-  }
-
-  handleKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.close();
-      return;
-    }
-    if (event.key !== 'Tab') return;
-    const elements = this.dialog?.nativeElement.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    );
-    if (!elements?.length) {
-      event.preventDefault();
-      this.dialog?.nativeElement.focus();
-      return;
-    }
-    const first = elements[0];
-    const last = elements[elements.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
   }
 
   invalidPeriod(): boolean {

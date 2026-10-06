@@ -93,15 +93,3 @@
 .component-style-31 {
   @apply rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500;
 }
-.component-style-32 {
-  @apply mt-4 grid grid-cols-3 items-center;
-}
-.component-style-33 {
-  @apply justify-self-start rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40;
-}
-.component-style-34 {
-  @apply text-center text-xs text-slate-500;
-}
-.component-style-35 {
-  @apply justify-self-end rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40;
-}

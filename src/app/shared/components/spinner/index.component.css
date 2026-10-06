@@ -1,0 +1,37 @@
+@reference "tailwindcss";
+
+.spinner-fullscreen {
+  @apply fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900/40 p-4 backdrop-blur-xs;
+}
+
+.spinner-inline {
+  @apply inline-flex flex-col items-center justify-center gap-2 p-2;
+}
+
+.spinner-icon {
+  @apply animate-spin text-emerald-600 dark:text-emerald-400;
+}
+
+.spinner-sm {
+  @apply h-4 w-4;
+}
+
+.spinner-md {
+  @apply h-8 w-8;
+}
+
+.spinner-lg {
+  @apply h-12 w-12;
+}
+
+.spinner-track {
+  @apply opacity-25;
+}
+
+.spinner-progress {
+  @apply opacity-75;
+}
+
+.spinner-message {
+  @apply text-sm font-medium text-slate-700 dark:text-slate-200;
+}

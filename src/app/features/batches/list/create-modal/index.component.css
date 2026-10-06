@@ -108,12 +108,7 @@
 .component-style-36 {
   @apply w-full sm:w-72;
 }
-.component-style-37 {
-  @apply sr-only;
-}
-.component-style-38 {
-  @apply min-h-10 w-full rounded-lg border border-slate-300 px-3 text-sm;
-}
+
 .component-style-39 {
   @apply rounded-lg bg-slate-50 p-6 text-center text-sm text-slate-500;
 }
@@ -132,18 +127,7 @@
 .component-style-44 {
   @apply rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 sm:col-span-2;
 }
-.component-style-45 {
-  @apply mt-3 grid grid-cols-3 items-center text-xs text-slate-500;
-}
-.component-style-46 {
-  @apply justify-self-start rounded border border-slate-200 px-3 py-2 disabled:opacity-40;
-}
-.component-style-47 {
-  @apply text-center;
-}
-.component-style-48 {
-  @apply justify-self-end rounded border border-slate-200 px-3 py-2 disabled:opacity-40;
-}
+
 .component-style-49 {
   @apply rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900;
 }

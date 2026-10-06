@@ -7,6 +7,7 @@ import { ProductUnit } from '../../products/index.schema';
 import { ChainResponseDTO, StageType } from '../../traceability/index.schema';
 import { BatchCreateModalComponent } from './create-modal/index.component';
 import { BatchStageModalComponent } from './stage-modal/index.component';
+import { PaginationComponent } from '../../../shared/components/pagination/index.component';
 
 const PAGE_SIZE = 20;
 
@@ -88,7 +89,7 @@ const BATCH_STAGE_TONES: Record<StageType | 'CREATED', BatchStageTone> = {
 
 @Component({
   selector: 'app-batches-list',
-  imports: [BatchCreateModalComponent, BatchStageModalComponent],
+  imports: [BatchCreateModalComponent, BatchStageModalComponent, PaginationComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

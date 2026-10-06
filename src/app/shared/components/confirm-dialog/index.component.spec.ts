@@ -170,11 +170,11 @@ describe('ConfirmDialogComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const confirmBtn = compiled.querySelector('[data-testid="dialog-confirm-button"]') as HTMLButtonElement;
 
-    expect(confirmBtn.className).toContain('bg-red-600');
+    expect(confirmBtn.className).toContain('dialog-confirm-danger');
 
     componentRef.setInput('variant', 'primary');
     fixture.detectChanges();
 
-    expect(confirmBtn.className).toContain('bg-emerald-600');
+    expect(confirmBtn.className).toContain('dialog-confirm-primary');
   });
 });

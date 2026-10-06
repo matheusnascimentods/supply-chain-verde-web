@@ -8,10 +8,14 @@ import { SuppliersService } from '../index.service';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
 import { SupplierReportsModalComponent } from './reports-modal/index.component';
 import { SupplierCertificationsModalComponent } from './certifications-modal/index.component';
+import { ButtonComponent } from '../../../shared/components/button/index.component';
+import { DataTableComponent } from '../../../shared/components/data-table/index.component';
+import { PaginationComponent } from '../../../shared/components/pagination/index.component';
+import { TextFieldComponent } from '../../../shared/components/text-field/index.component';
 
 const PAGE_SIZE = 20;
 
-@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierReportsModalComponent, SupplierCertificationsModalComponent], templateUrl: './index.component.html',
+@Component({ selector: 'app-suppliers-list', imports: [RouterLink, FormsModule, SupplierReportsModalComponent, SupplierCertificationsModalComponent, ButtonComponent, DataTableComponent, PaginationComponent, TextFieldComponent], templateUrl: './index.component.html',
   styleUrl: './index.component.css', changeDetection: ChangeDetectionStrategy.OnPush })
 export class SupplierListComponent {
   private readonly service = inject(SuppliersService);

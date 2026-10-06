@@ -1,17 +1,4 @@
-<div
-  class="component-style-1"
-  role="presentation"
-  (click)="backdropClick($event)"
->
-  <section
-    #dialog
-    tabindex="-1"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="create-batch-title"
-    class="component-style-2"
-    (click)="$event.stopPropagation()"
-  >
+<app-modal labelledBy="create-batch-title" size="xl" [flush]="true" (dismissed)="requestDismiss()">
     <header class="component-style-3">
       <div>
         <p class="component-style-4">Supply Chain Verde</p>
@@ -70,7 +57,7 @@
         <section aria-labelledby="choose-product-heading">
           <div class="component-style-35">
             <div><h3 id="choose-product-heading" class="component-style-23">Ou selecione um produto</h3><p class="component-style-24">Busque no catálogo e escolha um item.</p></div>
-            <label class="component-style-36"><span class="component-style-37">Buscar produtos</span><input class="component-style-38" [value]="productSearch()" (input)="productSearchFor($any($event.target).value)" placeholder="Buscar produto..." /></label>
+            <app-text-field id="batch-product-search" class="component-style-36" label="Buscar produtos" type="search" placeholder="Buscar produto..." [ngModel]="productSearch()" (ngModelChange)="productSearchFor($event)" />
           </div>
           @if (loadingProducts()) { <p class="component-style-39" aria-live="polite">Carregando produtos…</p> }
           @else {
@@ -81,7 +68,7 @@
                 </button>
               } @empty { <p class="component-style-44">Nenhum produto encontrado.</p> }
             </div>
-            <nav class="component-style-45" aria-label="Paginação de produtos"><button type="button" class="component-style-46" [disabled]="productPage() === 0" (click)="changeProductPage(-1)">Anterior</button><span class="component-style-47">Página {{ productTotalPages() ? productPage() + 1 : 0 }} de {{ productTotalPages() }}</span><button type="button" class="component-style-48" [disabled]="productPage() + 1 >= productTotalPages()" (click)="changeProductPage(1)">Próxima</button></nav>
+            <app-pagination [page]="productTotalPages() ? productPage() + 1 : 0" [totalPages]="productTotalPages()" [disabled]="loadingProducts()" label="Paginação de produtos" (previous)="changeProductPage(-1)" (next)="changeProductPage(1)" />
           }
         </section>
         }
@@ -113,11 +100,11 @@
             </form>
           </section>
           <section aria-labelledby="choose-supplier-heading">
-            <div class="component-style-35"><div><h3 id="choose-supplier-heading" class="component-style-23">Ou selecione um fornecedor</h3><p class="component-style-24">Resultados ordenados pelo ranking de sustentabilidade.</p></div><label class="component-style-36"><span class="component-style-37">Buscar fornecedores</span><input class="component-style-38" [value]="supplierSearch()" (input)="supplierSearchFor($any($event.target).value)" placeholder="Buscar fornecedor..." /></label></div>
+            <div class="component-style-35"><div><h3 id="choose-supplier-heading" class="component-style-23">Ou selecione um fornecedor</h3><p class="component-style-24">Resultados ordenados pelo ranking de sustentabilidade.</p></div><app-text-field id="batch-supplier-search" class="component-style-36" label="Buscar fornecedores" type="search" placeholder="Buscar fornecedor..." [ngModel]="supplierSearch()" (ngModelChange)="supplierSearchFor($event)" /></div>
             @if (loadingSuppliers()) { <p class="component-style-39" aria-live="polite">Carregando fornecedores…</p> }
             @else {
               <div class="component-style-40">@for (supplier of suppliers(); track supplier.supplierId) { <button type="button" class="component-style-41" [class.border-emerald-600]="selectedSupplier()?.supplierId === supplier.supplierId" [class.bg-emerald-50]="selectedSupplier()?.supplierId === supplier.supplierId" [class.border-slate-200]="selectedSupplier()?.supplierId !== supplier.supplierId" [attr.aria-pressed]="selectedSupplier()?.supplierId === supplier.supplierId" (click)="selectSupplier(supplier)"><span class="component-style-42">{{ supplier.name ?? supplier.supplierName }}</span><span class="component-style-43">{{ supplier.cnpj ?? 'CNPJ não informado' }} · {{ supplierScore(supplier) }} pontos</span></button> } @empty { <p class="component-style-44">Nenhum fornecedor encontrado.</p> }</div>
-              <nav class="component-style-45" aria-label="Paginação de fornecedores"><button type="button" class="component-style-46" [disabled]="supplierPage() === 0" (click)="changeSupplierPage(-1)">Anterior</button><span class="component-style-47">Página {{ supplierTotalPages() ? supplierPage() + 1 : 0 }} de {{ supplierTotalPages() }}</span><button type="button" class="component-style-48" [disabled]="supplierPage() + 1 >= supplierTotalPages()" (click)="changeSupplierPage(1)">Próxima</button></nav>
+              <app-pagination [page]="supplierTotalPages() ? supplierPage() + 1 : 0" [totalPages]="supplierTotalPages()" [disabled]="loadingSuppliers()" label="Paginação de fornecedores" (previous)="changeSupplierPage(-1)" (next)="changeSupplierPage(1)" />
             }
           </section>
           }
@@ -146,5 +133,4 @@
       @if (step() < 2) { <button type="button" class="component-style-68" [disabled]="saving() || (step() === 0 && (loadingProducts() || loadingSuppliers()))" (click)="next()">Avançar</button> }
       @else { <button type="button" class="component-style-69" [disabled]="saving()" (click)="submit()">{{ saving() ? 'Salvando…' : 'Confirmar e criar lote' }}</button> }
     </footer>
-  </section>
-</div>
+</app-modal>

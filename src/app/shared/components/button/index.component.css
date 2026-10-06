@@ -1,0 +1,25 @@
+@reference "tailwindcss";
+
+.shared-button {
+  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.shared-button-primary {
+  @apply bg-green-700 text-white hover:bg-green-800 focus-visible:outline-green-700;
+}
+
+.shared-button-secondary {
+  @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:outline-green-700;
+}
+
+.shared-button-danger {
+  @apply bg-red-600 text-white hover:bg-red-700 focus-visible:outline-red-600;
+}
+
+.shared-button-text {
+  @apply min-h-0 rounded-md px-2 py-1 text-green-800 underline hover:bg-green-50 focus-visible:outline-green-700;
+}
+
+.shared-button-small {
+  @apply min-h-9 px-3 py-2 text-xs;
+}
