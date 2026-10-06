@@ -18,6 +18,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
   selector: 'app-top-nav',
   imports: [RouterLink],
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopNavComponent {

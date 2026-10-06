@@ -15,24 +15,18 @@
 .component-style-5 {
   @apply mt-1 text-sm text-slate-500;
 }
-.component-style-6 {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2;
-}
+
 .component-style-7 {
   @apply mb-5 grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1.5fr_auto] lg:items-end;
 }
 .component-style-8 {
   @apply grid gap-1.5 text-xs font-semibold text-slate-600;
 }
-.component-style-9 {
-  @apply rounded-lg border border-slate-300 px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
-}
+
 .component-style-10 {
   @apply rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
 }
-.component-style-11 {
-  @apply rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2;
-}
+
 .component-style-12 {
   @apply mb-4 text-sm text-red-700;
 }
@@ -45,12 +39,7 @@
 .component-style-15 {
   @apply rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500;
 }
-.component-style-16 {
-  @apply overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm;
-}
-.component-style-17 {
-  @apply overflow-x-auto;
-}
+
 .component-style-18 {
   @apply w-full min-w-[820px] text-left text-sm;
 }
@@ -87,33 +76,14 @@
 .component-style-29 {
   @apply px-5 py-14 text-center text-slate-500;
 }
-.component-style-30 {
-  @apply mt-3 grid grid-cols-3 items-center py-2;
-}
-.component-style-31 {
-  @apply justify-self-start rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40;
-}
-.component-style-32 {
-  @apply text-center text-xs text-slate-500;
-}
-.component-style-33 {
-  @apply justify-self-end rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40;
-}
-.component-style-34 {
-  @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4;
-}
-.component-style-35 {
-  @apply w-full max-w-lg rounded-2xl bg-white p-5 shadow-2xl sm:p-7;
-}
+
 .component-style-36 {
   @apply mb-5 flex items-start justify-between gap-4;
 }
 .component-style-37 {
   @apply text-xl font-bold text-slate-900;
 }
-.component-style-38 {
-  @apply rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600;
-}
+
 .component-style-39 {
   @apply grid gap-4;
 }
@@ -123,9 +93,7 @@
 .component-style-41 {
   @apply grid gap-1.5 text-sm font-medium text-slate-700;
 }
-.component-style-42 {
-  @apply rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
-}
+
 .component-style-43 {
   @apply rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
 }
@@ -135,21 +103,10 @@
 .component-style-45 {
   @apply mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end;
 }
-.component-style-46 {
-  @apply rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50;
-}
-.component-style-47 {
-  @apply rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60;
-}
+
 .component-style-48 {
   @apply text-sm text-slate-600;
 }
 .component-style-49 {
   @apply flex flex-col-reverse gap-2 sm:flex-row sm:justify-end;
-}
-.component-style-50 {
-  @apply rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50;
-}
-.component-style-51 {
-  @apply rounded-lg bg-green-700 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-green-800;
 }

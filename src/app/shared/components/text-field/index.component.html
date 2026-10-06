@@ -1,0 +1,27 @@
+<div class="shared-field">
+  @if (label()) {
+    <label class="shared-field-label" [class.shared-field-label-hidden]="labelHidden()" [for]="id()">{{ label() }} @if (required()) { <span class="shared-field-required" aria-hidden="true">*</span> }</label>
+  }
+  <input
+    class="shared-field-control"
+    [class.shared-field-search]="type() === 'search'"
+    [id]="id()"
+    [name]="name() || id()"
+    [type]="type()"
+    [value]="value()"
+    [placeholder]="placeholder()"
+    [autocomplete]="autocomplete()"
+    [attr.inputmode]="inputMode() || null"
+    [required]="required()"
+    [disabled]="isDisabled"
+    [attr.min]="min()"
+    [attr.max]="max()"
+    [attr.step]="step()"
+    [attr.maxlength]="maxLength()"
+    [attr.aria-invalid]="!!error()"
+    [attr.aria-describedby]="error() ? id() + '-error' : null"
+    (input)="updateValue($event)"
+    (blur)="markTouched()"
+  />
+  @if (error()) { <p class="shared-field-error" [id]="id() + '-error'" role="alert">{{ error() }}</p> }
+</div>
