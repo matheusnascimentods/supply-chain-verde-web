@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SessionService } from '../../core/session/index.service';
+import { SessionService } from '../../core/auth/session/index.service';
 import { UsersService } from '../users/index.service';
 import { DashboardStageType, DashboardSummaryResponse, RecentBatchSummary } from './index.schema';
 import { DASHBOARDS } from './index.constants';

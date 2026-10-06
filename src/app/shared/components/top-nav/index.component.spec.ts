@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { AuthService } from '../../../features/auth/index.service';
-import { SessionService } from '../../../core/session/index.service';
+import { SessionService } from '../../../core/auth/session/index.service';
 import { TopNavComponent } from './index.component';
 
 @Component({ template: '' })
