@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Router, provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { SessionService } from '../../core/session/index.service';
+import { SessionService } from '../../core/auth/session/index.service';
 import { AuthService } from './index.service';
 import {
   LoginRequestDTO,

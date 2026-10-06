@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { SessionService } from './index.service';
-import { UserRole, userRoleSchema, parseUserRole } from './index.schema';
+import { UserRole, userRoleSchema, parseUserRole } from './index.model';
 
 describe('SessionService', () => {
   let service: SessionService;

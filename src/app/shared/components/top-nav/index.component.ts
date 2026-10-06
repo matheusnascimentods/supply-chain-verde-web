@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed,
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
-import { SessionService } from '../../../core/session/index.service';
-import { UserRole } from '../../../core/session/index.schema';
+import { SessionService } from '../../../core/auth/session/index.service';
+import { UserRole } from '../../../core/auth/session/index.model';
 import { AuthService } from '../../../features/auth/index.service';
 import { DASHBOARDS } from '../../../features/dashboard/index.constants';
 
