@@ -9,7 +9,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, debounceTime, distinctUntilChanged, finalize, map, of, startWith, Subject, switchMap, tap, timer } from 'rxjs';
-import { SessionService } from '../../../../core/session/index.service';
+import { SessionService } from '../../../../core/auth/session/index.service';
 import { ProductRequestDTO, ProductResponseDTO } from '../../../products/index.schema';
 import { ProductsService } from '../../../products/index.service';
 import {

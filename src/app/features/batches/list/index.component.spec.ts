@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { SessionService } from '../../../core/session/index.service';
+import { SessionService } from '../../../core/auth/session/index.service';
 import { ProductsService } from '../../products/index.service';
 import { BatchesService } from '../index.service';
 import { BatchListComponent } from './index.component';
