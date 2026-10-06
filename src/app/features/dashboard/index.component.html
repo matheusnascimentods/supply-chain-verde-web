@@ -1,117 +1,117 @@
-<main class="min-w-0 flex-1 px-4 py-6 text-slate-800 sm:px-6 sm:py-8 lg:px-8">
+<main class="dashboard-content">
   @if (content(); as dashboard) {
-    <header class="flex flex-wrap items-start justify-between gap-4">
+    <header class="dashboard-header">
       <div>
-        <p class="text-sm font-semibold text-green-800">Supply Chain Verde</p>
-        <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{{ greeting() }}</h1>
-        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{{ dashboard.description }}</p>
+        <p class="dashboard-brand">Supply Chain Verde</p>
+        <h1 class="dashboard-greeting">{{ greeting() }}</h1>
+        <p class="dashboard-description">{{ dashboard.description }}</p>
       </div>
     </header>
 
     @if (loading()) {
-      <p class="mt-8 rounded-xl bg-white p-5 text-sm text-slate-600 shadow-sm" role="status">Carregando resumo da operação…</p>
+      <p class="dashboard-loading" role="status">Carregando resumo da operação…</p>
     } @else if (error()) {
-      <div class="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-5" role="alert">
-        <p class="text-sm text-red-800">{{ error() }}</p>
-        <button type="button" (click)="loadSummary()" class="rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-800 hover:bg-red-100">Tentar novamente</button>
+      <div class="dashboard-error-panel" role="alert">
+        <p class="dashboard-error-message">{{ error() }}</p>
+        <button type="button" (click)="loadSummary()" class="dashboard-retry-button">Tentar novamente</button>
       </div>
     } @else if (summary(); as dashboardData) {
-      <section class="mt-7 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-label="Indicadores da operação">
+      <section class="dashboard-metrics-grid" aria-label="Indicadores da operação">
         @for (metric of metrics(); track metric.label) {
-          <article class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <span class="absolute inset-y-0 left-0 w-1.5" [class]="metric.accent" aria-hidden="true"></span>
-            <h2 class="min-h-10 pl-1 text-xs font-medium leading-5 text-slate-500 sm:text-sm">{{ metric.label }}</h2>
-            <p class="mt-2 pl-1 text-2xl font-bold tracking-tight text-slate-950 sm:text-[28px]">{{ metric.value }}</p>
+          <article class="dashboard-metric-card">
+            <span class="dashboard-metric-accent" [class]="metric.accent" aria-hidden="true"></span>
+            <h2 class="dashboard-metric-label">{{ metric.label }}</h2>
+            <p class="dashboard-metric-value">{{ metric.value }}</p>
           </article>
         }
       </section>
 
-      <section class="mt-8 grid gap-4 xl:grid-cols-5" aria-label="Análises dos lotes recentes">
-        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-3">
+      <section class="dashboard-analytics-grid" aria-label="Análises dos lotes recentes">
+        <article class="dashboard-stage-chart-card">
           <div>
-            <h2 class="font-semibold text-slate-900">Lotes recentes por etapa</h2>
-            <p class="mt-1 text-sm text-slate-500">Distribuição dos lotes retornados pela API (até 10)</p>
+            <h2 class="dashboard-section-title">Lotes recentes por etapa</h2>
+            <p class="dashboard-section-description">Distribuição dos lotes retornados pela API (até 10)</p>
           </div>
           @if (stageDistribution().length) {
-            <div class="mt-6 flex h-48 items-end justify-around gap-3 border-b border-l border-slate-200 px-3 sm:gap-5" role="img" [attr.aria-label]="'Lotes por etapa: ' + pieAriaLabel()">
+            <div class="dashboard-bar-chart" role="img" [attr.aria-label]="'Lotes por etapa: ' + pieAriaLabel()">
               @for (item of stageDistribution(); track item.stage) {
-                <div class="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
-                  <span class="text-xs font-semibold text-slate-700">{{ item.count }}</span>
-                  <span class="w-full max-w-12 cursor-pointer rounded-t-md transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-y-105 hover:brightness-110 hover:shadow-md motion-reduce:transition-none" [style.height.%]="barHeight(item.count)" [style.background-color]="item.color" [title]="item.label + ': ' + item.count"></span>
-                  <span class="max-w-full truncate pb-2 text-center text-[10px] text-slate-500 sm:text-xs">{{ item.label }}</span>
+                <div class="dashboard-bar-column">
+                  <span class="dashboard-bar-count">{{ item.count }}</span>
+                  <span class="dashboard-bar" [style.height.%]="barHeight(item.count)" [style.background-color]="item.color" [title]="item.label + ': ' + item.count"></span>
+                  <span class="dashboard-stage-label">{{ item.label }}</span>
                 </div>
               }
             </div>
           } @else {
-            <p class="mt-5 flex min-h-44 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 px-5 text-center text-sm text-slate-600" role="status">Ainda não há lotes recentes para exibir.</p>
+            <p class="dashboard-empty-state" role="status">Ainda não há lotes recentes para exibir.</p>
           }
         </article>
 
-        <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
+        <article class="dashboard-pie-chart-card">
           <div>
-            <h2 class="font-semibold text-slate-900">Etapas dos lotes recentes</h2>
-            <p class="mt-1 text-sm text-slate-500">Participação por etapa entre os lotes retornados</p>
+            <h2 class="dashboard-section-title">Etapas dos lotes recentes</h2>
+            <p class="dashboard-section-description">Participação por etapa entre os lotes retornados</p>
           </div>
           @if (stageDistribution().length) {
-            <div class="mt-5 flex flex-wrap items-center justify-center gap-5">
-              <svg viewBox="0 0 40 40" class="h-36 w-36 shrink-0" role="img" [attr.aria-label]="'Distribuição por etapa: ' + pieAriaLabel()">
+            <div class="dashboard-pie-chart-layout">
+              <svg viewBox="0 0 40 40" class="dashboard-pie-chart" role="img" [attr.aria-label]="'Distribuição por etapa: ' + pieAriaLabel()">
                 <circle cx="20" cy="20" r="15.9155" fill="none" stroke="#e2e8f0" stroke-width="7" />
                 @for (segment of pieSegments(); track segment.stage) {
-                  <circle cx="20" cy="20" r="15.9155" fill="none" [attr.stroke]="segment.color" stroke-width="7" [attr.stroke-dasharray]="pieDashArray(segment.percent)" [attr.stroke-dashoffset]="-segment.offset" [attr.title]="segment.label + ': ' + segment.count" class="cursor-pointer transition-all duration-200 ease-out hover:opacity-80 hover:stroke-[9] motion-reduce:transition-none" transform="rotate(-90 20 20)" />
+                  <circle cx="20" cy="20" r="15.9155" fill="none" [attr.stroke]="segment.color" stroke-width="7" [attr.stroke-dasharray]="pieDashArray(segment.percent)" [attr.stroke-dashoffset]="-segment.offset" [attr.title]="segment.label + ': ' + segment.count" class="dashboard-stage-segment" transform="rotate(-90 20 20)" />
                 }
-                <text x="20" y="19" text-anchor="middle" class="fill-slate-900 text-[6px] font-bold">{{ recentBatches().length }}</text>
-                <text x="20" y="24" text-anchor="middle" class="fill-slate-500 text-[3px]">lotes</text>
+                <text x="20" y="19" text-anchor="middle" class="dashboard-pie-center-count">{{ recentBatches().length }}</text>
+                <text x="20" y="24" text-anchor="middle" class="dashboard-pie-center-label">lotes</text>
               </svg>
-              <ul class="grid gap-2 text-xs text-slate-600">
+              <ul class="dashboard-legend">
                 @for (item of stageDistribution(); track item.stage) {
-                  <li class="flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-sm" [style.background-color]="item.color" aria-hidden="true"></span><span>{{ item.label }}</span><span class="font-semibold text-slate-800">{{ item.count }}</span></li>
+                  <li class="dashboard-legend-item"><span class="dashboard-legend-swatch" [style.background-color]="item.color" aria-hidden="true"></span><span>{{ item.label }}</span><span class="dashboard-legend-count">{{ item.count }}</span></li>
                 }
               </ul>
             </div>
           } @else {
-            <p class="mt-5 flex min-h-44 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 px-5 text-center text-sm text-slate-600" role="status">Ainda não há lotes recentes para exibir.</p>
+            <p class="dashboard-empty-state" role="status">Ainda não há lotes recentes para exibir.</p>
           }
         </article>
 
       </section>
 
-      <div class="mt-8 mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="dashboard-recent-heading">
         <div>
-          <h2 id="recent-batches-heading" class="text-lg font-semibold text-slate-950">Lotes recentes</h2>
-          <p class="mt-1 text-sm text-slate-500">{{ dashboardData.recentBatches.length }} dos lotes recentes retornados pela API.</p>
+          <h2 id="recent-batches-heading" class="dashboard-recent-title">Lotes recentes</h2>
+          <p class="dashboard-section-description">{{ dashboardData.recentBatches.length }} dos lotes recentes retornados pela API.</p>
         </div>
-        <a routerLink="/batches" class="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-green-800 hover:bg-green-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-700">Ver todos <span aria-hidden="true">→</span></a>
+        <a routerLink="/batches" class="dashboard-view-all">Ver todos <span aria-hidden="true">→</span></a>
       </div>
-      <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-labelledby="recent-batches-heading">
+      <section class="dashboard-batches-table-card" aria-labelledby="recent-batches-heading">
         @if (recentBatches().length) {
-          <div class="overflow-x-auto">
-            <table class="w-full min-w-[640px] text-left text-sm">
-              <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr><th scope="col" class="px-4 py-4">Produto</th><th scope="col" class="px-4 py-4">Fornecedor</th><th scope="col" class="px-4 py-4">Quantidade</th><th scope="col" class="px-4 py-4">Etapa atual</th></tr>
+          <div class="dashboard-table-scroll">
+            <table class="dashboard-batches-table">
+              <thead class="dashboard-table-head">
+                <tr><th scope="col" class="dashboard-table-cell-heading">Produto</th><th scope="col" class="dashboard-table-cell-heading">Fornecedor</th><th scope="col" class="dashboard-table-cell-heading">Quantidade</th><th scope="col" class="dashboard-table-cell-heading">Etapa atual</th></tr>
               </thead>
               <tbody>
                 @for (batch of recentBatches(); track batch.batchId) {
-                  <tr class="border-t border-slate-100">
-                    <td class="px-4 py-3.5 font-medium text-slate-900">{{ batch.productName }}</td>
-                    <td class="px-4 py-3.5 text-slate-600">{{ batch.supplierName }}</td>
-                    <td class="px-4 py-3.5 text-slate-600">{{ formatQuantity(batch) }}</td>
-                    <td class="px-4 py-3.5"><span [class]="stageBadgeClass(batch.status)">{{ stageLabel(batch.status) }}</span></td>
+                  <tr class="dashboard-batch-row">
+                    <td class="dashboard-product-cell">{{ batch.productName }}</td>
+                    <td class="dashboard-detail-cell">{{ batch.supplierName }}</td>
+                    <td class="dashboard-detail-cell">{{ formatQuantity(batch) }}</td>
+                    <td class="dashboard-action-cell"><span [class]="stageBadgeClass(batch.status)">{{ stageLabel(batch.status) }}</span></td>
                   </tr>
                 }
               </tbody>
             </table>
           </div>
         } @else {
-          <p class="m-5 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-sm text-slate-600" role="status">Nenhum lote recente encontrado.</p>
+          <p class="dashboard-empty-table" role="status">Nenhum lote recente encontrado.</p>
         }
       </section>
     } @else {
-      <p class="mt-8 rounded-xl border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-600" role="status">Resumo indisponível.</p>
+      <p class="dashboard-profile-state" role="status">Resumo indisponível.</p>
     }
   } @else {
-    <section class="rounded-xl border border-slate-200 bg-white p-6" role="status">
-      <h1 class="font-semibold text-slate-900">Perfil indisponível</h1>
-      <p class="mt-1 text-sm text-slate-600">Entre novamente para carregar o dashboard do seu perfil.</p>
+    <section class="dashboard-profile-title" role="status">
+      <h1 class="dashboard-section-title">Perfil indisponível</h1>
+      <p class="dashboard-profile-description">Entre novamente para carregar o dashboard do seu perfil.</p>
     </section>
   }
 </main>
