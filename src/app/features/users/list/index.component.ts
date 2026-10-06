@@ -12,7 +12,7 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
-import { SessionService } from '../../../core/session/index.service';
+import { SessionService } from '../../../core/auth/session/index.service';
 import { USER_ROLES, UserResponseDTO, UserRole } from '../index.schema';
 import { UsersService } from '../index.service';
 import { UserFormComponent } from '../form/index.component';

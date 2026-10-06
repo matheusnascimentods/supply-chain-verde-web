@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { roleGuard } from '../../core/guards/index.guard';
+import { roleGuard } from '../../core/auth/guards/index.guard';
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./list/index.component').then((m) => m.SupplierListComponent) },
   { path: 'ranking', pathMatch: 'full', redirectTo: '' },

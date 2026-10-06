@@ -1,5 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { UserRole, parseUserRole } from './index.schema';
+import { UserRole, parseUserRole } from './index.model';
 
 const TOKEN_KEY = 'token';
 const ROLE_KEY = 'role';
