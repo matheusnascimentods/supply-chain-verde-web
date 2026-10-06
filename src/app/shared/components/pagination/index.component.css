@@ -1,0 +1,7 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+.shared-pagination { @apply mt-3 grid grid-cols-3 items-center py-2; }
+.shared-pagination-button:first-child { @apply justify-self-start; }
+.shared-pagination-button:last-child { @apply justify-self-end; }
+.shared-pagination-status { @apply text-center text-xs text-slate-500; }

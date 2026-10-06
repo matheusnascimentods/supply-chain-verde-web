@@ -1,0 +1,5 @@
+@reference "tailwindcss";
+
+:host { @apply block; }
+.shared-table-frame { @apply overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm; }
+.shared-table-scroll { @apply overflow-x-auto; }
