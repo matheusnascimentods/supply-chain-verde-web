@@ -1,0 +1,9 @@
+@reference "tailwindcss";
+
+.shell {
+  @apply flex min-w-0 flex-1 flex-col bg-slate-50 text-slate-800;
+}
+
+.route-outlet-container {
+  @apply mx-auto flex min-w-0 w-full max-w-screen-2xl flex-1 flex-col;
+}

@@ -18,6 +18,7 @@ export type EnumInputSource =
 @Component({
   selector: 'app-enum-select',
   templateUrl: './index.component.html',
+  styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {
