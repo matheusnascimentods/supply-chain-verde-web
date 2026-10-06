@@ -8,7 +8,7 @@ O objetivo é adotar o padrão `core / shared / features/{domain,application,inf
 
 ## Decisões tomadas
 
-- **Branches:** 1 branch por task com PR → `main`. Cada subtask é um branch com PR → branch da task. As tasks rodam em sequência: Task 2 só começa depois do merge da Task 1 na main, e Task 3 depois da Task 2.
+- **Branches:** cada subtask é um branch saído da `main` atualizada, com PR direto para `main`. Os PRs são feitos em sequência: cada subtask só começa depois do merge da anterior.
 - **Imports:** continuam relativos, sem aliases. Cada PR corrige os imports que quebrar.
 - **Features:** 1 PR por feature, incluindo o `batches`, que fica grande. Cada PR já inclui a renomeação das classes `component-style-N` para nomes semânticos, nos `.html` e `.css` daquela feature.
 - **Testes:** os specs existentes acompanham os arquivos movidos. Toda lógica extraída (use-case, facade, mapper, rules, value-object, util, directive) ganha um `index.*.spec.ts`. Os specs de componente passam a mockar o facade.
@@ -26,7 +26,6 @@ O objetivo é adotar o padrão `core / shared / features/{domain,application,inf
 
 ## Task 1: core
 
-Branch da task: `refactor/core-structure` → PR para `main`.
 
 ### 1.1 `refactor/core-auth-folder`: agrupar a autenticação em `core/auth`
 - Mover `core/session/` → `core/auth/session/`, `core/guards/` → `core/auth/guards/` e `core/interceptors/` → `core/auth/interceptors/`.
@@ -57,7 +56,6 @@ Branch da task: `refactor/core-structure` → PR para `main`.
 
 ## Task 2: shared
 
-Branch da task: `refactor/shared-structure` → PR para `main`.
 
 ### 2.1 `refactor/shared-remove-confirm-dialog`
 - Excluir `shared/components/confirm-dialog/` e o spec. Não há nenhum uso.
@@ -85,7 +83,6 @@ Branch da task: `refactor/shared-structure` → PR para `main`.
 
 ## Task 3: features
 
-Branch da task: `refactor/features-structure` → PR para `main`.
 
 Padrão aplicado em cada PR de feature:
 - `domain/index.model.ts` (+ `index.rules.ts` se houver regra).
