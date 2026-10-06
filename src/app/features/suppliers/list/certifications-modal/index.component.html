@@ -1,5 +1,4 @@
-<div class="component-style-1" (click)="close()">
-  <section #dialog tabindex="-1" class="component-style-2" role="dialog" aria-modal="true" aria-labelledby="supplier-certifications-title" (click)="$event.stopPropagation()" (keydown)="handleKeydown($event)">
+<app-modal labelledBy="supplier-certifications-title" size="lg" (dismissed)="close()">
     <header class="component-style-3">
       <div>
         <h2 id="supplier-certifications-title" class="component-style-4">Certificações de {{ supplierName() }}</h2>
@@ -54,5 +53,4 @@
         </div>
       </section>
     </div>
-  </section>
-</div>
+</app-modal>

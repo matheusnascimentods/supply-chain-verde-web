@@ -5,28 +5,22 @@
         <h1 class="component-style-4">Auditoria</h1>
         <p class="component-style-5">Consulte e exporte as atividades registradas no sistema.</p>
       </div>
-      <button #exportTrigger type="button" class="component-style-6" (click)="openExport()">
+      <button appButton type="button" variant="primary" (click)="openExport()">
         <span aria-hidden="true">↓</span> Exportar logs
       </button>
     </header>
 
     <form class="component-style-7" (ngSubmit)="applyFilters()">
-      <label class="component-style-8" for="audit-start-date">Data inicial
-        <input id="audit-start-date" class="component-style-9" type="date" name="startDate" required [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" />
-      </label>
-      <label class="component-style-8" for="audit-end-date">Data final
-        <input id="audit-end-date" class="component-style-9" type="date" name="endDate" required [ngModel]="endDate()" (ngModelChange)="endDate.set($event)" />
-      </label>
+      <app-text-field id="audit-start-date" label="Data inicial" type="date" name="startDate" [required]="true" [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" />
+      <app-text-field id="audit-end-date" label="Data final" type="date" name="endDate" [required]="true" [ngModel]="endDate()" (ngModelChange)="endDate.set($event)" />
       <label class="component-style-8" for="audit-action">Operação
         <select id="audit-action" class="component-style-10" name="action" [ngModel]="action()" (ngModelChange)="action.set($event)">
           <option value="">Todas as operações</option>
           @for (option of actions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }
         </select>
       </label>
-      <label class="component-style-8" for="audit-email">Email do usuário
-        <input id="audit-email" class="component-style-9" type="search" name="email" autocomplete="off" placeholder="Buscar por email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
-      </label>
-      <button class="component-style-11" type="submit">Filtrar</button>
+      <app-text-field id="audit-email" label="Email do usuário" type="search" name="email" autocomplete="off" placeholder="Buscar por email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
+      <button appButton type="submit" variant="primary">Filtrar</button>
     </form>
     @if (filterError()) { <p class="component-style-12" role="alert">{{ filterError() }}</p> }
 
@@ -37,8 +31,7 @@
     } @else if (loading()) {
       <div class="component-style-15" aria-live="polite">Carregando registros de auditoria…</div>
     } @else {
-      <section class="component-style-16" aria-label="Registros de auditoria">
-        <div class="component-style-17">
+      <app-data-table aria-label="Registros de auditoria">
           <table class="component-style-18">
             <thead class="component-style-19">
               <tr>
@@ -59,55 +52,42 @@
               }
             </tbody>
           </table>
-        </div>
-      </section>
-      <nav class="component-style-30" aria-label="Paginação dos registros">
-        <button type="button" class="component-style-31" [disabled]="pageOffset() === 0 || loading()" (click)="previousPage()">Anterior</button>
-        <span class="component-style-32">Página {{ pageNumber() }} de {{ totalPages() }}</span>
-        <button type="button" class="component-style-33" [disabled]="pageNumber() >= totalPages() || loading()" (click)="nextPage()">Próxima</button>
-      </nav>
+      </app-data-table>
+      <app-pagination [page]="pageNumber()" [totalPages]="totalPages()" [disabled]="loading()" label="Paginação dos registros" (previous)="previousPage()" (next)="nextPage()" />
     }
   </div>
 
   @if (exportOpen()) {
-    <div class="component-style-34" (click)="$event.target === $event.currentTarget ? closeExport() : null" (keydown)="onExportKeydown($event)">
-      <section #exportDialog role="dialog" aria-modal="true" aria-labelledby="export-title" class="component-style-35">
+    <app-modal labelledBy="export-title" size="md" initialFocusSelector="#export-start-date" (dismissed)="closeExport()">
         <div class="component-style-36">
           <div><h2 id="export-title" class="component-style-37">Exportar logs</h2><p class="component-style-5">Escolha o intervalo e os filtros do arquivo CSV.</p></div>
-          <button type="button" class="component-style-38" aria-label="Fechar" [disabled]="exporting()" (click)="closeExport()">✕</button>
+          <button appButton type="button" variant="text" aria-label="Fechar" [disabled]="exporting()" (click)="closeExport()">✕</button>
         </div>
         @if (!exportUrl()) {
         <form class="component-style-39" (ngSubmit)="exportLogs()">
           <div class="component-style-40">
-            <label class="component-style-41" for="export-start-date">Data inicial
-              <input #exportStartInput id="export-start-date" class="component-style-42" type="date" name="exportStartDate" required [ngModel]="exportStartDate()" (ngModelChange)="exportStartDate.set($event)" />
-            </label>
-            <label class="component-style-41" for="export-end-date">Data final
-              <input id="export-end-date" class="component-style-42" type="date" name="exportEndDate" required [ngModel]="exportEndDate()" (ngModelChange)="exportEndDate.set($event)" />
-            </label>
+            <app-text-field id="export-start-date" label="Data inicial" type="date" name="exportStartDate" [required]="true" [ngModel]="exportStartDate()" (ngModelChange)="exportStartDate.set($event)" />
+            <app-text-field id="export-end-date" label="Data final" type="date" name="exportEndDate" [required]="true" [ngModel]="exportEndDate()" (ngModelChange)="exportEndDate.set($event)" />
           </div>
           <label class="component-style-41" for="export-action">Operação
             <select id="export-action" class="component-style-43" name="exportAction" [ngModel]="exportAction()" (ngModelChange)="exportAction.set($event)"><option value="">Todas as operações</option>@for (option of actions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select>
           </label>
-          <label class="component-style-41" for="export-email">Email do usuário
-            <input id="export-email" class="component-style-42" type="search" name="exportEmail" placeholder="Buscar por email" [ngModel]="exportEmail()" (ngModelChange)="exportEmail.set($event)" />
-          </label>
+          <app-text-field id="export-email" label="Email do usuário" type="search" name="exportEmail" placeholder="Buscar por email" [ngModel]="exportEmail()" (ngModelChange)="exportEmail.set($event)" />
           @if (exportError()) { <p role="alert" class="component-style-44">{{ exportError() }}</p> }
           <div class="component-style-45">
-            <button type="button" class="component-style-46" [disabled]="exporting()" (click)="closeExport()">Cancelar</button>
-            <button type="submit" class="component-style-47" [disabled]="exporting()">{{ exporting() ? 'Preparando CSV…' : 'Preparar CSV' }}</button>
+            <button appButton type="button" variant="secondary" [disabled]="exporting()" (click)="closeExport()">Cancelar</button>
+            <button appButton type="submit" variant="primary" [disabled]="exporting()">{{ exporting() ? 'Preparando CSV…' : 'Preparar CSV' }}</button>
           </div>
         </form>
         } @else {
           <div class="component-style-39" role="status">
             <p class="component-style-48">Arquivo pronto para baixar.</p>
             <div class="component-style-49">
-              <button type="button" class="component-style-50" (click)="clearPreparedExport()">Alterar filtros</button>
-              <a class="component-style-51" [href]="exportUrl()" [download]="exportFilename()" (click)="logCsvDownloadClick()">Baixar CSV</a>
+              <button appButton type="button" variant="secondary" (click)="clearPreparedExport()">Alterar filtros</button>
+              <a appButton variant="primary" [href]="exportUrl()" [download]="exportFilename()" (click)="logCsvDownloadClick()">Baixar CSV</a>
             </div>
           </div>
         }
-      </section>
-    </div>
+    </app-modal>
   }
 </main>

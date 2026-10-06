@@ -16,12 +16,17 @@ import { SessionService } from '../../../core/session/index.service';
 import { USER_ROLES, UserResponseDTO, UserRole } from '../index.schema';
 import { UsersService } from '../index.service';
 import { UserFormComponent } from '../form/index.component';
+import { ButtonComponent } from '../../../shared/components/button/index.component';
+import { DataTableComponent } from '../../../shared/components/data-table/index.component';
+import { ModalComponent } from '../../../shared/components/modal/index.component';
+import { PaginationComponent } from '../../../shared/components/pagination/index.component';
+import { TextFieldComponent } from '../../../shared/components/text-field/index.component';
 
 const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-users-list',
-  imports: [DatePipe, FormsModule, UserFormComponent],
+  imports: [DatePipe, FormsModule, UserFormComponent, ButtonComponent, DataTableComponent, ModalComponent, PaginationComponent, TextFieldComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,8 +38,6 @@ export class UserListComponent {
   private readonly emailChanges = new Subject<string>();
   private loadSequence = 0;
 
-  @ViewChild('createTrigger') private createTrigger?: ElementRef<HTMLButtonElement>;
-  @ViewChild('createDialog') private createDialog?: ElementRef<HTMLElement>;
   @ViewChildren('roleMenu') private roleMenus?: QueryList<ElementRef<HTMLDetailsElement>>;
 
   readonly items = signal<UserResponseDTO[]>([]);
@@ -100,12 +103,10 @@ export class UserListComponent {
 
   openCreateModal(): void {
     this.createModalOpen.set(true);
-    setTimeout(() => this.createDialog?.nativeElement.querySelector<HTMLElement>('input')?.focus());
   }
 
   dismissCreateModal(): void {
     this.createModalOpen.set(false);
-    setTimeout(() => this.createTrigger?.nativeElement.focus());
   }
 
   userCreated(): void {
@@ -189,24 +190,4 @@ export class UserListComponent {
     }
   }
 
-  onDialogKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.dismissCreateModal();
-      return;
-    }
-    if (event.key !== 'Tab' || !this.createDialog) return;
-    const focusable = Array.from(this.createDialog.nativeElement.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex="0"]',
-    ));
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last?.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first?.focus();
-    }
-  }
 }

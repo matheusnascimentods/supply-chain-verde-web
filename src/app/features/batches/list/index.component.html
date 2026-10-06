@@ -218,30 +218,7 @@
       </section>
     }
 
-    <nav
-      class="component-style-47"
-      aria-label="Paginação dos lotes"
-    >
-      <button
-        type="button"
-        class="component-style-48"
-        [disabled]="page() === 0 || loading()"
-        (click)="previousPage()"
-      >
-        Anterior
-      </button>
-      <p class="component-style-49" aria-live="polite">
-        Página {{ pageNumber() }} de {{ totalPages() }}
-      </p>
-      <button
-        type="button"
-        class="component-style-50"
-        [disabled]="page() + 1 >= totalPages() || loading()"
-        (click)="nextPage()"
-      >
-        Próxima
-      </button>
-    </nav>
+    <app-pagination [page]="pageNumber()" [totalPages]="totalPages()" [disabled]="loading()" label="Paginação dos lotes" (previous)="previousPage()" (next)="nextPage()" />
   </div>
 </main>
 

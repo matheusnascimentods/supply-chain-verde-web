@@ -1,21 +1,23 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuditLogService } from './index.service';
 import { AuditLogResponseDTO } from './index.schema';
+import { ButtonComponent } from '../../shared/components/button/index.component';
+import { DataTableComponent } from '../../shared/components/data-table/index.component';
+import { ModalComponent } from '../../shared/components/modal/index.component';
+import { PaginationComponent } from '../../shared/components/pagination/index.component';
+import { TextFieldComponent } from '../../shared/components/text-field/index.component';
 
 @Component({
   selector: 'app-audit-log',
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, ButtonComponent, DataTableComponent, ModalComponent, PaginationComponent, TextFieldComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuditLogComponent {
   private readonly service = inject(AuditLogService);
-  @ViewChild('exportTrigger') private exportTrigger?: ElementRef<HTMLButtonElement>;
-  @ViewChild('exportDialog') private exportDialog?: ElementRef<HTMLElement>;
-  @ViewChild('exportStartInput') private exportStartInput?: ElementRef<HTMLInputElement>;
   readonly logs = signal<AuditLogResponseDTO[]>([]);
   readonly action = signal('');
   readonly email = signal('');
@@ -117,13 +119,11 @@ export class AuditLogComponent {
     this.exportEmail.set(this.email());
     this.exportError.set('');
     this.exportOpen.set(true);
-    setTimeout(() => this.exportStartInput?.nativeElement.focus());
   }
   closeExport(): void {
     if (!this.exporting()) {
       this.exportOpen.set(false);
       this.clearPreparedExport();
-      setTimeout(() => this.exportTrigger?.nativeElement.focus());
     }
   }
 
@@ -184,21 +184,6 @@ export class AuditLogComponent {
     if (url) URL.revokeObjectURL(url);
     this.exportUrl.set('');
     this.exportFilename.set('');
-  }
-
-  onExportKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') { this.closeExport(); return; }
-    if (event.key !== 'Tab' || !this.exportDialog) return;
-    const focusable = Array.from(this.exportDialog.nativeElement.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex="0"]',
-    ));
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault(); last?.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault(); first?.focus();
-    }
   }
 
   private csvCell(value: unknown): string {
