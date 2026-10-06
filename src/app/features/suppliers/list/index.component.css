@@ -1,0 +1,170 @@
+@reference "tailwindcss";
+
+.component-style-1 {
+  @apply min-w-0 flex-1 bg-slate-50 px-4 py-6 text-slate-800 sm:px-8 sm:py-8;
+}
+.component-style-2 {
+  @apply mx-auto max-w-7xl;
+}
+.component-style-3 {
+  @apply mb-7;
+}
+.component-style-4 {
+  @apply text-2xl font-bold tracking-tight text-slate-900;
+}
+.component-style-5 {
+  @apply mt-1 text-sm text-slate-500;
+}
+.component-style-6 {
+  @apply mb-8;
+}
+.component-style-7 {
+  @apply sr-only;
+}
+.component-style-8 {
+  @apply w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
+}
+.component-style-9 {
+  @apply rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700;
+}
+.component-style-10 {
+  @apply mt-2 font-semibold underline;
+}
+.component-style-11 {
+  @apply rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500;
+}
+.component-style-12 {
+  @apply mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900;
+}
+.component-style-13 {
+  @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+.component-style-14 {
+  @apply px-5 py-5 sm:px-6;
+}
+.component-style-15 {
+  @apply text-lg font-semibold text-slate-900;
+}
+.component-style-16 {
+  @apply overflow-x-auto;
+}
+.component-style-17 {
+  @apply w-full min-w-[650px] text-left text-sm;
+}
+.component-style-18 {
+  @apply bg-slate-50 text-xs uppercase tracking-wide text-slate-500;
+}
+.component-style-19 {
+  @apply px-5 py-3 font-medium;
+}
+.component-style-20 {
+  @apply border-t border-slate-100 hover:bg-slate-50;
+}
+.component-style-21 {
+  @apply px-5 py-4;
+}
+.component-style-22 {
+  @apply font-semibold text-slate-800 hover:text-green-700 hover:underline;
+}
+.component-style-23 {
+  @apply font-semibold text-slate-800;
+}
+.component-style-24 {
+  @apply px-5 py-4 text-slate-600;
+}
+.component-style-25 {
+  @apply px-5 py-12 text-center text-slate-500;
+}
+.component-style-26 {
+  @apply mb-4 text-lg font-semibold text-slate-900;
+}
+.component-style-27 {
+  @apply grid gap-4 md:grid-cols-3;
+}
+.component-style-28 {
+  @apply relative overflow-hidden rounded-2xl border bg-white p-5 shadow-sm;
+}
+.component-style-29 {
+  @apply mb-4 flex items-start justify-between gap-3;
+}
+.component-style-30 {
+  @apply inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold;
+}
+.component-style-31 {
+  @apply rounded-full px-3 py-1 text-xs font-semibold;
+}
+.component-style-32 {
+  @apply truncate text-lg font-semibold text-slate-900;
+}
+.component-style-33 {
+  @apply mt-1 truncate text-sm text-slate-500;
+}
+.component-style-34 {
+  @apply mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm;
+}
+.component-style-35 {
+  @apply text-xs text-slate-500;
+}
+.component-style-36 {
+  @apply mt-1;
+}
+.component-style-37 {
+  @apply inline-flex min-w-8 items-center justify-center rounded-full bg-green-100 px-2.5 py-1 text-sm font-semibold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2;
+}
+.component-style-38 {
+  @apply mt-1 font-semibold text-slate-900;
+}
+.component-style-39 {
+  @apply mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-sm;
+}
+.component-style-40 {
+  @apply inline-flex min-w-9 items-center justify-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2;
+}
+.component-style-41 {
+  @apply inline-flex min-w-9 items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600;
+}
+.component-style-42 {
+  @apply mb-4;
+}
+.component-style-43 {
+  @apply text-lg font-bold tracking-tight text-slate-900;
+}
+.component-style-44 {
+  @apply overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm;
+}
+.component-style-45 {
+  @apply w-full min-w-[980px] text-left text-sm;
+}
+.component-style-46 {
+  @apply bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500;
+}
+.component-style-47 {
+  @apply px-5 py-4 text-right;
+}
+.component-style-48 {
+  @apply px-5 py-4 text-center;
+}
+.component-style-49 {
+  @apply px-5 py-4 font-medium text-slate-500;
+}
+.component-style-50 {
+  @apply px-5 py-4 text-right font-semibold text-green-700;
+}
+.component-style-51 {
+  @apply inline-flex rounded-full px-2.5 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2;
+}
+.component-style-52 {
+  @apply px-5 py-4 text-right text-slate-700;
+}
+.component-style-53 {
+  @apply mt-3 grid grid-cols-3 items-center py-2;
+}
+.component-style-54 {
+  @apply justify-self-start rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40;
+}
+.component-style-55 {
+  @apply text-center text-xs text-slate-500;
+}
+.component-style-56 {
+  @apply justify-self-end rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40;
+}
