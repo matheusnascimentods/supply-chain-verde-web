@@ -20,7 +20,7 @@ import {
 } from '../../../suppliers/index.schema';
 import { SuppliersService } from '../../../suppliers/index.service';
 import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../suppliers/index.utils';
-import { UsersService } from '../../../users/index.service';
+import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { BatchRequestDTO } from '../../index.schema';
 import { BatchesService } from '../../index.service';
 import { PaginationComponent } from '../../../../shared/components/pagination/index.component';
@@ -41,7 +41,7 @@ export class BatchCreateModalComponent {
   private readonly batches = inject(BatchesService);
   private readonly productsService = inject(ProductsService);
   private readonly suppliersService = inject(SuppliersService);
-  private readonly usersService = inject(UsersService);
+  private readonly currentUserService = inject(CurrentUserService);
   private readonly session = inject(SessionService);
   private readonly productSearchChanges = new Subject<string>();
   private readonly supplierSearchChanges = new Subject<string>();
@@ -452,7 +452,7 @@ export class BatchCreateModalComponent {
   }
 
   private loadOwnSupplier(): void {
-    this.usersService.loadCurrentUser().pipe(
+    this.currentUserService.load().pipe(
       switchMap((user) => {
         this.ownSupplierId = user.userId;
         return this.suppliersService.get(user.userId);
