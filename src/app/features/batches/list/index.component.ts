@@ -7,7 +7,7 @@ import { ProductUnit } from '../../products/index.schema';
 import { ChainResponseDTO, StageType } from '../../traceability/index.schema';
 import { BatchCreateModalComponent } from './create-modal/index.component';
 import { BatchStageModalComponent } from './stage-modal/index.component';
-import { PaginationComponent } from '../../../shared/components/pagination/index.component';
+import { PaginationComponent } from '../../../shared/ui/pagination/index.component';
 
 const PAGE_SIZE = 20;
 
