@@ -1,20 +1,17 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { AuthService } from '../../../features/auth/index.service';
-import { SessionService } from '../../../core/auth/session/index.service';
+import { SessionService } from '../../auth/session/index.service';
 import { TopNavComponent } from './index.component';
 
 @Component({ template: '' })
 class TestPageComponent {}
 
 describe('TopNavComponent', () => {
-  let auth: { logout: ReturnType<typeof vi.fn> };
   let session: SessionService;
 
   beforeEach(() => {
     sessionStorage.clear();
-    auth = { logout: vi.fn() };
     TestBed.configureTestingModule({
       imports: [TopNavComponent],
       providers: [
@@ -24,7 +21,6 @@ describe('TopNavComponent', () => {
           { path: 'suppliers/me', component: TestPageComponent },
         ]),
         SessionService,
-        { provide: AuthService, useValue: auth },
       ],
     });
     session = TestBed.inject(SessionService);
@@ -70,10 +66,11 @@ describe('TopNavComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('supplier@example.com');
   });
 
-  it('delegates sign out to the authentication service', () => {
+  it('delegates sign out to the session service', () => {
     const fixture = TestBed.createComponent(TopNavComponent);
+    const logout = vi.spyOn(session, 'logout');
     fixture.componentInstance.logout();
-    expect(auth.logout).toHaveBeenCalledOnce();
+    expect(logout).toHaveBeenCalledOnce();
   });
 
   it('toggles the mobile navigation state', () => {

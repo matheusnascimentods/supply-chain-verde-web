@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Router, provideRouter } from '@angular/router';
 import { SessionService } from './index.service';
 import { UserRole, userRoleSchema, parseUserRole } from './index.model';
 
@@ -91,6 +92,22 @@ describe('SessionService', () => {
       expect(newService.email()).toBe('supplier@example.com');
       expect(newService.hasSession()).toBe(true);
       expect(newService.isAuthenticated()).toBe(true);
+    });
+  });
+
+  describe('logout()', () => {
+    it('should clear the session and navigate to /login', () => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ providers: [provideRouter([])] });
+      const sessionWithRouter = TestBed.inject(SessionService);
+      const navigateSpy = vi.spyOn(TestBed.inject(Router), 'navigate');
+      sessionWithRouter.setSession('sample-token', 'auditor');
+
+      sessionWithRouter.logout();
+
+      expect(sessionWithRouter.hasSession()).toBe(false);
+      expect(sessionWithRouter.isAuthenticated()).toBe(false);
+      expect(navigateSpy).toHaveBeenCalledWith(['/login']);
     });
   });
 });

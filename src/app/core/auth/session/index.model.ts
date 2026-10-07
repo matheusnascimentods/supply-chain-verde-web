@@ -6,6 +6,13 @@ export const userRoleSchema = z.enum(USER_ROLES);
 
 export type UserRole = z.infer<typeof userRoleSchema>;
 
+export const ROLE_LABELS: Record<UserRole, string> = {
+  admin: 'Administrador',
+  manager: 'Gestor',
+  auditor: 'Auditor',
+  supplier: 'Fornecedor',
+};
+
 export function parseUserRole(value: unknown): UserRole | null {
   if (typeof value === 'string') {
     const normalized = value.toLowerCase();
