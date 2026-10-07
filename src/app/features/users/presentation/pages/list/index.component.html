@@ -1,0 +1,59 @@
+<main class="users-page">
+  <div class="users-container">
+    <header class="users-header">
+      <div>
+        <h1 class="users-title">Usuários</h1>
+        <p class="users-subtitle">Gerencie os usuários e os perfis de acesso ao sistema.</p>
+      </div>
+      @if (facade.canManage()) {
+        <button appButton type="button" variant="primary" (click)="createModalOpen.set(true)">
+          + Adicionar usuário
+        </button>
+      }
+    </header>
+
+    <div class="users-search">
+      <app-text-field id="users-email-search" label="Buscar por email" type="search" name="email" autocomplete="off" placeholder="Digite um email" [ngModel]="facade.email()" (ngModelChange)="facade.searchFor($event)" />
+    </div>
+
+    @if (facade.error()) {
+      <div class="users-error" role="alert">
+        <p>{{ facade.error() }}</p><button class="users-retry" type="button" (click)="facade.reload()">Tentar novamente</button>
+      </div>
+    } @else if (facade.loading()) {
+      <div class="users-loading" aria-live="polite">Carregando usuários…</div>
+    } @else {
+      @if (facade.roleError()) { <p class="users-role-error" role="alert">{{ facade.roleError() }}</p> }
+      <app-data-table aria-label="Lista de usuários">
+        <table class="users-table">
+          <thead class="users-table-head"><tr class="users-table-head-row">
+            <th scope="col" class="users-cell">Nome</th><th scope="col" class="users-cell">Email</th><th scope="col" class="users-cell">Role</th><th scope="col" class="users-cell">Criado em</th>
+          </tr></thead>
+          <tbody>
+            @for (item of facade.items(); track item.userId) {
+              <tr class="users-row">
+                <td class="users-cell-name">{{ item.name }}</td>
+                <td class="users-cell-email">{{ item.email }}</td>
+                <td class="users-cell">
+                  @if (facade.canManage()) {
+                    <app-role-menu [user]="item" [disabled]="facade.updatingRoleId() === item.userId" (roleSelected)="facade.updateRole(item, $event)" />
+                  } @else {
+                    <app-role-badge [role]="item.role" />
+                  }
+                </td>
+                <td class="users-cell-date">{{ item.createdAt ? (item.createdAt | date:'dd/MM/yyyy HH:mm') : '—' }}</td>
+              </tr>
+            } @empty {
+              <tr><td class="users-empty" colspan="4">Nenhum usuário encontrado.</td></tr>
+            }
+          </tbody>
+        </table>
+      </app-data-table>
+      <app-pagination [page]="facade.pageNumber()" [totalPages]="facade.totalPages()" [disabled]="facade.loading()" label="Paginação de usuários" (previous)="facade.previousPage()" (next)="facade.nextPage()" />
+    }
+  </div>
+
+  @if (createModalOpen()) {
+    <app-create-user-modal (created)="userCreated()" (dismissed)="createModalOpen.set(false)" />
+  }
+</main>
