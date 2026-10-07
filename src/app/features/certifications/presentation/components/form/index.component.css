@@ -1,0 +1,32 @@
+@reference "tailwindcss";
+
+.certification-form {
+  @apply block w-full;
+}
+.certification-form-title {
+  @apply mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500;
+}
+.certification-form-grid {
+  @apply grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2 sm:p-5;
+}
+.certification-form-error {
+  @apply rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 sm:col-span-2;
+}
+.certification-form-field {
+  @apply grid gap-1.5;
+}
+.certification-form-label {
+  @apply text-sm font-medium text-slate-700;
+}
+.certification-form-input {
+  @apply rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
+}
+.certification-form-field-error {
+  @apply text-xs text-red-700;
+}
+.certification-form-actions {
+  @apply flex justify-end border-t border-slate-200 pt-4 sm:col-span-2;
+}
+.certification-form-submit {
+  @apply rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 disabled:cursor-wait disabled:opacity-50;
+}

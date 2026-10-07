@@ -1,8 +1,12 @@
 import { ChangeDetectionStrategy, Component, ElementRef, QueryList, ViewChildren, computed, inject, input, output, signal } from '@angular/core';
 import { SupplierCertificationDTO } from '../../index.schema';
-import { CertificationsService } from '../../../certifications/index.service';
-import { CertificationStatus } from '../../../certifications/index.schema';
-import { CertificationFormComponent } from '../../../certifications/form/index.component';
+import {
+  CERTIFICATION_STATUSES,
+  CERTIFICATION_STATUS_LABELS,
+  CertificationFormComponent,
+  CertificationStatus,
+  UpdateCertificationStatusUseCase,
+} from '../../../certifications';
 import { ModalComponent } from '../../../../shared/ui/modal/index.component';
 
 @Component({
@@ -14,7 +18,7 @@ import { ModalComponent } from '../../../../shared/ui/modal/index.component';
   host: { '(document:click)': 'closeStatusMenusOnOutsideClick($event)' },
 })
 export class SupplierCertificationsModalComponent {
-  private readonly service = inject(CertificationsService);
+  private readonly updateCertificationStatus = inject(UpdateCertificationStatusUseCase);
   @ViewChildren('certificationStatusMenu') private statusMenus?: QueryList<ElementRef<HTMLDetailsElement>>;
   readonly supplierId = input.required<number>();
   readonly supplierName = input.required<string>();
@@ -27,12 +31,7 @@ export class SupplierCertificationsModalComponent {
   readonly statusMenuPosition = signal({ top: 0, left: 0 });
   readonly error = signal('');
   readonly items = computed(() => this.certifications());
-  readonly statuses: { value: CertificationStatus; label: string }[] = [
-    { value: 'active', label: 'Ativa' },
-    { value: 'expired', label: 'Expirada' },
-    { value: 'suspended', label: 'Suspensa' },
-    { value: 'underReview', label: 'Em análise' },
-  ];
+  readonly statuses = CERTIFICATION_STATUSES.map((value) => ({ value, label: CERTIFICATION_STATUS_LABELS[value] }));
 
   close(): void { this.dismissed.emit(); }
 
@@ -41,12 +40,8 @@ export class SupplierCertificationsModalComponent {
     return match ? `${match[3]}/${match[2]}/${match[1]}` : value;
   }
 
-  status(value: SupplierCertificationDTO['status']): CertificationStatus {
-    return value === 'UNDER_REVIEW' ? 'underReview' : value.toLowerCase() as CertificationStatus;
-  }
-
-  statusLabel(value: SupplierCertificationDTO['status']): string {
-    return this.statuses.find((status) => status.value === this.status(value))?.label ?? value;
+  statusLabel(value: CertificationStatus): string {
+    return CERTIFICATION_STATUS_LABELS[value];
   }
 
   statusStyle(value: SupplierCertificationDTO['status']): string {
@@ -56,10 +51,10 @@ export class SupplierCertificationsModalComponent {
   setStatus(item: SupplierCertificationDTO, status: CertificationStatus, menu: HTMLDetailsElement): void {
     menu.open = false;
     menu.querySelector('summary')?.focus();
-    if (!this.canUpdateStatus() || status === this.status(item.status)) return;
+    if (!this.canUpdateStatus() || status === item.status) return;
     this.error.set('');
     this.updatingStatusId.set(item.certificationId);
-    this.service.updateStatus(item.certificationId, status).subscribe({
+    this.updateCertificationStatus.execute(item.certificationId, status).subscribe({
       next: () => { this.updatingStatusId.set(null); this.updated.emit(); },
       error: () => { this.updatingStatusId.set(null); this.error.set(`Não foi possível atualizar o status de ${item.certification}.`); },
     });
