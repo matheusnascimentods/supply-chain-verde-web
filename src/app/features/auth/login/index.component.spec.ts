@@ -3,7 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { LoginComponent } from './index.component';
 import { AuthService } from '../index.service';
-import { ErrorToastService } from '../../../shared/components/error-toast/index.service';
+import { ErrorToastService } from '../../../shared/ui/error-toast/index.service';
 import { LoginResponseDTO } from '../index.schema';
 
 describe('LoginComponent', () => {
