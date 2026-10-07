@@ -1,32 +1,32 @@
-<main class="component-style-1">
+<main class="login-page">
   <section
-    class="component-style-2"
+    class="login-card"
     aria-labelledby="login-title"
   >
-    <header class="component-style-3">
-      <div class="component-style-4">
-        <span class="component-style-5" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="component-style-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <header class="login-header">
+      <div class="login-brand">
+        <span class="login-brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="login-brand-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 4c-7 0-12 2-13 7-1 4 2 7 6 6 5-1 7-6 7-13Z" />
             <path d="M4 21c2-5 5-8 11-11" />
           </svg>
         </span>
-        <span class="component-style-7">Supply Chain Verde</span>
+        <span class="login-brand-name">Supply Chain Verde</span>
       </div>
-      <h1 id="login-title" class="component-style-8">
+      <h1 id="login-title" class="login-title">
         Bem-vindo de volta
       </h1>
-      <p class="component-style-9">Entre com suas credenciais para acessar o sistema</p>
+      <p class="login-subtitle">Entre com suas credenciais para acessar o sistema</p>
     </header>
 
     @if (errorMessage()) {
       <div
         role="alert"
         aria-live="assertive"
-        class="component-style-10"
+        class="login-alert"
         data-testid="error-alert"
       >
-        <p class="component-style-11" data-testid="error-message">{{ errorMessage() }}</p>
+        <p class="login-alert-message" data-testid="error-message">{{ errorMessage() }}</p>
       </div>
     }
 
@@ -35,10 +35,10 @@
       (ngSubmit)="onSubmit()"
       novalidate
       aria-label="Formulário de login"
-      class="component-style-12"
+      class="login-form"
     >
       <div>
-        <label for="email" class="component-style-13">Email</label>
+        <label for="email" class="login-label">Email</label>
         <input
           id="email"
           type="email"
@@ -47,19 +47,19 @@
           placeholder="thiago.mendes@empresa.com"
           [attr.aria-invalid]="isFieldInvalid('email')"
           [attr.aria-describedby]="isFieldInvalid('email') ? 'email-error' : null"
-          class="component-style-14"
+          class="login-input"
           data-testid="email-input"
         />
         @if (isFieldInvalid('email')) {
-          <p id="email-error" role="alert" class="component-style-15" data-testid="email-error">
+          <p id="email-error" role="alert" class="login-field-error" data-testid="email-error">
             {{ getEmailErrorMessage() }}
           </p>
         }
       </div>
 
       <div>
-        <label for="password" class="component-style-13">Senha</label>
-        <div class="component-style-16">
+        <label for="password" class="login-label">Senha</label>
+        <div class="login-password-field">
           <input
             id="password"
             [type]="showPassword() ? 'text' : 'password'"
@@ -68,21 +68,21 @@
             placeholder="••••••••"
             [attr.aria-invalid]="isFieldInvalid('password')"
             [attr.aria-describedby]="isFieldInvalid('password') ? 'password-error' : null"
-            class="component-style-17"
+            class="login-password-input"
             data-testid="password-input"
           />
           <button
             type="button"
             (click)="togglePasswordVisibility()"
             [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Exibir senha'"
-            class="component-style-18"
+            class="login-password-toggle"
             data-testid="toggle-password-visibility"
           >
             {{ showPassword() ? 'Ocultar' : 'Exibir' }}
           </button>
         </div>
         @if (isFieldInvalid('password')) {
-          <p id="password-error" role="alert" class="component-style-15" data-testid="password-error">
+          <p id="password-error" role="alert" class="login-field-error" data-testid="password-error">
             {{ getPasswordErrorMessage() }}
           </p>
         }
@@ -91,11 +91,11 @@
       <button
         type="submit"
         [disabled]="isLoading()"
-        class="component-style-19"
+        class="login-submit"
         data-testid="submit-button"
       >
         @if (isLoading()) {
-          <span class="component-style-20">
+          <span class="login-submit-loading">
             <app-spinner size="sm" ariaLabel="Autenticando..." />
             <span>Entrando...</span>
           </span>
