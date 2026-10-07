@@ -8,7 +8,7 @@ import { SuppliersService } from '../index.service';
 import { SupplierRequestDTO } from '../index.schema';
 import { ViaCepResponseDTO } from '../../../core/integrations/via-cep/index.dto';
 import { ViaCepService } from '../../../core/integrations/via-cep/index.service';
-import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../index.utils';
+import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../shared/utils/format/index.utils';
 
 @Component({
   selector: 'app-suppliers-form',
