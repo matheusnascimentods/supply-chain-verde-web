@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
+import { ViaCepService } from '../../../core/integrations/via-cep/index.service';
 import { SuppliersService } from '../index.service';
 import { SupplierFormComponent } from './index.component';
 
@@ -13,20 +14,19 @@ describe('SupplierFormComponent', () => {
   let service: {
     create: ReturnType<typeof vi.fn>;
     get: ReturnType<typeof vi.fn>;
-    lookupZipCode: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
     service = {
       create: vi.fn().mockReturnValue(of({ supplierId: 8, name: 'Fazenda Verde' })),
       get: vi.fn(),
-      lookupZipCode: vi.fn().mockReturnValue(of(null)),
     };
     await TestBed.configureTestingModule({
       imports: [SupplierFormComponent],
       providers: [
         provideRouter([{ path: 'suppliers', component: SupplierListPage }]),
         { provide: SuppliersService, useValue: service },
+        { provide: ViaCepService, useValue: { lookup: vi.fn().mockReturnValue(of(null)) } },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(SupplierFormComponent);
