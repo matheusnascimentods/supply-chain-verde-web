@@ -1,62 +1,62 @@
 @reference "tailwindcss";
 
-.component-style-1 {
+.login-page {
   @apply flex min-h-screen items-center justify-center bg-[#f8f9fb] px-4 py-10;
 }
-.component-style-2 {
+.login-card {
   @apply w-full max-w-[570px] rounded-2xl border border-slate-100 bg-white px-8 pt-10 pb-8 shadow-[0_8px_22px_rgba(15,23,42,0.08)] sm:px-10;
 }
-.component-style-3 {
+.login-header {
   @apply text-center;
 }
-.component-style-4 {
+.login-brand {
   @apply flex items-center justify-center gap-2;
 }
-.component-style-5 {
+.login-brand-icon {
   @apply inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#16a34a] text-white;
 }
-.component-style-6 {
+.login-brand-svg {
   @apply h-5 w-5;
 }
-.component-style-7 {
+.login-brand-name {
   @apply text-base font-bold tracking-tight text-slate-900;
 }
-.component-style-8 {
+.login-title {
   @apply mt-7 text-2xl font-bold tracking-tight text-slate-900;
 }
-.component-style-9 {
+.login-subtitle {
   @apply mt-4 text-sm text-slate-500;
 }
-.component-style-10 {
+.login-alert {
   @apply mt-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800;
 }
-.component-style-11 {
+.login-alert-message {
   @apply font-medium;
 }
-.component-style-12 {
+.login-form {
   @apply mt-5 space-y-5;
 }
-.component-style-13 {
+.login-label {
   @apply block text-sm font-medium text-slate-800;
 }
-.component-style-14 {
+.login-input {
   @apply mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-600/15;
 }
-.component-style-15 {
+.login-field-error {
   @apply mt-1.5 text-xs font-medium text-red-600;
 }
-.component-style-16 {
+.login-password-field {
   @apply relative mt-2;
 }
-.component-style-17 {
+.login-password-input {
   @apply h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-600/15;
 }
-.component-style-18 {
+.login-password-toggle {
   @apply sr-only focus:not-sr-only focus:absolute focus:right-2 focus:top-1/2 focus:-translate-y-1/2 focus:rounded focus:bg-white focus:px-2 focus:py-1 focus:text-xs focus:text-green-800;
 }
-.component-style-19 {
+.login-submit {
   @apply flex h-10 w-full items-center justify-center rounded-lg bg-[#16a34a] px-4 text-sm font-semibold text-white transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
 }
-.component-style-20 {
+.login-submit-loading {
   @apply flex items-center gap-2;
 }
