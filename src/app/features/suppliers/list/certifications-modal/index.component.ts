@@ -3,7 +3,7 @@ import { SupplierCertificationDTO } from '../../index.schema';
 import { CertificationsService } from '../../../certifications/index.service';
 import { CertificationStatus } from '../../../certifications/index.schema';
 import { CertificationFormComponent } from '../../../certifications/form/index.component';
-import { ModalComponent } from '../../../../shared/components/modal/index.component';
+import { ModalComponent } from '../../../../shared/ui/modal/index.component';
 
 @Component({
   selector: 'app-supplier-certifications-modal',
