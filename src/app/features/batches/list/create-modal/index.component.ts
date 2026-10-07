@@ -24,9 +24,9 @@ import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../sup
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { BatchRequestDTO } from '../../index.schema';
 import { BatchesService } from '../../index.service';
-import { PaginationComponent } from '../../../../shared/components/pagination/index.component';
-import { TextFieldComponent } from '../../../../shared/components/text-field/index.component';
-import { ModalComponent } from '../../../../shared/components/modal/index.component';
+import { PaginationComponent } from '../../../../shared/ui/pagination/index.component';
+import { TextFieldComponent } from '../../../../shared/ui/text-field/index.component';
+import { ModalComponent } from '../../../../shared/ui/modal/index.component';
 
 const PAGE_SIZE = 20;
 
