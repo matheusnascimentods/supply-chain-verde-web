@@ -1,0 +1,59 @@
+@reference "tailwindcss";
+
+.users-page {
+  @apply min-w-0 flex-1 bg-slate-50 px-4 py-6 text-slate-800 sm:px-8 sm:py-8;
+}
+.users-container {
+  @apply mx-auto max-w-7xl;
+}
+.users-header {
+  @apply mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between;
+}
+.users-title {
+  @apply text-2xl font-bold tracking-tight text-slate-900;
+}
+.users-subtitle {
+  @apply mt-1 text-sm text-slate-500;
+}
+.users-search {
+  @apply mb-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm;
+}
+.users-error {
+  @apply rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700;
+}
+.users-retry {
+  @apply mt-2 font-semibold underline;
+}
+.users-loading {
+  @apply rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500;
+}
+.users-role-error {
+  @apply mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700;
+}
+.users-table {
+  @apply w-full min-w-[720px] text-left text-sm;
+}
+.users-table-head {
+  @apply bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500;
+}
+.users-table-head-row {
+  @apply border-b border-slate-200;
+}
+.users-cell {
+  @apply px-5 py-4;
+}
+.users-row {
+  @apply border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70;
+}
+.users-cell-name {
+  @apply px-5 py-4 font-medium text-slate-800;
+}
+.users-cell-email {
+  @apply px-5 py-4 text-slate-600;
+}
+.users-cell-date {
+  @apply whitespace-nowrap px-5 py-4 text-slate-600;
+}
+.users-empty {
+  @apply px-5 py-14 text-center text-slate-500;
+}

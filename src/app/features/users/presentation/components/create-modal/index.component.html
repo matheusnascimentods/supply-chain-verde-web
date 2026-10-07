@@ -1,0 +1,38 @@
+<app-modal labelledBy="user-create-title" size="lg" initialFocusSelector="input" (dismissed)="dismissed.emit()">
+  <div class="create-user-header">
+    <div>
+      <h2 id="user-create-title" class="create-user-title">Adicionar usuário</h2>
+      <p class="create-user-subtitle">Informe os dados e o perfil de acesso.</p>
+    </div>
+    <button type="button" class="create-user-close" aria-label="Fechar" (click)="dismissed.emit()">✕</button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="create-user-form">
+    <div class="create-user-row">
+      <label class="create-user-field" for="user-name">Nome
+        <input id="user-name" class="create-user-input" type="text" autocomplete="name" formControlName="name" />
+        @if (form.controls.name.touched && form.controls.name.hasError('required')) { <span class="create-user-field-error">Informe o nome.</span> }
+      </label>
+      <label class="create-user-field" for="user-email">Email
+        <input id="user-email" class="create-user-input" type="email" autocomplete="email" formControlName="email" />
+        @if (form.controls.email.touched && form.controls.email.hasError('required')) { <span class="create-user-field-error">Informe o email.</span> }
+        @else if (form.controls.email.touched && form.controls.email.hasError('email')) { <span class="create-user-field-error">Informe um email válido.</span> }
+      </label>
+    </div>
+    <div class="create-user-row">
+      <label class="create-user-field" for="user-password">Senha
+        <input id="user-password" class="create-user-input" type="password" autocomplete="new-password" formControlName="password" />
+        @if (form.controls.password.touched && form.controls.password.hasError('required')) { <span class="create-user-field-error">Informe a senha.</span> }
+      </label>
+      <label class="create-user-field" for="user-role">Role
+        <app-enum-select id="user-role" [options]="roles" [formControlName]="'role'" />
+        @if (form.controls.role.touched && form.controls.role.hasError('required')) { <span class="create-user-field-error">Selecione um perfil.</span> }
+      </label>
+    </div>
+    @if (error()) { <p role="alert" class="create-user-error">{{ error() }}</p> }
+    <div class="create-user-actions">
+      <button type="button" class="create-user-cancel" [disabled]="saving()" (click)="dismissed.emit()">Cancelar</button>
+      <button type="submit" class="create-user-submit" [disabled]="form.invalid || saving()">{{ saving() ? 'Salvando…' : 'Adicionar usuário' }}</button>
+    </div>
+  </form>
+</app-modal>
