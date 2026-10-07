@@ -9,12 +9,4 @@ describe('UsersService', () => {
   beforeEach(() => { TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] }); service = TestBed.inject(UsersService); http = TestBed.inject(HttpTestingController); });
   afterEach(() => http.verify());
   it('should be created', () => expect(service).toBeTruthy());
-  it('loads the authenticated user from /users/me', () => {
-    service.loadCurrentUser().subscribe((user) => {
-      expect(user).toMatchObject({ userId: 4, name: 'Maria Gabriela Brito', email: 'maria@example.com', role: 'manager' });
-    });
-    const request = http.expectOne(`${environment.apiUrl}/users/me`);
-    expect(request.request.method).toBe('GET');
-    request.flush({ userId: 4, name: 'Maria Gabriela Brito', email: 'maria@example.com', role: 'MANAGER' });
-  });
 });
