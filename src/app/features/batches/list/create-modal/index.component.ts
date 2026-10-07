@@ -20,7 +20,7 @@ import {
 import { SuppliersService } from '../../../suppliers/index.service';
 import { ViaCepResponseDTO } from '../../../../core/integrations/via-cep/index.dto';
 import { ViaCepService } from '../../../../core/integrations/via-cep/index.service';
-import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../suppliers/index.utils';
+import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../../shared/utils/format/index.utils';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { BatchRequestDTO } from '../../index.schema';
 import { BatchesService } from '../../index.service';
