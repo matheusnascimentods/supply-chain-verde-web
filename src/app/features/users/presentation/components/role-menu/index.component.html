@@ -1,0 +1,12 @@
+<details #menu appCloseOnOutsideClick class="role-menu" (keydown)="onKeydown($event, menu)" (toggle)="positionMenu($event)">
+  <summary class="role-menu-trigger" [attr.aria-label]="'Perfil de ' + user().name" aria-haspopup="menu" [attr.aria-expanded]="menu.open">
+    <app-role-badge [role]="user().role"><span aria-hidden="true">⌄</span></app-role-badge>
+  </summary>
+  <div class="role-menu-list" [style.top.px]="position().top" [style.left.px]="position().left" role="menu" [attr.aria-label]="'Alterar perfil de ' + user().name">
+    @for (role of roles; track role) {
+      <button type="button" class="role-menu-option" role="menuitemradio" [attr.aria-checked]="user().role === role" [disabled]="disabled()" (click)="select(role, menu)">
+        {{ roleLabels[role] }} @if (user().role === role) { <span aria-hidden="true">✓</span> }
+      </button>
+    }
+  </div>
+</details>
