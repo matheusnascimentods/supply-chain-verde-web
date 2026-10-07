@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { ProductsService } from '../../../products/index.service';
 import { SuppliersService } from '../../../suppliers/index.service';
+import { ViaCepService } from '../../../../core/integrations/via-cep/index.service';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { BatchesService } from '../../index.service';
 import { BatchCreateModalComponent } from './index.component';
@@ -16,7 +17,8 @@ const supplierPage = { items: [supplier], limit: 20, offset: 0, hasNext: false, 
 describe('BatchCreateModalComponent', () => {
   let fixture: ComponentFixture<BatchCreateModalComponent>;
   let products: { load: ReturnType<typeof vi.fn>; create: ReturnType<typeof vi.fn> };
-  let suppliers: { loadRanking: ReturnType<typeof vi.fn>; create: ReturnType<typeof vi.fn>; get: ReturnType<typeof vi.fn>; lookupZipCode: ReturnType<typeof vi.fn> };
+  let suppliers: { loadRanking: ReturnType<typeof vi.fn>; create: ReturnType<typeof vi.fn>; get: ReturnType<typeof vi.fn> };
+  let viaCep: { lookup: ReturnType<typeof vi.fn> };
   let batches: { create: ReturnType<typeof vi.fn> };
 
   async function setup(role = 'admin') {
@@ -28,8 +30,8 @@ describe('BatchCreateModalComponent', () => {
       loadRanking: vi.fn().mockReturnValue(of(supplierPage)),
       create: vi.fn().mockReturnValue(of(supplierDetail)),
       get: vi.fn().mockReturnValue(of(supplierDetail)),
-      lookupZipCode: vi.fn().mockReturnValue(of({ logradouro: 'Avenida Paulista', bairro: 'Bela Vista', localidade: 'São Paulo', uf: 'SP' })),
     };
+    viaCep = { lookup: vi.fn().mockReturnValue(of({ logradouro: 'Avenida Paulista', bairro: 'Bela Vista', localidade: 'São Paulo', uf: 'SP' })) };
     batches = { create: vi.fn().mockReturnValue(of({ batchId: 1 })) };
     await TestBed.configureTestingModule({
       imports: [BatchCreateModalComponent],
@@ -37,6 +39,7 @@ describe('BatchCreateModalComponent', () => {
         { provide: SessionService, useValue: { role: () => role } },
         { provide: ProductsService, useValue: products },
         { provide: SuppliersService, useValue: suppliers },
+        { provide: ViaCepService, useValue: viaCep },
         { provide: CurrentUserService, useValue: { load: vi.fn().mockReturnValue(of({ userId: 22, name: 'Fazenda', email: 'f@example.com', role: 'supplier' })) } },
         { provide: BatchesService, useValue: batches },
       ],
@@ -101,7 +104,7 @@ describe('BatchCreateModalComponent', () => {
     expect(component.supplierForm.controls.zipCode.value).toBe('01000-000');
     await new Promise((resolve) => setTimeout(resolve, 400));
 
-    expect(suppliers.lookupZipCode).toHaveBeenCalledWith('01000000');
+    expect(viaCep.lookup).toHaveBeenCalledWith('01000000');
     expect(component.supplierForm.controls.street.value).toBe('Avenida Paulista');
     expect(component.supplierForm.controls.neighborhood.value).toBe('Bela Vista');
     expect(component.supplierForm.controls.city.value).toBe('São Paulo');
