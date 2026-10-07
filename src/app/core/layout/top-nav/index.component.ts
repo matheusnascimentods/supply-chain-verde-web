@@ -2,17 +2,9 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed,
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
-import { SessionService } from '../../../core/auth/session/index.service';
-import { UserRole } from '../../../core/auth/session/index.model';
-import { AuthService } from '../../../features/auth/index.service';
-import { DASHBOARDS } from '../../../features/dashboard/index.constants';
-
-const ROLE_LABELS: Record<UserRole, string> = {
-  admin: 'Administrador',
-  manager: 'Gestor',
-  auditor: 'Auditor',
-  supplier: 'Fornecedor',
-};
+import { SessionService } from '../../auth/session/index.service';
+import { ROLE_LABELS } from '../../auth/session/index.model';
+import { NAV_LINKS } from '../navigation/index.constants';
 
 @Component({
   selector: 'app-top-nav',
@@ -25,12 +17,11 @@ export class TopNavComponent {
   @ViewChild('profileMenu') private profileMenu?: ElementRef<HTMLDetailsElement>;
 
   private readonly session = inject(SessionService);
-  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly links = computed(() => {
     const role = this.session.role();
-    return role ? DASHBOARDS[role].links : [];
+    return role ? NAV_LINKS[role] : [];
   });
   readonly email = this.session.email;
   readonly roleLabel = computed(() => {
@@ -81,7 +72,7 @@ export class TopNavComponent {
   }
 
   logout(): void {
-    this.auth.logout();
+    this.session.logout();
   }
 
   private closeProfileMenu(): void {

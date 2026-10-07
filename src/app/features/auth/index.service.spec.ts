@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { Router, provideRouter } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { SessionService } from '../../core/auth/session/index.service';
 import { AuthService } from './index.service';
@@ -16,7 +16,6 @@ describe('AuthService', () => {
   let service: AuthService;
   let sessionService: SessionService;
   let httpTestingController: HttpTestingController;
-  let router: Router;
 
   const mockCredentials: LoginRequestDTO = {
     email: 'test@example.com',
@@ -44,7 +43,6 @@ describe('AuthService', () => {
     service = TestBed.inject(AuthService);
     sessionService = TestBed.inject(SessionService);
     httpTestingController = TestBed.inject(HttpTestingController);
-    router = TestBed.inject(Router);
   });
 
   afterEach(() => {
@@ -167,21 +165,6 @@ describe('AuthService', () => {
       expect(errorOccurred).toBe(true);
       expect(service.isLoading()).toBe(false);
       expect(sessionService.hasSession()).toBe(false);
-    });
-  });
-
-  describe('logout()', () => {
-    it('should clear session and navigate to /login', () => {
-      sessionService.setSession('sample-token', 'auditor');
-      expect(service.isAuthenticated()).toBe(true);
-
-      const navigateSpy = vi.spyOn(router, 'navigate');
-
-      service.logout();
-
-      expect(sessionService.hasSession()).toBe(false);
-      expect(service.isAuthenticated()).toBe(false);
-      expect(navigateSpy).toHaveBeenCalledWith(['/login']);
     });
   });
 });

@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { Observable, map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SessionService } from '../../core/auth/session/index.service';
@@ -10,7 +9,6 @@ import { LoginRequestDTO, LoginResponseDTO, loginResponseSchema } from './index.
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly sessionService = inject(SessionService);
-  private readonly router = inject(Router, { optional: true });
 
   private readonly _isLoading = signal<boolean>(false);
   readonly isLoading = this._isLoading.asReadonly();
@@ -33,10 +31,5 @@ export class AuthService {
         },
       }),
     );
-  }
-
-  logout(): void {
-    this.sessionService.clearSession();
-    this.router?.navigate(['/login']);
   }
 }
