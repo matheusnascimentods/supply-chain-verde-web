@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsersService } from '../index.service';
-import { EnumSelectComponent } from '../../../shared/components/enum-select/index.component';
+import { EnumSelectComponent } from '../../../shared/ui/enum-select/index.component';
 import { userRequestSchema, userRoleSchema } from '../index.schema';
 @Component({ selector:'app-users-form', imports:[ReactiveFormsModule, EnumSelectComponent], templateUrl:'./index.component.html',
   styleUrl: './index.component.css', changeDetection:ChangeDetectionStrategy.OnPush })

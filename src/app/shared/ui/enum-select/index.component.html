@@ -32,7 +32,7 @@
       </option>
     }
 
-    @for (opt of parsedOptions(); track opt) {
+    @for (opt of options(); track opt) {
       <option [value]="opt">
         {{ getOptionLabel(opt) }}
       </option>

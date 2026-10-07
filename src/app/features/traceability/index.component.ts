@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { SpinnerComponent } from '../../shared/components/spinner/index.component';
+import { SpinnerComponent } from '../../shared/ui/spinner/index.component';
 import { CarbonChartComponent } from './carbon-chart/index.component';
 import { TraceabilityService } from './index.service';
 import { BatchTraceabilityResponseDTO, CarbonFootprintResponseDTO } from './index.schema';

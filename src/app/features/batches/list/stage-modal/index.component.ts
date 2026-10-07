@@ -12,7 +12,7 @@ import { forkJoin, of, catchError, map, switchMap } from 'rxjs';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { SuppliersService } from '../../../suppliers/index.service';
-import { ModalComponent } from '../../../../shared/components/modal/index.component';
+import { ModalComponent } from '../../../../shared/ui/modal/index.component';
 import { ChainService } from '../../../chain/index.service';
 import {
   calculationMethodSchema,

@@ -7,9 +7,9 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SpinnerComponent } from '../../../shared/components/spinner/index.component';
-import { ErrorToastComponent } from '../../../shared/components/error-toast/index.component';
-import { ErrorToastService } from '../../../shared/components/error-toast/index.service';
+import { SpinnerComponent } from '../../../shared/ui/spinner/index.component';
+import { ErrorToastComponent } from '../../../shared/ui/error-toast/index.component';
+import { ErrorToastService } from '../../../shared/ui/error-toast/index.service';
 import { AuthService } from '../index.service';
 
 @Component({

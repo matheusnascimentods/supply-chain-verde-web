@@ -8,10 +8,10 @@ import { SuppliersService } from '../index.service';
 import { SupplierRankingResponseDTO, SupplierResponseDTO } from '../index.schema';
 import { SupplierReportsModalComponent } from './reports-modal/index.component';
 import { SupplierCertificationsModalComponent } from './certifications-modal/index.component';
-import { ButtonComponent } from '../../../shared/components/button/index.component';
-import { DataTableComponent } from '../../../shared/components/data-table/index.component';
-import { PaginationComponent } from '../../../shared/components/pagination/index.component';
-import { TextFieldComponent } from '../../../shared/components/text-field/index.component';
+import { ButtonComponent } from '../../../shared/ui/button/index.component';
+import { DataTableComponent } from '../../../shared/ui/data-table/index.component';
+import { PaginationComponent } from '../../../shared/ui/pagination/index.component';
+import { TextFieldComponent } from '../../../shared/ui/text-field/index.component';
 
 const PAGE_SIZE = 20;
 

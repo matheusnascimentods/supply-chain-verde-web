@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, inject, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { SessionService } from '../../auth/session/index.service';
 import { ROLE_LABELS } from '../../auth/session/index.model';
 import { NAV_LINKS } from '../navigation/index.constants';
+import { CloseOnOutsideClickDirective } from '../../../shared/directives/close-on-outside-click/index.directive';
 
 @Component({
   selector: 'app-top-nav',
-  imports: [RouterLink],
+  imports: [RouterLink, CloseOnOutsideClickDirective],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,14 +44,6 @@ export class TopNavComponent {
         this.mobileMenuOpen.set(false);
         this.closeProfileMenu();
       });
-  }
-
-  @HostListener('document:click', ['$event'])
-  closeProfileMenuOnOutsideClick(event: MouseEvent): void {
-    const menu = this.profileMenu?.nativeElement;
-    if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) {
-      this.closeProfileMenu();
-    }
   }
 
   isDashboardActive(): boolean {

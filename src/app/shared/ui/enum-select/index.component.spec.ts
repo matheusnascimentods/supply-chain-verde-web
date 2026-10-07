@@ -37,22 +37,6 @@ describe('EnumSelectComponent', () => {
     expect(options[3].getAttribute('value')).toBe('LOGISTICS');
   });
 
-  it('should render options passed from a ZodEnum object with options property', () => {
-    const mockZodEnum = {
-      options: ['PENDING', 'VALID', 'EXPIRED'],
-    };
-    componentRef.setInput('options', mockZodEnum);
-    fixture.detectChanges();
-
-    const compiled = fixture.nativeElement as HTMLElement;
-    const options = compiled.querySelectorAll('select option');
-
-    expect(options.length).toBe(4);
-    expect(options[1].getAttribute('value')).toBe('PENDING');
-    expect(options[2].getAttribute('value')).toBe('VALID');
-    expect(options[3].getAttribute('value')).toBe('EXPIRED');
-  });
-
   it('should use custom label mapping from labels input', () => {
     componentRef.setInput('options', ['PENDING', 'VALID']);
     componentRef.setInput('labels', {
