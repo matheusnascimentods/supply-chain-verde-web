@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, sign
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ReportsService } from '../../../reports/index.service';
 import { ReportResponseDTO } from '../../../reports/index.schema';
-import { ModalComponent } from '../../../../shared/components/modal/index.component';
-import { PaginationComponent } from '../../../../shared/components/pagination/index.component';
+import { ModalComponent } from '../../../../shared/ui/modal/index.component';
+import { PaginationComponent } from '../../../../shared/ui/pagination/index.component';
 
 const PAGE_SIZE = 20;
 

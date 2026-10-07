@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../../core/auth/session/index.service';
-import { EnumSelectComponent } from '../../../shared/components/enum-select/index.component';
+import { EnumSelectComponent } from '../../../shared/ui/enum-select/index.component';
 import { CurrentUserService } from '../../../core/auth/session/current-user/index.service';
 import {
   calculationMethodSchema,
