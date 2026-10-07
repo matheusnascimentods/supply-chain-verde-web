@@ -1,7 +1,7 @@
 
 import { Routes } from '@angular/router';
 import { authGuard, roleGuard } from './core/auth/guards/index.guard';
-import { AppShellComponent } from './shared/components/app-shell/index.component';
+import { AppShellComponent } from './core/layout/app-shell/index.component';
 
 export const routes: Routes = [
   {
