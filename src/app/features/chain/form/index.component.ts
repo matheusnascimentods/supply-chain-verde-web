@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { EnumSelectComponent } from '../../../shared/components/enum-select/index.component';
-import { UsersService } from '../../users/index.service';
+import { CurrentUserService } from '../../../core/auth/session/current-user/index.service';
 import {
   calculationMethodSchema,
   fuelTypeSchema,
@@ -22,7 +22,7 @@ import { ChainService } from '../index.service';
 export class ChainFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(ChainService);
-  private readonly users = inject(UsersService);
+  private readonly currentUserService = inject(CurrentUserService);
   private readonly session = inject(SessionService);
   readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -62,7 +62,7 @@ export class ChainFormComponent {
     const value = this.form.getRawValue();
     const batchId = Number(this.route.snapshot.paramMap.get('batchId'));
 
-    this.users.loadCurrentUser().subscribe({
+    this.currentUserService.load().subscribe({
       error: () => this.fail(),
       next: (user) =>
         this.service
