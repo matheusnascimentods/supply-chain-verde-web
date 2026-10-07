@@ -30,3 +30,7 @@ export function formatZipCode(value: string): string {
   const digits = digitsOnly(value).slice(0, 8);
   return digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
 }
+
+export function formatNumberBr(value: number, maxFractionDigits = 2): string {
+  return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: maxFractionDigits }).format(value);
+}

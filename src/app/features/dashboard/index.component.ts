@@ -4,6 +4,7 @@ import { SessionService } from '../../core/auth/session/index.service';
 import { CurrentUserService } from '../../core/auth/session/current-user/index.service';
 import { DashboardStageType, DashboardSummaryResponse, RecentBatchSummary } from './index.schema';
 import { DASHBOARDS } from './index.constants';
+import { formatNumberBr } from '../../shared/utils/format/index.utils';
 import { DashboardService } from './index.service';
 
 const STAGE_ORDER: DashboardStageType[] = [
@@ -63,10 +64,10 @@ export class DashboardComponent {
   readonly metrics = computed(() => {
     const summary = this.summary();
     return [
-      { label: 'Lotes Ativos', value: summary ? this.formatInteger(summary.activeBatches) : '—', accent: 'bg-green-600' },
-      { label: 'Certificações Expirando', value: summary ? this.formatInteger(summary.expiringCertifications) : '—', accent: 'bg-amber-500' },
-      { label: 'Fornecedores', value: summary ? this.formatInteger(summary.suppliers) : '—', accent: 'bg-teal-600' },
-      { label: 'Emissão Total (mês)', value: summary ? `${this.formatNumber(summary.monthlyEmissionKgCo2e)} kg CO₂e` : '—', accent: 'bg-emerald-700' },
+      { label: 'Lotes Ativos', value: summary ? formatNumberBr(summary.activeBatches, 0) : '—', accent: 'bg-green-600' },
+      { label: 'Certificações Expirando', value: summary ? formatNumberBr(summary.expiringCertifications, 0) : '—', accent: 'bg-amber-500' },
+      { label: 'Fornecedores', value: summary ? formatNumberBr(summary.suppliers, 0) : '—', accent: 'bg-teal-600' },
+      { label: 'Emissão Total (mês)', value: summary ? `${formatNumberBr(summary.monthlyEmissionKgCo2e)} kg CO₂e` : '—', accent: 'bg-emerald-700' },
     ];
   });
   readonly stageDistribution = computed(() => {
@@ -124,14 +125,6 @@ export class DashboardComponent {
     });
   }
 
-  formatInteger(value: number): string {
-    return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 }).format(value);
-  }
-
-  formatNumber(value: number): string {
-    return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(value);
-  }
-
   formatQuantity(batch: RecentBatchSummary): string {
     const unitLabels: Record<RecentBatchSummary['unit'], string> = {
       KG: 'kg',
@@ -140,7 +133,7 @@ export class DashboardComponent {
       UNIT: 'un',
       M3: 'm³',
     };
-    return `${this.formatNumber(batch.quantity)} ${unitLabels[batch.unit]}`;
+    return `${formatNumberBr(batch.quantity)} ${unitLabels[batch.unit]}`;
   }
 
   barHeight(count: number): number {
