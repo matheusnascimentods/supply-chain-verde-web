@@ -2,14 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { LoginComponent } from './index.component';
-import { AuthService } from '../index.service';
-import { ErrorToastService } from '../../../shared/ui/error-toast/index.service';
-import { LoginResponseDTO } from '../index.schema';
+import { LoginUseCase } from '../../../application/use-cases/login/index.use-case';
+import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.service';
+import { LoginResponseDTO } from '../../../infrastructure/index.dto';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let authService: AuthService;
+  let loginUseCase: LoginUseCase;
   let errorToastService: ErrorToastService;
   let router: Router;
 
@@ -26,11 +26,8 @@ describe('LoginComponent', () => {
       providers: [
         provideRouter([]),
         {
-          provide: AuthService,
-          useValue: {
-            login: vi.fn(),
-            isLoading: vi.fn().mockReturnValue(false),
-          },
+          provide: LoginUseCase,
+          useValue: { execute: vi.fn() },
         },
         ErrorToastService,
       ],
@@ -38,7 +35,7 @@ describe('LoginComponent', () => {
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-    authService = TestBed.inject(AuthService);
+    loginUseCase = TestBed.inject(LoginUseCase);
     errorToastService = TestBed.inject(ErrorToastService);
     router = TestBed.inject(Router);
     fixture.detectChanges();
@@ -64,7 +61,7 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
 
     expect(component.loginForm.touched).toBe(true);
-    expect(authService.login).not.toHaveBeenCalled();
+    expect(loginUseCase.execute).not.toHaveBeenCalled();
 
     const emailError = fixture.nativeElement.querySelector('[data-testid="email-error"]');
     const passwordError = fixture.nativeElement.querySelector('[data-testid="password-error"]');
@@ -90,7 +87,7 @@ describe('LoginComponent', () => {
 
   it('should submit valid credentials, navigate to /dashboard on success', () => {
     const navigateSpy = vi.spyOn(router, 'navigate');
-    vi.mocked(authService.login).mockReturnValue(of(mockLoginSuccess));
+    vi.mocked(loginUseCase.execute).mockReturnValue(of(mockLoginSuccess));
 
     component.loginForm.setValue({
       email: 'manager@supply.com',
@@ -100,7 +97,7 @@ describe('LoginComponent', () => {
     component.onSubmit();
     fixture.detectChanges();
 
-    expect(authService.login).toHaveBeenCalledWith({
+    expect(loginUseCase.execute).toHaveBeenCalledWith({
       email: 'manager@supply.com',
       password: 'password123',
     });
@@ -112,7 +109,7 @@ describe('LoginComponent', () => {
   it('should display generic error message and toast when authentication fails', () => {
     const toastSpy = vi.spyOn(errorToastService, 'show');
     const navigateSpy = vi.spyOn(router, 'navigate');
-    vi.mocked(authService.login).mockReturnValue(throwError(() => new Error('401 Unauthorized')));
+    vi.mocked(loginUseCase.execute).mockReturnValue(throwError(() => new Error('401 Unauthorized')));
 
     component.loginForm.setValue({
       email: 'user@supply.com',
@@ -122,7 +119,7 @@ describe('LoginComponent', () => {
     component.onSubmit();
     fixture.detectChanges();
 
-    expect(authService.login).toHaveBeenCalledWith({
+    expect(loginUseCase.execute).toHaveBeenCalledWith({
       email: 'user@supply.com',
       password: 'wrongpassword',
     });

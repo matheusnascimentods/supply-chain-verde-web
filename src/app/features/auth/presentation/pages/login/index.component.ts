@@ -7,10 +7,10 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SpinnerComponent } from '../../../shared/ui/spinner/index.component';
-import { ErrorToastComponent } from '../../../shared/ui/error-toast/index.component';
-import { ErrorToastService } from '../../../shared/ui/error-toast/index.service';
-import { AuthService } from '../index.service';
+import { SpinnerComponent } from '../../../../../shared/ui/spinner/index.component';
+import { ErrorToastComponent } from '../../../../../shared/ui/error-toast/index.component';
+import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.service';
+import { LoginUseCase } from '../../../application/use-cases/login/index.use-case';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +21,7 @@ import { AuthService } from '../index.service';
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
+  private readonly login = inject(LoginUseCase);
   private readonly router = inject(Router);
   private readonly toastService = inject(ErrorToastService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -78,7 +78,7 @@ export class LoginComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.authService.login({ email, password }).subscribe({
+    this.login.execute({ email, password }).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.router.navigate(['/dashboard']);

@@ -12,8 +12,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    title: 'Login',
-    loadComponent: () => import('./features/auth/login').then((module) => module.LoginComponent),
+    loadChildren: () => import('./features/auth').then((module) => module.routes),
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   {
