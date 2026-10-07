@@ -56,6 +56,8 @@ O objetivo é adotar o padrão `core / shared / features/{domain,application,inf
 
 ## Task 2: shared
 
+Exceção à regra de 1 PR por subtask: as 5 subtasks da Task 2 vão em **um único PR**, com um commit por subtask.
+
 
 ### 2.1 `refactor/shared-remove-confirm-dialog`
 - Excluir `shared/components/confirm-dialog/` e o spec. Não há nenhum uso.
@@ -74,7 +76,7 @@ O objetivo é adotar o padrão `core / shared / features/{domain,application,inf
 - Atualizar os imports em `suppliers/form` e `batches/create-modal`.
 
 ### 2.5 `refactor/shared-click-outside`
-- Criar `shared/directives/click-outside/index.directive.ts` + spec.
+- Criar `shared/directives/close-on-outside-click/index.directive.ts` + spec (`details[appCloseOnOutsideClick]`, que fecha o `<details>` diretamente, já que os 3 usos são `<details>`).
 - Aplicar no `core/layout/top-nav` (substitui o `@HostListener('document:click')`). O `users/list` adota na 3.2.
 
 **Critério de pronto da Task 2:** `src/app/shared/components/` não existe, e `grep -rn "core/\|features/" src/app/shared` sem resultado.

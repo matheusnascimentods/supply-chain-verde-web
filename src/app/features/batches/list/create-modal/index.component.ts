@@ -20,13 +20,13 @@ import {
 import { SuppliersService } from '../../../suppliers/index.service';
 import { ViaCepResponseDTO } from '../../../../core/integrations/via-cep/index.dto';
 import { ViaCepService } from '../../../../core/integrations/via-cep/index.service';
-import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../suppliers/index.utils';
+import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../../shared/utils/format/index.utils';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { BatchRequestDTO } from '../../index.schema';
 import { BatchesService } from '../../index.service';
-import { PaginationComponent } from '../../../../shared/components/pagination/index.component';
-import { TextFieldComponent } from '../../../../shared/components/text-field/index.component';
-import { ModalComponent } from '../../../../shared/components/modal/index.component';
+import { PaginationComponent } from '../../../../shared/ui/pagination/index.component';
+import { TextFieldComponent } from '../../../../shared/ui/text-field/index.component';
+import { ModalComponent } from '../../../../shared/ui/modal/index.component';
 
 const PAGE_SIZE = 20;
 

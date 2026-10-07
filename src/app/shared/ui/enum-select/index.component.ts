@@ -9,12 +9,6 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-export type EnumInputSource =
-  | readonly string[]
-  | { options: readonly string[] }
-  | null
-  | undefined;
-
 @Component({
   selector: 'app-enum-select',
   templateUrl: './index.component.html',
@@ -29,7 +23,7 @@ export type EnumInputSource =
   ],
 })
 export class EnumSelectComponent implements ControlValueAccessor {
-  readonly options = input<EnumInputSource>(null);
+  readonly options = input<readonly string[]>([]);
   readonly value = input<string>('');
   readonly id = input<string>('enum-select');
   readonly name = input<string>('');
@@ -51,20 +45,6 @@ export class EnumSelectComponent implements ControlValueAccessor {
 
   protected readonly effectiveDisabled = computed(() => {
     return this.isFormDisabled() || this.disabled();
-  });
-
-  protected readonly parsedOptions = computed<readonly string[]>(() => {
-    const opts = this.options();
-    if (!opts) {
-      return [];
-    }
-    if (Array.isArray(opts)) {
-      return opts;
-    }
-    if (typeof opts === 'object' && 'options' in opts && Array.isArray(opts.options)) {
-      return opts.options;
-    }
-    return [];
   });
 
   private onChange: (value: string) => void = () => {};

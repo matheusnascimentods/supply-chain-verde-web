@@ -16,11 +16,11 @@ import { SessionService } from '../../../core/auth/session/index.service';
 import { USER_ROLES, UserResponseDTO, UserRole } from '../index.schema';
 import { UsersService } from '../index.service';
 import { UserFormComponent } from '../form/index.component';
-import { ButtonComponent } from '../../../shared/components/button/index.component';
-import { DataTableComponent } from '../../../shared/components/data-table/index.component';
-import { ModalComponent } from '../../../shared/components/modal/index.component';
-import { PaginationComponent } from '../../../shared/components/pagination/index.component';
-import { TextFieldComponent } from '../../../shared/components/text-field/index.component';
+import { ButtonComponent } from '../../../shared/ui/button/index.component';
+import { DataTableComponent } from '../../../shared/ui/data-table/index.component';
+import { ModalComponent } from '../../../shared/ui/modal/index.component';
+import { PaginationComponent } from '../../../shared/ui/pagination/index.component';
+import { TextFieldComponent } from '../../../shared/ui/text-field/index.component';
 
 const PAGE_SIZE = 20;
 
