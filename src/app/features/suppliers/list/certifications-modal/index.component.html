@@ -9,7 +9,7 @@
 
     <div class="component-style-7">
       @if (canCreate()) {
-        <app-certifications-form class="component-style-8" [supplierId]="supplierId()" [modal]="true" [embedded]="true" (saved)="updated.emit()" />
+        <app-certification-form class="component-style-8" [supplierId]="supplierId()" (saved)="updated.emit()" />
       }
       @if (error()) { <p class="component-style-9" role="alert">{{ error() }}</p> }
 
@@ -36,8 +36,8 @@
                     </summary>
                     <div class="component-style-23" [style.top.px]="statusMenuPosition().top" [style.left.px]="statusMenuPosition().left" role="menu" [attr.aria-label]="'Alterar status de ' + item.certification">
                       @for (option of statuses; track option.value) {
-                        <button type="button" class="component-style-24" role="menuitemradio" [attr.aria-checked]="status(item.status) === option.value" [disabled]="updatingStatusId() === item.certificationId" (click)="setStatus(item, option.value, certificationStatusMenu)">
-                          {{ option.label }} @if (status(item.status) === option.value) { <span aria-hidden="true">✓</span> }
+                        <button type="button" class="component-style-24" role="menuitemradio" [attr.aria-checked]="item.status === option.value" [disabled]="updatingStatusId() === item.certificationId" (click)="setStatus(item, option.value, certificationStatusMenu)">
+                          {{ option.label }} @if (item.status === option.value) { <span aria-hidden="true">✓</span> }
                         </button>
                       }
                     </div>

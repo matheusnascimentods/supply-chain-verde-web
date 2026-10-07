@@ -1,0 +1,29 @@
+<section class="certification-form" role="region" aria-labelledby="certification-form-title">
+  <h3 id="certification-form-title" class="certification-form-title">Nova certificação</h3>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="certification-form-grid">
+    @if (error()) { <p class="certification-form-error" role="alert">{{ error() }}</p> }
+    <div class="certification-form-field">
+      <label for="certification-name" class="certification-form-label">Certificação</label>
+      <input id="certification-name" class="certification-form-input" type="text" formControlName="certification" required />
+      @if (fieldError('certification')) { <p class="certification-form-field-error" role="alert">{{ fieldError('certification') }}</p> }
+    </div>
+    <div class="certification-form-field">
+      <label for="certification-issuer" class="certification-form-label">Órgão emissor</label>
+      <input id="certification-issuer" class="certification-form-input" type="text" formControlName="issuingBody" required />
+      @if (fieldError('issuingBody')) { <p class="certification-form-field-error" role="alert">{{ fieldError('issuingBody') }}</p> }
+    </div>
+    <div class="certification-form-field">
+      <label for="certification-issued-at" class="certification-form-label">Data de emissão</label>
+      <input id="certification-issued-at" class="certification-form-input" type="date" formControlName="issuedAt" required />
+      @if (fieldError('issuedAt')) { <p class="certification-form-field-error" role="alert">{{ fieldError('issuedAt') }}</p> }
+    </div>
+    <div class="certification-form-field">
+      <label for="certification-expires-at" class="certification-form-label">Data de validade</label>
+      <input id="certification-expires-at" class="certification-form-input" type="date" formControlName="expiresAt" required />
+      @if (fieldError('expiresAt')) { <p class="certification-form-field-error" role="alert">{{ fieldError('expiresAt') }}</p> }
+    </div>
+    <footer class="certification-form-actions">
+      <button class="certification-form-submit" [disabled]="saving()">{{ saving() ? 'Salvando…' : 'Salvar certificação' }}</button>
+    </footer>
+  </form>
+</section>
