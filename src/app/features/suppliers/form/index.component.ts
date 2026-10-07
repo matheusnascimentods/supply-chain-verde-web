@@ -5,7 +5,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgTemplateOutlet } from '@angular/common';
 import { catchError, distinctUntilChanged, finalize, map, of, startWith, switchMap, tap, timer } from 'rxjs';
 import { SuppliersService } from '../index.service';
-import { SupplierRequestDTO, ViaCepResponseDTO } from '../index.schema';
+import { SupplierRequestDTO } from '../index.schema';
+import { ViaCepResponseDTO } from '../../../core/integrations/via-cep/index.dto';
+import { ViaCepService } from '../../../core/integrations/via-cep/index.service';
 import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../index.utils';
 
 @Component({
@@ -18,6 +20,7 @@ import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../index.uti
 export class SupplierFormComponent implements AfterViewInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(SuppliersService);
+  private readonly viaCep = inject(ViaCepService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private previousFocus: HTMLElement | null = null;
@@ -177,7 +180,7 @@ export class SupplierFormComponent implements AfterViewInit, OnDestroy {
         this.cepLoading.set(true);
         this.cepMessage.set('');
         return timer(350).pipe(
-          switchMap(() => this.service.lookupZipCode(zipCode)),
+          switchMap(() => this.viaCep.lookup(zipCode)),
           catchError(() => {
             this.cepMessage.set('Não foi possível consultar o CEP. Você pode preencher o endereço manualmente.');
             return of(null);

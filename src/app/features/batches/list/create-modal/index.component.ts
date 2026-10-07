@@ -16,9 +16,10 @@ import {
   SupplierRankingResponseDTO,
   SupplierRequestDTO,
   SupplierResponseDTO,
-  ViaCepResponseDTO,
 } from '../../../suppliers/index.schema';
 import { SuppliersService } from '../../../suppliers/index.service';
+import { ViaCepResponseDTO } from '../../../../core/integrations/via-cep/index.dto';
+import { ViaCepService } from '../../../../core/integrations/via-cep/index.service';
 import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../suppliers/index.utils';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { BatchRequestDTO } from '../../index.schema';
@@ -41,6 +42,7 @@ export class BatchCreateModalComponent {
   private readonly batches = inject(BatchesService);
   private readonly productsService = inject(ProductsService);
   private readonly suppliersService = inject(SuppliersService);
+  private readonly viaCep = inject(ViaCepService);
   private readonly currentUserService = inject(CurrentUserService);
   private readonly session = inject(SessionService);
   private readonly productSearchChanges = new Subject<string>();
@@ -408,7 +410,7 @@ export class BatchCreateModalComponent {
         this.cepLoading.set(true);
         this.cepMessage.set('');
         return timer(350).pipe(
-          switchMap(() => this.suppliersService.lookupZipCode(zipCode)),
+          switchMap(() => this.viaCep.lookup(zipCode)),
           catchError(() => {
             this.cepMessage.set('Não foi possível consultar o CEP. Você pode preencher o endereço manualmente.');
             return of(null);
