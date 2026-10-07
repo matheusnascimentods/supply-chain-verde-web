@@ -18,7 +18,7 @@
     </nav>
 
     <div class="nav-actions">
-      <details #profileMenu class="profile-menu">
+      <details #profileMenu appCloseOnOutsideClick class="profile-menu">
         <summary class="profile-trigger" aria-label="Abrir menu do perfil">
           <span class="profile-avatar" aria-hidden="true">{{ (email() ?? roleLabel()).slice(0, 1).toUpperCase() }}</span>
           <span class="profile-copy">
