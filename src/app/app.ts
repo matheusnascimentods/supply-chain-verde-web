@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
-import { AppFooterComponent } from './shared/components/app-footer/index.component';
+import { AppFooterComponent } from './core/layout/app-footer/index.component';
 
 @Component({
   selector: 'app-root',

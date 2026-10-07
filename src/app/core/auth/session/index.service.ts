@@ -1,4 +1,5 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserRole, parseUserRole } from './index.model';
 
 const TOKEN_KEY = 'token';
@@ -7,6 +8,7 @@ const EMAIL_KEY = 'email';
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
+  private readonly router = inject(Router, { optional: true });
   private readonly _role = signal<UserRole | null>(this.readInitialRole());
   private readonly _email = signal<string | null>(this.readInitialEmail());
   readonly role = this._role.asReadonly();
@@ -35,6 +37,11 @@ export class SessionService {
     }
     this._role.set(null);
     this._email.set(null);
+  }
+
+  logout(): void {
+    this.clearSession();
+    this.router?.navigate(['/login']);
   }
 
   get token(): string | null {
