@@ -8,6 +8,7 @@ import { ChainResponseDTO, StageType } from '../../traceability/index.schema';
 import { BatchCreateModalComponent } from './create-modal/index.component';
 import { BatchStageModalComponent } from './stage-modal/index.component';
 import { PaginationComponent } from '../../../shared/ui/pagination/index.component';
+import { formatNumberBr } from '../../../shared/utils/format/index.utils';
 
 const PAGE_SIZE = 20;
 
@@ -220,9 +221,7 @@ export class BatchListComponent {
       UNIT: 'un',
       M3: 'm³',
     };
-    const amount = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(
-      batch.quantity,
-    );
+    const amount = formatNumberBr(batch.quantity);
     return `${amount}${unit ? ` ${units[unit]}` : ''}`;
   }
 
