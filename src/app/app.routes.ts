@@ -56,7 +56,7 @@ export const routes: Routes = [
         title: 'Supply Chain | Usuários',
         canActivate: [roleGuard],
         data: { roles: ['admin'] },
-        loadChildren: () => import('./features/users/routes').then((module) => module.routes),
+        loadChildren: () => import('./features/users').then((module) => module.routes),
       },
       {
         path: 'audit-log',
