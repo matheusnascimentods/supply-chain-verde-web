@@ -1,6 +1,6 @@
 # Especificação funcional — Supply Chain Verde Web
 
-> Estado funcional implementado, consolidado a partir das telas, rotas, `docs/tasks.md` e do histórico de commits. Contratos detalhados pertencem à API `supply-chain-verde-api`.
+> Estado funcional implementado, consolidado a partir das telas, rotas, `docs/initial/tasks.md` e do histórico de commits. Contratos detalhados pertencem à API `supply-chain-verde-api`.
 
 ## 1. Objetivo
 
