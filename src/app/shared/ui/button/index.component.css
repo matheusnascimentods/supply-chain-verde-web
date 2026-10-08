@@ -1,7 +1,7 @@
 @reference "tailwindcss";
 
 .shared-button {
-  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed;
 }
 
 .shared-button-primary {
@@ -22,4 +22,12 @@
 
 .shared-button-small {
   @apply min-h-9 px-3 py-2 text-xs;
+}
+
+.shared-button:disabled:not(.shared-button-text) {
+  @apply border-transparent bg-slate-200 text-slate-400;
+}
+
+.shared-button-text:disabled {
+  @apply bg-transparent text-slate-400;
 }
