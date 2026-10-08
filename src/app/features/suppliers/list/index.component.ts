@@ -113,7 +113,7 @@ export class SupplierListComponent {
 
   canOpenReports(supplier: SupplierRankingResponseDTO): boolean {
     const role = this.session.role();
-    if (role === 'supplier') return this.currentUserId() === supplier.supplierId;
+    if (role === 'supplier') return this.session.userId() === supplier.supplierId;
     return ['admin', 'manager', 'auditor'].includes(role ?? '');
   }
 
@@ -139,7 +139,7 @@ export class SupplierListComponent {
 
   canCreateCertificationFor(supplier: SupplierRankingResponseDTO): boolean {
     const role = this.session.role();
-    return role === 'admin' || (role === 'supplier' && this.currentUserId() === supplier.supplierId);
+    return role === 'admin' || (role === 'supplier' && this.session.userId() === supplier.supplierId);
   }
 
   certificationLabel(item: SupplierRankingResponseDTO): string {
@@ -172,17 +172,5 @@ export class SupplierListComponent {
     const digits = value.replace(/\D/g, '');
     if (digits.length !== 14) return value;
     return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
-  }
-
-  private currentUserId(): number | null {
-    const payload = this.session.token?.split('.')[1];
-    if (!payload) return null;
-    try {
-      const claims = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as { userId?: unknown };
-      const userId = Number(claims.userId);
-      return Number.isInteger(userId) && userId > 0 ? userId : null;
-    } catch {
-      return null;
-    }
   }
 }
