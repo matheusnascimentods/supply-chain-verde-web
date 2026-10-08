@@ -51,6 +51,18 @@ export class SessionService {
     return null;
   }
 
+  userId(): number | null {
+    const payload = this.token?.split('.')[1];
+    if (!payload) return null;
+    try {
+      const claims = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as { userId?: unknown };
+      const userId = Number(claims.userId);
+      return Number.isInteger(userId) && userId > 0 ? userId : null;
+    } catch {
+      return null;
+    }
+  }
+
   hasSession(): boolean {
     return !!this.token;
   }
