@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { CarbonEmissionResponseDTO, ChainResponseDTO } from '../index.schema';
+import { STAGE_TYPE_LABELS } from '../../../../batches';
+import { CarbonEmission, Stage } from '../../../domain/index.model';
 
 @Component({
   selector: 'app-carbon-chart',
@@ -8,8 +9,8 @@ import { CarbonEmissionResponseDTO, ChainResponseDTO } from '../index.schema';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CarbonChartComponent {
-  readonly emissions = input<CarbonEmissionResponseDTO[]>([]);
-  readonly stages = input<ChainResponseDTO[]>([]);
+  readonly emissions = input<CarbonEmission[]>([]);
+  readonly stages = input<Stage[]>([]);
 
   readonly bars = computed(() => {
     const emissions = this.emissions();
@@ -20,17 +21,9 @@ export class CarbonChartComponent {
       const stage = stagesById.get(emission.chainId);
       return {
         ...emission,
-        label: stage ? this.stageLabel(stage.stageType) : `Etapa ${emission.chainId}`,
+        label: stage ? STAGE_TYPE_LABELS[stage.stageType] : `Etapa ${emission.chainId}`,
         width: maxValue > 0 ? Math.max((emission.co2Kg / maxValue) * 100, 2) : 0,
       };
     });
   });
-
-  private stageLabel(stageType: string): string {
-    const labels: Record<string, string> = {
-      PRODUCTION: 'Produção', STORAGE: 'Armazenagem', PROCESSING: 'Processamento',
-      TRANSPORT: 'Transporte', DISTRIBUTION: 'Distribuição', RETAIL: 'Varejo',
-    };
-    return labels[stageType] ?? stageType;
-  }
 }

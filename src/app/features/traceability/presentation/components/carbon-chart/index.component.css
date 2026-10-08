@@ -1,23 +1,23 @@
 @reference "tailwindcss";
 
-.component-style-1 {
+.carbon-chart {
   @apply space-y-2;
 }
-.component-style-2 {
+.carbon-chart-row {
   @apply grid grid-cols-[110px_minmax(0,1fr)_44px] items-center gap-3 text-sm;
 }
-.component-style-3 {
+.carbon-chart-label {
   @apply truncate text-slate-700;
 }
-.component-style-4 {
+.carbon-chart-track {
   @apply h-2 overflow-hidden rounded-full bg-slate-200;
 }
-.component-style-5 {
+.carbon-chart-bar {
   @apply h-full rounded-full bg-green-600;
 }
-.component-style-6 {
+.carbon-chart-value {
   @apply text-right text-slate-900;
 }
-.component-style-7 {
+.carbon-chart-empty {
   @apply text-sm text-slate-500;
 }
