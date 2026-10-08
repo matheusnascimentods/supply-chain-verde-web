@@ -140,9 +140,9 @@ docs/                            # especificação, arquitetura e histórico de 
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/spec.md`](docs/spec.md) | Funcionalidades, perfis, rotas e fluxos atuais |
-| [`docs/plan.md`](docs/plan.md) | Arquitetura técnica, decisões e fluxo de criação de lote |
-| [`docs/tasks.md`](docs/tasks.md) | Histórico de implementação e pendências |
+| [`docs/initial/spec.md`](docs/initial/spec.md) | Funcionalidades, perfis, rotas e fluxos atuais |
+| [`docs/initial/plan.md`](docs/initial/plan.md) | Arquitetura técnica, decisões e fluxo de criação de lote |
+| [`docs/initial/tasks.md`](docs/initial/tasks.md) | Histórico de implementação e pendências |
 
 ### Pipeline de Qualidade
 
