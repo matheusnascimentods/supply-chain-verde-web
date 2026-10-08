@@ -110,4 +110,21 @@ describe('SessionService', () => {
       expect(navigateSpy).toHaveBeenCalledWith(['/login']);
     });
   });
+
+  describe('userId()', () => {
+    const tokenWith = (claims: object) => `header.${btoa(JSON.stringify(claims))}.signature`;
+
+    it('reads the userId claim from the session token', () => {
+      service.setSession(tokenWith({ userId: 9, sub: 'supplier@example.com' }), 'supplier');
+      expect(service.userId()).toBe(9);
+    });
+
+    it('returns null without a session or with an invalid claim', () => {
+      expect(service.userId()).toBeNull();
+      service.setSession(tokenWith({ userId: 'abc' }), 'supplier');
+      expect(service.userId()).toBeNull();
+      service.setSession('not-a-jwt', 'supplier');
+      expect(service.userId()).toBeNull();
+    });
+  });
 });

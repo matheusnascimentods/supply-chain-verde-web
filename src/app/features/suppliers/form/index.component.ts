@@ -8,6 +8,7 @@ import { SuppliersService } from '../index.service';
 import { SupplierRequestDTO } from '../index.schema';
 import { ViaCepResponseDTO } from '../../../core/integrations/via-cep/index.dto';
 import { ViaCepService } from '../../../core/integrations/via-cep/index.service';
+import { SessionService } from '../../../core/auth/session/index.service';
 import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../shared/utils/format/index.utils';
 
 @Component({
@@ -23,6 +24,7 @@ export class SupplierFormComponent implements AfterViewInit, OnDestroy {
   private readonly viaCep = inject(ViaCepService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
   private previousFocus: HTMLElement | null = null;
 
   @ViewChild('dialog') private dialog?: ElementRef<HTMLElement>;
@@ -51,7 +53,7 @@ export class SupplierFormComponent implements AfterViewInit, OnDestroy {
   constructor() {
     this.watchInputFormatting();
     const id = this.route.snapshot.paramMap.get('id')
-      ?? (this.route.snapshot.routeConfig?.path === 'suppliers/me' ? sessionStorage.getItem('supplierId') : null);
+      ?? (this.route.snapshot.routeConfig?.path === 'suppliers/me' ? this.session.userId() : null);
 
     if (id) {
       this.service.get(Number(id)).subscribe({
@@ -126,7 +128,7 @@ export class SupplierFormComponent implements AfterViewInit, OnDestroy {
 
     this.saving.set(true);
     this.error.set('');
-    const supplierId = this.route.snapshot.paramMap.get('id') ?? sessionStorage.getItem('supplierId');
+    const supplierId = this.route.snapshot.paramMap.get('id') ?? this.session.userId();
     const request = this.editing()
       ? this.service.update(Number(supplierId), this.data())
       : this.service.create(this.data());
