@@ -1,0 +1,20 @@
+<section class="inline-form-card" aria-labelledby="new-supplier-heading">
+  <div class="inline-form-header">
+    <h3 id="new-supplier-heading" class="inline-form-title">Cadastrar fornecedor agora</h3>
+    <p class="inline-form-hint">Os dados serão enviados à API somente após confirmar o lote.</p>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="inline-form-grid">
+    <label class="inline-field">Razão social<input formControlName="name" class="inline-input" /></label>
+    <label class="inline-field">CNPJ<input formControlName="cnpj" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" class="inline-input" /></label>
+    <label class="inline-field">Telefone<input formControlName="phone" type="tel" inputmode="tel" maxlength="15" placeholder="(00) 00000-0000" class="inline-input" /></label>
+    <label class="inline-field">CEP<input formControlName="zipCode" inputmode="numeric" maxlength="9" placeholder="00000-000" aria-describedby="batch-supplier-cep-status" class="inline-input" /></label>
+    <label class="inline-field-wide">Rua<input formControlName="street" class="inline-input" /></label>
+    <label class="inline-field">Número<input formControlName="number" class="inline-input" /></label>
+    <label class="inline-field">Bairro<input formControlName="neighborhood" class="inline-input" /></label>
+    <label class="inline-field">Cidade<input formControlName="city" class="inline-input" /></label>
+    <label class="inline-field">Estado<input formControlName="state" maxlength="2" class="inline-input" /></label>
+    <label class="inline-field-wide">Complemento<input formControlName="complement" class="inline-input" /></label>
+    <p id="batch-supplier-cep-status" class="cep-status" aria-live="polite">@if (cepLoading()) { Consultando CEP… } @else if (cepMessage()) { {{ cepMessage() }} } @else { O endereço será preenchido quando o CEP for localizado. }</p>
+    <div class="inline-form-actions-wide"><button type="submit" class="inline-submit">Usar este fornecedor</button></div>
+  </form>
+</section>
