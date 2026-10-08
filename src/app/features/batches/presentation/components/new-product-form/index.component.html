@@ -1,0 +1,23 @@
+<section class="inline-form-card" aria-labelledby="new-product-heading">
+  <div class="inline-form-header">
+    <h3 id="new-product-heading" class="inline-form-title">Cadastrar produto agora</h3>
+    <p class="inline-form-hint">O produto será criado somente após confirmar o lote.</p>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="inline-form-grid">
+    <label class="inline-field">Nome do produto<input formControlName="name" class="inline-input" placeholder="Ex.: Café orgânico" /></label>
+    <label class="inline-field">Categoria
+      <select formControlName="category" class="inline-input">
+        <option value="">Selecione</option>
+        @for (category of categories; track category) { <option [value]="category">{{ categoryLabels[category] }}</option> }
+      </select>
+    </label>
+    <label class="inline-field-wide">Descrição<input formControlName="description" class="inline-input" placeholder="Descrição do produto" /></label>
+    <label class="inline-field">Unidade
+      <select formControlName="unit" class="inline-input">
+        <option value="">Selecione</option>
+        @for (unit of units; track unit) { <option [value]="unit">{{ unitLabels[unit] }}</option> }
+      </select>
+    </label>
+    <div class="inline-form-actions"><button type="submit" class="inline-submit">Usar este produto</button></div>
+  </form>
+</section>

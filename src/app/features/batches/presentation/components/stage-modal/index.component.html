@@ -1,0 +1,112 @@
+<app-modal labelledBy="stage-modal-title" size="2xl" [flush]="true" (dismissed)="requestDismiss()">
+  <header class="stage-header">
+    <div>
+      <p class="stage-eyebrow">Lote #{{ batchId() }}</p>
+      <h2 id="stage-modal-title" class="stage-title">Adicionar etapa</h2>
+      <p class="stage-subtitle">Registre o próximo ponto da jornada deste lote.</p>
+    </div>
+    <button type="button" class="stage-close" aria-label="Fechar formulário de etapa" [disabled]="facade.saving()" (click)="requestDismiss()">
+      <svg viewBox="0 0 24 24" class="stage-close-icon" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+    </button>
+  </header>
+
+  @if (facade.loadingChoices()) {
+    <p class="stage-loading" aria-live="polite">Carregando endereços disponíveis…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="stage-form">
+      <label class="stage-field">
+        Tipo da etapa
+        <select formControlName="stageType" class="stage-select">
+          <option value="">Selecione o tipo</option>
+          @for (type of stageTypes; track type) { <option [value]="type">{{ stageTypeLabels[type] }}</option> }
+        </select>
+        @if (form.controls.stageType.touched && form.controls.stageType.invalid) { <span class="stage-field-error">Selecione o tipo da etapa.</span> }
+      </label>
+      <label class="stage-field">
+        Início
+        <input formControlName="startedAt" type="datetime-local" class="stage-input" />
+        @if (form.controls.startedAt.touched && form.controls.startedAt.invalid) { <span class="stage-field-error">Informe quando a etapa começou.</span> }
+      </label>
+      <label class="stage-field-wide">
+        Fim <span class="stage-optional">(opcional)</span>
+        <input formControlName="endedAt" type="datetime-local" class="stage-input" />
+      </label>
+
+      <fieldset class="stage-fieldset">
+        <legend class="stage-legend">Origem <span class="stage-optional">(opcional)</span></legend>
+        <select formControlName="originAddressId" class="stage-select">
+          <option value="">Não informar origem</option>
+          @for (address of facade.addresses(); track address.addressId) { <option [value]="address.addressId">{{ address.label }}</option> }
+        </select>
+        @if (facade.addresses().length === 0) { <span class="stage-hint">Nenhum endereço cadastrado está disponível.</span> }
+      </fieldset>
+      <fieldset class="stage-fieldset">
+        <legend class="stage-legend">Destino <span class="stage-optional">(opcional)</span></legend>
+        <select formControlName="destinationAddressId" class="stage-select">
+          <option value="">Não informar destino</option>
+          @for (address of facade.addresses(); track address.addressId) { <option [value]="address.addressId">{{ address.label }}</option> }
+        </select>
+      </fieldset>
+
+      @if (isTransport) {
+        <section class="stage-transport" aria-labelledby="transport-heading">
+          <div class="stage-transport-header">
+            <h3 id="transport-heading" class="stage-section-title">Dados do transporte</h3>
+            <p class="stage-section-hint">Informe os dados usados para calcular a pegada logística.</p>
+          </div>
+          <label class="stage-field">Modal
+            <select formControlName="transportMode" class="stage-select">
+              <option value="">Selecione</option>
+              @for (mode of transportModes; track mode) { <option [value]="mode">{{ transportModeLabels[mode] }}</option> }
+            </select>
+            @if (form.controls.transportMode.touched && form.controls.transportMode.invalid) { <span class="stage-field-error">Selecione o modal.</span> }
+          </label>
+          <label class="stage-field">Distância (km)
+            <input formControlName="distance" type="number" min="0.000001" step="any" class="stage-input" />
+            @if (form.controls.distance.touched && form.controls.distance.invalid) { <span class="stage-field-error">Informe uma distância maior que zero.</span> }
+          </label>
+          <label class="stage-field">Combustível
+            <select formControlName="fuelType" class="stage-select">
+              <option value="">Selecione</option>
+              @for (fuel of fuelTypes; track fuel) { <option [value]="fuel">{{ fuelTypeLabels[fuel] }}</option> }
+            </select>
+            @if (form.controls.fuelType.touched && form.controls.fuelType.invalid) { <span class="stage-field-error">Selecione o combustível.</span> }
+          </label>
+          <label class="stage-field">Capacidade (kg)
+            <input formControlName="capacity" type="number" min="0.000001" step="any" class="stage-input" />
+            @if (form.controls.capacity.touched && form.controls.capacity.invalid) { <span class="stage-field-error">Informe uma capacidade maior que zero.</span> }
+          </label>
+        </section>
+      }
+
+      @if (facade.canCalculateEmission) {
+        <section class="stage-emission">
+          <label class="stage-checkbox-label">
+            <input formControlName="calculateEmission" type="checkbox" class="stage-checkbox" />
+            <span>
+              <span class="stage-checkbox-title">Calcular emissão desta etapa</span>
+              <span class="stage-checkbox-hint">Você pode registrar a etapa agora e calcular a emissão em outro momento.</span>
+            </span>
+          </label>
+          @if (form.controls.calculateEmission.value) {
+            <label class="stage-field">Metodologia
+              <select formControlName="calculationMethod" class="stage-select">
+                @for (method of calculationMethods; track method) { <option [value]="method">{{ calculationMethodLabels[method] }}</option> }
+              </select>
+            </label>
+          }
+        </section>
+      } @else {
+        <p class="stage-emission-unavailable">O cálculo de emissão está disponível para perfis de gestor e administrador.</p>
+      }
+
+      @if (facade.error()) { <p role="alert" class="stage-error">{{ facade.error() }}</p> }
+      <footer class="stage-footer">
+        <button type="button" class="stage-cancel" [disabled]="facade.saving()" (click)="requestDismiss()">Cancelar</button>
+        <button type="submit" class="stage-submit" [disabled]="form.invalid || facade.saving()">
+          {{ facade.saving() ? (facade.stageSaved() ? 'Finalizando etapa…' : 'Registrando etapa…') : (facade.stageSaved() ? 'Tentar novamente' : 'Registrar etapa') }}
+        </button>
+      </footer>
+    </form>
+  }
+</app-modal>
