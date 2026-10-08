@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { environment } from '../../../environments/environment';
-import { DashboardService } from './index.service';
+import { environment } from '../../../../environments/environment';
+import { DashboardRepository } from './index.repository';
 
-describe('DashboardService', () => {
-  let service: DashboardService;
+describe('DashboardRepository', () => {
+  let repository: DashboardRepository;
   let http: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
-    service = TestBed.inject(DashboardService);
+    repository = TestBed.inject(DashboardRepository);
     http = TestBed.inject(HttpTestingController);
   });
 
@@ -35,7 +35,7 @@ describe('DashboardService', () => {
     };
     let response: unknown;
 
-    service.loadSummary().subscribe((value) => (response = value));
+    repository.loadSummary(10).subscribe((value) => (response = value));
     const request = http.expectOne(`${environment.apiUrl}/dashboard/summary?limit=10`);
     expect(request.request.method).toBe('GET');
     request.flush(result);
@@ -44,7 +44,7 @@ describe('DashboardService', () => {
   });
 
   it('accepts an empty batch list when the summary contains no recent batches', () => {
-    service.loadSummary(5).subscribe((response) => expect(response.recentBatches).toEqual([]));
+    repository.loadSummary(5).subscribe((response) => expect(response.recentBatches).toEqual([]));
     const request = http.expectOne(`${environment.apiUrl}/dashboard/summary?limit=5`);
     request.flush({
       activeBatches: 0,
@@ -56,7 +56,7 @@ describe('DashboardService', () => {
   });
 
   it('rejects an invalid API payload', () => {
-    service.loadSummary().subscribe({
+    repository.loadSummary(10).subscribe({
       next: () => expect.fail('invalid response should fail schema validation'),
       error: (error: unknown) => expect(error).toBeTruthy(),
     });

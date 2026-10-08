@@ -1,2 +1,1 @@
-export { DashboardComponent } from './index.component';
-export * from './index.schema';
+export { routes } from './index.routes';
