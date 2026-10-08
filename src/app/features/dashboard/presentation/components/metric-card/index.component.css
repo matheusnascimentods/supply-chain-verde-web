@@ -1,0 +1,26 @@
+@reference "tailwindcss";
+
+:host {
+  @apply relative block overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5;
+}
+.metric-accent {
+  @apply absolute inset-y-0 left-0 w-1.5;
+}
+.metric-label {
+  @apply min-h-10 pl-1 text-xs font-medium leading-5 text-slate-500 sm:text-sm;
+}
+.metric-value {
+  @apply mt-2 pl-1 text-2xl font-bold tracking-tight text-slate-950 sm:text-[28px];
+}
+:host([data-tone='batches']) .metric-accent {
+  @apply bg-green-600;
+}
+:host([data-tone='certifications']) .metric-accent {
+  @apply bg-amber-500;
+}
+:host([data-tone='suppliers']) .metric-accent {
+  @apply bg-teal-600;
+}
+:host([data-tone='emission']) .metric-accent {
+  @apply bg-emerald-700;
+}
