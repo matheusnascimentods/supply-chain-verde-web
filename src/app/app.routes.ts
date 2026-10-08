@@ -45,8 +45,7 @@ export const routes: Routes = [
         title: 'Supply Chain | Autidoria',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'auditor'] },
-        loadComponent: () =>
-          import('./features/audit-log/index.component').then((module) => module.AuditLogComponent),
+        loadChildren: () => import('./features/audit-log').then((module) => module.routes),
       },
       {
         path: '**',
