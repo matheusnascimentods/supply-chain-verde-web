@@ -1,0 +1,23 @@
+@reference "tailwindcss";
+
+:host {
+  @apply inline-flex rounded-full px-2.5 py-1 text-xs font-medium;
+}
+:host([data-stage='PRODUCTION']) {
+  @apply bg-green-100 text-green-800;
+}
+:host([data-stage='STORAGE']) {
+  @apply bg-teal-100 text-teal-800;
+}
+:host([data-stage='PROCESSING']) {
+  @apply bg-lime-100 text-lime-800;
+}
+:host([data-stage='TRANSPORT']) {
+  @apply bg-amber-100 text-amber-900;
+}
+:host([data-stage='DISTRIBUTION']) {
+  @apply bg-sky-100 text-sky-800;
+}
+:host([data-stage='RETAIL']) {
+  @apply bg-violet-100 text-violet-800;
+}

@@ -1,0 +1,36 @@
+@reference "tailwindcss";
+
+.bar-chart {
+  @apply mt-6 flex h-48 items-end justify-around gap-3 border-b border-l border-slate-200 px-3 sm:gap-5;
+}
+.bar-column {
+  @apply flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2;
+}
+.bar-count {
+  @apply text-xs font-semibold text-slate-700;
+}
+.bar {
+  @apply w-full max-w-12 cursor-pointer rounded-t-md transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-y-105 hover:brightness-110 hover:shadow-md motion-reduce:transition-none;
+  background-color: var(--stage-color);
+}
+.bar-label {
+  @apply max-w-full truncate pb-2 text-center text-[10px] text-slate-500 sm:text-xs;
+}
+[data-stage='PRODUCTION'] {
+  --stage-color: #15803d;
+}
+[data-stage='STORAGE'] {
+  --stage-color: #0f766e;
+}
+[data-stage='PROCESSING'] {
+  --stage-color: #65a30d;
+}
+[data-stage='TRANSPORT'] {
+  --stage-color: #d97706;
+}
+[data-stage='DISTRIBUTION'] {
+  --stage-color: #0891b2;
+}
+[data-stage='RETAIL'] {
+  --stage-color: #64748b;
+}

@@ -3,26 +3,22 @@
     <header class="dashboard-header">
       <div>
         <p class="dashboard-brand">Supply Chain Verde</p>
-        <h1 class="dashboard-greeting">{{ greeting() }}</h1>
+        <h1 class="dashboard-greeting">{{ facade.greeting() }}</h1>
         <p class="dashboard-description">{{ dashboard.description }}</p>
       </div>
     </header>
 
-    @if (loading()) {
+    @if (facade.loading()) {
       <p class="dashboard-loading" role="status">Carregando resumo da operação…</p>
-    } @else if (error()) {
+    } @else if (facade.error()) {
       <div class="dashboard-error-panel" role="alert">
-        <p class="dashboard-error-message">{{ error() }}</p>
-        <button type="button" (click)="loadSummary()" class="dashboard-retry-button">Tentar novamente</button>
+        <p class="dashboard-error-message">{{ facade.error() }}</p>
+        <button type="button" (click)="facade.load()" class="dashboard-retry-button">Tentar novamente</button>
       </div>
-    } @else if (summary(); as dashboardData) {
+    } @else if (facade.summary(); as dashboardData) {
       <section class="dashboard-metrics-grid" aria-label="Indicadores da operação">
         @for (metric of metrics(); track metric.label) {
-          <article class="dashboard-metric-card">
-            <span class="dashboard-metric-accent" [class]="metric.accent" aria-hidden="true"></span>
-            <h2 class="dashboard-metric-label">{{ metric.label }}</h2>
-            <p class="dashboard-metric-value">{{ metric.value }}</p>
-          </article>
+          <app-metric-card [label]="metric.label" [value]="metric.value" [tone]="metric.tone" />
         }
       </section>
 
@@ -32,16 +28,8 @@
             <h2 class="dashboard-section-title">Lotes recentes por etapa</h2>
             <p class="dashboard-section-description">Distribuição dos lotes retornados pela API (até 10)</p>
           </div>
-          @if (stageDistribution().length) {
-            <div class="dashboard-bar-chart" role="img" [attr.aria-label]="'Lotes por etapa: ' + pieAriaLabel()">
-              @for (item of stageDistribution(); track item.stage) {
-                <div class="dashboard-bar-column">
-                  <span class="dashboard-bar-count">{{ item.count }}</span>
-                  <span class="dashboard-bar" [style.height.%]="barHeight(item.count)" [style.background-color]="item.color" [title]="item.label + ': ' + item.count"></span>
-                  <span class="dashboard-stage-label">{{ item.label }}</span>
-                </div>
-              }
-            </div>
+          @if (facade.distribution().length) {
+            <app-stage-bar-chart [shares]="facade.distribution()" />
           } @else {
             <p class="dashboard-empty-state" role="status">Ainda não há lotes recentes para exibir.</p>
           }
@@ -52,22 +40,8 @@
             <h2 class="dashboard-section-title">Etapas dos lotes recentes</h2>
             <p class="dashboard-section-description">Participação por etapa entre os lotes retornados</p>
           </div>
-          @if (stageDistribution().length) {
-            <div class="dashboard-pie-chart-layout">
-              <svg viewBox="0 0 40 40" class="dashboard-pie-chart" role="img" [attr.aria-label]="'Distribuição por etapa: ' + pieAriaLabel()">
-                <circle cx="20" cy="20" r="15.9155" fill="none" stroke="#e2e8f0" stroke-width="7" />
-                @for (segment of pieSegments(); track segment.stage) {
-                  <circle cx="20" cy="20" r="15.9155" fill="none" [attr.stroke]="segment.color" stroke-width="7" [attr.stroke-dasharray]="pieDashArray(segment.percent)" [attr.stroke-dashoffset]="-segment.offset" [attr.title]="segment.label + ': ' + segment.count" class="dashboard-stage-segment" transform="rotate(-90 20 20)" />
-                }
-                <text x="20" y="19" text-anchor="middle" class="dashboard-pie-center-count">{{ recentBatches().length }}</text>
-                <text x="20" y="24" text-anchor="middle" class="dashboard-pie-center-label">lotes</text>
-              </svg>
-              <ul class="dashboard-legend">
-                @for (item of stageDistribution(); track item.stage) {
-                  <li class="dashboard-legend-item"><span class="dashboard-legend-swatch" [style.background-color]="item.color" aria-hidden="true"></span><span>{{ item.label }}</span><span class="dashboard-legend-count">{{ item.count }}</span></li>
-                }
-              </ul>
-            </div>
+          @if (facade.distribution().length) {
+            <app-stage-pie-chart [shares]="facade.distribution()" [total]="facade.recentBatches().length" />
           } @else {
             <p class="dashboard-empty-state" role="status">Ainda não há lotes recentes para exibir.</p>
           }
@@ -83,19 +57,19 @@
         <a routerLink="/batches" class="dashboard-view-all">Ver todos <span aria-hidden="true">→</span></a>
       </div>
       <section class="dashboard-batches-table-card" aria-labelledby="recent-batches-heading">
-        @if (recentBatches().length) {
+        @if (facade.recentBatches().length) {
           <div class="dashboard-table-scroll">
             <table class="dashboard-batches-table">
               <thead class="dashboard-table-head">
                 <tr><th scope="col" class="dashboard-table-cell-heading">Produto</th><th scope="col" class="dashboard-table-cell-heading">Fornecedor</th><th scope="col" class="dashboard-table-cell-heading">Quantidade</th><th scope="col" class="dashboard-table-cell-heading">Etapa atual</th></tr>
               </thead>
               <tbody>
-                @for (batch of recentBatches(); track batch.batchId) {
+                @for (batch of facade.recentBatches(); track batch.batchId) {
                   <tr class="dashboard-batch-row">
                     <td class="dashboard-product-cell">{{ batch.productName }}</td>
                     <td class="dashboard-detail-cell">{{ batch.supplierName }}</td>
-                    <td class="dashboard-detail-cell">{{ formatQuantity(batch) }}</td>
-                    <td class="dashboard-action-cell"><span [class]="stageBadgeClass(batch.status)">{{ stageLabel(batch.status) }}</span></td>
+                    <td class="dashboard-detail-cell">{{ quantity(batch) }}</td>
+                    <td class="dashboard-action-cell"><app-stage-badge [stage]="batch.status" /></td>
                   </tr>
                 }
               </tbody>
