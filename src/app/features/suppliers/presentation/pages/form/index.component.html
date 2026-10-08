@@ -1,0 +1,64 @@
+<main class="supplier-form-page">
+  <div class="supplier-form-card">
+    <header class="supplier-form-header">
+      <div>
+        <a routerLink="/suppliers" class="supplier-form-back">← Voltar para fornecedores</a>
+        <h1 id="supplier-form-title" class="supplier-form-title">Editar fornecedor</h1>
+        <p id="supplier-form-description" class="supplier-form-subtitle">Informe os dados da empresa e do endereço.</p>
+      </div>
+    </header>
+
+    @if (error()) {
+      <p class="supplier-form-error" role="alert">{{ error() }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="supplier-form" aria-labelledby="supplier-form-title" aria-describedby="supplier-form-description">
+      <section aria-labelledby="supplier-company-heading">
+        <h2 id="supplier-company-heading" class="supplier-form-section-title">Dados do fornecedor</h2>
+        <div class="supplier-form-grid">
+          <label class="supplier-form-field-wide" for="supplier-name">Razão social
+            <input id="supplier-name" class="supplier-form-input" type="text" formControlName="name" autocomplete="organization" required />
+          </label>
+          <label class="supplier-form-field" for="supplier-cnpj">CNPJ
+            <input id="supplier-cnpj" class="supplier-form-input" type="text" formControlName="cnpj" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="00.000.000/0000-00" required />
+          </label>
+          <label class="supplier-form-field" for="supplier-phone">Telefone
+            <input id="supplier-phone" class="supplier-form-input" type="tel" formControlName="phone" autocomplete="tel" maxlength="15" placeholder="(00) 00000-0000" required />
+          </label>
+        </div>
+      </section>
+
+      <section aria-labelledby="supplier-address-heading">
+        <h2 id="supplier-address-heading" class="supplier-form-section-title">Endereço</h2>
+        <div class="supplier-form-grid">
+          <label class="supplier-form-field" for="supplier-zip-code">CEP
+            <input id="supplier-zip-code" class="supplier-form-input" type="text" formControlName="zipCode" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required />
+          </label>
+          <label class="supplier-form-field" for="supplier-state">Estado (UF)
+            <input id="supplier-state" class="supplier-form-input" type="text" formControlName="state" autocomplete="address-level1" maxlength="2" required />
+          </label>
+          <label class="supplier-form-field-wide" for="supplier-street">Logradouro
+            <input id="supplier-street" class="supplier-form-input" type="text" formControlName="street" autocomplete="address-line1" required />
+          </label>
+          <label class="supplier-form-field" for="supplier-number">Número
+            <input id="supplier-number" class="supplier-form-input" type="text" formControlName="number" autocomplete="address-line2" required />
+          </label>
+          <label class="supplier-form-field" for="supplier-neighborhood">Bairro
+            <input id="supplier-neighborhood" class="supplier-form-input" type="text" formControlName="neighborhood" required />
+          </label>
+          <label class="supplier-form-field" for="supplier-complement"><span>Complemento <span class="supplier-form-optional">(opcional)</span></span>
+            <input id="supplier-complement" class="supplier-form-input" type="text" formControlName="complement" autocomplete="address-line3" />
+          </label>
+          <label class="supplier-form-field" for="supplier-city">Cidade
+            <input id="supplier-city" class="supplier-form-input" type="text" formControlName="city" autocomplete="address-level2" required />
+          </label>
+        </div>
+      </section>
+
+      <footer class="supplier-form-actions">
+        <a routerLink="/suppliers" class="supplier-form-cancel">Cancelar</a>
+        <button type="submit" class="supplier-form-submit" [disabled]="form.invalid || saving()">{{ saving() ? 'Salvando…' : 'Salvar alterações' }}</button>
+      </footer>
+    </form>
+  </div>
+</main>

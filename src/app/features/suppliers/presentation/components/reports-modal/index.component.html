@@ -1,0 +1,72 @@
+<app-modal labelledBy="supplier-reports-title" describedBy="supplier-reports-description" size="lg" (dismissed)="close()">
+  <header class="reports-header">
+    <div>
+      <h2 id="supplier-reports-title" class="reports-title">Relatórios de {{ supplierName() }}</h2>
+      <p id="supplier-reports-description" class="reports-subtitle">Gere e consulte relatórios de sustentabilidade deste fornecedor.</p>
+    </div>
+    <button type="button" class="reports-close" aria-label="Fechar relatórios" [disabled]="facade.saving()" (click)="close()">&times;</button>
+  </header>
+
+  <div class="reports-body">
+    @if (canGenerate()) {
+      <section aria-labelledby="generate-report-heading">
+        <h3 id="generate-report-heading" class="reports-section-title">Gerar relatório</h3>
+        <form [formGroup]="form" (ngSubmit)="submit()" class="reports-form">
+          <label class="reports-field" for="report-start-date">Início do período
+            <input id="report-start-date" class="reports-input" type="date" formControlName="startDate" required />
+            @if (form.controls.startDate.touched && form.controls.startDate.invalid) { <span class="reports-field-error">Informe a data inicial.</span> }
+          </label>
+          <label class="reports-field" for="report-end-date">Fim do período
+            <input id="report-end-date" class="reports-input" type="date" formControlName="endDate" required />
+            @if (form.controls.endDate.touched && form.controls.endDate.invalid) { <span class="reports-field-error">Informe a data final.</span> }
+          </label>
+          <button type="submit" class="reports-submit" [disabled]="form.invalid || invalidPeriod() || facade.saving()">{{ facade.saving() ? 'Gerando…' : 'Gerar relatório' }}</button>
+          @if (invalidPeriod()) { <p class="reports-form-error" role="alert">A data inicial deve ser anterior ou igual à data final.</p> }
+          @if (facade.saveError()) { <p class="reports-form-error" role="alert">{{ facade.saveError() }}</p> }
+          @if (facade.success()) { <p class="reports-form-success" role="status" aria-live="polite">{{ facade.success() }}</p> }
+        </form>
+      </section>
+    }
+
+    <section aria-labelledby="supplier-report-list-heading">
+      <div class="reports-list-header">
+        <div>
+          <h3 id="supplier-report-list-heading" class="reports-list-title">Relatórios gerados</h3>
+          <p class="reports-list-page">{{ facade.totalPages() > 0 ? 'Página ' + (facade.page() + 1) + ' de ' + facade.totalPages() : 'Nenhuma página' }}</p>
+        </div>
+      </div>
+      @if (facade.loadingError()) {
+        <div class="reports-error" role="alert">
+          <p>{{ facade.loadingError() }}</p>
+          <button type="button" class="reports-retry" (click)="facade.load()">Tentar novamente</button>
+        </div>
+      } @else if (facade.loading()) {
+        <p class="reports-loading" role="status" aria-live="polite">Carregando relatórios…</p>
+      } @else {
+        <div class="reports-list" aria-label="Relatórios do fornecedor">
+          @for (report of facade.items(); track report.reportId) {
+            <article class="report-card">
+              <div class="report-card-main">
+                <h4 class="report-card-title">Relatório #{{ report.reportId }}</h4>
+                <p class="reports-subtitle">{{ date(report.periodStartAt) }} – {{ date(report.periodEndAt) }}</p>
+              </div>
+              <dl class="report-card-stats">
+                <div><dt class="report-card-label">CO₂ total</dt><dd class="report-card-value">{{ co2(report.totalCo2Kg) }}</dd></div>
+                <div><dt class="report-card-label">Total de lotes</dt><dd class="report-card-value">{{ report.totalBatchCount }}</dd></div>
+              </dl>
+              <div class="report-card-generated">
+                <p class="report-card-label">Data de geração</p>
+                <p class="report-card-date">{{ date(report.generatedAt) }}</p>
+              </div>
+            </article>
+          } @empty {
+            <p class="reports-empty" role="status">Nenhum relatório gerado para este fornecedor.</p>
+          }
+        </div>
+        @if (facade.totalPages() > 1) {
+          <app-pagination [page]="facade.page() + 1" [totalPages]="facade.totalPages()" [disabled]="facade.loading()" label="Paginação dos relatórios do fornecedor" (previous)="facade.previousPage()" (next)="facade.nextPage()" />
+        }
+      }
+    </section>
+  </div>
+</app-modal>
