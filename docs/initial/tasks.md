@@ -564,7 +564,7 @@ _Redesenhe a gestão de relatórios para seguir a hierarquia visual das telas de
 - [x] Respeitar as permissões atuais: `POST /products` e `POST /suppliers` aceitam `ADMIN`/`MANAGER`; `POST /batches` aceita `ADMIN`/`SUPPLIER`. Ocultar/bloquear ações não autorizadas e validar a compatibilidade do fluxo por perfil. Hoje apenas `ADMIN` pode criar os três recursos em sequência; `SUPPLIER` pode criar lote vinculado ao fornecedor da sessão, mas não cadastrar produto/fornecedor; `MANAGER` pode cadastrar produto/fornecedor, mas não criar lote.
 - [x] Remover a tela e entrada de navegação de Produtos conforme escopo da task, mantendo os services/schemas usados pelo wizard e por eventuais fluxos existentes. Remover também o modal de criação de fornecedor da tela de Fornecedores para evitar dois pontos de entrada; preservar edição e demais ações.
 - [x] Após remover as referências visuais às imagens de produtos, verificar o uso de `public/images/` no código e eliminar os arquivos que ficarem sem consumidores. Não remover imagens ainda referenciadas por outras telas ou fluxos.
-- [x] Atualizar testes unitários/E2E relevantes para seleção, navegação entre passos, payload final e falhas parciais. Atualizar `docs/spec.md`, `docs/plan.md` e README conforme implementação concluída.
+- [x] Atualizar testes unitários/E2E relevantes para seleção, navegação entre passos, payload final e falhas parciais. Atualizar `docs/initial/spec.md`, `docs/initial/plan.md` e README conforme implementação concluída.
 
 ### Contrato de listagem de fornecedores
 
