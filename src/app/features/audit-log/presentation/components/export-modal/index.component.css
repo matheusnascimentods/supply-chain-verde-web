@@ -1,0 +1,32 @@
+@reference "tailwindcss";
+
+.export-header {
+  @apply mb-5 flex items-start justify-between gap-4;
+}
+.export-title {
+  @apply text-xl font-bold text-slate-900;
+}
+.export-subtitle {
+  @apply mt-1 text-sm text-slate-500;
+}
+.export-body {
+  @apply grid gap-4;
+}
+.export-period {
+  @apply grid gap-4 sm:grid-cols-2;
+}
+.export-field {
+  @apply grid gap-1.5 text-sm font-medium text-slate-700;
+}
+.export-select {
+  @apply rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
+}
+.export-error {
+  @apply rounded-lg bg-red-50 p-3 text-sm text-red-700;
+}
+.export-actions {
+  @apply mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end;
+}
+.export-ready {
+  @apply text-sm text-slate-600;
+}
