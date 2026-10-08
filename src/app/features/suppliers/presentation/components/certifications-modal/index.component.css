@@ -1,0 +1,86 @@
+@reference "tailwindcss";
+
+.certifications-header {
+  @apply flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-7;
+}
+.certifications-title {
+  @apply text-xl font-bold text-slate-900;
+}
+.certifications-subtitle {
+  @apply mt-1 text-sm text-slate-500;
+}
+.certifications-close {
+  @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100;
+}
+.certifications-body {
+  @apply space-y-7 px-5 py-5 sm:px-7 sm:py-6;
+}
+app-certification-form {
+  @apply block;
+}
+.certifications-error {
+  @apply rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700;
+}
+.certifications-section-title {
+  @apply mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500;
+}
+.certifications-list {
+  @apply space-y-3;
+}
+.certification-card {
+  @apply grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-5 sm:px-5;
+}
+.certification-card-main {
+  @apply min-w-0;
+}
+.certification-card-title {
+  @apply truncate font-semibold text-slate-900;
+}
+.certification-card-dates {
+  @apply grid grid-cols-2 gap-3 text-sm;
+}
+.certification-card-label {
+  @apply text-xs text-slate-500;
+}
+.certification-card-value {
+  @apply mt-0.5 font-medium text-slate-700;
+}
+.certification-card-status {
+  @apply text-sm sm:text-right;
+}
+.certification-card-status-label {
+  @apply mb-1 text-xs text-slate-500;
+}
+.status-badge {
+  @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset;
+}
+.status-badge[data-status='ACTIVE'] {
+  @apply bg-green-50 text-green-700 ring-green-600/20;
+}
+.status-badge[data-status='EXPIRED'] {
+  @apply bg-red-50 text-red-700 ring-red-600/20;
+}
+.status-badge[data-status='SUSPENDED'] {
+  @apply bg-slate-100 text-slate-700 ring-slate-600/20;
+}
+.status-badge[data-status='UNDER_REVIEW'] {
+  @apply bg-blue-50 text-blue-700 ring-blue-600/20;
+}
+.status-menu {
+  @apply relative inline-block;
+}
+.status-menu-trigger {
+  @apply cursor-pointer list-none focus:outline-none focus:ring-2 focus:ring-green-600 [&::-webkit-details-marker]:hidden;
+}
+.status-menu-trigger-busy {
+  @apply pointer-events-none opacity-60;
+}
+.status-menu-list {
+  @apply fixed z-[60] max-h-[min(11rem,calc(100vh-1rem))] w-44 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg;
+}
+.status-menu-option {
+  @apply flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none;
+}
+.certifications-empty {
+  @apply rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500;
+}
