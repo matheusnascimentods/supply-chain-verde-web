@@ -1,0 +1,63 @@
+<main class="audit-page">
+  <div class="audit-container">
+    <header class="audit-header">
+      <div>
+        <h1 class="audit-title">Auditoria</h1>
+        <p class="audit-subtitle">Consulte e exporte as atividades registradas no sistema.</p>
+      </div>
+      <button appButton type="button" variant="primary" (click)="exportOpen.set(true)">
+        <span aria-hidden="true">↓</span> Exportar logs
+      </button>
+    </header>
+
+    <form class="audit-filters" (ngSubmit)="facade.applyFilters()">
+      <app-text-field id="audit-start-date" label="Data inicial" type="date" name="startDate" [required]="true" [ngModel]="facade.startDate()" (ngModelChange)="facade.startDate.set($event)" />
+      <app-text-field id="audit-end-date" label="Data final" type="date" name="endDate" [required]="true" [ngModel]="facade.endDate()" (ngModelChange)="facade.endDate.set($event)" />
+      <label class="audit-filter-field" for="audit-action">Operação
+        <select id="audit-action" class="audit-select" name="action" [ngModel]="facade.action()" (ngModelChange)="facade.action.set($event)">
+          <option value="">Todas as operações</option>
+          @for (action of actions; track action) { <option [value]="action">{{ actionLabels[action] }}</option> }
+        </select>
+      </label>
+      <app-text-field id="audit-email" label="Email do usuário" type="search" name="email" autocomplete="off" placeholder="Buscar por email" [ngModel]="facade.email()" (ngModelChange)="facade.email.set($event)" />
+      <button appButton type="submit" variant="primary">Filtrar</button>
+    </form>
+    @if (facade.filterError()) { <p class="audit-filter-error" role="alert">{{ facade.filterError() }}</p> }
+
+    @if (facade.error()) {
+      <div class="audit-error" role="alert">
+        <p>{{ facade.error() }}</p><button class="audit-retry" type="button" (click)="facade.load()">Tentar novamente</button>
+      </div>
+    } @else if (facade.loading()) {
+      <div class="audit-loading" aria-live="polite">Carregando registros de auditoria…</div>
+    } @else {
+      <app-data-table aria-label="Registros de auditoria">
+        <table class="audit-table">
+          <thead class="audit-table-head">
+            <tr>
+              <th scope="col" class="audit-cell">Usuário / email</th><th scope="col" class="audit-cell">Operação</th><th scope="col" class="audit-cell">Data e hora</th><th scope="col" class="audit-cell">Tabela afetada</th><th scope="col" class="audit-cell">Detalhes</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of facade.logs(); track log.logId) {
+              <tr class="audit-row">
+                <td class="audit-cell"><span class="audit-user">{{ userLabel(log) }}</span>@if (log.userEmail && log.userId) { <span class="audit-user-id">ID {{ log.userId }}</span> }</td>
+                <td class="audit-cell"><span class="audit-action" [attr.data-action]="log.action">{{ actionLabels[log.action] }}</span></td>
+                <td class="audit-cell-date">{{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="audit-cell-muted">{{ log.affectedTable ?? '—' }}</td>
+                <td class="audit-cell-details"><span class="audit-details">{{ describe(log) }}</span></td>
+              </tr>
+            } @empty {
+              <tr><td class="audit-empty" colspan="5">Nenhum registro de auditoria encontrado para este período e filtros.</td></tr>
+            }
+          </tbody>
+        </table>
+      </app-data-table>
+      <app-pagination [page]="facade.pageNumber()" [totalPages]="facade.totalPages()" [disabled]="facade.loading()" label="Paginação dos registros" (previous)="facade.previousPage()" (next)="facade.nextPage()" />
+    }
+  </div>
+
+  @if (exportOpen()) {
+    <app-audit-export-modal [initialFilters]="facade.filters()" (closed)="exportOpen.set(false)" />
+  }
+</main>
