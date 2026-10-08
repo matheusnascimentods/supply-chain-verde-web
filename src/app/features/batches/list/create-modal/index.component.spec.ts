@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { ProductsService } from '../../../products/index.service';
-import { SuppliersService } from '../../../suppliers/index.service';
+import { SuppliersRepository } from '../../../suppliers';
 import { ViaCepService } from '../../../../core/integrations/via-cep/index.service';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { BatchesService } from '../../index.service';
@@ -38,7 +38,7 @@ describe('BatchCreateModalComponent', () => {
       providers: [
         { provide: SessionService, useValue: { role: () => role } },
         { provide: ProductsService, useValue: products },
-        { provide: SuppliersService, useValue: suppliers },
+        { provide: SuppliersRepository, useValue: suppliers },
         { provide: ViaCepService, useValue: viaCep },
         { provide: CurrentUserService, useValue: { load: vi.fn().mockReturnValue(of({ userId: 22, name: 'Fazenda', email: 'f@example.com', role: 'supplier' })) } },
         { provide: BatchesService, useValue: batches },

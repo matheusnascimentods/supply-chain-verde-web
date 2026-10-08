@@ -1,0 +1,89 @@
+@reference "tailwindcss";
+
+.reports-header {
+  @apply sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-100 bg-white px-5 py-5 sm:px-7;
+}
+.reports-title {
+  @apply text-xl font-bold text-slate-900;
+}
+.reports-subtitle {
+  @apply mt-1 text-sm text-slate-500;
+}
+.reports-close {
+  @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xl text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600 disabled:opacity-50;
+}
+.reports-body {
+  @apply space-y-7 px-5 py-5 sm:px-7 sm:py-6;
+}
+.reports-section-title {
+  @apply mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500;
+}
+.reports-form {
+  @apply grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end sm:p-5;
+}
+.reports-field {
+  @apply grid gap-1.5 text-sm font-medium text-slate-700;
+}
+.reports-input {
+  @apply rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
+}
+.reports-field-error {
+  @apply text-xs font-normal text-red-700;
+}
+.reports-submit {
+  @apply rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+.reports-form-error {
+  @apply text-sm text-red-700 sm:col-span-3;
+}
+.reports-form-success {
+  @apply text-sm text-green-800 sm:col-span-3;
+}
+.reports-list-header {
+  @apply mb-3 flex flex-wrap items-end justify-between gap-2;
+}
+.reports-list-title {
+  @apply text-sm font-semibold uppercase tracking-wide text-slate-500;
+}
+.reports-list-page {
+  @apply mt-1 text-xs text-slate-500;
+}
+.reports-error {
+  @apply rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700;
+}
+.reports-retry {
+  @apply mt-2 font-semibold underline;
+}
+.reports-loading {
+  @apply rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500;
+}
+.reports-list {
+  @apply space-y-3;
+}
+.report-card {
+  @apply grid gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-5 sm:px-5;
+}
+.report-card-main {
+  @apply min-w-0;
+}
+.report-card-title {
+  @apply truncate font-semibold text-slate-900;
+}
+.report-card-stats {
+  @apply grid grid-cols-2 gap-3 text-sm sm:grid-cols-2;
+}
+.report-card-label {
+  @apply text-xs text-slate-500;
+}
+.report-card-value {
+  @apply mt-0.5 font-semibold text-slate-800;
+}
+.report-card-generated {
+  @apply text-sm sm:text-right;
+}
+.report-card-date {
+  @apply mt-0.5 font-medium text-slate-700;
+}
+.reports-empty {
+  @apply rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500;
+}
