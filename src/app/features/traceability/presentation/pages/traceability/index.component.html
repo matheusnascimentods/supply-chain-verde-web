@@ -1,0 +1,81 @@
+<div class="traceability-page">
+  <header class="public-header">
+    <a class="public-brand" href="/" aria-label="Supply Chain Verde, início">
+      <span class="public-brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" class="public-brand-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 4c-7 0-12 2-13 7-1 4 2 7 6 6 5-1 7-6 7-13Z"/><path d="M4 21c2-5 5-8 11-11"/>
+        </svg>
+      </span>
+      <span>Supply Chain Verde</span>
+    </a>
+    <span class="muted-label">Rastreabilidade Pública</span>
+  </header>
+
+  <main class="traceability-card">
+    @if (facade.isLoading()) {
+      <section class="traceability-loading" aria-label="Carregando rastreabilidade">
+        <app-spinner [message]="'Carregando a jornada do lote…'" />
+      </section>
+    } @else if (facade.errorMessage()) {
+      <section class="traceability-error" role="alert">
+        <h1 class="traceability-error-title">Lote não encontrado</h1>
+        <p class="traceability-error-text">{{ facade.errorMessage() }}</p>
+      </section>
+    } @else if (facade.traceability(); as batch) {
+      <section aria-labelledby="batch-heading">
+        <h1 id="batch-heading" class="batch-title">{{ batch.productName ?? 'Produto não identificado' }}</h1>
+        <dl class="batch-facts">
+          <div><dt class="fact-label">Fornecedor</dt><dd class="fact-value">{{ batch.supplierName ?? 'Fornecedor não identificado' }}</dd></div>
+          <div><dt class="fact-label">Quantidade</dt><dd class="fact-value">{{ batch.quantity }}</dd></div>
+          <div><dt class="fact-label">Produzido em</dt><dd class="fact-value">{{ batch.producedAt | date:'dd/MM/yyyy' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="carbon-section" aria-labelledby="carbon-heading">
+        <div>
+          <h2 id="carbon-heading" class="muted-label">Pegada de Carbono Total</h2>
+          <p class="carbon-total">{{ facade.footprint()?.totalCo2Kg ?? batch.totalCo2Kg }} kg CO₂e</p>
+        </div>
+        @if (facade.footprint(); as carbon) {
+          <app-carbon-chart [emissions]="carbon.emissionsByStage" [stages]="batch.stages" />
+        }
+      </section>
+
+      <section class="journey" aria-labelledby="journey-heading">
+        <h2 id="journey-heading" class="journey-title">Jornada do Lote</h2>
+        @if (batch.stages.length) {
+          <ol class="journey-list">
+            @for (stage of batch.stages; track stage.chainId) {
+              <li class="journey-item">
+                <span class="journey-dot" aria-hidden="true"></span>
+                <article class="journey-content">
+                  <div class="journey-header">
+                    <h3 class="journey-stage">{{ stageLabels[stage.stageType] }}</h3>
+                    <p class="fact-label">
+                      {{ stage.startedAt | date:'dd/MM/yyyy' }}@if (stage.endedAt) { – {{ stage.endedAt | date:'dd/MM/yyyy' }} }
+                    </p>
+                  </div>
+                  <p class="journey-place">
+                    {{ placeOf(stage.originAddress) || 'Origem não informada' }}
+                    @if (placeOf(stage.destinationAddress); as destination) {
+                      <span aria-hidden="true"> → </span>{{ destination }}
+                    }
+                  </p>
+                  @if (stage.transport; as transport) {
+                    <p class="journey-transport">{{ transportLabels[transport.transportMode] }} · {{ transport.fuelType }} · {{ transport.distance }} km</p>
+                  }
+                  @if (stage.emission; as emission) {
+                    <p class="journey-emission">Emissão: {{ emission.co2Kg }} kg CO₂e</p>
+                  }
+                </article>
+              </li>
+            }
+          </ol>
+        } @else {
+          <p class="journey-empty">Ainda não há etapas registradas para este lote.</p>
+        }
+      </section>
+      <p class="sr-only-summary">Lote #{{ batch.batchId }} · {{ batch.quantity }} unidades</p>
+    }
+  </main>
+</div>

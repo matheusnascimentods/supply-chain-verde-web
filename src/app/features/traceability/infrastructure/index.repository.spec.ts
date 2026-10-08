@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { environment } from '../../../environments/environment';
-import { TraceabilityService } from './index.service';
-import { batchTraceabilityResponseSchema, carbonFootprintResponseSchema } from './index.schema';
+import { environment } from '../../../../environments/environment';
+import { TraceabilityRepository } from './index.repository';
+import { batchTraceabilityResponseSchema, carbonFootprintResponseSchema } from './index.dto';
 
-describe('TraceabilityService', () => {
-  let service: TraceabilityService;
+describe('TraceabilityRepository', () => {
+  let repository: TraceabilityRepository;
   let http: HttpTestingController;
   const traceability = {
     batchId: 42, productName: 'Café orgânico', supplierName: 'Fazenda Verde', quantity: 100,
@@ -15,8 +15,8 @@ describe('TraceabilityService', () => {
   const footprint = { batchId: 42, totalCo2Kg: 8.5, emissionsByStage: [] };
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(), TraceabilityService] });
-    service = TestBed.inject(TraceabilityService);
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(), TraceabilityRepository] });
+    repository = TestBed.inject(TraceabilityRepository);
     http = TestBed.inject(HttpTestingController);
   });
 
@@ -34,7 +34,7 @@ describe('TraceabilityService', () => {
 
   it('gets and parses batch traceability', () => {
     let result: unknown;
-    service.getTraceability(42).subscribe((value) => (result = value));
+    repository.getTraceability('42').subscribe((value) => (result = value));
     const request = http.expectOne(`${environment.apiUrl}/batches/42/traceability`);
     expect(request.request.method).toBe('GET');
     request.flush(traceability);
@@ -43,7 +43,7 @@ describe('TraceabilityService', () => {
 
   it('gets and parses batch carbon footprint', () => {
     let result: unknown;
-    service.getCarbonFootprint(42).subscribe((value) => (result = value));
+    repository.getCarbonFootprint('42').subscribe((value) => (result = value));
     const request = http.expectOne(`${environment.apiUrl}/batches/42/carbon-footprint`);
     expect(request.request.method).toBe('GET');
     request.flush(footprint);
@@ -52,8 +52,12 @@ describe('TraceabilityService', () => {
 
   it('fails when the API returns an invalid payload', () => {
     let failed = false;
-    service.getTraceability(42).subscribe({ error: () => (failed = true) });
+    repository.getTraceability('42').subscribe({ error: () => (failed = true) });
     http.expectOne(`${environment.apiUrl}/batches/42/traceability`).flush({ batchId: 42 });
     expect(failed).toBe(true);
+  });
+
+  it('accepts a batch without product or supplier linked', () => {
+    expect(batchTraceabilityResponseSchema.parse({ ...traceability, productName: null, supplierName: null }).productName).toBeNull();
   });
 });
