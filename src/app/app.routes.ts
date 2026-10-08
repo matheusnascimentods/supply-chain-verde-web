@@ -6,9 +6,7 @@ import { AppShellComponent } from './core/layout/app-shell/index.component';
 export const routes: Routes = [
   {
     path: 'rastreio/:batchId',
-    title: 'Rastreio',
-    loadComponent: () =>
-      import('./features/traceability').then((module) => module.TraceabilityComponent),
+    loadChildren: () => import('./features/traceability').then((module) => module.routes),
   },
   {
     path: 'login',
