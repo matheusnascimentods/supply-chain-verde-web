@@ -12,12 +12,7 @@ import { catchError, debounceTime, distinctUntilChanged, finalize, map, of, star
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { ProductRequestDTO, ProductResponseDTO } from '../../../products/index.schema';
 import { ProductsService } from '../../../products/index.service';
-import {
-  SupplierRankingResponseDTO,
-  SupplierRequestDTO,
-  SupplierResponseDTO,
-} from '../../../suppliers/index.schema';
-import { SuppliersService } from '../../../suppliers/index.service';
+import { NewSupplier, Supplier, SupplierRanking, SuppliersRepository, addressFromViaCep } from '../../../suppliers';
 import { ViaCepResponseDTO } from '../../../../core/integrations/via-cep/index.dto';
 import { ViaCepService } from '../../../../core/integrations/via-cep/index.service';
 import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../../shared/utils/format/index.utils';
@@ -41,7 +36,7 @@ export class BatchCreateModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly batches = inject(BatchesService);
   private readonly productsService = inject(ProductsService);
-  private readonly suppliersService = inject(SuppliersService);
+  private readonly suppliersService = inject(SuppliersRepository);
   private readonly viaCep = inject(ViaCepService);
   private readonly currentUserService = inject(CurrentUserService);
   private readonly session = inject(SessionService);
@@ -52,10 +47,10 @@ export class BatchCreateModalComponent {
   readonly created = output<void>();
   readonly step = signal(0);
   readonly products = signal<ProductResponseDTO[]>([]);
-  readonly suppliers = signal<SupplierRankingResponseDTO[]>([]);
+  readonly suppliers = signal<SupplierRanking[]>([]);
   readonly selectedProduct = signal<ProductResponseDTO | null>(null);
-  readonly selectedSupplier = signal<SupplierRankingResponseDTO | SupplierResponseDTO | null>(null);
-  readonly ownSupplier = signal<SupplierResponseDTO | null>(null);
+  readonly selectedSupplier = signal<SupplierRanking | Supplier | null>(null);
+  readonly ownSupplier = signal<Supplier | null>(null);
   readonly productPage = signal(0);
   readonly productTotalPages = signal(0);
   readonly productSearch = signal('');
@@ -97,8 +92,8 @@ export class BatchCreateModalComponent {
 
   private pendingProduct: ProductRequestDTO | null = null;
   private createdProduct: ProductResponseDTO | null = null;
-  private pendingSupplier: SupplierRequestDTO | null = null;
-  private createdSupplier: SupplierResponseDTO | null = null;
+  private pendingSupplier: NewSupplier | null = null;
+  private createdSupplier: Supplier | null = null;
   private ownSupplierId: number | null = null;
 
   constructor() {
@@ -179,7 +174,7 @@ export class BatchCreateModalComponent {
     this.error.set('');
   }
 
-  selectSupplier(supplier: SupplierRankingResponseDTO): void {
+  selectSupplier(supplier: SupplierRanking): void {
     if (this.createdSupplier) return;
     this.selectedSupplier.set(supplier);
     this.pendingSupplier = null;
@@ -327,7 +322,7 @@ export class BatchCreateModalComponent {
     return supplier?.name ?? (this.createdSupplier ? this.createdSupplier.name : this.pendingSupplier?.name ?? '');
   }
 
-  supplierScore(supplier: SupplierRankingResponseDTO): string {
+  supplierScore(supplier: SupplierRanking): string {
     return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(
       supplier.sustainabilityScore,
     );
@@ -425,16 +420,12 @@ export class BatchCreateModalComponent {
 
   private applyZipCodeResponse(response: ViaCepResponseDTO | null): void {
     if (!response) return;
-    if (response.erro === true || response.erro === 'true') {
+    const lookup = addressFromViaCep(response);
+    if (!lookup.found) {
       this.cepMessage.set('CEP não encontrado. Confira o número ou preencha o endereço manualmente.');
       return;
     }
-    this.supplierForm.patchValue({
-      street: response.logradouro ?? '',
-      neighborhood: response.bairro ?? '',
-      city: response.localidade ?? '',
-      state: response.uf ?? '',
-    }, { emitEvent: false });
+    this.supplierForm.patchValue(lookup.address, { emitEvent: false });
     this.cepMessage.set('Endereço localizado. Confira os dados antes de salvar.');
   }
 

@@ -11,7 +11,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, of, catchError, map, switchMap } from 'rxjs';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
-import { SuppliersService } from '../../../suppliers/index.service';
+import { Supplier, SuppliersRepository } from '../../../suppliers';
 import { ModalComponent } from '../../../../shared/ui/modal/index.component';
 import { ChainService } from '../../../chain/index.service';
 import {
@@ -20,7 +20,6 @@ import {
   stageTypeSchema,
   transportModeSchema,
 } from '../../../traceability/index.schema';
-import { SupplierResponseDTO } from '../../../suppliers/index.schema';
 
 interface AddressOption {
   addressId: number;
@@ -38,7 +37,7 @@ export class BatchStageModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly chainService = inject(ChainService);
   private readonly currentUserService = inject(CurrentUserService);
-  private readonly suppliersService = inject(SuppliersService);
+  private readonly suppliersService = inject(SuppliersRepository);
   private readonly session = inject(SessionService);
 
   readonly dismiss = output<void>();
@@ -92,7 +91,7 @@ export class BatchStageModalComponent {
             user: this.currentUserService.load(),
             suppliers: this.suppliersService
               .load()
-              .pipe(catchError(() => of([] as SupplierResponseDTO[]))),
+              .pipe(catchError(() => of([] as Supplier[]))),
           });
     choices$.subscribe({
       next: ({ user, suppliers }) => {
@@ -243,7 +242,7 @@ export class BatchStageModalComponent {
     return value.length === 16 ? `${value}:00` : value;
   }
 
-  private toAddressOptions(supplier: SupplierResponseDTO): AddressOption[] {
+  private toAddressOptions(supplier: Supplier): AddressOption[] {
     const address = supplier.address;
     if (!address?.addressId) return [];
     const place = [address.city, address.state].filter(Boolean).join('/');
