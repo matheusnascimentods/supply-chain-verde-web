@@ -1,0 +1,15 @@
+<div class="pie-layout">
+  <svg viewBox="0 0 40 40" class="pie" role="img" [attr.aria-label]="'Distribuição por etapa: ' + description()">
+    <circle cx="20" cy="20" r="15.9155" fill="none" class="pie-track" stroke-width="7" />
+    @for (segment of segments(); track segment.stage) {
+      <circle cx="20" cy="20" r="15.9155" fill="none" stroke-width="7" class="pie-segment" [attr.data-stage]="segment.stage" [attr.stroke-dasharray]="segment.dashArray" [attr.stroke-dashoffset]="-segment.offset" [attr.title]="labels[segment.stage] + ': ' + segment.count" transform="rotate(-90 20 20)" />
+    }
+    <text x="20" y="19" text-anchor="middle" class="pie-center-count">{{ total() }}</text>
+    <text x="20" y="24" text-anchor="middle" class="pie-center-label">lotes</text>
+  </svg>
+  <ul class="legend">
+    @for (share of shares(); track share.stage) {
+      <li class="legend-item"><span class="legend-swatch" [attr.data-stage]="share.stage" aria-hidden="true"></span><span>{{ labels[share.stage] }}</span><span class="legend-count">{{ share.count }}</span></li>
+    }
+  </ul>
+</div>

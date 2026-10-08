@@ -21,8 +21,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         title: 'Supply Chain | Dashboard',
-        loadComponent: () =>
-          import('./features/dashboard').then((module) => module.DashboardComponent),
+        loadChildren: () => import('./features/dashboard').then((module) => module.routes),
       },
       {
         path: 'suppliers',
