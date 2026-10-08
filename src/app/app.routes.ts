@@ -27,18 +27,9 @@ export const routes: Routes = [
           import('./features/dashboard').then((module) => module.DashboardComponent),
       },
       {
-        path: 'suppliers/me',
-        canActivate: [roleGuard],
-        data: { roles: ['supplier'] },
-        loadComponent: () =>
-          import('./features/suppliers/form/index.component').then(
-            (module) => module.SupplierFormComponent,
-          ),
-      },
-      {
         path: 'suppliers',
         title: 'Supply Chain | Fornecedores',
-        loadChildren: () => import('./features/suppliers/routes').then((module) => module.routes),
+        loadChildren: () => import('./features/suppliers').then((module) => module.routes),
       },
       {
         path: 'batches',

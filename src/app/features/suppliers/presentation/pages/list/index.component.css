@@ -1,0 +1,168 @@
+@reference "tailwindcss";
+
+.suppliers-page {
+  @apply min-w-0 flex-1 bg-slate-50 px-4 py-6 text-slate-800 sm:px-8 sm:py-8;
+}
+.suppliers-container {
+  @apply mx-auto max-w-7xl;
+}
+.suppliers-header {
+  @apply mb-7;
+}
+.suppliers-title {
+  @apply text-2xl font-bold tracking-tight text-slate-900;
+}
+.suppliers-subtitle {
+  @apply mt-1 text-sm text-slate-500;
+}
+.suppliers-section {
+  @apply mb-8;
+}
+.suppliers-error {
+  @apply rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700;
+}
+.suppliers-retry {
+  @apply mt-2 font-semibold underline;
+}
+.suppliers-loading {
+  @apply rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500;
+}
+
+/* Destaques do ranking */
+.podium-title {
+  @apply mb-4 text-lg font-semibold text-slate-900;
+}
+.podium {
+  @apply grid gap-4 md:grid-cols-3;
+}
+.podium-card {
+  @apply relative overflow-hidden rounded-2xl border bg-white p-5 shadow-sm;
+}
+.podium-card-top {
+  @apply mb-4 flex items-start justify-between gap-3;
+}
+.podium-position {
+  @apply inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold;
+}
+.podium-score {
+  @apply rounded-full px-3 py-1 text-xs font-semibold;
+}
+.podium-card[data-position='1'] {
+  @apply border-amber-300;
+}
+.podium-card[data-position='1'] .podium-position {
+  @apply bg-amber-100 text-amber-800;
+}
+.podium-card[data-position='1'] .podium-score {
+  @apply bg-green-50 text-green-800;
+}
+.podium-card[data-position='2'] {
+  @apply border-slate-400 bg-slate-50 shadow-md;
+}
+.podium-card[data-position='2'] .podium-position {
+  @apply bg-slate-300 text-slate-800 shadow-sm;
+}
+.podium-card[data-position='2'] .podium-score {
+  @apply bg-slate-200 text-slate-800;
+}
+.podium-card[data-position='3'] {
+  @apply border-orange-300;
+}
+.podium-card[data-position='3'] .podium-position {
+  @apply bg-orange-100 text-orange-800;
+}
+.podium-card[data-position='3'] .podium-score {
+  @apply bg-orange-50 text-orange-800;
+}
+.podium-name {
+  @apply truncate text-lg font-semibold text-slate-900;
+}
+.podium-location {
+  @apply mt-1 truncate text-sm text-slate-500;
+}
+.podium-stats {
+  @apply mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 text-sm;
+}
+.podium-label {
+  @apply text-xs text-slate-500;
+}
+.podium-stat {
+  @apply mt-1;
+}
+.podium-certifications {
+  @apply inline-flex min-w-8 items-center justify-center rounded-full bg-green-100 px-2.5 py-1 text-sm font-semibold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2;
+}
+.podium-co2 {
+  @apply mt-1 font-semibold text-slate-900;
+}
+.podium-reports {
+  @apply mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-sm;
+}
+
+/* Tabela do ranking */
+.ranking-heading {
+  @apply mb-4;
+}
+.ranking-title {
+  @apply text-lg font-bold tracking-tight text-slate-900;
+}
+.ranking-card {
+  @apply overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm;
+}
+.ranking-table {
+  @apply w-full min-w-[980px] text-left text-sm;
+}
+.ranking-table-head {
+  @apply bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500;
+}
+.ranking-row {
+  @apply border-t border-slate-100 hover:bg-slate-50;
+}
+.ranking-cell {
+  @apply px-5 py-4;
+}
+.ranking-cell-muted {
+  @apply px-5 py-4 text-slate-600;
+}
+.ranking-cell-right {
+  @apply px-5 py-4 text-right;
+}
+.ranking-cell-center {
+  @apply px-5 py-4 text-center;
+}
+.ranking-position {
+  @apply px-5 py-4 font-medium text-slate-500;
+}
+.ranking-score {
+  @apply px-5 py-4 text-right font-semibold text-green-700;
+}
+.ranking-co2 {
+  @apply px-5 py-4 text-right text-slate-700;
+}
+.ranking-empty {
+  @apply px-5 py-12 text-center text-slate-500;
+}
+.supplier-link {
+  @apply font-semibold text-slate-800 hover:text-green-700 hover:underline;
+}
+.supplier-name {
+  @apply font-semibold text-slate-800;
+}
+.certification-summary {
+  @apply inline-flex rounded-full px-2.5 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2;
+}
+.certification-summary[data-tone='expired'] {
+  @apply bg-red-50 text-red-700;
+}
+.certification-summary[data-tone='active'] {
+  @apply bg-green-50 text-green-700;
+}
+.certification-summary[data-tone='none'] {
+  @apply bg-slate-100 text-slate-600;
+}
+.report-count {
+  @apply inline-flex min-w-9 items-center justify-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2;
+}
+.report-count-static {
+  @apply inline-flex min-w-9 items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600;
+}
