@@ -1,0 +1,157 @@
+<app-modal labelledBy="create-batch-title" size="xl" [flush]="true" (dismissed)="requestDismiss()">
+  <header class="create-header">
+    <div>
+      <p class="create-eyebrow">Supply Chain Verde</p>
+      <h2 id="create-batch-title" class="create-title">Cadastrar novo lote</h2>
+      <p class="create-subtitle">Selecione produto e fornecedor, depois revise os dados.</p>
+    </div>
+    <button type="button" class="create-close" aria-label="Fechar cadastro de lote" [disabled]="facade.saving() || facade.hasPartialCreation()" (click)="requestDismiss()">&times;</button>
+  </header>
+
+  <nav class="create-steps" aria-label="Etapas do cadastro">
+    @for (label of steps; track label; let index = $index) {
+      <div class="create-step" [attr.data-active]="facade.step() === index">
+        <span class="create-step-number">{{ index + 1 }}</span>
+        <span>{{ label }}</span>
+      </div>
+    }
+  </nav>
+
+  @if (facade.error()) {
+    <div role="alert" class="create-error">
+      <span>{{ facade.error() }}</span>
+      @if (facade.products.loading() || facade.loadingSuppliers()) {
+        <span class="create-error-loading">Carregando…</span>
+      } @else if (facade.canRetryChoices()) {
+        <button type="button" class="create-error-retry" (click)="facade.retryChoices()">Tentar carregar novamente</button>
+      }
+    </div>
+  }
+  @if (facade.savedNotice()) {
+    <p role="status" class="create-notice">{{ facade.savedNotice() }}</p>
+  }
+  @if (facade.hasPartialCreation()) {
+    <p role="status" class="create-warning">Um cadastro já foi salvo pela API. Conclua a criação do lote nesta janela para evitar repetir ou perder o vínculo.</p>
+  }
+
+  @if (facade.step() === 0) {
+    <div class="create-body">
+      @if (facade.createdProduct(); as product) {
+        <section class="saved-card" aria-label="Produto já cadastrado">
+          <p class="saved-card-eyebrow">Produto já salvo</p>
+          <h3 class="saved-card-title">{{ product.name }}</h3>
+          <p class="saved-card-text">Este cadastro será reutilizado ao tentar criar o lote novamente.</p>
+        </section>
+      } @else if (facade.isAdmin) {
+        <app-new-product-form (submitted)="facade.useNewProduct($event)" (incomplete)="facade.reportError('Preencha nome, categoria e unidade para usar o novo produto.')" />
+      }
+
+      <section [formGroup]="batchForm" class="batch-data" aria-labelledby="batch-data-heading">
+        <h3 id="batch-data-heading" class="batch-data-title">Dados do lote</h3>
+        <label class="batch-data-field">Quantidade<input formControlName="quantity" type="number" min="0.000001" step="any" inputmode="decimal" class="batch-data-input" placeholder="Ex.: 500" /></label>
+        <label class="batch-data-field">Data de produção<input formControlName="producedAt" type="date" class="batch-data-input" /></label>
+      </section>
+
+      @if (!facade.createdProduct()) {
+        <section aria-labelledby="choose-product-heading">
+          <div class="picker-header">
+            <div>
+              <h3 id="choose-product-heading" class="picker-title">Ou selecione um produto</h3>
+              <p class="picker-hint">Busque no catálogo e escolha um item.</p>
+            </div>
+            <app-text-field id="batch-product-search" class="picker-search" label="Buscar produtos" type="search" placeholder="Buscar produto..." [ngModel]="facade.products.search()" (ngModelChange)="facade.products.searchFor($event)" />
+          </div>
+          @if (facade.products.loading()) {
+            <p class="picker-loading" aria-live="polite">Carregando produtos…</p>
+          } @else {
+            <div class="picker-grid">
+              @for (product of facade.products.items(); track product.productId) {
+                <button type="button" class="picker-option" [attr.aria-pressed]="facade.selectedProduct()?.productId === product.productId" (click)="facade.selectProduct(product)">
+                  <span class="picker-option-name">{{ product.name }}</span><span class="picker-option-meta">{{ product.category }} · {{ product.unit }}</span>
+                </button>
+              } @empty {
+                <p class="picker-empty">Nenhum produto encontrado.</p>
+              }
+            </div>
+            <app-pagination [page]="facade.products.totalPages() ? facade.products.page() + 1 : 0" [totalPages]="facade.products.totalPages()" [disabled]="facade.products.loading()" label="Paginação de produtos" (previous)="facade.products.changePage(-1)" (next)="facade.products.changePage(1)" />
+          }
+        </section>
+      }
+      @if (facade.hasProductChoice()) { <p class="choice-summary">Produto selecionado: <strong>{{ facade.productName() }}</strong></p> }
+    </div>
+  }
+
+  @if (facade.step() === 1) {
+    <div class="create-body">
+      @if (facade.isAdmin) {
+        @if (facade.createdSupplier(); as supplier) {
+          <section class="saved-card" aria-label="Fornecedor já cadastrado">
+            <p class="saved-card-eyebrow">Fornecedor já salvo</p>
+            <h3 class="saved-card-title">{{ supplier.name }}</h3>
+            <p class="saved-card-text">Este cadastro será reutilizado ao tentar criar o lote novamente.</p>
+          </section>
+        } @else {
+          <app-new-supplier-form (submitted)="facade.useNewSupplier($event)" (incomplete)="facade.reportError('Preencha os dados obrigatórios do fornecedor para continuar.')" />
+          <section aria-labelledby="choose-supplier-heading">
+            <div class="picker-header">
+              <div>
+                <h3 id="choose-supplier-heading" class="picker-title">Ou selecione um fornecedor</h3>
+                <p class="picker-hint">Resultados ordenados pelo ranking de sustentabilidade.</p>
+              </div>
+              <app-text-field id="batch-supplier-search" class="picker-search" label="Buscar fornecedores" type="search" placeholder="Buscar fornecedor..." [ngModel]="facade.suppliers.search()" (ngModelChange)="facade.suppliers.searchFor($event)" />
+            </div>
+            @if (facade.suppliers.loading()) {
+              <p class="picker-loading" aria-live="polite">Carregando fornecedores…</p>
+            } @else {
+              <div class="picker-grid">
+                @for (supplier of facade.suppliers.items(); track supplier.supplierId) {
+                  <button type="button" class="picker-option" [attr.aria-pressed]="facade.selectedSupplier()?.supplierId === supplier.supplierId" (click)="facade.selectSupplier(supplier)">
+                    <span class="picker-option-name">{{ supplier.name }}</span><span class="picker-option-meta">{{ supplier.cnpj ?? 'CNPJ não informado' }} · {{ score(supplier.sustainabilityScore) }} pontos</span>
+                  </button>
+                } @empty {
+                  <p class="picker-empty">Nenhum fornecedor encontrado.</p>
+                }
+              </div>
+              <app-pagination [page]="facade.suppliers.totalPages() ? facade.suppliers.page() + 1 : 0" [totalPages]="facade.suppliers.totalPages()" [disabled]="facade.suppliers.loading()" label="Paginação de fornecedores" (previous)="facade.suppliers.changePage(-1)" (next)="facade.suppliers.changePage(1)" />
+            }
+          </section>
+        }
+      } @else {
+        @if (facade.loadingSuppliers()) {
+          <p class="own-supplier-loading" aria-live="polite">Carregando fornecedor da sua conta…</p>
+        } @else if (facade.ownSupplier(); as supplier) {
+          <section class="own-supplier-card">
+            <p class="own-supplier-eyebrow">Fornecedor vinculado à sua conta</p>
+            <h3 class="own-supplier-name">{{ supplier.name }}</h3>
+            <p class="own-supplier-cnpj">{{ supplier.cnpj ?? 'CNPJ não informado' }}</p>
+          </section>
+        }
+      }
+      @if (facade.hasSupplierChoice()) { <p class="choice-summary">Fornecedor selecionado: <strong>{{ facade.supplierName() }}</strong></p> }
+    </div>
+  }
+
+  @if (facade.step() === 2) {
+    <section class="review" aria-labelledby="batch-review-heading">
+      <div>
+        <h3 id="batch-review-heading" class="review-title">Revise os dados do lote</h3>
+        <p class="create-subtitle">Os novos cadastros serão salvos antes do lote, nesta ordem.</p>
+      </div>
+      <dl class="review-list">
+        <div class="review-row"><dt class="review-label">Produto</dt><dd class="review-value">{{ facade.productName() }} @if (facade.pendingProduct()) { <span class="review-badge">Será cadastrado</span> }</dd></div>
+        <div class="review-row"><dt class="review-label">Fornecedor</dt><dd class="review-value">{{ facade.supplierName() }} @if (facade.pendingSupplier()) { <span class="review-badge">Será cadastrado</span> }</dd></div>
+        <div class="review-row"><dt class="review-label">Quantidade</dt><dd class="review-value-plain">{{ batchForm.controls.quantity.value }}</dd></div>
+        <div class="review-row"><dt class="review-label">Data de produção</dt><dd class="review-value-plain">{{ batchForm.controls.producedAt.value }}</dd></div>
+      </dl>
+    </section>
+  }
+
+  <footer class="create-footer">
+    <button type="button" class="footer-secondary" [disabled]="facade.saving() || (facade.step() === 0 && facade.hasPartialCreation())" (click)="back()">{{ facade.step() === 0 ? 'Cancelar' : 'Voltar' }}</button>
+    @if (facade.step() < 2) {
+      <button type="button" class="footer-primary" [disabled]="facade.saving() || (facade.step() === 0 && (facade.products.loading() || facade.loadingSuppliers()))" (click)="next()">Avançar</button>
+    } @else {
+      <button type="button" class="footer-confirm" [disabled]="facade.saving()" (click)="submit()">{{ facade.saving() ? 'Salvando…' : 'Confirmar e criar lote' }}</button>
+    }
+  </footer>
+</app-modal>
