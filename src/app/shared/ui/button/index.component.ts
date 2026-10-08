@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, input } from '@angular/core';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'text';
 
@@ -6,6 +6,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'text';
   selector: 'button[appButton], a[appButton]',
   template: '<ng-content />',
   styleUrl: './index.component.css',
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.shared-button]': 'true',
