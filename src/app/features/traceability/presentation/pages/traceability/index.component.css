@@ -1,92 +1,92 @@
 @reference "tailwindcss";
 
-.component-style-1 {
+.traceability-page {
   @apply flex-1 bg-slate-50 text-slate-800;
 }
-.component-style-2 {
+.public-header {
   @apply flex h-[72px] items-center justify-between border border-slate-200 bg-white px-5 sm:px-10 lg:px-[4.5%];
 }
-.component-style-3 {
+.public-brand {
   @apply flex items-center gap-2.5 text-base font-bold tracking-tight text-slate-900;
 }
-.component-style-4 {
+.public-brand-icon {
   @apply flex h-8 w-8 items-center justify-center rounded-lg bg-green-600 text-white;
 }
-.component-style-5 {
+.public-brand-svg {
   @apply h-5 w-5;
 }
-.component-style-6 {
+.muted-label {
   @apply text-sm text-slate-500;
 }
-.component-style-7 {
+.traceability-card {
   @apply mx-auto my-10 max-w-[960px] bg-white px-6 py-8 sm:px-8 sm:py-9 lg:px-8;
 }
-.component-style-8 {
+.traceability-loading {
   @apply py-20 text-center;
 }
-.component-style-9 {
+.traceability-error {
   @apply rounded-lg border border-amber-200 bg-amber-50 p-6;
 }
-.component-style-10 {
+.traceability-error-title {
   @apply font-semibold text-amber-950;
 }
-.component-style-11 {
+.traceability-error-text {
   @apply mt-1 text-sm text-amber-900;
 }
-.component-style-12 {
+.batch-title {
   @apply text-[28px] font-bold leading-tight tracking-tight text-slate-900;
 }
-.component-style-13 {
+.batch-facts {
   @apply mt-5 grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-[180px_90px_1fr] sm:gap-x-6;
 }
-.component-style-14 {
+.fact-label {
   @apply text-xs text-slate-500;
 }
-.component-style-15 {
+.fact-value {
   @apply mt-1 font-semibold text-slate-900;
 }
-.component-style-16 {
+.carbon-section {
   @apply mt-12 grid gap-8 sm:mt-[58px] sm:grid-cols-[280px_1fr] sm:items-center sm:gap-6;
 }
-.component-style-17 {
+.carbon-total {
   @apply mt-1 text-4xl font-bold leading-none tracking-tight text-green-600 sm:text-[38px];
 }
-.component-style-18 {
+.journey {
   @apply mt-12;
 }
-.component-style-19 {
+.journey-title {
   @apply text-lg font-bold text-slate-900;
 }
-.component-style-20 {
+.journey-list {
   @apply mt-2;
 }
-.component-style-21 {
+.journey-item {
   @apply grid grid-cols-[10px_1fr] gap-x-4 border-b border-slate-200 py-5 last:border-b-0;
 }
-.component-style-22 {
+.journey-dot {
   @apply mt-1.5 h-2.5 w-2.5 rounded-full bg-green-600;
 }
-.component-style-23 {
+.journey-content {
   @apply min-w-0;
 }
-.component-style-24 {
+.journey-header {
   @apply flex flex-wrap items-center justify-between gap-x-4 gap-y-2;
 }
-.component-style-25 {
+.journey-stage {
   @apply rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700;
 }
-.component-style-26 {
+.journey-place {
   @apply mt-1.5 text-sm text-slate-700;
 }
-.component-style-27 {
+.journey-transport {
   @apply mt-0.5 text-sm text-slate-500;
 }
-.component-style-28 {
+.journey-emission {
   @apply mt-0.5 text-sm font-medium text-slate-900;
 }
-.component-style-29 {
+.journey-empty {
   @apply mt-4 text-sm text-slate-600;
 }
-.component-style-30 {
+.sr-only-summary {
   @apply sr-only;
 }
