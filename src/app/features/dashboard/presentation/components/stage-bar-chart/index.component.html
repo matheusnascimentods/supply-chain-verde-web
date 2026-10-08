@@ -1,0 +1,9 @@
+<div class="bar-chart" role="img" [attr.aria-label]="'Lotes por etapa: ' + description()">
+  @for (share of shares(); track share.stage) {
+    <div class="bar-column">
+      <span class="bar-count">{{ share.count }}</span>
+      <span class="bar" [attr.data-stage]="share.stage" [style.height.%]="barHeight(share.count)" [title]="labels[share.stage] + ': ' + share.count"></span>
+      <span class="bar-label">{{ labels[share.stage] }}</span>
+    </div>
+  }
+</div>

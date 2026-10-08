@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { SessionService } from '../../core/auth/session/index.service';
-import { UserRole } from '../../core/auth/session/index.model';
-import { DashboardSummaryResponse } from './index.schema';
-import { DashboardService } from './index.service';
-import { CurrentUserService } from '../../core/auth/session/current-user/index.service';
+import { SessionService } from '../../../../../core/auth/session/index.service';
+import { UserRole } from '../../../../../core/auth/session/index.model';
+import { DashboardSummary } from '../../../domain/index.model';
+import { DashboardRepository } from '../../../infrastructure/index.repository';
+import { CurrentUserService } from '../../../../../core/auth/session/current-user/index.service';
 import { DashboardComponent } from './index.component';
 
-const summary: DashboardSummaryResponse = {
+const summary: DashboardSummary = {
   activeBatches: 12,
   expiringCertifications: 3,
   suppliers: 8,
@@ -39,7 +39,7 @@ describe('DashboardComponent', () => {
       providers: [
         provideRouter([]),
         SessionService,
-        { provide: DashboardService, useValue: dashboardService },
+        { provide: DashboardRepository, useValue: dashboardService },
         { provide: CurrentUserService, useValue: currentUserService },
       ],
     }).compileComponents();
