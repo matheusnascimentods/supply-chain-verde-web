@@ -1,0 +1,15 @@
+@if (bars().length) {
+  <ul class="carbon-chart" aria-label="Emissão de CO₂ por etapa">
+    @for (bar of bars(); track bar.emissionId) {
+      <li class="carbon-chart-row">
+        <span class="carbon-chart-label">{{ bar.label }}</span>
+        <div class="carbon-chart-track" role="img" [attr.aria-label]="bar.label + ': ' + bar.co2Kg + ' kg de CO2 equivalente'">
+          <div class="carbon-chart-bar" [style.width.%]="bar.width"></div>
+        </div>
+        <span class="carbon-chart-value">{{ bar.co2Kg }} kg</span>
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="carbon-chart-empty">Ainda não há emissões calculadas para este lote.</p>
+}
