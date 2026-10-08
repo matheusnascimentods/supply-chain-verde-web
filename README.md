@@ -72,26 +72,35 @@ O frontend oferece uma interface integrada à API para acompanhar lotes da produ
 | Formulários | Angular Reactive Forms |
 | Contratos e validação | Zod 4 |
 | HTTP | Angular `HttpClient` e interceptor funcional |
-| Estado | Angular Signals e services por feature |
+| Estado | Angular Signals em facades por feature |
 | Testes unitários | Vitest |
 | Testes ponta a ponta | Cypress |
 
-## 🏛️ Arquitetura (Feature-based)
+## 🏛️ Arquitetura (core / shared / features em camadas)
 
-O frontend organiza a aplicação por domínio. Cada feature reúne seus componentes, serviços, schemas e testes; funcionalidades transversais ficam em `core` e `shared`. O roteador carrega as features sob demanda.
+A aplicação é organizada em três níveis:
+
+- **`core`**: autenticação (sessão, guards, interceptor e usuário logado), integrações externas (ViaCEP) e layout (shell, navegação por perfil e footer). Não importa features.
+- **`shared`**: UI genérica, diretivas e utilitários de formatação. Não importa `core` nem features.
+- **`features`**: cada domínio dividido em `domain` (models, regras e value-objects), `application` (facade com signals e use-cases), `infrastructure` (repository HTTP, DTOs Zod e mappers) e `presentation` (páginas e componentes). O `index.ts` é a API pública da feature, e outras features só importam por ele.
+
+O roteador carrega as features sob demanda pelo `index.routes.ts` de cada uma.
 
 ```mermaid
 flowchart LR
     Browser[Navegador] --> Routes[Angular Router]
     Routes --> Guards[Auth Guard / Role Guard]
-    Guards --> Features[Features]
-    Features --> Services[Services por feature]
-    Services --> HTTP[HttpClient]
+    Guards --> Presentation[Presentation<br/>pages e components]
+    Presentation --> Facade[Application<br/>facade e use-cases]
+    Facade --> Repository[Infrastructure<br/>repository]
+    Repository --> HTTP[HttpClient]
     HTTP --> Interceptor[Auth Interceptor]
     Interceptor --> API[Supply Chain Verde API]
-    Services --> Zod[Validação Zod]
-    Zod --> Signals[Angular Signals]
-    Signals --> Features
+    Repository --> Zod[DTOs Zod + mappers]
+    Zod --> Domain[Domain models]
+    Domain --> Facade
+    Facade --> Signals[Angular Signals]
+    Signals --> Presentation
 ```
 
 ### Status de Implementação
@@ -107,33 +116,39 @@ flowchart LR
 - **`auth`**: login e integração com a sessão.
 - **`dashboard`**: indicadores globais e lotes recentes.
 - **`traceability`**: consulta pública e gráficos da pegada de carbono.
-- **`suppliers`**: fornecedores, ranking e modais de certificações/relatórios.
-- **`products`**: schemas e serviço de produto usados no cadastro e na seleção do wizard, sem tela dedicada.
-- **`batches` e `chain`**: lotes, fluxo multi-step de criação, etapas, transporte e emissões.
+- **`suppliers`**: fornecedores, ranking, relatórios e modais de certificações/relatórios.
+- **`certifications`**: domínio e formulário de certificações usados pelos fornecedores.
+- **`batches`**: lotes, produtos, fluxo multi-step de criação, etapas, transporte e emissões.
 - **`users` e `audit-log`**: gestão de usuários e consulta de eventos.
 
 ## 📁 Estrutura do Projeto
 
 ```text
-src/app/
-├── core/                       # sessão, guards e interceptor
-├── shared/components/          # shell, navegação, footer e componentes comuns
-├── features/
-│   ├── auth/                   # autenticação
-│   ├── dashboard/              # indicadores e lotes recentes
-│   ├── traceability/            # rastreabilidade pública
-│   ├── suppliers/               # fornecedores, ranking e modais contextuais
-│   ├── products/                # schemas e serviço usados pelos lotes
-│   ├── batches/                 # listagem e criação de lotes
-│   ├── chain/                   # etapas, transporte e emissão
-│   ├── certifications/          # schemas e serviço de certificações
-│   ├── reports/                 # schemas e serviço de relatórios
-│   ├── users/                   # gestão de usuários
-│   └── audit-log/               # auditoria e exportação CSV
+src/
+├── app/
+│   ├── core/
+│   │   ├── auth/                # sessão, usuário logado, guards e interceptor
+│   │   ├── integrations/        # ViaCEP
+│   │   └── layout/              # shell, top-nav, footer e navegação por perfil
+│   ├── shared/
+│   │   ├── ui/                  # button, modal, data-table, pagination, spinner, toast...
+│   │   ├── directives/          # close-on-outside-click
+│   │   └── utils/               # formatação (CNPJ, telefone, CEP, número pt-BR)
+│   └── features/                # cada uma com domain/ application/ infrastructure/ presentation/
+│       ├── auth/                # autenticação
+│       ├── dashboard/           # indicadores e lotes recentes
+│       ├── traceability/        # rastreabilidade pública
+│       ├── suppliers/           # fornecedores, ranking e relatórios
+│       ├── certifications/      # certificações dos fornecedores
+│       ├── batches/             # lotes, produtos, etapas, transporte e emissão
+│       ├── users/               # gestão de usuários
+│       └── audit-log/           # auditoria e exportação CSV
 └── environments/                # URL da API por ambiente
 
 cypress/e2e/                     # fluxos ponta a ponta
-docs/                            # especificação, arquitetura e histórico de tasks
+docs/
+├── initial/                     # SDD inicial: spec, plan e tasks
+└── folder-restructure/          # SDD da reestruturação em camadas
 ```
 
 ## 📚 Documentação do Projeto
@@ -143,6 +158,9 @@ docs/                            # especificação, arquitetura e histórico de 
 | [`docs/initial/spec.md`](docs/initial/spec.md) | Funcionalidades, perfis, rotas e fluxos atuais |
 | [`docs/initial/plan.md`](docs/initial/plan.md) | Arquitetura técnica, decisões e fluxo de criação de lote |
 | [`docs/initial/tasks.md`](docs/initial/tasks.md) | Histórico de implementação e pendências |
+| [`docs/folder-restructure/spec.md`](docs/folder-restructure/spec.md) | Problema, requisitos e critérios de aceite da reestruturação em camadas |
+| [`docs/folder-restructure/plan.md`](docs/folder-restructure/plan.md) | Estrutura alvo, padrão por feature e decisões |
+| [`docs/folder-restructure/tasks.md`](docs/folder-restructure/tasks.md) | Tarefas e PRs da reestruturação (#41–#53) |
 
 ### Pipeline de Qualidade
 
