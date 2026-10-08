@@ -1,0 +1,37 @@
+<app-modal labelledBy="export-title" size="md" initialFocusSelector="#export-start-date" (dismissed)="close()">
+  <div class="export-header">
+    <div>
+      <h2 id="export-title" class="export-title">Exportar logs</h2>
+      <p class="export-subtitle">Escolha o intervalo e os filtros do arquivo CSV.</p>
+    </div>
+    <button appButton type="button" variant="text" aria-label="Fechar" [disabled]="exporting()" (click)="close()">✕</button>
+  </div>
+  @if (!fileUrl()) {
+    <form class="export-body" (ngSubmit)="prepare()">
+      <div class="export-period">
+        <app-text-field id="export-start-date" label="Data inicial" type="date" name="exportStartDate" [required]="true" [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" />
+        <app-text-field id="export-end-date" label="Data final" type="date" name="exportEndDate" [required]="true" [ngModel]="endDate()" (ngModelChange)="endDate.set($event)" />
+      </div>
+      <label class="export-field" for="export-action">Operação
+        <select id="export-action" class="export-select" name="exportAction" [ngModel]="action()" (ngModelChange)="action.set($event)">
+          <option value="">Todas as operações</option>
+          @for (option of actions; track option) { <option [value]="option">{{ actionLabels[option] }}</option> }
+        </select>
+      </label>
+      <app-text-field id="export-email" label="Email do usuário" type="search" name="exportEmail" placeholder="Buscar por email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
+      @if (error()) { <p role="alert" class="export-error">{{ error() }}</p> }
+      <div class="export-actions">
+        <button appButton type="button" variant="secondary" [disabled]="exporting()" (click)="close()">Cancelar</button>
+        <button appButton type="submit" variant="primary" [disabled]="exporting()">{{ exporting() ? 'Preparando CSV…' : 'Preparar CSV' }}</button>
+      </div>
+    </form>
+  } @else {
+    <div class="export-body" role="status">
+      <p class="export-ready">Arquivo pronto para baixar.</p>
+      <div class="export-actions">
+        <button appButton type="button" variant="secondary" (click)="discardFile()">Alterar filtros</button>
+        <a appButton variant="primary" [href]="fileUrl()" [download]="filename()">Baixar CSV</a>
+      </div>
+    </div>
+  }
+</app-modal>
