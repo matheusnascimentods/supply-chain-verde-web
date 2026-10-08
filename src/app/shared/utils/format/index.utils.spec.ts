@@ -1,4 +1,4 @@
-import { formatCnpj, formatPhone, formatZipCode, digitsOnly, formatNumberBr } from './index.utils';
+import { formatCnpj, formatPhone, formatZipCode, digitsOnly, formatNumberBr, formatIsoDateBr } from './index.utils';
 
 describe('input formatters', () => {
   it('formats CNPJ while the user types and strips punctuation for requests', () => {
@@ -28,5 +28,17 @@ describe('formatNumberBr', () => {
 
   it('rounds to the given number of fraction digits', () => {
     expect(formatNumberBr(1234.5, 0)).toBe('1.235');
+  });
+});
+
+describe('formatIsoDateBr', () => {
+  it('converts ISO dates and date-times to dd/MM/yyyy', () => {
+    expect(formatIsoDateBr('2026-01-10')).toBe('10/01/2026');
+    expect(formatIsoDateBr('2026-01-10T13:45:00')).toBe('10/01/2026');
+  });
+
+  it('shows a dash when empty and keeps unknown formats as they are', () => {
+    expect(formatIsoDateBr(null)).toBe('—');
+    expect(formatIsoDateBr('10/01/2026')).toBe('10/01/2026');
   });
 });

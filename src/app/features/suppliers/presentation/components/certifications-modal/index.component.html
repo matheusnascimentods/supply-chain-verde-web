@@ -1,0 +1,55 @@
+<app-modal labelledBy="supplier-certifications-title" size="lg" (dismissed)="dismissed.emit()">
+  <header class="certifications-header">
+    <div>
+      <h2 id="supplier-certifications-title" class="certifications-title">Certificações de {{ supplierName() }}</h2>
+      <p class="certifications-subtitle">Consulte os certificados e acompanhe seus status.</p>
+    </div>
+    <button type="button" class="certifications-close" aria-label="Fechar certificações" (click)="dismissed.emit()">&times;</button>
+  </header>
+
+  <div class="certifications-body">
+    @if (canCreate()) {
+      <app-certification-form [supplierId]="supplierId()" (saved)="updated.emit()" />
+    }
+    @if (error()) { <p class="certifications-error" role="alert">{{ error() }}</p> }
+
+    <section aria-labelledby="supplier-certification-list-heading">
+      <h3 id="supplier-certification-list-heading" class="certifications-section-title">Certificações cadastradas</h3>
+      <div class="certifications-list" aria-label="Lista de certificações">
+        @for (item of certifications(); track item.certificationId) {
+          <article class="certification-card">
+            <div class="certification-card-main">
+              <h4 class="certification-card-title">{{ item.certification }}</h4>
+              <p class="certifications-subtitle">{{ item.issuingBody }}</p>
+            </div>
+            <dl class="certification-card-dates">
+              <div><dt class="certification-card-label">Emitida em</dt><dd class="certification-card-value">{{ date(item.issuedAt) }}</dd></div>
+              <div><dt class="certification-card-label">Validade</dt><dd class="certification-card-value">{{ date(item.expiresAt) }}</dd></div>
+            </dl>
+            <div class="certification-card-status">
+              <p class="certification-card-status-label">Status</p>
+              @if (canUpdateStatus()) {
+                <details #statusMenu appCloseOnOutsideClick class="status-menu" (keydown)="handleStatusMenuKeydown($event, statusMenu)" (toggle)="positionStatusMenu($event)">
+                  <summary class="status-badge status-menu-trigger" [attr.data-status]="item.status" [class.status-menu-trigger-busy]="updatingStatusId() === item.certificationId" [attr.aria-label]="'Status de ' + item.certification" aria-haspopup="menu" [attr.aria-expanded]="statusMenu.open">
+                    {{ statusLabels[item.status] }} <span aria-hidden="true">⌄</span>
+                  </summary>
+                  <div class="status-menu-list" [style.top.px]="statusMenuPosition().top" [style.left.px]="statusMenuPosition().left" role="menu" [attr.aria-label]="'Alterar status de ' + item.certification">
+                    @for (status of statuses; track status) {
+                      <button type="button" class="status-menu-option" role="menuitemradio" [attr.aria-checked]="item.status === status" [disabled]="updatingStatusId() === item.certificationId" (click)="setStatus(item, status, statusMenu)">
+                        {{ statusLabels[status] }} @if (item.status === status) { <span aria-hidden="true">✓</span> }
+                      </button>
+                    }
+                  </div>
+                </details>
+              } @else {
+                <span class="status-badge" [attr.data-status]="item.status">{{ statusLabels[item.status] }}</span>
+              }
+            </div>
+          </article>
+        } @empty {
+          <p class="certifications-empty" role="status">Nenhuma certificação cadastrada para este fornecedor.</p>
+        }
+      </div>
+    </section>
+  </div>
+</app-modal>

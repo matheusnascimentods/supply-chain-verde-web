@@ -1,0 +1,111 @@
+<main class="suppliers-page">
+  <div class="suppliers-container">
+    <header class="suppliers-header">
+      <h1 class="suppliers-title">Fornecedores</h1>
+      <p class="suppliers-subtitle">Desempenho ambiental e gestão de fornecedores</p>
+    </header>
+
+    <div class="suppliers-section">
+      <app-text-field id="supplier-search" label="Buscar por nome ou CNPJ" [labelHidden]="true" type="search" name="search" [ngModel]="facade.search()" (ngModelChange)="facade.searchFor($event)" placeholder="Buscar por nome ou CNPJ..." />
+    </div>
+
+    @if (facade.error()) {
+      <div class="suppliers-error" role="alert">
+        <p>{{ facade.error() }}</p>
+        <button appButton variant="text" class="suppliers-retry" type="button" (click)="facade.load()">Tentar novamente</button>
+      </div>
+    } @else if (facade.loading()) {
+      <div class="suppliers-loading" aria-live="polite">Carregando fornecedores…</div>
+    } @else {
+      @if (facade.podium().length) {
+        <section class="suppliers-section" aria-labelledby="top-suppliers-heading">
+          <h2 id="top-suppliers-heading" class="podium-title">Destaques do ranking</h2>
+          <div class="podium">
+            @for (supplier of facade.podium(); track supplier.supplierId; let index = $index) {
+              <article class="podium-card" [attr.data-position]="index + 1">
+                <div class="podium-card-top">
+                  <span class="podium-position">{{ index + 1 }}</span>
+                  <span class="podium-score">{{ number(supplier.sustainabilityScore) }} pontos</span>
+                </div>
+                <h3 class="podium-name">{{ supplier.name }}</h3>
+                <p class="podium-location">{{ supplier.address?.city ?? 'Localização não informada' }}@if (supplier.address?.state) { /{{ supplier.address?.state }} }</p>
+                <dl class="podium-stats">
+                  <div><dt class="podium-label">Certificações ativas</dt><dd class="podium-stat"><button type="button" class="podium-certifications" [attr.aria-label]="'Abrir certificações de ' + supplier.name" (click)="facade.certificationsSupplier.set(supplier)">{{ supplier.activeCertificationCount }}</button></dd></div>
+                  <div><dt class="podium-label">CO₂ total</dt><dd class="podium-co2">{{ number(supplier.totalCo2Kg) }} kg</dd></div>
+                </dl>
+                <div class="podium-reports">
+                  <span class="podium-label">Relatórios</span>
+                  @if (facade.canOpenReports(supplier)) {
+                    <button type="button" class="report-count" [attr.aria-label]="'Abrir ' + supplier.reportCount + ' relatórios de ' + supplier.name" (click)="facade.reportsSupplier.set(supplier)">{{ supplier.reportCount }}</button>
+                  } @else {
+                    <span class="report-count-static">{{ supplier.reportCount }}</span>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      <div class="ranking-heading">
+        <h2 id="supplier-ranking-heading" class="ranking-title">Ranking de fornecedores</h2>
+        <p class="suppliers-subtitle">Ordenado por score de sustentabilidade</p>
+      </div>
+      <section class="ranking-card" aria-labelledby="supplier-ranking-heading">
+        <app-data-table [framed]="false">
+          <table class="ranking-table">
+            <thead class="ranking-table-head">
+              <tr>
+                <th scope="col" class="ranking-cell">Posição</th>
+                <th scope="col" class="ranking-cell">Fornecedor</th>
+                <th scope="col" class="ranking-cell-right">Score</th>
+                <th scope="col" class="ranking-cell">CNPJ</th>
+                <th scope="col" class="ranking-cell">Telefone</th>
+                <th scope="col" class="ranking-cell">Certificações</th>
+                <th scope="col" class="ranking-cell-right">CO₂ total</th>
+                <th scope="col" class="ranking-cell-center">Relatórios</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (supplier of facade.tableItems(); track supplier.supplierId; let index = $index) {
+                <tr class="ranking-row">
+                  <td class="ranking-position">{{ facade.firstTablePosition() + index }}</td>
+                  <td class="ranking-cell">
+                    @if (facade.canManage()) {
+                      <a class="supplier-link" [routerLink]="['/', 'suppliers', supplier.supplierId, 'edit']">{{ supplier.name }}</a>
+                    } @else {
+                      <span class="supplier-name">{{ supplier.name }}</span>
+                    }
+                  </td>
+                  <td class="ranking-score">{{ number(supplier.sustainabilityScore) }}</td>
+                  <td class="ranking-cell-muted">{{ cnpj(supplier.cnpj) }}</td>
+                  <td class="ranking-cell-muted">{{ supplier.phone ?? '—' }}</td>
+                  <td class="ranking-cell">
+                    <button type="button" class="certification-summary" [attr.data-tone]="certificationTone(supplier)" [attr.aria-label]="'Abrir certificações de ' + supplier.name" (click)="facade.certificationsSupplier.set(supplier)">{{ certificationLabel(supplier) }}</button>
+                  </td>
+                  <td class="ranking-co2">{{ number(supplier.totalCo2Kg) }} kg</td>
+                  <td class="ranking-cell-center">
+                    @if (facade.canOpenReports(supplier)) {
+                      <button type="button" class="report-count" [attr.aria-label]="'Abrir ' + supplier.reportCount + ' relatórios de ' + supplier.name" (click)="facade.reportsSupplier.set(supplier)">{{ supplier.reportCount }}</button>
+                    } @else {
+                      <span class="report-count-static">{{ supplier.reportCount }}</span>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td class="ranking-empty" colspan="8">{{ facade.ranking().length ? 'Todos os resultados desta página estão nos destaques.' : (facade.search() ? 'Nenhum fornecedor corresponde à busca.' : 'Nenhum fornecedor cadastrado no ranking.') }}</td></tr>
+              }
+            </tbody>
+          </table>
+        </app-data-table>
+      </section>
+      <app-pagination [page]="facade.pageNumber()" [totalPages]="facade.totalPages()" [disabled]="facade.loading()" label="Paginação do ranking" (previous)="facade.previousPage()" (next)="facade.nextPage()" />
+    }
+  </div>
+  @if (facade.reportsSupplier(); as supplier) {
+    <app-supplier-reports-modal [supplierId]="supplier.supplierId" [supplierName]="supplier.name" [canGenerate]="facade.canGenerateReports()" (generated)="facade.load()" (dismissed)="facade.reportsSupplier.set(null)" />
+  }
+  @if (facade.certificationsSupplier(); as supplier) {
+    <app-supplier-certifications-modal [supplierId]="supplier.supplierId" [supplierName]="supplier.name" [certifications]="supplier.certifications" [canCreate]="facade.canCreateCertificationFor(supplier)" [canUpdateStatus]="facade.canUpdateCertificationStatus()" (updated)="facade.load()" (dismissed)="facade.certificationsSupplier.set(null)" />
+  }
+</main>
