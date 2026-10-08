@@ -1,0 +1,59 @@
+@reference "tailwindcss";
+
+.batches-page {
+  @apply min-h-[calc(100vh-4rem)] bg-slate-50 px-4 py-6 text-slate-800 sm:px-6 lg:px-8;
+}
+.batches-container {
+  @apply mx-auto max-w-screen-2xl;
+}
+.batches-header {
+  @apply mb-6 flex flex-wrap items-center justify-between gap-4;
+}
+.batches-title-row {
+  @apply flex flex-wrap items-baseline gap-x-3 gap-y-1;
+}
+.batches-title {
+  @apply text-2xl font-bold tracking-tight text-slate-900;
+}
+.batches-count {
+  @apply text-sm text-slate-500;
+}
+.batches-subtitle {
+  @apply mt-1 text-sm text-slate-500;
+}
+.batches-create {
+  @apply inline-flex min-h-10 items-center gap-2 rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700;
+}
+.batches-icon {
+  @apply h-4 w-4;
+}
+.batches-error {
+  @apply mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800;
+}
+.batches-retry {
+  @apply font-semibold underline underline-offset-2;
+}
+.batches-grid {
+  @apply grid gap-4 xl:grid-cols-2;
+}
+.batches-skeleton {
+  @apply h-56 animate-pulse rounded-xl border border-slate-200 bg-white;
+}
+.batches-empty {
+  @apply rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center;
+}
+.batches-empty-icon {
+  @apply mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-800;
+}
+.batches-empty-svg {
+  @apply h-6 w-6;
+}
+.batches-empty-title {
+  @apply mt-4 text-base font-bold text-slate-900;
+}
+.batches-empty-text {
+  @apply mx-auto mt-1 max-w-md text-sm text-slate-500;
+}
+.batches-empty-create {
+  @apply mt-5 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800;
+}

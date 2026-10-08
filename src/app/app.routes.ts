@@ -34,13 +34,7 @@ export const routes: Routes = [
       {
         path: 'batches',
         title: 'Supply Chain | Lotes',
-        loadChildren: () => import('./features/batches/routes').then((module) => module.routes),
-      },
-      {
-        path: 'batches/:batchId/stages',
-        canActivate: [roleGuard],
-        data: { roles: ['admin', 'manager', 'supplier'] },
-        loadChildren: () => import('./features/chain/routes').then((module) => module.routes),
+        loadChildren: () => import('./features/batches').then((module) => module.routes),
       },
       {
         path: 'users',

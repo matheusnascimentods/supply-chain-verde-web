@@ -1,0 +1,65 @@
+<main class="batches-page">
+  <div class="batches-container">
+    <header class="batches-header">
+      <div>
+        <div class="batches-title-row">
+          <h1 class="batches-title">Lotes</h1>
+          <p class="batches-count">{{ facade.totalElements() }} {{ facade.totalElements() === 1 ? 'lote cadastrado' : 'lotes cadastrados' }}</p>
+        </div>
+        <p class="batches-subtitle">Acompanhe a jornada dos produtos pela cadeia de suprimentos.</p>
+      </div>
+      @if (facade.canCreate()) {
+        <button type="button" class="batches-create" (click)="createModalOpen.set(true)">
+          <svg viewBox="0 0 20 20" class="batches-icon" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3Z" clip-rule="evenodd" />
+          </svg>
+          Novo lote
+        </button>
+      }
+    </header>
+
+    @if (facade.error()) {
+      <section role="alert" class="batches-error">
+        <span>{{ facade.error() }}</span>
+        <button type="button" class="batches-retry" (click)="facade.load()">Tentar novamente</button>
+      </section>
+    }
+
+    @if (facade.loading()) {
+      <section class="batches-grid" aria-label="Carregando lotes" aria-live="polite">
+        @for (skeleton of [1, 2, 3, 4]; track skeleton) {
+          <div class="batches-skeleton"></div>
+        }
+      </section>
+    } @else if (facade.items().length) {
+      <section class="batches-grid" aria-label="Lotes">
+        @for (batch of facade.items(); track batch.batchId) {
+          <app-batch-card [batch]="batch" [unit]="facade.unitOf(batch)" [canAddStage]="facade.canAddStageTo(batch)" (addStage)="stageBatch.set(batch)" />
+        }
+      </section>
+    } @else {
+      <section class="batches-empty">
+        <span class="batches-empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="batches-empty-svg" fill="none" stroke="currentColor" stroke-width="1.7">
+            <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z" />
+            <path d="m4.3 7.7 7.7 4.4 7.7-4.4M12 12v9" />
+          </svg>
+        </span>
+        <h2 class="batches-empty-title">Nenhum lote por aqui ainda</h2>
+        <p class="batches-empty-text">Quando um lote for cadastrado, você poderá acompanhar cada etapa da cadeia nesta tela.</p>
+        @if (facade.canCreate()) {
+          <button type="button" class="batches-empty-create" (click)="createModalOpen.set(true)">Cadastrar primeiro lote</button>
+        }
+      </section>
+    }
+
+    <app-pagination [page]="facade.pageNumber()" [totalPages]="facade.totalPages()" [disabled]="facade.loading()" label="Paginação dos lotes" (previous)="facade.previousPage()" (next)="facade.nextPage()" />
+  </div>
+</main>
+
+@if (createModalOpen()) {
+  <app-batch-create-modal (dismiss)="createModalOpen.set(false)" (created)="batchCreated()" />
+}
+@if (stageBatch(); as batch) {
+  <app-batch-stage-modal [batchId]="batch.batchId" (dismiss)="stageBatch.set(null)" (changed)="facade.load()" (created)="stageCreated()" />
+}

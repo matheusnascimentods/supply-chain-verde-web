@@ -1,0 +1,65 @@
+<article class="batch-card">
+  <section class="batch-summary">
+    <p class="batch-code">LOTE #{{ batch().batchId }}</p>
+    <h2 class="batch-product">{{ batch().productName ?? 'Produto não identificado' }}</h2>
+    <p class="batch-supplier">{{ supplierName() }}</p>
+
+    <dl class="batch-facts">
+      <div>
+        <dt class="batch-fact-label">Quantidade</dt>
+        <dd class="batch-fact-value">{{ quantity() }}</dd>
+      </div>
+      <div>
+        <dt class="batch-fact-label">Produzido em</dt>
+        <dd class="batch-fact-value">{{ formatDate(batch().producedAt) }}</dd>
+      </div>
+    </dl>
+    @if (canAddStage()) {
+      <button type="button" class="batch-add-stage" (click)="addStage.emit()">
+        <svg viewBox="0 0 20 20" class="batch-icon" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3Z" clip-rule="evenodd" />
+        </svg>
+        Adicionar etapa
+      </button>
+    }
+  </section>
+
+  <section class="batch-journey" aria-label="Jornada do lote">
+    <div class="batch-route">
+      <h3 class="batch-route-origin">
+        {{ routeOrigin() }}
+        <span class="batch-route-arrow" aria-hidden="true">→</span>
+      </h3>
+      <p class="batch-route-destination">{{ routeDestination() }}</p>
+    </div>
+
+    @if (batch().stages.length) {
+      <ol class="batch-timeline">
+        @for (stage of batch().stages; track stage.chainId; let last = $last) {
+          <li class="batch-timeline-item">
+            @if (!last) { <span class="batch-timeline-line" aria-hidden="true"></span> }
+            <span class="batch-timeline-node" aria-hidden="true"></span>
+            <div class="batch-timeline-content">
+              <div class="batch-timeline-header">
+                <span class="batch-timeline-stage">{{ stageLabels[stage.stageType] }}</span>
+                <time class="batch-timeline-time" [attr.datetime]="stage.startedAt">{{ formatDate(stage.startedAt, true) }}</time>
+              </div>
+              <p class="batch-timeline-address">{{ stageAddress(stage) }}</p>
+              @if (stage.transport || stage.emission) {
+                <p class="batch-timeline-details">
+                  @if (stage.transport; as transport) {
+                    {{ transportModeLabels[transport.transportMode] }} · {{ transport.distance }} km · {{ transport.fuelType }}
+                  }
+                  @if (stage.transport && stage.emission) { <span aria-hidden="true"> · </span> }
+                  @if (stage.emission; as emission) { {{ emission.co2Kg }} kg CO₂e }
+                </p>
+              }
+            </div>
+          </li>
+        }
+      </ol>
+    } @else {
+      <div class="batch-timeline-empty">Nenhuma etapa registrada. A jornada aparecerá aqui quando começar.</div>
+    }
+  </section>
+</article>
