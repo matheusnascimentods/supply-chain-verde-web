@@ -1,5 +1,6 @@
 import { Batch } from './index.model';
-import { canAddStageTo, canCalculateEmission, canCreateBatch } from './index.rules';
+import type { SupplierRanking } from '../../suppliers';
+import { canAddStageTo, canCalculateEmission, canCreateBatch, isRecommended } from './index.rules';
 
 describe('batches rules', () => {
   const batch = { currentStage: 'TRANSPORT' } as Batch;
@@ -22,5 +23,13 @@ describe('batches rules', () => {
     expect(canAddStageTo('supplier', { ...batch, currentStage: null })).toBe(true);
     expect(canAddStageTo('admin', { ...batch, currentStage: 'RETAIL' })).toBe(false);
     expect(canAddStageTo('auditor', batch)).toBe(false);
+  });
+
+  it('recommends only the first supplier of the first page with emission history', () => {
+    const withHistory = { co2KgPerUnit: 0.42 } as SupplierRanking;
+    expect(isRecommended(withHistory, 0, 0)).toBe(true);
+    expect(isRecommended(withHistory, 1, 0)).toBe(false);
+    expect(isRecommended(withHistory, 0, 1)).toBe(false);
+    expect(isRecommended({ co2KgPerUnit: null } as SupplierRanking, 0, 0)).toBe(false);
   });
 });

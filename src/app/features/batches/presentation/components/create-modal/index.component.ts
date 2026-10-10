@@ -5,6 +5,7 @@ import { PaginationComponent } from '../../../../../shared/ui/pagination/index.c
 import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
 import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { BatchCreationFacade } from '../../../application/create-batch/index.facade';
+import { isRecommended } from '../../../domain/index.rules';
 import { NewProductFormComponent } from '../new-product-form/index.component';
 import { NewSupplierFormComponent } from '../new-supplier-form/index.component';
 
@@ -28,6 +29,7 @@ export class BatchCreateModalComponent {
   protected readonly facade = inject(BatchCreationFacade);
   protected readonly steps = ['Produto', 'Fornecedor', 'Revisão'];
   protected readonly score = formatNumberBr;
+  protected readonly isRecommended = isRecommended;
 
   readonly dismiss = output<void>();
   readonly created = output<void>();
