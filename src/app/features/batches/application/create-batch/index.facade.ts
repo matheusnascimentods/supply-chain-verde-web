@@ -1,9 +1,9 @@
-import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Observable, switchMap, tap } from 'rxjs';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../core/auth/session/index.service';
-import { NewSupplier, Supplier, SupplierRanking, SuppliersRepository } from '../../../suppliers';
-import { NewProduct, Product } from '../../domain/product/index.model';
+import { NewSupplier, RecommendationCriteria, Supplier, SupplierRanking, SuppliersRepository } from '../../../suppliers';
+import { NewProduct, PRODUCT_UNIT_SYMBOLS, Product } from '../../domain/product/index.model';
 import { ProductsRepository } from '../../infrastructure/product/index.repository';
 import { PagedSearch } from '../paged-search/index.helper';
 import { CreateBatchError, CreateBatchProgress, CreateBatchStep, CreateBatchUseCase } from '../use-cases/create-batch/index.use-case';
@@ -39,7 +39,7 @@ export class BatchCreationFacade {
     this.destroyRef,
   );
   readonly suppliers = new PagedSearch<SupplierRanking>(
-    (query) => this.suppliersRepository.loadRanking(query),
+    (query) => this.suppliersRepository.loadRanking(query, this.recommendationCriteria()),
     { load: 'Não foi possível carregar os fornecedores. Tente novamente.', page: 'Não foi possível carregar esta página de fornecedores.' },
     (message) => this.error.set(message),
     this.destroyRef,
@@ -54,6 +54,20 @@ export class BatchCreationFacade {
   readonly ownSupplier = signal<Supplier | null>(null);
   private readonly ownSupplierId = signal<number | null>(null);
   private readonly loadingOwnSupplier = signal(this.isSupplier);
+
+  readonly recommendationCriteria = computed<RecommendationCriteria | undefined>(
+    () => {
+      const selected = this.selectedProduct();
+      if (selected) return { productId: selected.productId };
+      const pending = this.pendingProduct();
+      return pending ? { category: pending.category, unit: pending.unit } : undefined;
+    },
+    { equal: (a, b) => JSON.stringify(a) === JSON.stringify(b) },
+  );
+  readonly productUnitSymbol = computed(() => {
+    const unit = (this.selectedProduct() ?? this.pendingProduct())?.unit;
+    return unit ? PRODUCT_UNIT_SYMBOLS[unit] : '';
+  });
 
   readonly loadingSuppliers = computed(() => (this.isAdmin ? this.suppliers.loading() : this.loadingOwnSupplier()));
   readonly hasProductChoice = computed(() => !!(this.selectedProduct() || this.createdProduct() || this.pendingProduct()));
@@ -79,8 +93,13 @@ export class BatchCreationFacade {
 
   constructor() {
     this.products.load();
-    if (this.isAdmin) this.suppliers.load();
-    else if (this.isSupplier) this.loadOwnSupplier();
+    if (this.isAdmin) {
+      // Recarrega o ranking do início sempre que o produto (ou categoria + unidade) muda.
+      effect(() => {
+        this.recommendationCriteria();
+        untracked(() => this.suppliers.load());
+      });
+    } else if (this.isSupplier) this.loadOwnSupplier();
   }
 
   selectProduct(product: Product): void {

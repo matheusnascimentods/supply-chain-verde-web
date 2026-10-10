@@ -36,7 +36,11 @@ export interface SupplierRanking extends Supplier {
   totalCo2Kg: number;
   reportCount: number;
   certifications: SupplierCertification[];
+  co2KgPerUnit?: number | null;
 }
+
+/** Critério da recomendação: produto cadastrado ou categoria + unidade de um produto novo. */
+export type RecommendationCriteria = { productId: number } | { category: string; unit: string };
 
 export interface NewSupplier {
   name: string;

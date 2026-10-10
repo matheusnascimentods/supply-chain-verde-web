@@ -96,7 +96,7 @@
             <div class="picker-header">
               <div>
                 <h3 id="choose-supplier-heading" class="picker-title">Ou selecione um fornecedor</h3>
-                <p class="picker-hint">Resultados ordenados pelo ranking de sustentabilidade.</p>
+                <p class="picker-hint">{{ facade.recommendationCriteria() ? 'Ordenados pelo menor CO₂ por unidade deste produto.' : 'Resultados ordenados pelo ranking de sustentabilidade.' }}</p>
               </div>
               <app-text-field id="batch-supplier-search" class="picker-search" label="Buscar fornecedores" type="search" placeholder="Buscar fornecedor..." [ngModel]="facade.suppliers.search()" (ngModelChange)="facade.suppliers.searchFor($event)" />
             </div>
@@ -104,9 +104,12 @@
               <p class="picker-loading" aria-live="polite">Carregando fornecedores…</p>
             } @else {
               <div class="picker-grid">
-                @for (supplier of facade.suppliers.items(); track supplier.supplierId) {
+                @for (supplier of facade.suppliers.items(); track supplier.supplierId; let index = $index) {
                   <button type="button" class="picker-option" [attr.aria-pressed]="facade.selectedSupplier()?.supplierId === supplier.supplierId" (click)="facade.selectSupplier(supplier)">
-                    <span class="picker-option-name">{{ supplier.name }}</span><span class="picker-option-meta">{{ supplier.cnpj ?? 'CNPJ não informado' }} · {{ score(supplier.sustainabilityScore) }} pontos</span>
+                    <span class="picker-option-name">{{ supplier.name }} @if (isRecommended(supplier, index, facade.suppliers.page())) { <span class="recommended-badge">Recomendado</span> }</span><span class="picker-option-meta">{{ supplier.cnpj ?? 'CNPJ não informado' }} · {{ score(supplier.sustainabilityScore) }} pontos</span>
+                    @if (facade.recommendationCriteria()) {
+                      <span class="picker-option-meta">{{ typeof supplier.co2KgPerUnit === 'number' ? score(supplier.co2KgPerUnit) + ' kg CO₂e/' + facade.productUnitSymbol() : 'Sem histórico' }}</span>
+                    }
                   </button>
                 } @empty {
                   <p class="picker-empty">Nenhum fornecedor encontrado.</p>
