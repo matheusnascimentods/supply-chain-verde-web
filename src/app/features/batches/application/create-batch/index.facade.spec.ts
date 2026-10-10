@@ -28,7 +28,9 @@ describe('BatchCreationFacade', () => {
         { provide: CreateBatchUseCase, useValue: createBatch },
       ],
     });
-    return TestBed.inject(BatchCreationFacade);
+    const facade = TestBed.inject(BatchCreationFacade);
+    TestBed.tick();
+    return facade;
   }
 
   beforeEach(() => {
@@ -44,6 +46,26 @@ describe('BatchCreationFacade', () => {
     const facade = createFacade('admin');
     expect(facade.products.items()).toEqual([product]);
     expect(facade.suppliers.items()).toEqual([supplier]);
+  });
+
+  it('reloads the supplier ranking with the chosen product as criteria', () => {
+    const facade = createFacade('admin');
+    expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, undefined);
+
+    facade.selectProduct(product);
+    TestBed.tick();
+    expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, { productId: 11 });
+
+    facade.useNewProduct(newProduct);
+    TestBed.tick();
+    expect(suppliers.loadRanking).toHaveBeenLastCalledWith(
+      { limit: 20, offset: 0, search: '' },
+      { category: 'AGRICULTURE', unit: 'KG' },
+    );
+
+    facade.useNewProduct({ ...newProduct, name: 'Outro café' });
+    TestBed.tick();
+    expect(suppliers.loadRanking).toHaveBeenCalledTimes(3);
   });
 
   it('preselects the supplier linked to a supplier account', () => {

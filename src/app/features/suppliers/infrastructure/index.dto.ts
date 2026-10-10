@@ -38,6 +38,7 @@ export const supplierRankingSchema = supplierResponseSchema.extend({
   totalCo2Kg: z.number(),
   reportCount: z.number().int().nonnegative(),
   certifications: z.array(supplierCertificationSchema),
+  co2KgPerUnit: z.number().nullable().optional(),
 });
 
 export const supplierRankingPageSchema = z.object({
