@@ -36,6 +36,23 @@ describe('SuppliersRepository', () => {
     request.flush({ items: [ranking], limit: 20, offset: 20, hasNext: false, totalPages: 2 });
   });
 
+  it('sends the recommendation criteria with the ranking query', () => {
+    repository.loadRanking({ limit: 20, offset: 0 }, { productId: 12 }).subscribe((page) => {
+      expect(page.items[0].co2KgPerUnit).toBe(0.421);
+    });
+    const byProduct = http.expectOne((req) => req.url === base);
+    expect(byProduct.request.params.get('productId')).toBe('12');
+    expect(byProduct.request.params.has('category')).toBe(false);
+    byProduct.flush({ items: [{ ...ranking, co2KgPerUnit: 0.421 }], limit: 20, offset: 0, hasNext: false, totalPages: 1 });
+
+    repository.loadRanking({ limit: 20, offset: 0 }, { category: 'AGRICULTURE', unit: 'KG' }).subscribe();
+    const byCategory = http.expectOne((req) => req.url === base);
+    expect(byCategory.request.params.get('category')).toBe('AGRICULTURE');
+    expect(byCategory.request.params.get('unit')).toBe('KG');
+    expect(byCategory.request.params.has('productId')).toBe(false);
+    byCategory.flush({ items: [{ ...ranking, co2KgPerUnit: null }], limit: 20, offset: 0, hasNext: false, totalPages: 1 });
+  });
+
   it('rejects a ranking item outside the contract', () => {
     let failed = false;
     repository.loadRanking({ limit: 20, offset: 0 }).subscribe({ error: () => (failed = true) });
