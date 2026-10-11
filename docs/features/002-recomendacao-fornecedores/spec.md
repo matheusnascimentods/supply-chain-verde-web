@@ -1,6 +1,6 @@
 # Especificação — Recomendação de fornecedores sustentáveis
 
-> Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Regras e contrato da API: `supply-chain-verde-api/docs/recomendacao-fornecedores/spec.md`.
+> Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Regras e contrato da API: `supply-chain-verde-api/docs/features/001-recomendacao-fornecedores/spec.md`.
 
 ## 1. Problema
 
