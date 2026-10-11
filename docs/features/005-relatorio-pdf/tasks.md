@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** não iniciado. Depende da API (`supply-chain-verde-api/docs/relatorio-pdf/tasks.md`).
+**Status:** não iniciado. Depende da API (`supply-chain-verde-api/docs/features/005-relatorio-pdf/tasks.md`).
 
 ---
 

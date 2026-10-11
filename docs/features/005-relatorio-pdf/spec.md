@@ -1,6 +1,6 @@
 # Especificação — Relatório de sustentabilidade em PDF
 
-> Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Dados vindos da API: `supply-chain-verde-api/docs/relatorio-pdf/spec.md`.
+> Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Dados vindos da API: `supply-chain-verde-api/docs/features/005-relatorio-pdf/spec.md`.
 
 ## 1. Problema
 

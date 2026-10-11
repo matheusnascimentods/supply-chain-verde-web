@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md). Cada task é um branch/PR para `main`, em sequência.
 
-**Status:** não iniciado. Depende da API (`supply-chain-verde-api/docs/vinculo-usuario-fornecedor/tasks.md`). Primeira feature a implementar; o gráfico de emissões usa o `supplierId()` da sessão.
+**Status:** não iniciado. Depende da API (`supply-chain-verde-api/docs/features/002-vinculo-usuario-fornecedor/tasks.md`). Primeira feature a implementar; o gráfico de emissões usa o `supplierId()` da sessão.
 
 ---
 
