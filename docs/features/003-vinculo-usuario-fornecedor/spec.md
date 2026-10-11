@@ -1,6 +1,6 @@
 # Especificação — Vínculo entre usuário e fornecedor
 
-> Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Regras e contratos da API: `supply-chain-verde-api/docs/vinculo-usuario-fornecedor/spec.md`.
+> Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Regras e contratos da API: `supply-chain-verde-api/docs/features/002-vinculo-usuario-fornecedor/spec.md`.
 
 ## 1. Problema
 

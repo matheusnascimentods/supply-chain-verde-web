@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** implementado (aguarda merge da API, PR #53). Depende da API (`supply-chain-verde-api/docs/recomendacao-fornecedores/tasks.md`).
+**Status:** implementado (aguarda merge da API, PR #53). Depende da API (`supply-chain-verde-api/docs/features/001-recomendacao-fornecedores/tasks.md`).
 
 ---
 
