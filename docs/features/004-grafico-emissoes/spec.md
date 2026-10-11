@@ -1,6 +1,6 @@
 # Especificação — Gráfico de emissões por período
 
-> Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Contrato da API: `supply-chain-verde-api/docs/grafico-emissoes/spec.md`.
+> Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Contrato da API: `supply-chain-verde-api/docs/features/004-grafico-emissoes/spec.md`.
 
 ## 1. Problema
 

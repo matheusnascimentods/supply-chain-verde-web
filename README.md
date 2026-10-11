@@ -147,20 +147,25 @@ src/
 
 cypress/e2e/                     # fluxos ponta a ponta
 docs/
-├── initial/                     # SDD inicial: spec, plan e tasks
-└── folder-restructure/          # SDD da reestruturação em camadas
+└── features/                    # SDD por feature (spec, plan e tasks)
+    ├── 000-base/                # SDD inicial
+    ├── 001-folder-restructure/  # reestruturação em camadas
+    ├── 002-recomendacao-fornecedores/
+    ├── 003-vinculo-usuario-fornecedor/
+    ├── 004-grafico-emissoes/
+    └── 005-relatorio-pdf/
 ```
 
 ## 📚 Documentação do Projeto
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/initial/spec.md`](docs/initial/spec.md) | Funcionalidades, perfis, rotas e fluxos atuais |
-| [`docs/initial/plan.md`](docs/initial/plan.md) | Arquitetura técnica, decisões e fluxo de criação de lote |
-| [`docs/initial/tasks.md`](docs/initial/tasks.md) | Histórico de implementação e pendências |
-| [`docs/folder-restructure/spec.md`](docs/folder-restructure/spec.md) | Problema, requisitos e critérios de aceite da reestruturação em camadas |
-| [`docs/folder-restructure/plan.md`](docs/folder-restructure/plan.md) | Estrutura alvo, padrão por feature e decisões |
-| [`docs/folder-restructure/tasks.md`](docs/folder-restructure/tasks.md) | Tarefas e PRs da reestruturação (#41–#53) |
+| [`docs/features/000-base/spec.md`](docs/features/000-base/spec.md) | Funcionalidades, perfis, rotas e fluxos atuais |
+| [`docs/features/000-base/plan.md`](docs/features/000-base/plan.md) | Arquitetura técnica, decisões e fluxo de criação de lote |
+| [`docs/features/000-base/tasks.md`](docs/features/000-base/tasks.md) | Histórico de implementação e pendências |
+| [`docs/features/001-folder-restructure/spec.md`](docs/features/001-folder-restructure/spec.md) | Problema, requisitos e critérios de aceite da reestruturação em camadas |
+| [`docs/features/001-folder-restructure/plan.md`](docs/features/001-folder-restructure/plan.md) | Estrutura alvo, padrão por feature e decisões |
+| [`docs/features/001-folder-restructure/tasks.md`](docs/features/001-folder-restructure/tasks.md) | Tarefas e PRs da reestruturação (#41–#53) |
 
 ### Pipeline de Qualidade
 
