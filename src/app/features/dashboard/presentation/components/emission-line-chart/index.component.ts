@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
+import { formatKgCo2e, formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { MonthlyEmission } from '../../../domain/index.model';
 import { monthLabel } from '../../../domain/index.rules';
 
@@ -44,12 +44,10 @@ function smoothPath(points: ChartPoint[]): string {
 export class EmissionLineChartComponent {
   readonly series = input.required<MonthlyEmission[]>();
 
-  private readonly step = computed(() => niceStep(Math.max(...this.series().map((item) => item.co2Kg), 0) / 4 || 1));
+  private readonly max = computed(() => Math.max(...this.series().map((item) => item.co2Kg), 0));
+  private readonly step = computed(() => niceStep(this.max() / 4 || 1));
   // Topo da escala: múltiplo do passo logo acima do maior valor (com tudo zerado, um passo, sem dividir por zero).
-  private readonly top = computed(() => {
-    const max = Math.max(...this.series().map((item) => item.co2Kg), 0);
-    return Math.max(1, Math.ceil(max / this.step())) * this.step();
-  });
+  private readonly top = computed(() => Math.max(1, Math.ceil(this.max() / this.step())) * this.step());
 
   protected readonly ticks = computed(() => {
     const count = Math.round(this.top() / this.step());
@@ -64,7 +62,7 @@ export class EmissionLineChartComponent {
     return series.map((item, index) => ({
       month: item.month,
       label: monthLabel(item.month),
-      value: `${formatNumberBr(item.co2Kg)} kg CO₂e`,
+      value: formatKgCo2e(item.co2Kg),
       x: series.length > 1 ? (index / (series.length - 1)) * 100 : 50,
       y: 100 - (item.co2Kg / this.top()) * 100,
     }));

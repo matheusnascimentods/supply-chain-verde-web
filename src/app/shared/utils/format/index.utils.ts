@@ -35,6 +35,10 @@ export function formatNumberBr(value: number, maxFractionDigits = 2): string {
   return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: maxFractionDigits }).format(value);
 }
 
+export function formatKgCo2e(value: number): string {
+  return `${formatNumberBr(value)} kg CO₂e`;
+}
+
 export function formatIsoDateBr(value: string | null | undefined): string {
   if (!value) return '—';
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);

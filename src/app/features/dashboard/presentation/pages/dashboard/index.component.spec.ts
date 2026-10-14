@@ -152,7 +152,7 @@ describe('DashboardComponent', () => {
     const page = renderAs('manager');
     const from = page.querySelector<HTMLInputElement>('#emissions-from')!;
     from.value = '2099-01';
-    from.dispatchEvent(new Event('change'));
+    from.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     expect(dashboardService.loadEmissions).toHaveBeenCalledOnce();
     expect(page.textContent).toContain('O mês inicial deve ser anterior ou igual ao final.');

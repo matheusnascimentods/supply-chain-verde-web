@@ -12,7 +12,7 @@
           <stop offset="100%" class="emission-chart-fill-bottom" />
         </linearGradient>
       </defs>
-      <path class="emission-chart-area" [attr.d]="areaPath()" fill="url(#emission-chart-fill)" />
+      <path [attr.d]="areaPath()" fill="url(#emission-chart-fill)" />
       <path class="emission-chart-line" [attr.d]="linePath()" vector-effect="non-scaling-stroke" />
     </svg>
     @for (point of points(); track point.month; let first = $first; let last = $last) {

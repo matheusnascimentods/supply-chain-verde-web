@@ -31,13 +31,9 @@
           <h2 id="emissions-heading" class="dashboard-section-title">{{ emissionsTitle() }}</h2>
           <p class="dashboard-section-description">Emissão de CO₂ mês a mês</p>
         </div>
-        <div>
-          <label class="dashboard-emissions-field" for="emissions-from">De
-            <input id="emissions-from" class="dashboard-emissions-input" type="month" [value]="facade.range().from" (change)="changeRange('from', $event)" />
-          </label>
-          <label class="dashboard-emissions-field" for="emissions-to">Até
-            <input id="emissions-to" class="dashboard-emissions-input" type="month" [value]="facade.range().to" (change)="changeRange('to', $event)" />
-          </label>
+        <div class="dashboard-emissions-range">
+          <app-text-field id="emissions-from" label="De" type="month" name="emissionsFrom" [ngModel]="facade.range().from" (ngModelChange)="facade.setRange({ from: $event })" />
+          <app-text-field id="emissions-to" label="Até" type="month" name="emissionsTo" [ngModel]="facade.range().to" (ngModelChange)="facade.setRange({ to: $event })" />
         </div>
       </div>
       @if (facade.rangeError()) {
@@ -51,10 +47,10 @@
         </div>
       } @else if (facade.hasEmissions()) {
         <div class="dashboard-emissions-summary">
-          <p class="dashboard-emissions-total">{{ periodTotal() }}</p>
+          <p class="dashboard-emissions-total">{{ periodTotalLabel() }}</p>
           <p class="dashboard-emissions-note">
             no período
-            @if (variation(); as change) {
+            @if (variationBadge(); as change) {
               <span class="dashboard-emissions-change" [attr.data-tone]="change.tone">{{ change.text }}</span> do primeiro ao último mês
             }
           </p>
@@ -65,66 +61,64 @@
       }
     </section>
 
-    @if (!facade.loading() && !facade.error()) {
-      @if (facade.summary(); as dashboardData) {
-          <section class="dashboard-analytics-grid" aria-label="Análises dos lotes recentes">
-            <article class="dashboard-stage-chart-card">
-              <div>
-                <h2 class="dashboard-section-title">Lotes recentes por etapa</h2>
-                <p class="dashboard-section-description">Distribuição dos lotes retornados pela API (até 10)</p>
-              </div>
-              @if (facade.distribution().length) {
-                <app-stage-bar-chart [shares]="facade.distribution()" />
-              } @else {
-                <p class="dashboard-empty-state" role="status">Ainda não há lotes recentes para exibir.</p>
-              }
-            </article>
-
-            <article class="dashboard-pie-chart-card">
-              <div>
-                <h2 class="dashboard-section-title">Etapas dos lotes recentes</h2>
-                <p class="dashboard-section-description">Participação por etapa entre os lotes retornados</p>
-              </div>
-              @if (facade.distribution().length) {
-                <app-stage-pie-chart [shares]="facade.distribution()" [total]="facade.recentBatches().length" />
-              } @else {
-                <p class="dashboard-empty-state" role="status">Ainda não há lotes recentes para exibir.</p>
-              }
-            </article>
-
-          </section>
-
-          <div class="dashboard-recent-heading">
-            <div>
-              <h2 id="recent-batches-heading" class="dashboard-recent-title">Lotes recentes</h2>
-              <p class="dashboard-section-description">{{ dashboardData.recentBatches.length }} dos lotes recentes retornados pela API.</p>
-            </div>
-            <a routerLink="/batches" class="dashboard-view-all">Ver todos <span aria-hidden="true">→</span></a>
+    @if (!facade.loading() && !facade.error() && facade.summary(); as dashboardData) {
+      <section class="dashboard-analytics-grid" aria-label="Análises dos lotes recentes">
+        <article class="dashboard-stage-chart-card">
+          <div>
+            <h2 class="dashboard-section-title">Lotes recentes por etapa</h2>
+            <p class="dashboard-section-description">Distribuição dos lotes retornados pela API (até 10)</p>
           </div>
-          <section class="dashboard-batches-table-card" aria-labelledby="recent-batches-heading">
-            @if (facade.recentBatches().length) {
-              <div class="dashboard-table-scroll">
-                <table class="dashboard-batches-table">
-                  <thead class="dashboard-table-head">
-                    <tr><th scope="col" class="dashboard-table-cell-heading">Produto</th><th scope="col" class="dashboard-table-cell-heading">Fornecedor</th><th scope="col" class="dashboard-table-cell-heading">Quantidade</th><th scope="col" class="dashboard-table-cell-heading">Etapa atual</th></tr>
-                  </thead>
-                  <tbody>
-                    @for (batch of facade.recentBatches(); track batch.batchId) {
-                      <tr class="dashboard-batch-row">
-                        <td class="dashboard-product-cell">{{ batch.productName }}</td>
-                        <td class="dashboard-detail-cell">{{ batch.supplierName }}</td>
-                        <td class="dashboard-detail-cell">{{ quantity(batch) }}</td>
-                        <td class="dashboard-action-cell"><app-stage-badge [stage]="batch.status" /></td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            } @else {
-              <p class="dashboard-empty-table" role="status">Nenhum lote recente encontrado.</p>
-            }
-          </section>
-      }
+          @if (facade.distribution().length) {
+            <app-stage-bar-chart [shares]="facade.distribution()" />
+          } @else {
+            <p class="dashboard-empty-state" role="status">Ainda não há lotes recentes para exibir.</p>
+          }
+        </article>
+
+        <article class="dashboard-pie-chart-card">
+          <div>
+            <h2 class="dashboard-section-title">Etapas dos lotes recentes</h2>
+            <p class="dashboard-section-description">Participação por etapa entre os lotes retornados</p>
+          </div>
+          @if (facade.distribution().length) {
+            <app-stage-pie-chart [shares]="facade.distribution()" [total]="facade.recentBatches().length" />
+          } @else {
+            <p class="dashboard-empty-state" role="status">Ainda não há lotes recentes para exibir.</p>
+          }
+        </article>
+
+      </section>
+
+      <div class="dashboard-recent-heading">
+        <div>
+          <h2 id="recent-batches-heading" class="dashboard-recent-title">Lotes recentes</h2>
+          <p class="dashboard-section-description">{{ dashboardData.recentBatches.length }} dos lotes recentes retornados pela API.</p>
+        </div>
+        <a routerLink="/batches" class="dashboard-view-all">Ver todos <span aria-hidden="true">→</span></a>
+      </div>
+      <section class="dashboard-batches-table-card" aria-labelledby="recent-batches-heading">
+        @if (facade.recentBatches().length) {
+          <div class="dashboard-table-scroll">
+            <table class="dashboard-batches-table">
+              <thead class="dashboard-table-head">
+                <tr><th scope="col" class="dashboard-table-cell-heading">Produto</th><th scope="col" class="dashboard-table-cell-heading">Fornecedor</th><th scope="col" class="dashboard-table-cell-heading">Quantidade</th><th scope="col" class="dashboard-table-cell-heading">Etapa atual</th></tr>
+              </thead>
+              <tbody>
+                @for (batch of facade.recentBatches(); track batch.batchId) {
+                  <tr class="dashboard-batch-row">
+                    <td class="dashboard-product-cell">{{ batch.productName }}</td>
+                    <td class="dashboard-detail-cell">{{ batch.supplierName }}</td>
+                    <td class="dashboard-detail-cell">{{ quantity(batch) }}</td>
+                    <td class="dashboard-action-cell"><app-stage-badge [stage]="batch.status" /></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <p class="dashboard-empty-table" role="status">Nenhum lote recente encontrado.</p>
+        }
+      </section>
     }
   } @else {
     <section class="dashboard-profile-title" role="status">

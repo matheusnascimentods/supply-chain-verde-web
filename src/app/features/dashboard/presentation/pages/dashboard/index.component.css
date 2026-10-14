@@ -102,11 +102,8 @@
 .dashboard-emissions-header {
   @apply flex flex-wrap items-end justify-between gap-4;
 }
-.dashboard-emissions-field {
-  @apply ml-3 text-xs font-medium text-slate-600;
-}
-.dashboard-emissions-input {
-  @apply ml-2 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800;
+.dashboard-emissions-range {
+  @apply flex gap-3;
 }
 .dashboard-emissions-note {
   @apply mt-3 text-sm text-slate-600;
@@ -117,9 +114,9 @@
 .dashboard-emissions-change {
   @apply font-semibold;
 }
-[data-tone='down'] {
+.dashboard-emissions-change[data-tone='down'] {
   @apply text-green-700;
 }
-[data-tone='up'] {
+.dashboard-emissions-change[data-tone='up'] {
   @apply text-red-600;
 }
