@@ -27,7 +27,7 @@
       <app-data-table aria-label="Lista de usuários">
         <table class="users-table">
           <thead class="users-table-head"><tr class="users-table-head-row">
-            <th scope="col" class="users-cell">Nome</th><th scope="col" class="users-cell">Email</th><th scope="col" class="users-cell">Role</th><th scope="col" class="users-cell">Criado em</th>
+            <th scope="col" class="users-cell">Nome</th><th scope="col" class="users-cell">Email</th><th scope="col" class="users-cell">Role</th><th scope="col" class="users-cell">Fornecedor</th><th scope="col" class="users-cell">Criado em</th>
           </tr></thead>
           <tbody>
             @for (item of facade.items(); track item.userId) {
@@ -35,16 +35,17 @@
                 <td class="users-cell-name">{{ item.name }}</td>
                 <td class="users-cell-email">{{ item.email }}</td>
                 <td class="users-cell">
-                  @if (facade.canManage()) {
+                  @if (facade.canChangeRoles()) {
                     <app-role-menu [user]="item" [disabled]="facade.updatingRoleId() === item.userId" (roleSelected)="facade.updateRole(item, $event)" />
                   } @else {
                     <app-role-badge [role]="item.role" />
                   }
                 </td>
+                <td class="users-cell">{{ item.supplierName ?? '—' }}</td>
                 <td class="users-cell-date">{{ item.createdAt ? (item.createdAt | date:'dd/MM/yyyy HH:mm') : '—' }}</td>
               </tr>
             } @empty {
-              <tr><td class="users-empty" colspan="4">Nenhum usuário encontrado.</td></tr>
+              <tr><td class="users-empty" colspan="5">Nenhum usuário encontrado.</td></tr>
             }
           </tbody>
         </table>

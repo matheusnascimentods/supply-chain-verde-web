@@ -29,6 +29,30 @@
         @if (form.controls.role.touched && form.controls.role.hasError('required')) { <span class="create-user-field-error">Selecione um perfil.</span> }
       </label>
     </div>
+    @if (form.controls.role.value === 'supplier') {
+      <fieldset class="create-user-supplier">
+        <legend class="create-user-supplier-legend">Fornecedor sem acesso</legend>
+        <label class="create-user-field" for="user-supplier-search">Buscar fornecedor
+          <input id="user-supplier-search" class="create-user-input" type="search" autocomplete="off" placeholder="Nome do fornecedor" [value]="suppliers.search()" (input)="searchSuppliers($event)" />
+        </label>
+        @if (suppliers.loading()) {
+          <p class="create-user-supplier-hint" aria-live="polite">Carregando fornecedores…</p>
+        } @else {
+          <div class="create-user-supplier-list">
+            @for (supplier of suppliers.items(); track supplier.supplierId) {
+              <button type="button" class="create-user-supplier-option" [attr.aria-pressed]="form.controls.supplierId.value === supplier.supplierId" (click)="form.controls.supplierId.setValue(supplier.supplierId)">
+                <span class="create-user-supplier-name">{{ supplier.name }}</span>
+                <span class="create-user-supplier-hint">{{ supplier.cnpj ?? 'CNPJ não informado' }}</span>
+              </button>
+            } @empty {
+              <p class="create-user-supplier-hint">Nenhum fornecedor sem acesso encontrado.</p>
+            }
+          </div>
+          <app-pagination [page]="suppliers.totalPages() ? suppliers.page() + 1 : 0" [totalPages]="suppliers.totalPages()" [disabled]="suppliers.loading()" label="Paginação de fornecedores" (previous)="suppliers.changePage(-1)" (next)="suppliers.changePage(1)" />
+        }
+        @if (form.controls.supplierId.touched && form.controls.supplierId.hasError('required')) { <span class="create-user-field-error">Selecione o fornecedor que receberá o acesso.</span> }
+      </fieldset>
+    }
     @if (error()) { <p role="alert" class="create-user-error">{{ error() }}</p> }
     <div class="create-user-actions">
       <button type="button" class="create-user-cancel" [disabled]="saving()" (click)="dismissed.emit()">Cancelar</button>

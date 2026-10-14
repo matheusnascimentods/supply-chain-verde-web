@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, switchMap, tap, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { Supplier, SuppliersRepository } from '../../../suppliers';
@@ -77,7 +77,11 @@ export class AddStageFacade {
     const choices$ =
       this.role === 'supplier'
         ? this.currentUser.load().pipe(
-            switchMap((user) => this.suppliers.get(user.userId).pipe(map((supplier) => ({ user, suppliers: [supplier] })))),
+            switchMap((user) =>
+              user.supplierId
+                ? this.suppliers.get(user.supplierId).pipe(map((supplier) => ({ user, suppliers: [supplier] })))
+                : throwError(() => new Error('Usuário fornecedor sem fornecedor vinculado.')),
+            ),
           )
         : forkJoin({
             user: this.currentUser.load(),

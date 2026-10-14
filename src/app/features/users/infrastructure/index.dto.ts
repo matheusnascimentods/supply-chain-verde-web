@@ -7,6 +7,8 @@ export const userResponseSchema = z.object({
   email: z.string().email(),
   role: z.preprocess((value) => (typeof value === 'string' ? value.toLowerCase() : value), userRoleSchema),
   createdAt: z.string().nullable().optional(),
+  supplierId: z.number().nullable().optional(),
+  supplierName: z.string().nullable().optional(),
 }).passthrough();
 
 export const userPageSchema = z.object({

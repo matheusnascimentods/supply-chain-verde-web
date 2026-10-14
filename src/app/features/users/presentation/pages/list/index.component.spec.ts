@@ -6,8 +6,9 @@ import { UserListComponent } from './index.component';
 
 describe('UserListComponent', () => {
   let fixture: ComponentFixture<UserListComponent>;
-  let facade: Record<string, unknown> & { canManage: ReturnType<typeof signal<boolean>>; updateRole: ReturnType<typeof vi.fn>; reloadFromFirstPage: ReturnType<typeof vi.fn> };
+  let facade: Record<string, unknown> & { canManage: ReturnType<typeof signal<boolean>>; canChangeRoles: ReturnType<typeof signal<boolean>>; updateRole: ReturnType<typeof vi.fn>; reloadFromFirstPage: ReturnType<typeof vi.fn> };
   const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager', createdAt: null };
+  const bia = { userId: 2, name: 'Bia', email: 'bia@example.com', role: 'supplier', createdAt: null, supplierId: 7, supplierName: 'Fazenda Verde' };
 
   beforeEach(() => {
     facade = {
@@ -20,6 +21,7 @@ describe('UserListComponent', () => {
       pageNumber: signal(1),
       updatingRoleId: signal(null),
       canManage: signal(true),
+      canChangeRoles: signal(true),
       reload: vi.fn(),
       searchFor: vi.fn(),
       previousPage: vi.fn(),
@@ -40,12 +42,20 @@ describe('UserListComponent', () => {
     expect(page.textContent).toContain('+ Adicionar usuário');
   });
 
-  it('shows only the role badge for users who cannot manage', () => {
-    facade.canManage.set(false);
+  it('shows only the role badge for users who cannot change roles', () => {
+    facade.canChangeRoles.set(false);
     fixture.detectChanges();
     const page: HTMLElement = fixture.nativeElement;
     expect(page.querySelector('app-role-menu')).toBeNull();
     expect(page.querySelector('app-role-badge')?.textContent?.trim()).toBe('Gestor');
+  });
+
+  it('shows the linked supplier of each user', () => {
+    (facade['items'] as ReturnType<typeof signal<unknown[]>>).set([ana, bia]);
+    fixture.detectChanges();
+    const rows = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('tbody tr'));
+    expect(rows[0].textContent).toContain('—');
+    expect(rows[1].textContent).toContain('Fazenda Verde');
   });
 
   it('forwards the selected role to the facade', () => {
