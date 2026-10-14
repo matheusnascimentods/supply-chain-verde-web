@@ -111,3 +111,15 @@
 .dashboard-emissions-note {
   @apply mt-3 text-sm text-slate-600;
 }
+.dashboard-emissions-total {
+  @apply mt-5 text-3xl font-bold text-slate-900;
+}
+.dashboard-emissions-change {
+  @apply font-semibold;
+}
+[data-tone='down'] {
+  @apply text-green-700;
+}
+[data-tone='up'] {
+  @apply text-red-600;
+}

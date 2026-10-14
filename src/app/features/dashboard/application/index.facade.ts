@@ -26,6 +26,7 @@ export class DashboardFacade {
   readonly emissionsError = signal('');
   readonly hasEmissions = computed(() => this.emissions().some((item) => item.co2Kg > 0));
   readonly variation = computed(() => periodVariation(this.emissions()));
+  readonly periodTotal = computed(() => this.emissions().reduce((total, item) => total + item.co2Kg, 0));
   private emissionsSequence = 0;
 
   constructor() {
