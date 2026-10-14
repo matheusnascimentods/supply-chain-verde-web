@@ -35,6 +35,18 @@ export function formatNumberBr(value: number, maxFractionDigits = 2): string {
   return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: maxFractionDigits }).format(value);
 }
 
+export function formatKgCo2e(value: number): string {
+  return `${formatNumberBr(value)} kg CO₂e`;
+}
+
+const MONTH_NAMES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+/** Ex.: "2026-01" → "jan/2026". */
+export function formatMonthBr(month: string): string {
+  const [year, value] = month.split('-');
+  return `${MONTH_NAMES[Number(value) - 1]}/${year}`;
+}
+
 export function formatIsoDateBr(value: string | null | undefined): string {
   if (!value) return '—';
   const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);

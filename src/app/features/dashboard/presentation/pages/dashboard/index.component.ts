@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { SessionService } from '../../../../../core/auth/session/index.service';
-import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
+import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
+import { formatKgCo2e, formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { PRODUCT_UNIT_SYMBOLS, StageBadgeComponent } from '../../../../batches';
 import { DashboardFacade } from '../../../application/index.facade';
 import { RecentBatch } from '../../../domain/index.model';
+import { EmissionLineChartComponent } from '../../components/emission-line-chart/index.component';
 import { MetricCardComponent, MetricTone } from '../../components/metric-card/index.component';
 import { StageBarChartComponent } from '../../components/stage-bar-chart/index.component';
 import { StagePieChartComponent } from '../../components/stage-pie-chart/index.component';
@@ -18,7 +21,16 @@ interface Metric {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, MetricCardComponent, StageBarChartComponent, StagePieChartComponent, StageBadgeComponent],
+  imports: [
+    FormsModule,
+    RouterLink,
+    MetricCardComponent,
+    StageBarChartComponent,
+    StagePieChartComponent,
+    StageBadgeComponent,
+    EmissionLineChartComponent,
+    TextFieldComponent,
+  ],
   providers: [DashboardFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
@@ -42,10 +54,26 @@ export class DashboardComponent {
       { label: 'Fornecedores', value: count(summary?.suppliers), tone: 'suppliers' },
       {
         label: 'Emissão Total (mês)',
-        value: summary ? `${formatNumberBr(summary.monthlyEmissionKgCo2e)} kg CO₂e` : '—',
+        value: summary ? formatKgCo2e(summary.monthlyEmissionKgCo2e) : '—',
         tone: 'emission',
       },
     ];
+  });
+
+  // O escopo vem da API: o fornecedor recebe só as próprias emissões.
+  readonly emissionsTitle = computed(() => (this.role() === 'supplier' ? 'Suas emissões' : 'Emissões da cadeia'));
+
+  readonly periodTotalLabel = computed(() => formatKgCo2e(this.facade.periodTotal()));
+
+  // Emissão caindo é bom: queda em verde, alta em vermelho.
+  readonly variationBadge = computed(() => {
+    const variation = this.facade.variation();
+    if (variation === null) return null;
+    const arrow = variation < 0 ? '▼' : variation > 0 ? '▲' : '';
+    return {
+      text: `${arrow} ${formatNumberBr(Math.abs(variation), 1)}%`.trim(),
+      tone: variation < 0 ? 'down' : variation > 0 ? 'up' : null,
+    };
   });
 
   protected quantity(batch: RecentBatch): string {

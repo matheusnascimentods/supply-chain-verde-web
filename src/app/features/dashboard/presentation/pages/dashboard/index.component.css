@@ -96,3 +96,30 @@
 .dashboard-profile-description {
   @apply mt-1 text-sm text-slate-600;
 }
+.dashboard-emissions-card {
+  @apply mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm;
+}
+.dashboard-emissions-header {
+  @apply flex flex-wrap items-end justify-between gap-4;
+}
+.dashboard-emissions-range {
+  @apply flex gap-3;
+}
+.dashboard-range-error {
+  @apply mt-5 text-sm text-red-700;
+}
+.dashboard-emissions-note {
+  @apply mt-3 text-sm text-slate-600;
+}
+.dashboard-emissions-total {
+  @apply mt-5 text-3xl font-bold text-slate-900;
+}
+.dashboard-emissions-change {
+  @apply font-semibold;
+}
+.dashboard-emissions-change[data-tone='down'] {
+  @apply text-green-700;
+}
+.dashboard-emissions-change[data-tone='up'] {
+  @apply text-red-600;
+}

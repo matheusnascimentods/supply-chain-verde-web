@@ -15,13 +15,51 @@
         <p class="dashboard-error-message">{{ facade.error() }}</p>
         <button type="button" (click)="facade.load()" class="dashboard-retry-button">Tentar novamente</button>
       </div>
-    } @else if (facade.summary(); as dashboardData) {
+    } @else if (facade.summary()) {
       <section class="dashboard-metrics-grid" aria-label="Indicadores da operação">
         @for (metric of metrics(); track metric.label) {
           <app-metric-card [label]="metric.label" [value]="metric.value" [tone]="metric.tone" />
         }
       </section>
+    } @else {
+      <p class="dashboard-profile-state" role="status">Resumo indisponível.</p>
+    }
 
+    <section class="dashboard-emissions-card" aria-labelledby="emissions-heading">
+      <div class="dashboard-emissions-header">
+        <div>
+          <h2 id="emissions-heading" class="dashboard-section-title">{{ emissionsTitle() }}</h2>
+          <p class="dashboard-section-description">Emissão de CO₂ mês a mês</p>
+        </div>
+        <div class="dashboard-emissions-range">
+          <app-text-field id="emissions-from" label="De" type="month" name="emissionsFrom" [ngModel]="facade.range().from" (ngModelChange)="facade.setRange({ from: $event })" />
+          <app-text-field id="emissions-to" label="Até" type="month" name="emissionsTo" [ngModel]="facade.range().to" (ngModelChange)="facade.setRange({ to: $event })" />
+        </div>
+      </div>
+      @if (facade.rangeError()) {
+        <p class="dashboard-range-error" role="alert">{{ facade.rangeError() }}</p>
+      } @else if (facade.emissionsLoading()) {
+        <p class="dashboard-empty-state" role="status">Carregando emissões…</p>
+      } @else if (facade.emissionsError()) {
+        <div class="dashboard-error-panel" role="alert">
+          <p class="dashboard-error-message">{{ facade.emissionsError() }}</p>
+          <button type="button" (click)="facade.loadEmissions()" class="dashboard-retry-button">Tentar novamente</button>
+        </div>
+      } @else if (facade.hasEmissions()) {
+        <p class="dashboard-emissions-total">{{ periodTotalLabel() }}</p>
+        <p class="dashboard-emissions-note">
+          no período
+          @if (variationBadge(); as change) {
+            <span class="dashboard-emissions-change" [attr.data-tone]="change.tone">{{ change.text }}</span> do primeiro ao último mês com emissão
+          }
+        </p>
+        <app-emission-line-chart [series]="facade.emissions()" />
+      } @else {
+        <p class="dashboard-empty-state" role="status">Sem emissões no período.</p>
+      }
+    </section>
+
+    @if (facade.summary(); as dashboardData) {
       <section class="dashboard-analytics-grid" aria-label="Análises dos lotes recentes">
         <article class="dashboard-stage-chart-card">
           <div>
@@ -79,8 +117,6 @@
           <p class="dashboard-empty-table" role="status">Nenhum lote recente encontrado.</p>
         }
       </section>
-    } @else {
-      <p class="dashboard-profile-state" role="status">Resumo indisponível.</p>
     }
   } @else {
     <section class="dashboard-profile-title" role="status">

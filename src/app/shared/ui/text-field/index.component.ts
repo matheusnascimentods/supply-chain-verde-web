@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, forwardRef, input, output, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-export type TextFieldType = 'text' | 'search' | 'email' | 'password' | 'date' | 'datetime-local' | 'number' | 'tel';
+export type TextFieldType = 'text' | 'search' | 'email' | 'password' | 'date' | 'month' | 'datetime-local' | 'number' | 'tel';
 export type TextFieldValue = string | number | null;
 
 @Component({
@@ -9,6 +9,8 @@ export type TextFieldValue = string | number | null;
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // O `id` vai para o <input>; no host ele duplicaria o id e o `label for` apontaria para o elemento errado.
+  host: { '[attr.id]': 'null' },
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TextFieldComponent), multi: true }],
 })
 export class TextFieldComponent implements ControlValueAccessor {

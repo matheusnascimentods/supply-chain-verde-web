@@ -23,3 +23,21 @@ export interface StageShare {
   count: number;
   percent: number;
 }
+
+/** Emissão de CO₂ de um mês (`YYYY-MM`); meses sem emissão vêm com zero. */
+export interface MonthlyEmission {
+  month: string;
+  co2Kg: number;
+}
+
+export const MAX_RANGE_MONTHS = 24;
+export const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+/** Intervalo de meses (`YYYY-MM`) do gráfico de emissões. */
+export interface MonthRange {
+  from: string;
+  to: string;
+}
+
+/** Por que um intervalo não pode ir para a API. */
+export type RangeProblem = 'invalid' | 'order' | 'tooLong';
