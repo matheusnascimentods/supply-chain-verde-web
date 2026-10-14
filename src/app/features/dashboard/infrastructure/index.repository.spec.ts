@@ -75,4 +75,11 @@ describe('DashboardRepository', () => {
     http.expectOne((req) => req.url.endsWith('/dashboard/emissions')).flush([{ month: '01/2026', co2Kg: 1 }]);
     expect(failed).toBe(true);
   });
+
+  it('rejects a month that does not exist', () => {
+    let failed = false;
+    repository.loadEmissions({ from: '2026-01', to: '2026-01' }).subscribe({ error: () => (failed = true) });
+    http.expectOne((req) => req.url.endsWith('/dashboard/emissions')).flush([{ month: '2026-13', co2Kg: 1 }]);
+    expect(failed).toBe(true);
+  });
 });

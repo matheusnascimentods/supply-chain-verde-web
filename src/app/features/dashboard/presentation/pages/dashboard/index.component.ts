@@ -46,7 +46,7 @@ export class DashboardComponent {
   });
 
   readonly metrics = computed<Metric[]>(() => {
-    const summary = this.facade.readySummary();
+    const summary = this.facade.summary();
     const count = (value: number | undefined) => (value === undefined ? '—' : formatNumberBr(value, 0));
     return [
       { label: 'Lotes Ativos', value: count(summary?.activeBatches), tone: 'batches' },

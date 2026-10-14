@@ -15,7 +15,7 @@
         <p class="dashboard-error-message">{{ facade.error() }}</p>
         <button type="button" (click)="facade.load()" class="dashboard-retry-button">Tentar novamente</button>
       </div>
-    } @else if (facade.readySummary()) {
+    } @else if (facade.summary()) {
       <section class="dashboard-metrics-grid" aria-label="Indicadores da operação">
         @for (metric of metrics(); track metric.label) {
           <app-metric-card [label]="metric.label" [value]="metric.value" [tone]="metric.tone" />
@@ -52,7 +52,7 @@
         <p class="dashboard-emissions-note">
           no período
           @if (variationBadge(); as change) {
-            <span class="dashboard-emissions-change" [attr.data-tone]="change.tone">{{ change.text }}</span> do primeiro ao último mês
+            <span class="dashboard-emissions-change" [attr.data-tone]="change.tone">{{ change.text }}</span> do primeiro ao último mês com emissão
           }
         </p>
         <app-emission-line-chart [series]="facade.emissions()" />
@@ -61,7 +61,7 @@
       }
     </section>
 
-    @if (facade.readySummary(); as dashboardData) {
+    @if (facade.summary(); as dashboardData) {
       <section class="dashboard-analytics-grid" aria-label="Análises dos lotes recentes">
         <article class="dashboard-stage-chart-card">
           <div>

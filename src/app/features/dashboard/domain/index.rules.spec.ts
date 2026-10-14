@@ -33,9 +33,9 @@ describe('dashboard rules', () => {
     expect(rangeProblem({ from: '2024-11', to: '2026-10' })).toBeNull();
     expect(rangeProblem({ from: '2024-10', to: '2026-10' })).toBe('tooLong');
     expect(rangeProblem({ from: '2026-02', to: '2026-01' })).toBe('order');
-    expect(rangeProblem({ from: '', to: '2026-01' })).toBe('missing');
-    expect(rangeProblem({ from: 'jan 2026', to: '2026-01' })).toBe('missing');
-    expect(rangeProblem({ from: '2026-13', to: '2026-12' })).toBe('missing');
+    expect(rangeProblem({ from: '', to: '2026-01' })).toBe('invalid');
+    expect(rangeProblem({ from: 'jan 2026', to: '2026-01' })).toBe('invalid');
+    expect(rangeProblem({ from: '2026-13', to: '2026-12' })).toBe('invalid');
   });
 
   it('measures the variation between the first and last months with emissions', () => {

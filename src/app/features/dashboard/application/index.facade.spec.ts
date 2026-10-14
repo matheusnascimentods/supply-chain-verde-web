@@ -40,10 +40,17 @@ describe('DashboardFacade', () => {
     repository.loadSummary.mockReturnValueOnce(throwError(() => new Error('500')));
     const facade = createFacade();
     expect(facade.error()).toBe('Não foi possível carregar o resumo. Tente novamente.');
-    expect(facade.readySummary()).toBeNull();
+    expect(facade.summary()).toBeNull();
     facade.load();
     expect(facade.error()).toBe('');
-    expect(facade.readySummary()).toEqual(summary);
+    expect(facade.summary()).toEqual(summary);
+  });
+
+  it('drops the previous summary while reloading', () => {
+    const facade = createFacade();
+    repository.loadSummary.mockReturnValueOnce(new Subject());
+    facade.load();
+    expect(facade.summary()).toBeNull();
   });
 
   it('loads the emissions of the last 12 months on creation', () => {
@@ -65,7 +72,7 @@ describe('DashboardFacade', () => {
 
     facade.setRange({ from: 'jan 2026', to: '2026-06' });
     expect(repository.loadEmissions).toHaveBeenCalledTimes(2);
-    expect(facade.rangeError()).toBe('Informe o mês inicial e o final.');
+    expect(facade.rangeError()).toBe('Informe o mês inicial e o final no formato AAAA-MM.');
   });
 
   it('ignores the response of a range that was already replaced', () => {

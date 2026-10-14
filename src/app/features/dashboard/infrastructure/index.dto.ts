@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PRODUCT_UNITS, STAGE_TYPES } from '../../batches';
+import { MONTH_PATTERN } from '../domain/index.rules';
 
 export const recentBatchSchema = z.object({
   batchId: z.number(),
@@ -20,7 +21,7 @@ export const dashboardSummaryResponseSchema = z.object({
 
 export const monthlyEmissionsResponseSchema = z.array(
   z.object({
-    month: z.string().regex(/^\d{4}-\d{2}$/),
+    month: z.string().regex(MONTH_PATTERN),
     co2Kg: z.number().nonnegative(),
   }),
 );

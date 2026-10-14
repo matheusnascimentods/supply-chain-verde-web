@@ -20,7 +20,7 @@ export function greetingFor(name: string): string {
 }
 
 export const MAX_RANGE_MONTHS = 24;
-const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+export const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 const MONTH_NAMES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
 // Meses contados a partir do ano zero, para comparar e subtrair `YYYY-MM`.
@@ -42,7 +42,7 @@ export function defaultRange(today: Date): MonthRange {
 /** Problema do intervalo, ou nulo quando ele pode ir para a API. */
 export function rangeProblem(range: MonthRange): RangeProblem | null {
   // Sem suporte a `type="month"`, o navegador cai para texto livre.
-  if (!MONTH_PATTERN.test(range.from) || !MONTH_PATTERN.test(range.to)) return 'missing';
+  if (!MONTH_PATTERN.test(range.from) || !MONTH_PATTERN.test(range.to)) return 'invalid';
   const months = monthIndex(range.to) - monthIndex(range.from) + 1;
   if (months < 1) return 'order';
   return months > MAX_RANGE_MONTHS ? 'tooLong' : null;
