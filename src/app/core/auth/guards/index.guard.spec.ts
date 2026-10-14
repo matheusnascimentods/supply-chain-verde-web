@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree, provideRouter } from '@angular/router';
 import { authGuard, roleGuard } from './index.guard';
 import { SessionService } from '../session/index.service';
+import { routes as appRoutes } from '../../../app.routes';
+import { routes as supplierRoutes } from '../../../features/suppliers/index.routes';
 
 describe('Guards', () => {
   let sessionService: SessionService;
@@ -138,6 +140,25 @@ describe('Guards', () => {
 
       expect(result instanceof UrlTree).toBe(true);
       expect((result as UrlTree).toString()).toBe('/login');
+    });
+  });
+
+  describe('user and supplier routes', () => {
+    const shellRoutes = appRoutes.find((route) => route.children)!.children!;
+    const usersRoute = shellRoutes.find((route) => route.path === 'users')!;
+    const newSupplierRoute = supplierRoutes.find((route) => route.path === 'new')!;
+
+    it.each([
+      ['manager', true],
+      ['admin', true],
+      ['auditor', false],
+      ['supplier', false],
+    ] as const)('lets %s into /users and /suppliers/new: %s', (role, allowed) => {
+      sessionService.setSession('test-token', role);
+      for (const route of [usersRoute, newSupplierRoute]) {
+        const result = TestBed.runInInjectionContext(() => roleGuard(mockRouteSnapshot(route.data), mockRouterStateSnapshot()));
+        expect(result === true).toBe(allowed);
+      }
     });
   });
 });

@@ -37,7 +37,7 @@ export const routes: Routes = [
         path: 'users',
         title: 'Supply Chain | Usuários',
         canActivate: [roleGuard],
-        data: { roles: ['admin'] },
+        data: { roles: ['admin', 'manager'] },
         loadChildren: () => import('./features/users').then((module) => module.routes),
       },
       {

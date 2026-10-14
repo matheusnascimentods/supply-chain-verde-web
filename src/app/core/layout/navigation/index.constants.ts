@@ -15,6 +15,7 @@ export const NAV_LINKS: Record<UserRole, NavLink[]> = {
   manager: [
     { label: 'Fornecedores', path: '/suppliers' },
     { label: 'Lotes', path: '/batches' },
+    { label: 'Usuários', path: '/users' },
   ],
   auditor: [
     { label: 'Auditoria do sistema', path: '/audit-log' },

@@ -39,3 +39,24 @@
 .create-user-submit {
   @apply rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50;
 }
+.create-user-supplier {
+  @apply grid gap-3 rounded-xl border border-slate-200 p-4;
+}
+.create-user-supplier-legend {
+  @apply px-1 text-sm font-semibold text-slate-700;
+}
+.create-user-supplier-list {
+  @apply grid max-h-64 gap-2 overflow-y-auto sm:grid-cols-2;
+}
+.create-user-supplier-option {
+  @apply rounded-lg border border-slate-200 p-3 text-left transition hover:border-green-600;
+}
+.create-user-supplier-option[aria-pressed='true'] {
+  @apply border-green-700 bg-green-50;
+}
+.create-user-supplier-name {
+  @apply block text-sm font-semibold text-slate-900;
+}
+.create-user-supplier-hint {
+  @apply block text-xs text-slate-500;
+}

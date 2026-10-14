@@ -4,7 +4,8 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { UserRole } from '../../../core/auth/session/index.model';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { User } from '../domain/index.model';
-import { canManageUsers } from '../domain/index.rules';
+import { apiErrorMessage } from '../../../shared/utils/http/index.utils';
+import { canChangeRoles, canManageUsers } from '../domain/index.rules';
 import { UsersRepository } from '../infrastructure/index.repository';
 import { UpdateUserRoleUseCase } from './use-cases/update-role/index.use-case';
 
@@ -27,6 +28,7 @@ export class UsersListFacade {
   readonly totalPages = signal(0);
   readonly updatingRoleId = signal<number | null>(null);
   readonly canManage = computed(() => canManageUsers(this.session.role()));
+  readonly canChangeRoles = computed(() => canChangeRoles(this.session.role()));
   readonly pageNumber = computed(() =>
     this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages()),
   );
@@ -81,7 +83,7 @@ export class UsersListFacade {
   }
 
   updateRole(user: User, role: UserRole): void {
-    if (!this.canManage() || user.role === role) return;
+    if (!this.canChangeRoles() || user.role === role) return;
     this.roleError.set('');
     this.updatingRoleId.set(user.userId);
     this.updateUserRole.execute(user, role).subscribe({
@@ -89,9 +91,9 @@ export class UsersListFacade {
         this.updatingRoleId.set(null);
         this.reload();
       },
-      error: () => {
+      error: (error: unknown) => {
         this.updatingRoleId.set(null);
-        this.roleError.set(`Não foi possível alterar o perfil de ${user.name}.`);
+        this.roleError.set(apiErrorMessage(error, `Não foi possível alterar o perfil de ${user.name}.`));
       },
     });
   }
