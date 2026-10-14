@@ -7,7 +7,7 @@
   @apply mx-auto max-w-7xl;
 }
 .suppliers-header {
-  @apply mb-7;
+  @apply mb-7 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
 }
 .suppliers-title {
   @apply text-2xl font-bold tracking-tight text-slate-900;
