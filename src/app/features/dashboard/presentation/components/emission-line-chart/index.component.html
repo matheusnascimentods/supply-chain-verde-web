@@ -7,12 +7,12 @@
     }
     <svg class="emission-chart-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id="emission-chart-fill" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient [attr.id]="gradientId" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" class="emission-chart-fill-top" />
           <stop offset="100%" class="emission-chart-fill-bottom" />
         </linearGradient>
       </defs>
-      <path [attr.d]="areaPath()" fill="url(#emission-chart-fill)" />
+      <path [attr.d]="areaPath()" [attr.fill]="'url(#' + gradientId + ')'" />
       <path class="emission-chart-line" [attr.d]="linePath()" vector-effect="non-scaling-stroke" />
     </svg>
     @for (point of points(); track point.month; let first = $first; let last = $last) {
