@@ -36,7 +36,7 @@ export class SuppliersRepository {
   }
 
   loadRanking(
-    params: { limit: number; offset: number; search?: string },
+    params: { limit: number; offset: number; search?: string; withoutUser?: boolean },
     criteria?: RecommendationCriteria,
   ): Observable<Page<SupplierRanking>> {
     const search = params.search?.trim();
@@ -46,6 +46,7 @@ export class SuppliersRepository {
       limit: String(params.limit),
       offset: String(params.offset),
       ...(search ? { search } : {}),
+      ...(params.withoutUser ? { withoutUser: 'true' } : {}),
       ...recommendation,
     };
     return this.http.get<unknown>(this.base, { params: query }).pipe(

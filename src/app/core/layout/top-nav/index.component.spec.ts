@@ -40,6 +40,11 @@ describe('TopNavComponent', () => {
 
     session.setSession('test-token', 'manager', 'manager@example.com');
     fixture.detectChanges();
+    expect(navigation.textContent).toContain('Usuários');
+    expect(navigation.textContent).not.toContain('Auditoria');
+
+    session.setSession('test-token', 'auditor', 'auditor@example.com');
+    fixture.detectChanges();
     expect(navigation.textContent).not.toContain('Usuários');
   });
 

@@ -53,6 +53,13 @@ describe('UsersRepository', () => {
     request.flush(apiUser);
   });
 
+  it('creates a supplier user linked to a supplier', () => {
+    repository.create({ name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'supplier', supplierId: 7 }).subscribe();
+    const request = http.expectOne(base);
+    expect(request.request.body).toEqual({ name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'SUPPLIER', supplierId: 7 });
+    request.flush({ ...apiUser, role: 'SUPPLIER', supplierId: 7, supplierName: 'Fazenda Verde' });
+  });
+
   it('updates the role of a user', () => {
     repository.updateRole(7, 'auditor').subscribe();
     const request = http.expectOne(`${base}/7/role`);
