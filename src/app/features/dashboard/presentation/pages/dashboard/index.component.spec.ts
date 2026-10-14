@@ -122,11 +122,14 @@ describe('DashboardComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Perfil indisponível');
   });
 
-  it('titles the emissions chart by role and shows the period variation', () => {
+  it('titles the emissions chart by role and shows the period total and variation', () => {
     let page = renderAs('manager');
     expect(page.querySelector('#emissions-heading')?.textContent).toBe('Emissões da cadeia');
     expect(page.querySelector('app-emission-line-chart')).not.toBeNull();
-    expect(page.textContent).toContain('−30,4% no período');
+    expect(page.querySelector('.dashboard-emissions-total')?.textContent).toBe('1.696 kg CO₂e');
+    const change = page.querySelector('.dashboard-emissions-change')!;
+    expect(change.textContent).toBe('▼ 30,4%');
+    expect(change.getAttribute('data-tone')).toBe('down');
 
     page = renderAs('supplier');
     expect(page.querySelector('#emissions-heading')?.textContent).toBe('Suas emissões');

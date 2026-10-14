@@ -108,10 +108,16 @@
           <button type="button" (click)="facade.loadEmissions()" class="dashboard-retry-button">Tentar novamente</button>
         </div>
       } @else if (facade.hasEmissions()) {
+        <div class="dashboard-emissions-summary">
+          <p class="dashboard-emissions-total">{{ periodTotal() }}</p>
+          <p class="dashboard-emissions-note">
+            no período
+            @if (variation(); as change) {
+              <span class="dashboard-emissions-change" [attr.data-tone]="change.tone">{{ change.text }}</span> do primeiro ao último mês
+            }
+          </p>
+        </div>
         <app-emission-line-chart [series]="facade.emissions()" />
-        @if (variationText()) {
-          <p class="dashboard-emissions-note">{{ variationText() }}</p>
-        }
       } @else {
         <p class="dashboard-empty-state" role="status">Sem emissões no período.</p>
       }

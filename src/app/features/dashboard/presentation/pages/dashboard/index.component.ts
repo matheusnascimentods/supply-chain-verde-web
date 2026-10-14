@@ -59,11 +59,17 @@ export class DashboardComponent {
   // O escopo vem da API: o fornecedor recebe só as próprias emissões.
   readonly emissionsTitle = computed(() => (this.role() === 'supplier' ? 'Suas emissões' : 'Emissões da cadeia'));
 
-  readonly variationText = computed(() => {
+  readonly periodTotal = computed(() => `${formatNumberBr(this.facade.periodTotal())} kg CO₂e`);
+
+  // Emissão caindo é bom: queda em verde, alta em vermelho.
+  readonly variation = computed(() => {
     const variation = this.facade.variation();
-    if (variation === null) return '';
-    const sign = variation < 0 ? '−' : variation > 0 ? '+' : '';
-    return `${sign}${formatNumberBr(Math.abs(variation), 1)}% no período`;
+    if (variation === null) return null;
+    const arrow = variation < 0 ? '▼' : variation > 0 ? '▲' : '';
+    return {
+      text: `${arrow} ${formatNumberBr(Math.abs(variation), 1)}%`.trim(),
+      tone: variation < 0 ? 'down' : variation > 0 ? 'up' : 'flat',
+    };
   });
 
   protected changeRange(field: 'from' | 'to', event: Event): void {

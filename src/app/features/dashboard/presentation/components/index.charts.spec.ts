@@ -44,19 +44,30 @@ describe('dashboard charts', () => {
     expect(fixture.nativeElement.textContent).toContain('4');
   });
 
-  it('line chart plots each month and lists the values for screen readers', () => {
+  it('line chart places each month on a rounded scale and lists the values for screen readers', () => {
     const fixture = TestBed.createComponent(EmissionLineChartComponent);
     fixture.componentRef.setInput('series', [
-      { month: '2026-01', co2Kg: 100 },
+      { month: '2026-01', co2Kg: 366.42 },
       { month: '2026-02', co2Kg: 50 },
+      { month: '2026-03', co2Kg: 200 },
     ]);
     fixture.detectChanges();
     const element: HTMLElement = fixture.nativeElement;
-    const points = Array.from(element.querySelectorAll('circle'));
-    expect(points.map((point) => [point.getAttribute('cx'), point.getAttribute('cy')])).toEqual([['64', '16'], ['624', '112']]);
-    expect(points[0].querySelector('title')?.textContent).toBe('jan/2026: 100 kg CO₂e');
-    expect(element.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe('Emissões mensais de jan/2026 a fev/2026. Pico em jan/2026: 100 kg CO₂e.');
-    expect(element.querySelectorAll('tbody tr').length).toBe(2);
+    expect(Array.from(element.querySelectorAll('.emission-chart-tick')).map((tick) => tick.textContent)).toEqual(['0', '100', '200', '300', '400']);
+    const slots = Array.from(element.querySelectorAll<HTMLElement>('.emission-chart-slot'));
+    expect(slots.map((slot) => slot.style.left)).toEqual(['0%', '50%', '100%']);
+    expect(parseFloat(element.querySelector<HTMLElement>('.emission-chart-dot')!.style.top)).toBeCloseTo(8.395);
+    expect(slots[0].textContent).toContain('366,42 kg CO₂e');
+    expect(element.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe('Emissões mensais de jan/2026 a mar/2026. Pico em jan/2026: 366,42 kg CO₂e.');
+    expect(element.querySelectorAll('tbody tr').length).toBe(3);
+  });
+
+  it('line chart shows at most six month labels, always the first and the last', () => {
+    const fixture = TestBed.createComponent(EmissionLineChartComponent);
+    fixture.componentRef.setInput('series', Array.from({ length: 12 }, (_, index) => ({ month: `2026-${String(index + 1).padStart(2, '0')}`, co2Kg: index })));
+    fixture.detectChanges();
+    const labels = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.emission-chart-month')).map((label) => label.textContent);
+    expect(labels).toEqual(['jan/2026', 'mar/2026', 'mai/2026', 'jul/2026', 'set/2026', 'nov/2026', 'dez/2026']);
   });
 
   it('line chart keeps all-zero months on the baseline without dividing by zero', () => {
@@ -66,7 +77,9 @@ describe('dashboard charts', () => {
       { month: '2026-02', co2Kg: 0 },
     ]);
     fixture.detectChanges();
-    const ys = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('circle')).map((point) => point.getAttribute('cy'));
-    expect(ys).toEqual(['208', '208']);
+    const element: HTMLElement = fixture.nativeElement;
+    const tops = Array.from(element.querySelectorAll<HTMLElement>('.emission-chart-dot')).map((dot) => dot.style.top);
+    expect(tops).toEqual(['100%', '100%']);
+    expect(element.querySelector('.emission-chart-line')?.getAttribute('d')).not.toContain('NaN');
   });
 });
