@@ -22,8 +22,8 @@ export class SupplierFormComponent {
   private readonly updateSupplier = inject(UpdateSupplierUseCase);
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
-  // /suppliers/:id/edit edita o fornecedor da URL; /suppliers/me, o da sessão (supplierId = userId).
-  private readonly supplierId = Number(inject(ActivatedRoute).snapshot.paramMap.get('id')) || this.session.userId();
+  // /suppliers/:id/edit edita o fornecedor da URL; /suppliers/me, o vinculado à sessão.
+  private readonly supplierId = Number(inject(ActivatedRoute).snapshot.paramMap.get('id')) || this.session.supplierId();
 
   readonly saving = signal(false);
   readonly error = signal('');

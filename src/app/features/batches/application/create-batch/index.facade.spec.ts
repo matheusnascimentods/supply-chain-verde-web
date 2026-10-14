@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
-import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { SuppliersRepository } from '../../../suppliers';
 import { ProductsRepository } from '../../infrastructure/product/index.repository';
@@ -21,10 +20,9 @@ describe('BatchCreationFacade', () => {
     TestBed.configureTestingModule({
       providers: [
         BatchCreationFacade,
-        { provide: SessionService, useValue: { role: () => role } },
+        { provide: SessionService, useValue: { role: () => role, supplierId: () => 22 } },
         { provide: ProductsRepository, useValue: products },
         { provide: SuppliersRepository, useValue: suppliers },
-        { provide: CurrentUserService, useValue: { load: vi.fn().mockReturnValue(of({ userId: 22 })) } },
         { provide: CreateBatchUseCase, useValue: createBatch },
       ],
     });

@@ -111,20 +111,22 @@ describe('SessionService', () => {
     });
   });
 
-  describe('userId()', () => {
+  describe('supplierId()', () => {
     const tokenWith = (claims: object) => `header.${btoa(JSON.stringify(claims))}.signature`;
 
-    it('reads the userId claim from the session token', () => {
-      service.setSession(tokenWith({ userId: 9, sub: 'supplier@example.com' }), 'supplier');
-      expect(service.userId()).toBe(9);
+    it('reads the supplierId claim from the session token', () => {
+      service.setSession(tokenWith({ userId: 4, supplierId: 9, sub: 'supplier@example.com' }), 'supplier');
+      expect(service.supplierId()).toBe(9);
     });
 
     it('returns null without a session or with an invalid claim', () => {
-      expect(service.userId()).toBeNull();
-      service.setSession(tokenWith({ userId: 'abc' }), 'supplier');
-      expect(service.userId()).toBeNull();
+      expect(service.supplierId()).toBeNull();
+      service.setSession(tokenWith({ supplierId: 'abc' }), 'supplier');
+      expect(service.supplierId()).toBeNull();
+      service.setSession(tokenWith({ userId: 4, supplierId: null }), 'admin');
+      expect(service.supplierId()).toBeNull();
       service.setSession('not-a-jwt', 'supplier');
-      expect(service.userId()).toBeNull();
+      expect(service.supplierId()).toBeNull();
     });
   });
 });
