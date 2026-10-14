@@ -53,8 +53,8 @@ export class DashboardFacade {
     });
   }
 
-  setRange(range: MonthRange): void {
-    this.range.set(range);
+  setRange(change: Partial<MonthRange>): void {
+    this.range.update((range) => ({ ...range, ...change }));
     this.loadEmissions();
   }
 

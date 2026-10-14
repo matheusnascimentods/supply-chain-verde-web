@@ -19,7 +19,7 @@ export function greetingFor(name: string): string {
   return trimmed ? `Olá, ${trimmed}` : 'Bem-vindo(a)';
 }
 
-export const MAX_RANGE_MONTHS = 24;
+const MAX_RANGE_MONTHS = 24;
 const MONTH_NAMES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
 // Meses contados a partir do ano zero, para comparar e subtrair `YYYY-MM`.
