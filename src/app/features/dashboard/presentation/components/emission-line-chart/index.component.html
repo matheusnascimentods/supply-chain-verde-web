@@ -1,0 +1,39 @@
+<figure class="emission-chart" role="img" [attr.aria-label]="description()">
+  <div class="emission-chart-plot">
+    @for (tick of ticks(); track tick.percent) {
+      <div class="emission-chart-gridline" [style.bottom.%]="tick.percent">
+        <span class="emission-chart-tick">{{ tick.label }}</span>
+      </div>
+    }
+    <svg class="emission-chart-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient [attr.id]="gradientId" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" class="emission-chart-fill-top" />
+          <stop offset="100%" class="emission-chart-fill-bottom" />
+        </linearGradient>
+      </defs>
+      <path [attr.d]="areaPath()" [attr.fill]="'url(#' + gradientId + ')'" />
+      <path class="emission-chart-line" [attr.d]="linePath()" vector-effect="non-scaling-stroke" />
+    </svg>
+    @for (point of points(); track point.month; let first = $first; let last = $last) {
+      <div class="emission-chart-slot" [style.left.%]="point.x" [style.width.%]="first || last ? slotWidth() / 2 : slotWidth()" [attr.data-edge]="first ? 'start' : last ? 'end' : null">
+        <span class="emission-chart-dot" [style.top.%]="point.y"></span>
+        <span class="emission-chart-tooltip" [style.top.%]="point.y"><strong>{{ point.value }}</strong>{{ point.label }}</span>
+      </div>
+    }
+  </div>
+  <div class="emission-chart-months" aria-hidden="true">
+    @for (point of xLabels(); track point.month; let first = $first; let last = $last) {
+      <span class="emission-chart-month" [style.left.%]="point.x" [attr.data-edge]="first ? 'start' : last ? 'end' : null">{{ point.label }}</span>
+    }
+  </div>
+</figure>
+<table class="emission-chart-table">
+  <caption>Emissão de CO₂ por mês</caption>
+  <thead><tr><th scope="col">Mês</th><th scope="col">Emissão</th></tr></thead>
+  <tbody>
+    @for (point of points(); track point.month) {
+      <tr><td>{{ point.label }}</td><td>{{ point.value }}</td></tr>
+    }
+  </tbody>
+</table>

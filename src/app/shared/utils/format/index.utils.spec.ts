@@ -1,4 +1,4 @@
-import { formatCnpj, formatPhone, formatZipCode, digitsOnly, formatNumberBr, formatIsoDateBr } from './index.utils';
+import { formatCnpj, formatPhone, formatZipCode, digitsOnly, formatNumberBr, formatIsoDateBr, formatKgCo2e, formatMonthBr } from './index.utils';
 
 describe('input formatters', () => {
   it('formats CNPJ while the user types and strips punctuation for requests', () => {
@@ -28,6 +28,19 @@ describe('formatNumberBr', () => {
 
   it('rounds to the given number of fraction digits', () => {
     expect(formatNumberBr(1234.5, 0)).toBe('1.235');
+  });
+});
+
+describe('formatKgCo2e', () => {
+  it('formats a CO₂e amount in kg', () => {
+    expect(formatKgCo2e(1696.42)).toBe('1.696,42 kg CO₂e');
+  });
+});
+
+describe('formatMonthBr', () => {
+  it('labels months in Portuguese', () => {
+    expect(formatMonthBr('2026-01')).toBe('jan/2026');
+    expect(formatMonthBr('2025-12')).toBe('dez/2025');
   });
 });
 
