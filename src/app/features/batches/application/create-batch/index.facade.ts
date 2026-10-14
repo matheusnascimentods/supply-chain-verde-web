@@ -1,6 +1,5 @@
 import { DestroyRef, Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
-import { Observable, switchMap, tap } from 'rxjs';
-import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
+import { Observable, tap } from 'rxjs';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { NewSupplier, RecommendationCriteria, Supplier, SupplierRanking, SuppliersRepository } from '../../../suppliers';
 import { NewProduct, PRODUCT_UNIT_SYMBOLS, Product } from '../../domain/product/index.model';
@@ -20,9 +19,9 @@ const FAILURE_MESSAGES: Record<CreateBatchStep, string> = {
 export class BatchCreationFacade {
   private readonly productsRepository = inject(ProductsRepository);
   private readonly suppliersRepository = inject(SuppliersRepository);
-  private readonly currentUser = inject(CurrentUserService);
   private readonly createBatch = inject(CreateBatchUseCase);
-  private readonly role = inject(SessionService).role();
+  private readonly session = inject(SessionService);
+  private readonly role = this.session.role();
   private readonly destroyRef = inject(DestroyRef);
 
   readonly isAdmin = this.role === 'admin';
@@ -208,15 +207,16 @@ export class BatchCreationFacade {
   }
 
   private loadOwnSupplier(): void {
+    const supplierId = this.session.supplierId();
+    if (!supplierId) {
+      this.loadingOwnSupplier.set(false);
+      this.error.set('Não foi possível identificar o fornecedor vinculado à sua conta.');
+      return;
+    }
     this.loadingOwnSupplier.set(true);
-    this.currentUser
-      .load()
-      .pipe(
-        switchMap((user) => {
-          this.ownSupplierId.set(user.userId);
-          return this.suppliersRepository.get(user.userId);
-        }),
-      )
+    this.ownSupplierId.set(supplierId);
+    this.suppliersRepository
+      .get(supplierId)
       .subscribe({
         next: (supplier) => {
           this.ownSupplier.set(supplier);

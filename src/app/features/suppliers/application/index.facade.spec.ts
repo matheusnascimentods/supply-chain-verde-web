@@ -20,7 +20,7 @@ describe('SuppliersListFacade', () => {
   });
   const five = [1, 2, 3, 4, 5].map((id) => supplier(id));
   const role = signal<UserRole | null>('admin');
-  let userId: number | null;
+  let supplierId: number | null;
   let repository: { loadRanking: ReturnType<typeof vi.fn> };
 
   function createFacade(): SuppliersListFacade {
@@ -28,7 +28,7 @@ describe('SuppliersListFacade', () => {
       providers: [
         SuppliersListFacade,
         { provide: SuppliersRepository, useValue: repository },
-        { provide: SessionService, useValue: { role, userId: () => userId } },
+        { provide: SessionService, useValue: { role, supplierId: () => supplierId } },
       ],
     });
     return TestBed.inject(SuppliersListFacade);
@@ -36,7 +36,7 @@ describe('SuppliersListFacade', () => {
 
   beforeEach(() => {
     role.set('admin');
-    userId = null;
+    supplierId = null;
     repository = { loadRanking: vi.fn().mockReturnValue(of({ items: five, totalPages: 2 })) };
   });
 
@@ -86,7 +86,7 @@ describe('SuppliersListFacade', () => {
 
   it('applies the permission rules of the current session', () => {
     role.set('supplier');
-    userId = 2;
+    supplierId = 2;
     const facade = createFacade();
     expect(facade.canManage()).toBe(false);
     expect(facade.canOpenReports(five[1])).toBe(true);

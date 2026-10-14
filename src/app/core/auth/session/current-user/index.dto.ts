@@ -7,6 +7,7 @@ export const currentUserResponseSchema = z.object({
   email: z.string().email(),
   role: z.preprocess((value) => (typeof value === 'string' ? value.toLowerCase() : value), userRoleSchema),
   createdAt: z.string().nullable().optional(),
+  supplierId: z.number().nullable().optional(),
 }).passthrough();
 
 export type CurrentUserDTO = z.infer<typeof currentUserResponseSchema>;

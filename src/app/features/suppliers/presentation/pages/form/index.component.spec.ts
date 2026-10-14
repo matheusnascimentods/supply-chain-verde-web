@@ -29,7 +29,7 @@ describe('SupplierFormComponent', () => {
       providers: [
         provideRouter([{ path: 'suppliers', component: SupplierListPage }]),
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap(params) } } },
-        { provide: SessionService, useValue: { userId: () => userId } },
+        { provide: SessionService, useValue: { supplierId: () => userId } },
         { provide: SuppliersRepository, useValue: repository },
         { provide: UpdateSupplierUseCase, useValue: updateSupplier },
       ],

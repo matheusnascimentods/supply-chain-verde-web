@@ -40,7 +40,7 @@ describe('AddStageFacade', () => {
       get: vi.fn().mockReturnValue(of(supplier(9, 'Campinas'))),
       load: vi.fn().mockReturnValue(of([supplier(1, 'São Paulo'), { supplierId: 2, name: 'Sem endereço', address: null }])),
     };
-    currentUser = { load: vi.fn().mockReturnValue(of({ userId: 9 })) };
+    currentUser = { load: vi.fn().mockReturnValue(of({ userId: 4, supplierId: 9 })) };
     advanceStage = { execute: vi.fn().mockReturnValue(of({ step: 'stage', chainId: 50 }, { step: 'transport' })) };
   });
 
@@ -68,7 +68,7 @@ describe('AddStageFacade', () => {
     const facade = createFacade('manager');
 
     facade.submit(submission)!.subscribe({ error: () => undefined });
-    expect(advanceStage.execute).toHaveBeenCalledWith({ ...submission, responsibleUserId: 9 }, { chainId: null, transportSaved: false, emissionSaved: false });
+    expect(advanceStage.execute).toHaveBeenCalledWith({ ...submission, responsibleUserId: 4 }, { chainId: null, transportSaved: false, emissionSaved: false });
     expect(facade.stageSaved()).toBe(true);
     expect(facade.error()).toBe('A etapa foi registrada, mas não foi possível salvar os dados do transporte. Você pode tentar novamente.');
 

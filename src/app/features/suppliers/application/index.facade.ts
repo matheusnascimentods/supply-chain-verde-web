@@ -89,11 +89,11 @@ export class SuppliersListFacade {
   }
 
   canOpenReports(supplier: SupplierRanking): boolean {
-    return canOpenReports(this.session.role(), this.session.userId(), supplier.supplierId);
+    return canOpenReports(this.session.role(), this.session.supplierId(), supplier.supplierId);
   }
 
   canCreateCertificationFor(supplier: SupplierRanking): boolean {
-    return canCreateCertification(this.session.role(), this.session.userId(), supplier.supplierId);
+    return canCreateCertification(this.session.role(), this.session.supplierId(), supplier.supplierId);
   }
 
   // Mantém o modal de certificações aberto com os dados recarregados após um cadastro ou troca de status.

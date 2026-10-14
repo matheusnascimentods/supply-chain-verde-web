@@ -51,13 +51,14 @@ export class SessionService {
     return null;
   }
 
-  userId(): number | null {
+  /** Fornecedor vinculado ao usuário (claim `supplierId` do token); nulo fora do role `supplier`. */
+  supplierId(): number | null {
     const payload = this.token?.split('.')[1];
     if (!payload) return null;
     try {
-      const claims = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as { userId?: unknown };
-      const userId = Number(claims.userId);
-      return Number.isInteger(userId) && userId > 0 ? userId : null;
+      const claims = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as { supplierId?: unknown };
+      const supplierId = Number(claims.supplierId);
+      return Number.isInteger(supplierId) && supplierId > 0 ? supplierId : null;
     } catch {
       return null;
     }

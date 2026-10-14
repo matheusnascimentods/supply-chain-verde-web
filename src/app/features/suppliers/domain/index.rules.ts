@@ -12,8 +12,8 @@ export function canGenerateReports(role: Role): boolean {
   return role === 'admin' || role === 'manager' || role === 'auditor';
 }
 
-export function canOpenReports(role: Role, userId: number | null, supplierId: number): boolean {
-  if (role === 'supplier') return userId === supplierId;
+export function canOpenReports(role: Role, ownSupplierId: number | null, supplierId: number): boolean {
+  if (role === 'supplier') return ownSupplierId === supplierId;
   return canGenerateReports(role);
 }
 
@@ -21,8 +21,8 @@ export function canUpdateCertificationStatus(role: Role): boolean {
   return role === 'admin' || role === 'auditor';
 }
 
-export function canCreateCertification(role: Role, userId: number | null, supplierId: number): boolean {
-  return role === 'admin' || (role === 'supplier' && userId === supplierId);
+export function canCreateCertification(role: Role, ownSupplierId: number | null, supplierId: number): boolean {
+  return role === 'admin' || (role === 'supplier' && ownSupplierId === supplierId);
 }
 
 export type CertificationTone = 'expired' | 'active' | 'none';
