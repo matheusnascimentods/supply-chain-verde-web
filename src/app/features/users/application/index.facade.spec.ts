@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
@@ -87,6 +88,15 @@ describe('UsersListFacade', () => {
     role.set('manager');
     facade.updateRole(ana, 'auditor');
     expect(updateRole.execute).not.toHaveBeenCalled();
+  });
+
+  it('shows the API message when the role change is refused', () => {
+    updateRole.execute.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'Não é possível alterar o perfil de um fornecedor.' } })),
+    );
+    const facade = createFacade();
+    facade.updateRole(ana, 'auditor');
+    expect(facade.roleError()).toBe('Não é possível alterar o perfil de um fornecedor.');
   });
 
   it('shows an error when the role update fails', () => {

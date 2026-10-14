@@ -7,6 +7,8 @@ export interface User {
   email: string;
   role: UserRole;
   createdAt?: string | null;
+  supplierId?: number | null;
+  supplierName?: string | null;
 }
 
 export interface UserPage {
@@ -14,11 +16,16 @@ export interface UserPage {
   totalPages: number;
 }
 
-export const newUserSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
-  password: z.string().min(1),
-  role: userRoleSchema,
-});
+// Usuário SUPPLIER sempre nasce vinculado a um fornecedor sem acesso; os demais roles não levam supplierId.
+export const newUserSchema = z
+  .object({
+    name: z.string().min(1),
+    email: z.string().email(),
+    password: z.string().min(1),
+    role: userRoleSchema,
+    supplierId: z.number().int().positive().nullish(),
+  })
+  .refine((user) => user.role !== 'supplier' || !!user.supplierId, { path: ['supplierId'] })
+  .transform(({ supplierId, ...user }) => (user.role === 'supplier' ? { ...user, supplierId: supplierId! } : user));
 
-export type NewUser = z.infer<typeof newUserSchema>;
+export type NewUser = z.output<typeof newUserSchema>;

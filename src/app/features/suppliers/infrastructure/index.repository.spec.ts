@@ -53,6 +53,13 @@ describe('SuppliersRepository', () => {
     byCategory.flush({ items: [{ ...ranking, co2KgPerUnit: null }], limit: 20, offset: 0, hasNext: false, totalPages: 1 });
   });
 
+  it('filters the ranking to suppliers without access', () => {
+    repository.loadRanking({ limit: 20, offset: 0, withoutUser: true }).subscribe();
+    const request = http.expectOne((req) => req.url === base);
+    expect(request.request.params.get('withoutUser')).toBe('true');
+    request.flush({ items: [], limit: 20, offset: 0, hasNext: false, totalPages: 0 });
+  });
+
   it('rejects a ranking item outside the contract', () => {
     let failed = false;
     repository.loadRanking({ limit: 20, offset: 0 }).subscribe({ error: () => (failed = true) });
