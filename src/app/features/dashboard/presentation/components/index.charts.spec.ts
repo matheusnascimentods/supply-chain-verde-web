@@ -67,7 +67,7 @@ describe('dashboard charts', () => {
     fixture.componentRef.setInput('series', Array.from({ length: 12 }, (_, index) => ({ month: `2026-${String(index + 1).padStart(2, '0')}`, co2Kg: index })));
     fixture.detectChanges();
     const labels = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.emission-chart-month')).map((label) => label.textContent);
-    expect(labels).toEqual(['jan/2026', 'mar/2026', 'mai/2026', 'jul/2026', 'set/2026', 'nov/2026', 'dez/2026']);
+    expect(labels).toEqual(['jan/2026', 'mar/2026', 'mai/2026', 'ago/2026', 'out/2026', 'dez/2026']);
   });
 
   it('line chart keeps all-zero months on the baseline without dividing by zero', () => {

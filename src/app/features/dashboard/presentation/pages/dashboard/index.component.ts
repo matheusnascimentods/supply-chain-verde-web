@@ -45,6 +45,9 @@ export class DashboardComponent {
     return role ? DASHBOARDS[role] : null;
   });
 
+  // Resumo só quando carregou sem erro; usado nos KPIs e nas análises.
+  protected readonly readySummary = computed(() => (this.facade.loading() || this.facade.error() ? null : this.facade.summary()));
+
   readonly metrics = computed<Metric[]>(() => {
     const summary = this.facade.summary();
     const count = (value: number | undefined) => (value === undefined ? '—' : formatNumberBr(value, 0));
@@ -72,7 +75,7 @@ export class DashboardComponent {
     const arrow = variation < 0 ? '▼' : variation > 0 ? '▲' : '';
     return {
       text: `${arrow} ${formatNumberBr(Math.abs(variation), 1)}%`.trim(),
-      tone: variation < 0 ? 'down' : variation > 0 ? 'up' : 'flat',
+      tone: variation < 0 ? 'down' : variation > 0 ? 'up' : null,
     };
   });
 

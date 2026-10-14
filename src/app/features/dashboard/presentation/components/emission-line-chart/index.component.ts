@@ -4,6 +4,7 @@ import { MonthlyEmission } from '../../../domain/index.model';
 import { monthLabel } from '../../../domain/index.rules';
 
 const MAX_X_LABELS = 6;
+let nextGradientId = 0;
 
 interface ChartPoint {
   month: string;
@@ -43,6 +44,8 @@ function smoothPath(points: ChartPoint[]): string {
 })
 export class EmissionLineChartComponent {
   readonly series = input.required<MonthlyEmission[]>();
+  // Id único por instância: ids de SVG valem para o documento inteiro.
+  protected readonly gradientId = `emission-chart-fill-${nextGradientId++}`;
 
   private readonly max = computed(() => Math.max(...this.series().map((item) => item.co2Kg), 0));
   private readonly step = computed(() => niceStep(this.max() / 4 || 1));
@@ -74,11 +77,12 @@ export class EmissionLineChartComponent {
     return points.length ? `${this.linePath()} L ${points[points.length - 1].x},100 L ${points[0].x},100 Z` : '';
   });
 
-  // No máximo 6 rótulos de mês, sempre incluindo o primeiro e o último.
+  // No máximo 6 rótulos de mês, espaçados por igual, sempre incluindo o primeiro e o último.
   protected readonly xLabels = computed(() => {
     const points = this.points();
-    const every = Math.ceil(points.length / MAX_X_LABELS);
-    return points.filter((_, index) => index % every === 0 || index === points.length - 1);
+    if (points.length <= MAX_X_LABELS) return points;
+    const gap = (points.length - 1) / (MAX_X_LABELS - 1);
+    return Array.from({ length: MAX_X_LABELS }, (_, index) => points[Math.round(index * gap)]);
   });
 
   protected readonly description = computed(() => {
