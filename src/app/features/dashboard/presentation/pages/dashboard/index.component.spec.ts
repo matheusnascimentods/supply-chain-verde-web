@@ -135,6 +135,19 @@ describe('DashboardComponent', () => {
     expect(page.querySelector('#emissions-heading')?.textContent).toBe('Suas emissões');
   });
 
+  it('places the emissions chart between the KPI cards and the stage charts', () => {
+    const page = renderAs('manager');
+    const order = Array.from(page.querySelectorAll('.dashboard-metrics-grid, .dashboard-emissions-card, .dashboard-analytics-grid')).map((section) => section.className);
+    expect(order).toEqual(['dashboard-metrics-grid', 'dashboard-emissions-card', 'dashboard-analytics-grid']);
+  });
+
+  it('keeps the emissions chart when the summary fails', () => {
+    dashboardService.loadSummary.mockReturnValue(throwError(() => new Error('API unavailable')));
+    const page = renderAs('manager');
+    expect(page.querySelector('app-emission-line-chart')).not.toBeNull();
+    expect(page.querySelector('.dashboard-analytics-grid')).toBeNull();
+  });
+
   it('blocks an inverted month range without calling the API', () => {
     const page = renderAs('manager');
     const from = page.querySelector<HTMLInputElement>('#emissions-from')!;
