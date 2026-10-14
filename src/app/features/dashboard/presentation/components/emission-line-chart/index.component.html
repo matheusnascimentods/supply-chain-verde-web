@@ -16,7 +16,7 @@
       <path class="emission-chart-line" [attr.d]="linePath()" vector-effect="non-scaling-stroke" />
     </svg>
     @for (point of points(); track point.month; let first = $first; let last = $last) {
-      <div class="emission-chart-slot" [style.left.%]="point.x" [style.width.%]="100 / points().length" [attr.data-edge]="first ? 'start' : last ? 'end' : null">
+      <div class="emission-chart-slot" [style.left.%]="point.x" [style.width.%]="slotWidth()" [attr.data-edge]="first ? 'start' : last ? 'end' : null">
         <span class="emission-chart-dot" [style.top.%]="point.y"></span>
         <span class="emission-chart-tooltip" [style.top.%]="point.y"><strong>{{ point.value }}</strong>{{ point.label }}</span>
       </div>

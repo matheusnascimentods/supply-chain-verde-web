@@ -37,4 +37,4 @@ export interface MonthRange {
 }
 
 /** Por que um intervalo não pode ir para a API. */
-export type RangeProblem = 'missing' | 'order' | 'tooLong';
+export type RangeProblem = 'invalid' | 'order' | 'tooLong';

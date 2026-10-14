@@ -9,7 +9,7 @@ import { DashboardRepository } from '../infrastructure/index.repository';
 export const RECENT_BATCHES_LIMIT = 10;
 
 const RANGE_MESSAGES: Record<RangeProblem, string> = {
-  missing: 'Informe o mês inicial e o final.',
+  invalid: 'Informe o mês inicial e o final no formato AAAA-MM.',
   order: 'O mês inicial deve ser anterior ou igual ao final.',
   tooLong: `Escolha um intervalo de até ${MAX_RANGE_MONTHS} meses.`,
 };
@@ -23,8 +23,6 @@ export class DashboardFacade {
   readonly summary = signal<DashboardSummary | null>(null);
   readonly loading = signal(true);
   readonly error = signal('');
-  /** Resumo só quando carregou sem erro; usado nos KPIs e nas análises. */
-  readonly readySummary = computed(() => (this.loading() || this.error() ? null : this.summary()));
   readonly recentBatches = computed(() => this.summary()?.recentBatches ?? []);
   readonly distribution = computed(() => stageDistribution(this.recentBatches()));
   readonly greeting = computed(() => greetingFor(this.userName()));
@@ -56,6 +54,7 @@ export class DashboardFacade {
   load(): void {
     this.loading.set(true);
     this.error.set('');
+    this.summary.set(null);
     this.repository.loadSummary(RECENT_BATCHES_LIMIT).subscribe({
       next: (summary) => {
         this.summary.set(summary);
@@ -80,7 +79,7 @@ export class DashboardFacade {
   /** Intervalo inválido fica só no front, com a mensagem de `rangeError`. */
   private fetchEmissions(range: MonthRange) {
     this.emissionsError.set('');
-    if (rangeProblem(range)) {
+    if (this.rangeError()) {
       this.emissions.set([]);
       this.emissionsLoading.set(false);
       return EMPTY;
