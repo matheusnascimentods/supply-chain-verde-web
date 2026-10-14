@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, Subject, catchError, switchMap, tap } from 'rxjs';
 import { CurrentUserService } from '../../../core/auth/session/current-user/index.service';
 import { DashboardSummary, MAX_RANGE_MONTHS, MonthRange, MonthlyEmission, RangeProblem } from '../domain/index.model';
-import { defaultRange, greetingFor, periodVariation, rangeProblem, stageDistribution } from '../domain/index.rules';
+import { defaultRange, greetingFor, periodTotal, periodVariation, rangeProblem, stageDistribution } from '../domain/index.rules';
 import { DashboardRepository } from '../infrastructure/index.repository';
 
 export const RECENT_BATCHES_LIMIT = 10;
@@ -37,7 +37,7 @@ export class DashboardFacade {
   readonly emissionsError = signal('');
   readonly hasEmissions = computed(() => this.emissions().some((item) => item.co2Kg > 0));
   readonly variation = computed(() => periodVariation(this.emissions()));
-  readonly periodTotal = computed(() => this.emissions().reduce((total, item) => total + item.co2Kg, 0));
+  readonly periodTotal = computed(() => periodTotal(this.emissions()));
   private readonly emissionsRequests = new Subject<MonthRange>();
 
   constructor() {

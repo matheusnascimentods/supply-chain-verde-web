@@ -1,5 +1,5 @@
 import { RecentBatch } from './index.model';
-import { defaultRange, describeDistribution, greetingFor, periodVariation, rangeProblem, stageDistribution } from './index.rules';
+import { defaultRange, describeDistribution, greetingFor, periodTotal, periodVariation, rangeProblem, stageDistribution } from './index.rules';
 
 describe('dashboard rules', () => {
   const batch = (status: RecentBatch['status']) => ({ status }) as RecentBatch;
@@ -36,6 +36,11 @@ describe('dashboard rules', () => {
     expect(rangeProblem({ from: '', to: '2026-01' })).toBe('invalid');
     expect(rangeProblem({ from: 'jan 2026', to: '2026-01' })).toBe('invalid');
     expect(rangeProblem({ from: '2026-13', to: '2026-12' })).toBe('invalid');
+  });
+
+  it('sums the emissions of the period', () => {
+    expect(periodTotal([{ month: '2026-01', co2Kg: 1000 }, { month: '2026-02', co2Kg: 696.5 }])).toBe(1696.5);
+    expect(periodTotal([])).toBe(0);
   });
 
   it('measures the variation between the first and last months with emissions', () => {

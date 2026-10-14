@@ -70,7 +70,7 @@ export class EmissionLineChartComponent {
     }));
   });
 
-  // Cada faixa cobre a distância entre dois meses vizinhos, sem buracos no hover.
+  // Cada faixa cobre a distância entre dois meses vizinhos, sem buracos no hover; nas pontas, só a metade de dentro.
   protected readonly slotWidth = computed(() => 100 / Math.max(this.points().length - 1, 1));
 
   protected readonly linePath = computed(() => smoothPath(this.points()));
