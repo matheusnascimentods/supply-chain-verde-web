@@ -105,6 +105,9 @@
 .dashboard-emissions-range {
   @apply flex gap-3;
 }
+.dashboard-range-error {
+  @apply mt-5 text-sm text-red-700;
+}
 .dashboard-emissions-note {
   @apply mt-3 text-sm text-slate-600;
 }

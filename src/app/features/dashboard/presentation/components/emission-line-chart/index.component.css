@@ -15,11 +15,15 @@
 .emission-chart-svg {
   @apply absolute inset-0 h-full w-full overflow-visible;
 }
+.emission-chart-fill-top,
+.emission-chart-fill-bottom {
+  stop-color: --theme(--color-green-600);
+}
 .emission-chart-fill-top {
-  stop-color: rgb(21 128 61 / 0.28);
+  stop-opacity: 0.28;
 }
 .emission-chart-fill-bottom {
-  stop-color: rgb(21 128 61 / 0);
+  stop-opacity: 0;
 }
 .emission-chart-line {
   @apply fill-none stroke-green-600;

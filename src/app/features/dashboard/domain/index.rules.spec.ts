@@ -1,5 +1,5 @@
 import { RecentBatch } from './index.model';
-import { defaultRange, describeDistribution, greetingFor, monthLabel, periodVariation, rangeProblem, stageDistribution } from './index.rules';
+import { defaultRange, describeDistribution, greetingFor, periodVariation, rangeProblem, stageDistribution } from './index.rules';
 
 describe('dashboard rules', () => {
   const batch = (status: RecentBatch['status']) => ({ status }) as RecentBatch;
@@ -49,10 +49,5 @@ describe('dashboard rules', () => {
     expect(periodVariation(series)).toBeCloseTo(-30.4);
     expect(periodVariation([{ month: '2026-01', co2Kg: 10 }, { month: '2026-02', co2Kg: 0 }])).toBeNull();
     expect(periodVariation([])).toBeNull();
-  });
-
-  it('labels months in Portuguese', () => {
-    expect(monthLabel('2026-01')).toBe('jan/2026');
-    expect(monthLabel('2025-12')).toBe('dez/2025');
   });
 });

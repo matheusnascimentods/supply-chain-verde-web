@@ -1,5 +1,5 @@
 import { STAGE_TYPES, STAGE_TYPE_LABELS } from '../../batches';
-import { MonthRange, MonthlyEmission, RangeProblem, RecentBatch, StageShare } from './index.model';
+import { MAX_RANGE_MONTHS, MONTH_PATTERN, MonthRange, MonthlyEmission, RangeProblem, RecentBatch, StageShare } from './index.model';
 
 /** Distribuição dos lotes por etapa, na ordem da cadeia, sem etapas vazias. */
 export function stageDistribution(batches: RecentBatch[]): StageShare[] {
@@ -18,10 +18,6 @@ export function greetingFor(name: string): string {
   const trimmed = name.trim();
   return trimmed ? `Olá, ${trimmed}` : 'Bem-vindo(a)';
 }
-
-export const MAX_RANGE_MONTHS = 24;
-export const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
-const MONTH_NAMES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
 // Meses contados a partir do ano zero, para comparar e subtrair `YYYY-MM`.
 function monthIndex(month: string): number {
@@ -54,10 +50,4 @@ export function periodVariation(series: MonthlyEmission[]): number | null {
   if (withEmission.length < 2) return null;
   const first = withEmission[0].co2Kg;
   return ((withEmission[withEmission.length - 1].co2Kg - first) / first) * 100;
-}
-
-/** Ex.: "2026-01" → "jan/2026". */
-export function monthLabel(month: string): string {
-  const [year, value] = month.split('-');
-  return `${MONTH_NAMES[Number(value) - 1]}/${year}`;
 }

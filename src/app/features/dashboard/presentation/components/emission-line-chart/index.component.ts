@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { formatKgCo2e, formatNumberBr } from '../../../../../shared/utils/format/index.utils';
+import { formatKgCo2e, formatMonthBr, formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { MonthlyEmission } from '../../../domain/index.model';
-import { monthLabel } from '../../../domain/index.rules';
 
 const MAX_X_LABELS = 6;
 let nextGradientId = 0;
@@ -64,7 +63,7 @@ export class EmissionLineChartComponent {
     const series = this.series();
     return series.map((item, index) => ({
       month: item.month,
-      label: monthLabel(item.month),
+      label: formatMonthBr(item.month),
       value: formatKgCo2e(item.co2Kg),
       x: series.length > 1 ? (index / (series.length - 1)) * 100 : 50,
       y: 100 - (item.co2Kg / this.top()) * 100,
