@@ -5,6 +5,7 @@ import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { PRODUCT_UNIT_SYMBOLS, StageBadgeComponent } from '../../../../batches';
 import { DashboardFacade } from '../../../application/index.facade';
 import { RecentBatch } from '../../../domain/index.model';
+import { EmissionLineChartComponent } from '../../components/emission-line-chart/index.component';
 import { MetricCardComponent, MetricTone } from '../../components/metric-card/index.component';
 import { StageBarChartComponent } from '../../components/stage-bar-chart/index.component';
 import { StagePieChartComponent } from '../../components/stage-pie-chart/index.component';
@@ -18,7 +19,14 @@ interface Metric {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, MetricCardComponent, StageBarChartComponent, StagePieChartComponent, StageBadgeComponent],
+  imports: [
+    RouterLink,
+    MetricCardComponent,
+    StageBarChartComponent,
+    StagePieChartComponent,
+    StageBadgeComponent,
+    EmissionLineChartComponent,
+  ],
   providers: [DashboardFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
@@ -47,6 +55,20 @@ export class DashboardComponent {
       },
     ];
   });
+
+  // O escopo vem da API: o fornecedor recebe só as próprias emissões.
+  readonly emissionsTitle = computed(() => (this.role() === 'supplier' ? 'Suas emissões' : 'Emissões da cadeia'));
+
+  readonly variationText = computed(() => {
+    const variation = this.facade.variation();
+    if (variation === null) return '';
+    const sign = variation < 0 ? '−' : variation > 0 ? '+' : '';
+    return `${sign}${formatNumberBr(Math.abs(variation), 1)}% no período`;
+  });
+
+  protected changeRange(field: 'from' | 'to', event: Event): void {
+    this.facade.setRange({ ...this.facade.range(), [field]: (event.target as HTMLInputElement).value });
+  }
 
   protected quantity(batch: RecentBatch): string {
     return `${formatNumberBr(batch.quantity)} ${PRODUCT_UNIT_SYMBOLS[batch.unit]}`;

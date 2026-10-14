@@ -1,0 +1,27 @@
+@reference "tailwindcss";
+
+.line-chart {
+  @apply mt-6 h-auto w-full overflow-visible;
+}
+.line-chart-grid {
+  @apply stroke-slate-100;
+  stroke-dasharray: 4 4;
+}
+.line-chart-axis {
+  @apply stroke-slate-200;
+}
+.line-chart-line {
+  @apply fill-none stroke-green-700;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.line-chart-point {
+  @apply cursor-pointer fill-white stroke-green-700 transition-all hover:fill-green-700 motion-reduce:transition-none;
+  stroke-width: 2;
+}
+.line-chart-tick {
+  @apply fill-slate-500 text-[11px];
+}
+.line-chart-table {
+  @apply sr-only;
+}

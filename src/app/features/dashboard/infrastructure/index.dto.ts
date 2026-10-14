@@ -17,3 +17,10 @@ export const dashboardSummaryResponseSchema = z.object({
   monthlyEmissionKgCo2e: z.number().nonnegative(),
   recentBatches: z.array(recentBatchSchema),
 });
+
+export const monthlyEmissionsResponseSchema = z.array(
+  z.object({
+    month: z.string().regex(/^\d{4}-\d{2}$/),
+    co2Kg: z.number().nonnegative(),
+  }),
+);

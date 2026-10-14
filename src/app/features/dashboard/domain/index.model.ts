@@ -23,3 +23,15 @@ export interface StageShare {
   count: number;
   percent: number;
 }
+
+/** Emissão de CO₂ de um mês (`YYYY-MM`); meses sem emissão vêm com zero. */
+export interface MonthlyEmission {
+  month: string;
+  co2Kg: number;
+}
+
+/** Intervalo de meses (`YYYY-MM`) do gráfico de emissões. */
+export interface MonthRange {
+  from: string;
+  to: string;
+}

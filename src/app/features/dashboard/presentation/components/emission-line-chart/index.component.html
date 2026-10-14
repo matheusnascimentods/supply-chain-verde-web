@@ -1,0 +1,24 @@
+<svg class="line-chart" [attr.viewBox]="viewBox" role="img" [attr.aria-label]="description()">
+  <line class="line-chart-grid" [attr.x1]="pad.left" [attr.x2]="plotRight" [attr.y1]="pad.top" [attr.y2]="pad.top" />
+  <line class="line-chart-axis" [attr.x1]="pad.left" [attr.x2]="plotRight" [attr.y1]="baseline" [attr.y2]="baseline" />
+  <text class="line-chart-tick" [attr.x]="pad.left - 8" [attr.y]="pad.top + 4" text-anchor="end">{{ maxLabel() }}</text>
+  <text class="line-chart-tick" [attr.x]="pad.left - 8" [attr.y]="baseline + 4" text-anchor="end">0</text>
+  <polyline class="line-chart-line" [attr.points]="polyline()" />
+  @for (point of points(); track point.label) {
+    <circle class="line-chart-point" [attr.cx]="point.x" [attr.cy]="point.y" r="4">
+      <title>{{ point.label }}: {{ point.value }}</title>
+    </circle>
+    @if (point.showLabel) {
+      <text class="line-chart-tick" [attr.x]="point.x" [attr.y]="baseline + 20" text-anchor="middle">{{ point.label }}</text>
+    }
+  }
+</svg>
+<table class="line-chart-table">
+  <caption>Emissão de CO₂ por mês</caption>
+  <thead><tr><th scope="col">Mês</th><th scope="col">Emissão</th></tr></thead>
+  <tbody>
+    @for (point of points(); track point.label) {
+      <tr><td>{{ point.label }}</td><td>{{ point.value }}</td></tr>
+    }
+  </tbody>
+</table>
