@@ -15,7 +15,7 @@
         <p class="dashboard-error-message">{{ facade.error() }}</p>
         <button type="button" (click)="facade.load()" class="dashboard-retry-button">Tentar novamente</button>
       </div>
-    } @else if (readySummary()) {
+    } @else if (facade.readySummary()) {
       <section class="dashboard-metrics-grid" aria-label="Indicadores da operação">
         @for (metric of metrics(); track metric.label) {
           <app-metric-card [label]="metric.label" [value]="metric.value" [tone]="metric.tone" />
@@ -61,7 +61,7 @@
       }
     </section>
 
-    @if (readySummary(); as dashboardData) {
+    @if (facade.readySummary(); as dashboardData) {
       <section class="dashboard-analytics-grid" aria-label="Análises dos lotes recentes">
         <article class="dashboard-stage-chart-card">
           <div>
