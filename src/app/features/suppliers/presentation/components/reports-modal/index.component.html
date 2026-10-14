@@ -43,6 +43,7 @@
       } @else if (facade.loading()) {
         <p class="reports-loading" role="status" aria-live="polite">Carregando relatórios…</p>
       } @else {
+        @if (facade.downloadError()) { <p class="reports-form-error" role="alert">{{ facade.downloadError() }}</p> }
         <div class="reports-list" aria-label="Relatórios do fornecedor">
           @for (report of facade.items(); track report.reportId) {
             <article class="report-card">
@@ -57,6 +58,7 @@
               <div class="report-card-generated">
                 <p class="report-card-label">Data de geração</p>
                 <p class="report-card-date">{{ date(report.generatedAt) }}</p>
+                <button type="button" class="report-card-download" [disabled]="facade.downloadingId() !== null" [attr.aria-busy]="facade.downloadingId() === report.reportId" (click)="facade.downloadPdf(report.reportId)">{{ facade.downloadingId() === report.reportId ? 'Gerando PDF…' : 'Baixar PDF' }}</button>
               </div>
             </article>
           } @empty {
