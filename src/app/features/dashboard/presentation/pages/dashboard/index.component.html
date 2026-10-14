@@ -82,6 +82,40 @@
     } @else {
       <p class="dashboard-profile-state" role="status">Resumo indisponível.</p>
     }
+
+    <section class="dashboard-emissions-card" aria-labelledby="emissions-heading">
+      <div class="dashboard-emissions-header">
+        <div>
+          <h2 id="emissions-heading" class="dashboard-section-title">{{ emissionsTitle() }}</h2>
+          <p class="dashboard-section-description">Emissão de CO₂ mês a mês</p>
+        </div>
+        <div>
+          <label class="dashboard-emissions-field" for="emissions-from">De
+            <input id="emissions-from" class="dashboard-emissions-input" type="month" [value]="facade.range().from" (change)="changeRange('from', $event)" />
+          </label>
+          <label class="dashboard-emissions-field" for="emissions-to">Até
+            <input id="emissions-to" class="dashboard-emissions-input" type="month" [value]="facade.range().to" (change)="changeRange('to', $event)" />
+          </label>
+        </div>
+      </div>
+      @if (facade.rangeError()) {
+        <p class="dashboard-emissions-note" role="alert">{{ facade.rangeError() }}</p>
+      } @else if (facade.emissionsLoading()) {
+        <p class="dashboard-empty-state" role="status">Carregando emissões…</p>
+      } @else if (facade.emissionsError()) {
+        <div class="dashboard-error-panel" role="alert">
+          <p class="dashboard-error-message">{{ facade.emissionsError() }}</p>
+          <button type="button" (click)="facade.loadEmissions()" class="dashboard-retry-button">Tentar novamente</button>
+        </div>
+      } @else if (facade.hasEmissions()) {
+        <app-emission-line-chart [series]="facade.emissions()" />
+        @if (variationText()) {
+          <p class="dashboard-emissions-note">{{ variationText() }}</p>
+        }
+      } @else {
+        <p class="dashboard-empty-state" role="status">Sem emissões no período.</p>
+      }
+    </section>
   } @else {
     <section class="dashboard-profile-title" role="status">
       <h1 class="dashboard-section-title">Perfil indisponível</h1>

@@ -62,4 +62,17 @@ describe('DashboardRepository', () => {
     });
     http.expectOne(`${environment.apiUrl}/dashboard/summary?limit=10`).flush({ activeBatches: -1 });
   });
+
+  it('loads the monthly emissions of the range', () => {
+    const series = [{ month: '2026-01', co2Kg: 1250.4 }, { month: '2026-02', co2Kg: 0 }];
+    repository.loadEmissions({ from: '2026-01', to: '2026-02' }).subscribe((response) => expect(response).toEqual(series));
+    http.expectOne(`${environment.apiUrl}/dashboard/emissions?from=2026-01&to=2026-02`).flush(series);
+  });
+
+  it('rejects a monthly emission outside the contract', () => {
+    let failed = false;
+    repository.loadEmissions({ from: '2026-01', to: '2026-01' }).subscribe({ error: () => (failed = true) });
+    http.expectOne((req) => req.url.endsWith('/dashboard/emissions')).flush([{ month: '01/2026', co2Kg: 1 }]);
+    expect(failed).toBe(true);
+  });
 });

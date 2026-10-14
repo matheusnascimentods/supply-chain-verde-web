@@ -23,12 +23,15 @@ const summary: DashboardSummary = {
 describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let session: SessionService;
-  let dashboardService: { loadSummary: ReturnType<typeof vi.fn> };
+  let dashboardService: { loadSummary: ReturnType<typeof vi.fn>; loadEmissions: ReturnType<typeof vi.fn> };
   let currentUserService: { load: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     sessionStorage.clear();
-    dashboardService = { loadSummary: vi.fn().mockReturnValue(of(summary)) };
+    dashboardService = {
+      loadSummary: vi.fn().mockReturnValue(of(summary)),
+      loadEmissions: vi.fn().mockReturnValue(of([{ month: '2026-01', co2Kg: 1000 }, { month: '2026-02', co2Kg: 696 }])),
+    };
     currentUserService = {
       load: vi.fn().mockReturnValue(
         of({ userId: 5, name: 'Maria Gabriela Brito', email: 'maria@example.com', role: 'manager' }),
@@ -84,7 +87,7 @@ describe('DashboardComponent', () => {
 
   it('renders recent batches as a responsive table and links to the full batch list', () => {
     const page = renderAs('supplier');
-    const rows = page.querySelectorAll('tbody tr');
+    const rows = page.querySelectorAll('.dashboard-batches-table tbody tr');
     expect(page.textContent).toContain('Lotes recentes');
     expect(rows).toHaveLength(3);
     expect(rows[0].textContent).toContain('Café orgânico');
@@ -98,7 +101,7 @@ describe('DashboardComponent', () => {
   it('shows an empty state when the API returns no recent batches', () => {
     dashboardService.loadSummary.mockReturnValue(of({ ...summary, recentBatches: [] }));
     const page = renderAs('auditor');
-    expect(page.querySelector('tbody')).toBeNull();
+    expect(page.querySelector('.dashboard-batches-table tbody')).toBeNull();
     expect(page.textContent).toContain('Nenhum lote recente encontrado.');
   });
 
@@ -117,5 +120,32 @@ describe('DashboardComponent', () => {
     fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Perfil indisponível');
+  });
+
+  it('titles the emissions chart by role and shows the period variation', () => {
+    let page = renderAs('manager');
+    expect(page.querySelector('#emissions-heading')?.textContent).toBe('Emissões da cadeia');
+    expect(page.querySelector('app-emission-line-chart')).not.toBeNull();
+    expect(page.textContent).toContain('−30,4% no período');
+
+    page = renderAs('supplier');
+    expect(page.querySelector('#emissions-heading')?.textContent).toBe('Suas emissões');
+  });
+
+  it('blocks an inverted month range without calling the API', () => {
+    const page = renderAs('manager');
+    const from = page.querySelector<HTMLInputElement>('#emissions-from')!;
+    from.value = '2099-01';
+    from.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(dashboardService.loadEmissions).toHaveBeenCalledOnce();
+    expect(page.textContent).toContain('O mês inicial deve ser anterior ou igual ao final.');
+  });
+
+  it('shows the empty state when the period has no emissions', () => {
+    dashboardService.loadEmissions.mockReturnValue(of([{ month: '2026-01', co2Kg: 0 }]));
+    const page = renderAs('auditor');
+    expect(page.textContent).toContain('Sem emissões no período.');
+    expect(page.querySelector('app-emission-line-chart')).toBeNull();
   });
 });

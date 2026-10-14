@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { StageShare } from '../../domain/index.model';
+import { EmissionLineChartComponent } from './emission-line-chart/index.component';
 import { MetricCardComponent } from './metric-card/index.component';
 import { StageBarChartComponent } from './stage-bar-chart/index.component';
 import { StagePieChartComponent } from './stage-pie-chart/index.component';
@@ -41,5 +42,31 @@ describe('dashboard charts', () => {
     expect(segments.map((segment) => segment.getAttribute('stroke-dasharray'))).toEqual(['25 75', '75 25']);
     expect(segments.map((segment) => segment.getAttribute('stroke-dashoffset'))).toEqual(['0', '-25']);
     expect(fixture.nativeElement.textContent).toContain('4');
+  });
+
+  it('line chart plots each month and lists the values for screen readers', () => {
+    const fixture = TestBed.createComponent(EmissionLineChartComponent);
+    fixture.componentRef.setInput('series', [
+      { month: '2026-01', co2Kg: 100 },
+      { month: '2026-02', co2Kg: 50 },
+    ]);
+    fixture.detectChanges();
+    const element: HTMLElement = fixture.nativeElement;
+    const points = Array.from(element.querySelectorAll('circle'));
+    expect(points.map((point) => [point.getAttribute('cx'), point.getAttribute('cy')])).toEqual([['64', '16'], ['624', '112']]);
+    expect(points[0].querySelector('title')?.textContent).toBe('jan/2026: 100 kg CO₂e');
+    expect(element.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe('Emissões mensais de jan/2026 a fev/2026. Pico em jan/2026: 100 kg CO₂e.');
+    expect(element.querySelectorAll('tbody tr').length).toBe(2);
+  });
+
+  it('line chart keeps all-zero months on the baseline without dividing by zero', () => {
+    const fixture = TestBed.createComponent(EmissionLineChartComponent);
+    fixture.componentRef.setInput('series', [
+      { month: '2026-01', co2Kg: 0 },
+      { month: '2026-02', co2Kg: 0 },
+    ]);
+    fixture.detectChanges();
+    const ys = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('circle')).map((point) => point.getAttribute('cy'));
+    expect(ys).toEqual(['208', '208']);
   });
 });
