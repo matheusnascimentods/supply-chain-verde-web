@@ -6,7 +6,7 @@ import { SupplierReportsModalComponent } from './index.component';
 
 describe('SupplierReportsModalComponent', () => {
   let fixture: ComponentFixture<SupplierReportsModalComponent>;
-  let facade: Record<string, unknown> & { open: ReturnType<typeof vi.fn>; generate: ReturnType<typeof vi.fn> };
+  let facade: Record<string, unknown> & { open: ReturnType<typeof vi.fn>; generate: ReturnType<typeof vi.fn>; downloadPdf: ReturnType<typeof vi.fn> };
   let generated: number;
 
   beforeEach(() => {
@@ -18,6 +18,8 @@ describe('SupplierReportsModalComponent', () => {
       saving: signal(false),
       saveError: signal(''),
       success: signal(''),
+      downloadingId: signal<number | null>(null),
+      downloadError: signal(''),
       page: signal(0),
       totalPages: signal(1),
       open: vi.fn(),
@@ -25,6 +27,7 @@ describe('SupplierReportsModalComponent', () => {
       previousPage: vi.fn(),
       nextPage: vi.fn(),
       generate: vi.fn().mockReturnValue(of({})),
+      downloadPdf: vi.fn(),
     };
     TestBed.overrideComponent(SupplierReportsModalComponent, { set: { providers: [{ provide: SupplierReportsFacade, useValue: facade }] } });
     fixture = TestBed.createComponent(SupplierReportsModalComponent);
@@ -55,5 +58,11 @@ describe('SupplierReportsModalComponent', () => {
     expect(facade.generate).toHaveBeenCalledWith({ periodStartAt: '2026-01-01', periodEndAt: '2026-01-31' });
     expect(fixture.componentInstance.form.getRawValue()).toEqual({ startDate: '', endDate: '' });
     expect(generated).toBe(1);
+  });
+
+  it('downloads the PDF of the report from its card', () => {
+    const button = [...document.querySelectorAll('button')].find((item) => item.textContent?.trim() === 'Baixar PDF')!;
+    button.click();
+    expect(facade.downloadPdf).toHaveBeenCalledWith(4);
   });
 });

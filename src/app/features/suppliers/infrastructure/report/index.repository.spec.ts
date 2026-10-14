@@ -43,4 +43,12 @@ describe('ReportsRepository', () => {
     expect(request.request.body).toEqual(period);
     request.flush({ reportId: 4, supplierId: 9, ...period, totalCo2Kg: 52.3, trackedProductCount: 2, generatedAt: '2026-02-01T10:00:00' });
   });
+
+  it('loads the report detail', () => {
+    const detail = { ...report, trackedProductCount: 2, supplier: { phone: null, address: null }, emissions: { byStage: [], byBatch: [], byMethod: [] }, certifications: [] };
+    repository.loadDetail(4).subscribe((value) => expect(value).toEqual(detail));
+    const request = http.expectOne((req) => req.url === `${environment.apiUrl}/reports`);
+    expect(request.request.params.get('reportId')).toBe('4');
+    request.flush(detail);
+  });
 });
