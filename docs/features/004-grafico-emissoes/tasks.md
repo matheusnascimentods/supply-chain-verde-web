@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** implementado (aguarda o merge da API, branch `feat/003-grafico-emissoes`). Depende da API (`supply-chain-verde-api/docs/features/004-grafico-emissoes/tasks.md`).
+**Status:** implementado. Depende da API (`supply-chain-verde-api/docs/features/004-grafico-emissoes/tasks.md`).
 
 ---
 
