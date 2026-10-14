@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { z } from 'zod';
 import { environment } from '../../../../environments/environment';
-import { NewSupplier, Page, RecommendationCriteria, Supplier, SupplierRanking } from '../domain/index.model';
+import { NewSupplier, OwnSupplierPatch, Page, RecommendationCriteria, Supplier, SupplierRanking } from '../domain/index.model';
 import { supplierRankingPageSchema, supplierResponseSchema } from './index.dto';
 
 @Injectable({ providedIn: 'root' })
@@ -29,6 +29,10 @@ export class SuppliersRepository {
     return this.http
       .put<unknown>(`${this.base}/${supplierId}`, supplier)
       .pipe(map((raw) => supplierResponseSchema.parse(raw)));
+  }
+
+  updateOwn(patch: OwnSupplierPatch): Observable<Supplier> {
+    return this.http.patch<unknown>(`${this.base}/me`, patch).pipe(map((raw) => supplierResponseSchema.parse(raw)));
   }
 
   loadRanking(
