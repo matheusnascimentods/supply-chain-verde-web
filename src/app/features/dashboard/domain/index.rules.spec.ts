@@ -1,5 +1,5 @@
 import { RecentBatch } from './index.model';
-import { defaultRange, describeDistribution, greetingFor, monthLabel, periodVariation, stageDistribution, validateRange } from './index.rules';
+import { defaultRange, describeDistribution, greetingFor, monthLabel, periodVariation, rangeProblem, stageDistribution } from './index.rules';
 
 describe('dashboard rules', () => {
   const batch = (status: RecentBatch['status']) => ({ status }) as RecentBatch;
@@ -28,12 +28,14 @@ describe('dashboard rules', () => {
     expect(defaultRange(new Date(2026, 0, 5))).toEqual({ from: '2025-02', to: '2026-01' });
   });
 
-  it('validates order and the 24-month limit of the range', () => {
-    expect(validateRange({ from: '2026-01', to: '2026-01' })).toBe('');
-    expect(validateRange({ from: '2024-11', to: '2026-10' })).toBe('');
-    expect(validateRange({ from: '2024-10', to: '2026-10' })).toBe('Escolha um intervalo de até 24 meses.');
-    expect(validateRange({ from: '2026-02', to: '2026-01' })).toBe('O mês inicial deve ser anterior ou igual ao final.');
-    expect(validateRange({ from: '', to: '2026-01' })).toBe('Informe o mês inicial e o final.');
+  it('validates format, order and the 24-month limit of the range', () => {
+    expect(rangeProblem({ from: '2026-01', to: '2026-01' })).toBeNull();
+    expect(rangeProblem({ from: '2024-11', to: '2026-10' })).toBeNull();
+    expect(rangeProblem({ from: '2024-10', to: '2026-10' })).toBe('tooLong');
+    expect(rangeProblem({ from: '2026-02', to: '2026-01' })).toBe('order');
+    expect(rangeProblem({ from: '', to: '2026-01' })).toBe('missing');
+    expect(rangeProblem({ from: 'jan 2026', to: '2026-01' })).toBe('missing');
+    expect(rangeProblem({ from: '2026-13', to: '2026-12' })).toBe('missing');
   });
 
   it('measures the variation between the first and last months with emissions', () => {

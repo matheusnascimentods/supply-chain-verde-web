@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../core/auth/session/current-user/index.service';
 import { DashboardRepository } from '../infrastructure/index.repository';
 import { DashboardFacade } from './index.facade';
@@ -40,9 +40,10 @@ describe('DashboardFacade', () => {
     repository.loadSummary.mockReturnValueOnce(throwError(() => new Error('500')));
     const facade = createFacade();
     expect(facade.error()).toBe('Não foi possível carregar o resumo. Tente novamente.');
+    expect(facade.readySummary()).toBeNull();
     facade.load();
     expect(facade.error()).toBe('');
-    expect(facade.summary()).toEqual(summary);
+    expect(facade.readySummary()).toEqual(summary);
   });
 
   it('loads the emissions of the last 12 months on creation', () => {
@@ -61,6 +62,19 @@ describe('DashboardFacade', () => {
     expect(repository.loadEmissions).toHaveBeenCalledTimes(2);
     expect(facade.rangeError()).toBe('O mês inicial deve ser anterior ou igual ao final.');
     expect(facade.emissions()).toEqual([]);
+
+    facade.setRange({ from: 'jan 2026', to: '2026-06' });
+    expect(repository.loadEmissions).toHaveBeenCalledTimes(2);
+    expect(facade.rangeError()).toBe('Informe o mês inicial e o final.');
+  });
+
+  it('ignores the response of a range that was already replaced', () => {
+    const pending = new Subject<typeof series>();
+    repository.loadEmissions.mockReturnValueOnce(pending);
+    const facade = createFacade();
+    facade.setRange({ from: '2026-01', to: '2026-06' });
+    pending.next([{ month: '2025-01', co2Kg: 1 }]);
+    expect(facade.emissions()).toEqual(series);
   });
 
   it('shows an error when the emissions fail', () => {

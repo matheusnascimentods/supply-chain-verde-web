@@ -45,11 +45,8 @@ export class DashboardComponent {
     return role ? DASHBOARDS[role] : null;
   });
 
-  // Resumo só quando carregou sem erro; usado nos KPIs e nas análises.
-  protected readonly readySummary = computed(() => (this.facade.loading() || this.facade.error() ? null : this.facade.summary()));
-
   readonly metrics = computed<Metric[]>(() => {
-    const summary = this.facade.summary();
+    const summary = this.facade.readySummary();
     const count = (value: number | undefined) => (value === undefined ? '—' : formatNumberBr(value, 0));
     return [
       { label: 'Lotes Ativos', value: count(summary?.activeBatches), tone: 'batches' },

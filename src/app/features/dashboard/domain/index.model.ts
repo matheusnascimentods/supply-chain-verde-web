@@ -35,3 +35,6 @@ export interface MonthRange {
   from: string;
   to: string;
 }
+
+/** Por que um intervalo não pode ir para a API. */
+export type RangeProblem = 'missing' | 'order' | 'tooLong';

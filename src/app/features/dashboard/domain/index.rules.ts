@@ -1,5 +1,5 @@
 import { STAGE_TYPES, STAGE_TYPE_LABELS } from '../../batches';
-import { MonthRange, MonthlyEmission, RecentBatch, StageShare } from './index.model';
+import { MonthRange, MonthlyEmission, RangeProblem, RecentBatch, StageShare } from './index.model';
 
 /** Distribuição dos lotes por etapa, na ordem da cadeia, sem etapas vazias. */
 export function stageDistribution(batches: RecentBatch[]): StageShare[] {
@@ -19,7 +19,8 @@ export function greetingFor(name: string): string {
   return trimmed ? `Olá, ${trimmed}` : 'Bem-vindo(a)';
 }
 
-const MAX_RANGE_MONTHS = 24;
+export const MAX_RANGE_MONTHS = 24;
+const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 const MONTH_NAMES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
 // Meses contados a partir do ano zero, para comparar e subtrair `YYYY-MM`.
@@ -38,12 +39,13 @@ export function defaultRange(today: Date): MonthRange {
   return { from: toMonth(current - 11), to: toMonth(current) };
 }
 
-/** Mensagem do problema do intervalo, ou vazio quando ele pode ir para a API. */
-export function validateRange(range: MonthRange): string {
-  if (!range.from || !range.to) return 'Informe o mês inicial e o final.';
+/** Problema do intervalo, ou nulo quando ele pode ir para a API. */
+export function rangeProblem(range: MonthRange): RangeProblem | null {
+  // Sem suporte a `type="month"`, o navegador cai para texto livre.
+  if (!MONTH_PATTERN.test(range.from) || !MONTH_PATTERN.test(range.to)) return 'missing';
   const months = monthIndex(range.to) - monthIndex(range.from) + 1;
-  if (months < 1) return 'O mês inicial deve ser anterior ou igual ao final.';
-  return months > MAX_RANGE_MONTHS ? `Escolha um intervalo de até ${MAX_RANGE_MONTHS} meses.` : '';
+  if (months < 1) return 'order';
+  return months > MAX_RANGE_MONTHS ? 'tooLong' : null;
 }
 
 /** Variação (%) entre o primeiro e o último mês com emissão; nula sem dois meses para comparar. */

@@ -1,10 +1,18 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EMPTY, Subject, catchError, switchMap, tap } from 'rxjs';
 import { CurrentUserService } from '../../../core/auth/session/current-user/index.service';
-import { DashboardSummary, MonthRange, MonthlyEmission } from '../domain/index.model';
-import { defaultRange, greetingFor, periodVariation, stageDistribution, validateRange } from '../domain/index.rules';
+import { DashboardSummary, MonthRange, MonthlyEmission, RangeProblem } from '../domain/index.model';
+import { MAX_RANGE_MONTHS, defaultRange, greetingFor, periodVariation, rangeProblem, stageDistribution } from '../domain/index.rules';
 import { DashboardRepository } from '../infrastructure/index.repository';
 
 export const RECENT_BATCHES_LIMIT = 10;
+
+const RANGE_MESSAGES: Record<RangeProblem, string> = {
+  missing: 'Informe o mês inicial e o final.',
+  order: 'O mês inicial deve ser anterior ou igual ao final.',
+  tooLong: `Escolha um intervalo de até ${MAX_RANGE_MONTHS} meses.`,
+};
 
 @Injectable()
 export class DashboardFacade {
@@ -15,21 +23,28 @@ export class DashboardFacade {
   readonly summary = signal<DashboardSummary | null>(null);
   readonly loading = signal(true);
   readonly error = signal('');
+  /** Resumo só quando carregou sem erro; usado nos KPIs e nas análises. */
+  readonly readySummary = computed(() => (this.loading() || this.error() ? null : this.summary()));
   readonly recentBatches = computed(() => this.summary()?.recentBatches ?? []);
   readonly distribution = computed(() => stageDistribution(this.recentBatches()));
   readonly greeting = computed(() => greetingFor(this.userName()));
 
   readonly range = signal<MonthRange>(defaultRange(new Date()));
-  readonly rangeError = computed(() => validateRange(this.range()));
+  readonly rangeError = computed(() => {
+    const problem = rangeProblem(this.range());
+    return problem ? RANGE_MESSAGES[problem] : '';
+  });
   readonly emissions = signal<MonthlyEmission[]>([]);
   readonly emissionsLoading = signal(false);
   readonly emissionsError = signal('');
   readonly hasEmissions = computed(() => this.emissions().some((item) => item.co2Kg > 0));
   readonly variation = computed(() => periodVariation(this.emissions()));
   readonly periodTotal = computed(() => this.emissions().reduce((total, item) => total + item.co2Kg, 0));
-  private emissionsSequence = 0;
+  private readonly emissionsRequests = new Subject<MonthRange>();
 
   constructor() {
+    // switchMap descarta a resposta de um intervalo que já foi trocado.
+    this.emissionsRequests.pipe(switchMap((range) => this.fetchEmissions(range)), takeUntilDestroyed()).subscribe();
     this.load();
     this.loadEmissions();
     this.currentUser.load().subscribe({
@@ -58,27 +73,29 @@ export class DashboardFacade {
     this.loadEmissions();
   }
 
-  /** Intervalo inválido fica só no front, com a mensagem de `rangeError`. */
   loadEmissions(): void {
-    const sequence = ++this.emissionsSequence;
+    this.emissionsRequests.next(this.range());
+  }
+
+  /** Intervalo inválido fica só no front, com a mensagem de `rangeError`. */
+  private fetchEmissions(range: MonthRange) {
     this.emissionsError.set('');
-    if (this.rangeError()) {
+    if (rangeProblem(range)) {
       this.emissions.set([]);
       this.emissionsLoading.set(false);
-      return;
+      return EMPTY;
     }
     this.emissionsLoading.set(true);
-    this.repository.loadEmissions(this.range()).subscribe({
-      next: (series) => {
-        if (sequence !== this.emissionsSequence) return;
+    return this.repository.loadEmissions(range).pipe(
+      tap((series) => {
         this.emissions.set(series);
         this.emissionsLoading.set(false);
-      },
-      error: () => {
-        if (sequence !== this.emissionsSequence) return;
+      }),
+      catchError(() => {
         this.emissionsError.set('Não foi possível carregar as emissões. Tente novamente.');
         this.emissionsLoading.set(false);
-      },
-    });
+        return EMPTY;
+      }),
+    );
   }
 }
