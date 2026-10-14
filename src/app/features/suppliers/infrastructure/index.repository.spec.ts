@@ -83,5 +83,11 @@ describe('SuppliersRepository', () => {
     const update = http.expectOne(`${base}/9`);
     expect(update.request.method).toBe('PUT');
     update.flush(supplier);
+
+    repository.updateOwn({ phone: '11988887777' }).subscribe((result) => expect(result).toEqual(supplier));
+    const own = http.expectOne(`${base}/me`);
+    expect(own.request.method).toBe('PATCH');
+    expect(own.request.body).toEqual({ phone: '11988887777' });
+    own.flush(supplier);
   });
 });

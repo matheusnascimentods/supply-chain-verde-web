@@ -42,12 +42,41 @@ export interface SupplierRanking extends Supplier {
 /** Critério da recomendação: produto cadastrado ou categoria + unidade de um produto novo. */
 export type RecommendationCriteria = { productId: number } | { category: string; unit: string };
 
+/** Acesso (usuário `SUPPLIER`) criado junto com o fornecedor. */
+export interface SupplierAccess {
+  name: string;
+  email: string;
+  password: string;
+}
+
 export interface NewSupplier {
   name: string;
   cnpj: string;
   phone: string;
   address: Address;
+  user?: SupplierAccess;
 }
+
+/** Campos que o próprio fornecedor edita em `/suppliers/me`. */
+export interface OwnSupplierProfile {
+  name: string;
+  phone: string;
+  address: Address;
+  userName: string;
+}
+
+export interface PasswordChange {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+/** Corpo do `PATCH /suppliers/me`: só os campos alterados. */
+export type OwnSupplierPatch = Partial<Omit<OwnSupplierProfile, 'address'>> & {
+  address?: Address;
+  currentPassword?: string;
+  newPassword?: string;
+};
 
 export interface Page<T> {
   items: T[];
