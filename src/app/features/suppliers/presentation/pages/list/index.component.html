@@ -1,8 +1,13 @@
 <main class="suppliers-page">
   <div class="suppliers-container">
     <header class="suppliers-header">
-      <h1 class="suppliers-title">Fornecedores</h1>
-      <p class="suppliers-subtitle">Desempenho ambiental e gestão de fornecedores</p>
+      <div>
+        <h1 class="suppliers-title">Fornecedores</h1>
+        <p class="suppliers-subtitle">Desempenho ambiental e gestão de fornecedores</p>
+      </div>
+      @if (facade.canManage()) {
+        <a appButton variant="primary" routerLink="/suppliers/new">+ Novo fornecedor</a>
+      }
     </header>
 
     <div class="suppliers-section">
