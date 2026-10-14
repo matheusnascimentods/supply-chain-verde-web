@@ -48,11 +48,23 @@
 .emission-chart-tooltip strong {
   @apply text-xs font-semibold text-white;
 }
-.emission-chart-slot[data-edge='start'] .emission-chart-tooltip {
+.emission-chart-slot[data-edge='start'] {
   @apply translate-x-0;
 }
-.emission-chart-slot[data-edge='end'] .emission-chart-tooltip {
+.emission-chart-slot[data-edge='end'] {
   @apply -translate-x-full;
+}
+.emission-chart-slot[data-edge='start'] .emission-chart-dot {
+  @apply left-0;
+}
+.emission-chart-slot[data-edge='end'] .emission-chart-dot {
+  @apply left-full;
+}
+.emission-chart-slot[data-edge='start'] .emission-chart-tooltip {
+  @apply left-0 translate-x-0;
+}
+.emission-chart-slot[data-edge='end'] .emission-chart-tooltip {
+  @apply left-full -translate-x-full;
 }
 .emission-chart-slot:hover .emission-chart-dot,
 .emission-chart-slot:hover .emission-chart-tooltip {

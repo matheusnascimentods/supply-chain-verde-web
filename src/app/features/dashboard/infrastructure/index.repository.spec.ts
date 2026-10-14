@@ -69,17 +69,12 @@ describe('DashboardRepository', () => {
     http.expectOne(`${environment.apiUrl}/dashboard/emissions?from=2026-01&to=2026-02`).flush(series);
   });
 
-  it('rejects a monthly emission outside the contract', () => {
-    let failed = false;
-    repository.loadEmissions({ from: '2026-01', to: '2026-01' }).subscribe({ error: () => (failed = true) });
-    http.expectOne((req) => req.url.endsWith('/dashboard/emissions')).flush([{ month: '01/2026', co2Kg: 1 }]);
-    expect(failed).toBe(true);
-  });
-
-  it('rejects a month that does not exist', () => {
-    let failed = false;
-    repository.loadEmissions({ from: '2026-01', to: '2026-01' }).subscribe({ error: () => (failed = true) });
-    http.expectOne((req) => req.url.endsWith('/dashboard/emissions')).flush([{ month: '2026-13', co2Kg: 1 }]);
-    expect(failed).toBe(true);
+  it('rejects a month outside the format or that does not exist', () => {
+    for (const month of ['01/2026', '2026-13']) {
+      let failed = false;
+      repository.loadEmissions({ from: '2026-01', to: '2026-01' }).subscribe({ error: () => (failed = true) });
+      http.expectOne((req) => req.url.endsWith('/dashboard/emissions')).flush([{ month, co2Kg: 1 }]);
+      expect(failed).toBe(true);
+    }
   });
 });

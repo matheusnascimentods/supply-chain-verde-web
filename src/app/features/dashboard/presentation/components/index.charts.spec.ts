@@ -56,7 +56,7 @@ describe('dashboard charts', () => {
     expect(Array.from(element.querySelectorAll('.emission-chart-tick')).map((tick) => tick.textContent)).toEqual(['0', '100', '200', '300', '400']);
     const slots = Array.from(element.querySelectorAll<HTMLElement>('.emission-chart-slot'));
     expect(slots.map((slot) => slot.style.left)).toEqual(['0%', '50%', '100%']);
-    expect(slots.map((slot) => slot.style.width)).toEqual(['50%', '50%', '50%']);
+    expect(slots.map((slot) => slot.style.width)).toEqual(['25%', '50%', '25%']);
     expect(parseFloat(element.querySelector<HTMLElement>('.emission-chart-dot')!.style.top)).toBeCloseTo(8.395);
     expect(slots[0].textContent).toContain('366,42 kg CO₂e');
     expect(element.querySelector('[role="img"]')?.getAttribute('aria-label')).toBe('Emissões mensais de jan/2026 a mar/2026. Pico em jan/2026: 366,42 kg CO₂e.');

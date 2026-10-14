@@ -44,6 +44,11 @@ export function rangeProblem(range: MonthRange): RangeProblem | null {
   return months > MAX_RANGE_MONTHS ? 'tooLong' : null;
 }
 
+/** Soma das emissões do período. */
+export function periodTotal(series: MonthlyEmission[]): number {
+  return series.reduce((total, item) => total + item.co2Kg, 0);
+}
+
 /** Variação (%) entre o primeiro e o último mês com emissão; nula sem dois meses para comparar. */
 export function periodVariation(series: MonthlyEmission[]): number | null {
   const withEmission = series.filter((item) => item.co2Kg > 0);

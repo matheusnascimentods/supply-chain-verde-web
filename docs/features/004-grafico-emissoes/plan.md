@@ -10,7 +10,7 @@
 | `domain/index.rules.ts` | `defaultRange(today)`, `rangeProblem(range)` (formato `YYYY-MM`, ordem e máximo de 24 meses; devolve o código do problema, a mensagem fica no facade), `periodVariation(series)` (% entre primeiro e último mês não nulo). |
 | `infrastructure/index.dto.ts` | Schema Zod do array. |
 | `infrastructure/index.repository.ts` | `loadEmissions(range)` → `GET /dashboard/emissions?from=&to=`. |
-| `application/index.facade.ts` | Signals `range`, `rangeError`, `emissions`, `emissionsLoading`, `emissionsError`, `readySummary`; recarrega via `switchMap` quando `range` muda e é válido (resposta de intervalo antigo é descartada). |
+| `application/index.facade.ts` | Signals `range`, `rangeError`, `emissions`, `emissionsLoading`, `emissionsError`; recarrega via `switchMap` quando `range` muda e é válido (resposta de intervalo antigo é descartada). |
 | `presentation/components/emission-line-chart` (novo) | SVG com eixo de meses e área com curva suave; tooltip por mês só no hover (CSS) e tabela `sr-only` com os valores para leitor de tela. |
 | `presentation/pages/dashboard` | Filtro de meses + gráfico; título conforme o role. |
 
