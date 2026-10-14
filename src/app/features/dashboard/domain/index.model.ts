@@ -30,6 +30,9 @@ export interface MonthlyEmission {
   co2Kg: number;
 }
 
+export const MAX_RANGE_MONTHS = 24;
+export const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
+
 /** Intervalo de meses (`YYYY-MM`) do gráfico de emissões. */
 export interface MonthRange {
   from: string;

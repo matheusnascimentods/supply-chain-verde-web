@@ -37,9 +37,7 @@
         </div>
       </div>
       @if (facade.rangeError()) {
-        <div class="dashboard-error-panel" role="alert">
-          <p class="dashboard-error-message">{{ facade.rangeError() }}</p>
-        </div>
+        <p class="dashboard-range-error" role="alert">{{ facade.rangeError() }}</p>
       } @else if (facade.emissionsLoading()) {
         <p class="dashboard-empty-state" role="status">Carregando emissões…</p>
       } @else if (facade.emissionsError()) {

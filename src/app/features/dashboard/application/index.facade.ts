@@ -2,8 +2,8 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, Subject, catchError, switchMap, tap } from 'rxjs';
 import { CurrentUserService } from '../../../core/auth/session/current-user/index.service';
-import { DashboardSummary, MonthRange, MonthlyEmission, RangeProblem } from '../domain/index.model';
-import { MAX_RANGE_MONTHS, defaultRange, greetingFor, periodVariation, rangeProblem, stageDistribution } from '../domain/index.rules';
+import { DashboardSummary, MAX_RANGE_MONTHS, MonthRange, MonthlyEmission, RangeProblem } from '../domain/index.model';
+import { defaultRange, greetingFor, periodVariation, rangeProblem, stageDistribution } from '../domain/index.rules';
 import { DashboardRepository } from '../infrastructure/index.repository';
 
 export const RECENT_BATCHES_LIMIT = 10;
@@ -79,7 +79,7 @@ export class DashboardFacade {
   /** Intervalo inválido fica só no front, com a mensagem de `rangeError`. */
   private fetchEmissions(range: MonthRange) {
     this.emissionsError.set('');
-    if (this.rangeError()) {
+    if (rangeProblem(range)) {
       this.emissions.set([]);
       this.emissionsLoading.set(false);
       return EMPTY;

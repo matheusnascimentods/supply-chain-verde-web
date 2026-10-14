@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { PRODUCT_UNITS, STAGE_TYPES } from '../../batches';
-import { MONTH_PATTERN } from '../domain/index.rules';
+import { MONTH_PATTERN } from '../domain/index.model';
 
 export const recentBatchSchema = z.object({
   batchId: z.number(),
