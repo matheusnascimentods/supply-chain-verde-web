@@ -20,19 +20,23 @@ export class ReportPdfExporter {
     const frame = document.createElement('iframe');
     frame.style.cssText = 'position:fixed;width:0;height:0;border:0';
     document.body.append(frame);
+    const doc = frame.contentDocument!;
+    doc.open();
+    doc.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${fileName}</title><style>${PRINT_STYLE}</style></head><body>${body}</body></html>`);
+    doc.close();
+    // O navegador sugere o título da página como nome do arquivo.
     const previousTitle = document.title;
-    try {
-      const doc = frame.contentDocument!;
-      doc.open();
-      doc.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${fileName}</title><style>${PRINT_STYLE}</style></head><body>${body}</body></html>`);
-      doc.close();
-      // O navegador sugere o título da página como nome do arquivo.
-      document.title = fileName;
-      // ponytail: print() bloqueia até o diálogo fechar no Chrome/Firefox; no Safari pode retornar antes e o iframe sai cedo.
-      frame.contentWindow!.print();
-    } finally {
-      document.title = previousTitle;
-      frame.remove();
-    }
+    document.title = fileName;
+    // O Chrome adia o print() enquanto o documento ainda carrega: o iframe só pode sair depois da impressão.
+    const view = frame.contentWindow!;
+    view.addEventListener(
+      'afterprint',
+      () => {
+        document.title = previousTitle;
+        frame.remove();
+      },
+      { once: true },
+    );
+    view.print();
   }
 }
