@@ -57,6 +57,12 @@ describe('report pdf mapper', () => {
     expect(reportPdfVariables({ ...report, supplierName: 'A | *B*' })['supplierName']).toBe('A \\| \\*B\\*');
   });
 
+  it('escapes the table cells from the API', () => {
+    const byBatch = [{ ...report.emissions.byBatch[0], productName: 'Café | <b>' }];
+    const vars = reportPdfVariables({ ...report, emissions: { ...report.emissions, byBatch } });
+    expect(vars['emissionsByBatchTable']).toContain('| Café \\| &lt;b&gt; |');
+  });
+
   it('fills every placeholder of the template', () => {
     const keys = Object.keys(reportPdfVariables(report));
     expect(placeholdersOf(template).filter((key) => !keys.includes(key))).toEqual([]);
