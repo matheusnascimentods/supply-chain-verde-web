@@ -3,7 +3,7 @@
     <header class="supplier-form-header">
       <div>
         <a routerLink="/suppliers" class="supplier-form-back">← Voltar para fornecedores</a>
-        <h1 id="supplier-form-title" class="supplier-form-title">{{ mode === 'me' ? 'Meu perfil' : mode === 'new' ? 'Novo fornecedor' : 'Editar fornecedor' }}</h1>
+        <h1 id="supplier-form-title" class="supplier-form-title">{{ mode === 'me' ? 'Meu perfil' : 'Editar fornecedor' }}</h1>
         <p id="supplier-form-description" class="supplier-form-subtitle">{{ mode === 'me' ? 'Atualize os dados da empresa, do endereço e do seu acesso.' : 'Informe os dados da empresa e do endereço.' }}</p>
       </div>
     </header>
@@ -55,32 +55,6 @@
         </div>
       </section>
 
-      @if (mode === 'new') {
-        <section [formGroup]="access" aria-labelledby="supplier-access-heading">
-          <h2 id="supplier-access-heading" class="supplier-form-section-title">Acesso ao sistema</h2>
-          <label class="supplier-form-checkbox" for="supplier-with-access">
-            <input id="supplier-with-access" type="checkbox" [formControl]="withAccess" />
-            Criar acesso para o fornecedor
-          </label>
-          @if (withAccess.value) {
-            <div class="supplier-form-grid">
-              <label class="supplier-form-field-wide" for="supplier-access-name">Nome do usuário
-                <input id="supplier-access-name" class="supplier-form-input" type="text" formControlName="name" autocomplete="off" required />
-              </label>
-              <label class="supplier-form-field" for="supplier-access-email">Email
-                <input id="supplier-access-email" class="supplier-form-input" type="email" formControlName="email" autocomplete="off" required />
-              </label>
-              <label class="supplier-form-field" for="supplier-access-password">Senha
-                <input id="supplier-access-password" class="supplier-form-input" type="password" formControlName="password" autocomplete="new-password" required />
-              </label>
-            </div>
-            @if (access.controls.email.touched && access.controls.email.hasError('email')) {
-              <p class="supplier-form-field-error" role="alert">Informe um email válido.</p>
-            }
-          }
-        </section>
-      }
-
       @if (mode === 'me') {
         <section [formGroup]="account" aria-labelledby="supplier-account-heading">
           <h2 id="supplier-account-heading" class="supplier-form-section-title">Meu acesso</h2>
@@ -111,7 +85,7 @@
 
       <footer class="supplier-form-actions">
         <a routerLink="/suppliers" class="supplier-form-cancel">Cancelar</a>
-        <button type="submit" class="supplier-form-submit" [disabled]="invalid() || saving()">{{ saving() ? 'Salvando…' : mode === 'new' ? 'Cadastrar fornecedor' : 'Salvar alterações' }}</button>
+        <button type="submit" class="supplier-form-submit" [disabled]="invalid() || saving()">{{ saving() ? 'Salvando…' : 'Salvar alterações' }}</button>
       </footer>
     </form>
   </div>

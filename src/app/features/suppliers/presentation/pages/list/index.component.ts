@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '../../../../../shared/ui/button/index.component';
@@ -10,6 +10,7 @@ import { SuppliersListFacade } from '../../../application/index.facade';
 import { SupplierRanking } from '../../../domain/index.model';
 import { certificationTone } from '../../../domain/index.rules';
 import { displayCnpj } from '../../../domain/value-objects/cnpj/index.vo';
+import { CreateSupplierModalComponent } from '../../components/create-modal/index.component';
 import { SupplierCertificationsModalComponent } from '../../components/certifications-modal/index.component';
 import { SupplierReportsModalComponent } from '../../components/reports-modal/index.component';
 
@@ -20,6 +21,7 @@ import { SupplierReportsModalComponent } from '../../components/reports-modal/in
     FormsModule,
     SupplierReportsModalComponent,
     SupplierCertificationsModalComponent,
+    CreateSupplierModalComponent,
     ButtonComponent,
     DataTableComponent,
     PaginationComponent,
@@ -35,6 +37,12 @@ export class SupplierListComponent {
   protected readonly cnpj = displayCnpj;
   protected readonly number = formatNumberBr;
   protected readonly certificationTone = certificationTone;
+  readonly createModalOpen = signal(false);
+
+  supplierCreated(): void {
+    this.createModalOpen.set(false);
+    this.facade.load();
+  }
 
   protected certificationLabel(supplier: SupplierRanking): string {
     const expired = supplier.certifications.filter((certification) => certification.status === 'EXPIRED').length;

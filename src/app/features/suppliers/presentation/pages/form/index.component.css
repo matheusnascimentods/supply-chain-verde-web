@@ -54,6 +54,3 @@
 .supplier-form-field-error {
   @apply mt-2 text-sm text-red-700;
 }
-.supplier-form-checkbox {
-  @apply mb-4 flex items-center gap-2 text-sm font-medium text-slate-700;
-}
