@@ -15,29 +15,31 @@ const PRINT_STYLE = `
 /** Converte o Markdown em HTML e abre a impressão do navegador, onde o usuário salva como PDF. */
 @Injectable({ providedIn: 'root' })
 export class ReportPdfExporter {
+  // ponytail: se o navegador não disparar `afterprint`, o título só volta no próximo download.
+  private cleanup?: () => void;
+
   async export(markdown: string, fileName: string): Promise<void> {
     const { marked } = await import('marked');
     const body = await marked.parse(markdown);
+    this.cleanup?.();
     const frame = document.createElement('iframe');
     frame.style.cssText = 'position:fixed;width:0;height:0;border:0';
     document.body.append(frame);
     const doc = frame.contentDocument!;
     doc.open();
-    doc.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${fileName}</title><style>${PRINT_STYLE}</style></head><body>${body}</body></html>`);
+    doc.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><style>${PRINT_STYLE}</style></head><body>${body}</body></html>`);
     doc.close();
-    // O navegador sugere o título da página como nome do arquivo.
+    // O navegador sugere o título da página principal como nome do arquivo.
     const previousTitle = document.title;
     document.title = fileName;
+    this.cleanup = () => {
+      document.title = previousTitle;
+      frame.remove();
+      this.cleanup = undefined;
+    };
     // O Chrome adia o print() enquanto o documento ainda carrega: o iframe só pode sair depois da impressão.
     const view = frame.contentWindow!;
-    view.addEventListener(
-      'afterprint',
-      () => {
-        document.title = previousTitle;
-        frame.remove();
-      },
-      { once: true },
-    );
+    view.addEventListener('afterprint', () => this.cleanup?.(), { once: true });
     view.print();
   }
 }
