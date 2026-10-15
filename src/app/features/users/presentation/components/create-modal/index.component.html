@@ -1,10 +1,10 @@
-<app-modal labelledBy="user-create-title" size="lg" initialFocusSelector="input" (dismissed)="dismissed.emit()">
+<app-modal labelledBy="user-create-title" size="lg" initialFocusSelector="input" [closeOnEscape]="!saving()" [closeOnBackdrop]="!saving()" (dismissed)="dismissed.emit()">
   <div class="create-user-header">
     <div>
       <h2 id="user-create-title" class="create-user-title">Adicionar usuário</h2>
       <p class="create-user-subtitle">Informe os dados e o perfil de acesso.</p>
     </div>
-    <button type="button" class="create-user-close" aria-label="Fechar" (click)="dismissed.emit()">✕</button>
+    <button type="button" class="create-user-close" aria-label="Fechar" [disabled]="saving()" (click)="dismissed.emit()">✕</button>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="submit()" class="create-user-form">

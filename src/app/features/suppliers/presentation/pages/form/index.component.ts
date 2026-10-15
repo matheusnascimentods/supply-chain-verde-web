@@ -1,17 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable, distinctUntilChanged, forkJoin, of, startWith } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { CurrentUserService } from '../../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../../core/auth/session/index.service';
-import { formatCnpj, formatPhone, formatZipCode } from '../../../../../shared/utils/format/index.utils';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 import { UpdateOwnSupplierUseCase } from '../../../application/use-cases/update-own-supplier/index.use-case';
 import { UpdateSupplierUseCase } from '../../../application/use-cases/update-supplier/index.use-case';
 import { NewSupplier, OwnSupplierProfile, Supplier } from '../../../domain/index.model';
 import { passwordChangeErrors } from '../../../domain/index.rules';
 import { SuppliersRepository } from '../../../infrastructure/index.repository';
+import { formatSupplierFieldsWhileTyping } from '../../supplier-fields/index.helper';
 
 type FormMode = 'edit' | 'me';
 
@@ -63,7 +62,7 @@ export class SupplierFormComponent {
   );
 
   constructor() {
-    this.watchInputFormatting();
+    formatSupplierFieldsWhileTyping(this.form.controls);
     if (!this.supplierId) {
       this.error.set('Não foi possível identificar o fornecedor desta sessão.');
       return;
@@ -136,19 +135,5 @@ export class SupplierFormComponent {
   private ownProfile(): OwnSupplierProfile {
     const { name, phone, address } = this.toSupplier();
     return { name, phone, address, userName: this.account.controls.userName.value };
-  }
-
-  private watchInputFormatting(): void {
-    const fields = [
-      [this.form.controls.cnpj, formatCnpj],
-      [this.form.controls.phone, formatPhone],
-      [this.form.controls.zipCode, formatZipCode],
-    ] as const;
-    for (const [control, formatter] of fields) {
-      control.valueChanges.pipe(startWith(control.value), distinctUntilChanged(), takeUntilDestroyed()).subscribe((value) => {
-        const formatted = formatter(value);
-        if (formatted !== value) control.setValue(formatted, { emitEvent: false });
-      });
-    }
   }
 }
