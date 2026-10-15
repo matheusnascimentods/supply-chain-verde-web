@@ -1,10 +1,10 @@
-<app-modal labelledBy="supplier-create-title" size="lg" initialFocusSelector="input" (dismissed)="dismissed.emit()">
+<app-modal labelledBy="supplier-create-title" size="lg" initialFocusSelector="input" [closeOnEscape]="!saving()" [closeOnBackdrop]="!saving()" (dismissed)="dismissed.emit()">
   <div class="create-supplier-header">
     <div>
       <h2 id="supplier-create-title" class="create-supplier-title">Novo fornecedor</h2>
       <p class="create-supplier-subtitle">Informe os dados da empresa e do endereço.</p>
     </div>
-    <button type="button" class="create-supplier-close" aria-label="Fechar" (click)="dismissed.emit()">✕</button>
+    <button type="button" class="create-supplier-close" aria-label="Fechar" [disabled]="saving()" (click)="dismissed.emit()">✕</button>
   </div>
 
   <form [formGroup]="form" (ngSubmit)="submit()" class="create-supplier-form">
@@ -28,7 +28,7 @@
       <div class="create-supplier-grid">
         <label class="create-supplier-field" for="supplier-zip-code">CEP
           <input id="supplier-zip-code" class="create-supplier-input" type="text" formControlName="zipCode" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required />
-          <span class="create-supplier-subtitle" aria-live="polite">{{ cepMessage() }}</span>
+          <span class="create-supplier-subtitle" aria-live="polite">@if (cepLoading()) { Consultando CEP… } @else { {{ cepMessage() }} }</span>
         </label>
         <label class="create-supplier-field" for="supplier-state">Estado (UF)
           <input id="supplier-state" class="create-supplier-input" type="text" formControlName="state" autocomplete="address-level1" maxlength="2" required />
