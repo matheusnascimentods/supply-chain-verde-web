@@ -7,14 +7,13 @@ import { CurrentUserService } from '../../../../../core/auth/session/current-use
 import { SessionService } from '../../../../../core/auth/session/index.service';
 import { formatCnpj, formatPhone, formatZipCode } from '../../../../../shared/utils/format/index.utils';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
-import { CreateSupplierUseCase } from '../../../application/use-cases/create-supplier/index.use-case';
 import { UpdateOwnSupplierUseCase } from '../../../application/use-cases/update-own-supplier/index.use-case';
 import { UpdateSupplierUseCase } from '../../../application/use-cases/update-supplier/index.use-case';
 import { NewSupplier, OwnSupplierProfile, Supplier } from '../../../domain/index.model';
 import { passwordChangeErrors } from '../../../domain/index.rules';
 import { SuppliersRepository } from '../../../infrastructure/index.repository';
 
-type FormMode = 'new' | 'edit' | 'me';
+type FormMode = 'edit' | 'me';
 
 @Component({
   selector: 'app-suppliers-form',
@@ -26,14 +25,13 @@ type FormMode = 'new' | 'edit' | 'me';
 export class SupplierFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly repository = inject(SuppliersRepository);
-  private readonly createSupplier = inject(CreateSupplierUseCase);
   private readonly updateSupplier = inject(UpdateSupplierUseCase);
   private readonly updateOwnSupplier = inject(UpdateOwnSupplierUseCase);
   private readonly currentUser = inject(CurrentUserService);
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
   private readonly route = inject(ActivatedRoute).snapshot;
-  // /suppliers/new cria; /suppliers/:id/edit edita o fornecedor da URL; /suppliers/me, o vinculado à sessão.
+  // /suppliers/:id/edit edita o fornecedor da URL; /suppliers/me, o vinculado à sessão.
   readonly mode: FormMode = this.route.data?.['mode'] ?? 'edit';
   private readonly supplierId = this.mode === 'me' ? this.session.supplierId() : Number(this.route.paramMap.get('id')) || null;
   private initialProfile: OwnSupplierProfile | null = null;
@@ -63,19 +61,9 @@ export class SupplierFormComponent {
     },
     { validators: (group) => passwordChangeErrors(group.getRawValue()) },
   );
-  // Só em /suppliers/new: acesso opcional (usuário SUPPLIER) criado junto com o fornecedor.
-  readonly withAccess = this.fb.nonNullable.control(false);
-  readonly access = this.fb.nonNullable.group({
-    name: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
-  });
 
   constructor() {
     this.watchInputFormatting();
-    this.access.disable();
-    this.withAccess.valueChanges.pipe(takeUntilDestroyed()).subscribe((enabled) => (enabled ? this.access.enable() : this.access.disable()));
-    if (this.mode === 'new') return;
     if (!this.supplierId) {
       this.error.set('Não foi possível identificar o fornecedor desta sessão.');
       return;
@@ -95,15 +83,14 @@ export class SupplierFormComponent {
   }
 
   invalid(): boolean {
-    return this.form.invalid || (this.mode === 'me' && this.account.invalid) || this.access.invalid;
+    return this.form.invalid || (this.mode === 'me' && this.account.invalid);
   }
 
   submit(): void {
-    const loaded = this.mode === 'new' || (this.supplierId && (this.mode === 'edit' || this.initialProfile));
+    const loaded = this.supplierId && (this.mode === 'edit' || this.initialProfile);
     if (this.invalid() || !loaded) {
       this.form.markAllAsTouched();
       this.account.markAllAsTouched();
-      this.access.markAllAsTouched();
       return;
     }
     this.saving.set(true);
@@ -121,10 +108,6 @@ export class SupplierFormComponent {
   }
 
   private save(): Observable<Supplier | null> {
-    if (this.mode === 'new') {
-      const user = this.access.enabled ? { user: this.access.getRawValue() } : {};
-      return this.createSupplier.execute({ ...this.toSupplier(), ...user });
-    }
     return this.mode === 'me'
       ? this.updateOwnSupplier.execute(this.initialProfile!, this.ownProfile(), this.account.getRawValue())
       : this.updateSupplier.execute(this.supplierId!, this.toSupplier());
