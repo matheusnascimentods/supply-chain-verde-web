@@ -8,6 +8,7 @@ const PRINT_STYLE = `
   table { width: 100%; border-collapse: collapse; margin: 6pt 0; }
   th, td { border: 1px solid #cbd5e1; padding: 4pt 6pt; text-align: left; }
   th { background: #f1f5f9; }
+  thead:has(th:empty) { display: none; }
   tr { break-inside: avoid; }
 `;
 
