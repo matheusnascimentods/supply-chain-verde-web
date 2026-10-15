@@ -26,7 +26,10 @@
             ],
             "styles": [
               "src/styles.css"
-            ]
+            ],
+            "loader": {
+              ".md": "text"
+            }
           },
           "configurations": {
             "production": {

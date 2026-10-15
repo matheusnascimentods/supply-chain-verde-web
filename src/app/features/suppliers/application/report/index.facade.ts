@@ -3,6 +3,7 @@ import { Observable, finalize, tap } from 'rxjs';
 import { Report, ReportPeriod } from '../../domain/report/index.model';
 import { GeneratedReportDTO } from '../../infrastructure/report/index.dto';
 import { ReportsRepository } from '../../infrastructure/report/index.repository';
+import { DownloadReportPdfUseCase } from '../use-cases/download-report-pdf/index.use-case';
 import { GenerateReportUseCase } from '../use-cases/generate-report/index.use-case';
 
 const PAGE_SIZE = 20;
@@ -11,6 +12,7 @@ const PAGE_SIZE = 20;
 export class SupplierReportsFacade {
   private readonly repository = inject(ReportsRepository);
   private readonly generateReport = inject(GenerateReportUseCase);
+  private readonly downloadReportPdf = inject(DownloadReportPdfUseCase);
   private supplierId = 0;
 
   readonly items = signal<Report[]>([]);
@@ -19,6 +21,8 @@ export class SupplierReportsFacade {
   readonly saving = signal(false);
   readonly saveError = signal('');
   readonly success = signal('');
+  readonly downloadingId = signal<number | null>(null);
+  readonly downloadError = signal('');
   readonly page = signal(0);
   readonly totalPages = signal(0);
 
@@ -66,5 +70,15 @@ export class SupplierReportsFacade {
       }),
       finalize(() => this.saving.set(false)),
     );
+  }
+
+  downloadPdf(reportId: number): void {
+    if (this.downloadingId() !== null) return;
+    this.downloadingId.set(reportId);
+    this.downloadError.set('');
+    this.downloadReportPdf
+      .execute(reportId)
+      .pipe(finalize(() => this.downloadingId.set(null)))
+      .subscribe({ error: () => this.downloadError.set('Não foi possível gerar o PDF do relatório. Tente novamente.') });
   }
 }

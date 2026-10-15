@@ -9,7 +9,7 @@ O documento é texto fixo com lacunas. Em vez de montar o PDF elemento a element
 1. O template é um arquivo `.md` com placeholders `{{nome}}`, importado como texto no build (carregado uma vez, sem requisição).
 2. Um mapper transforma o detalhe do relatório num dicionário `Record<string, string>` já formatado (datas, números, rótulos) e escapado. Partes repetidas (linhas das tabelas) são geradas pelo mapper como texto Markdown e entram num único placeholder.
 3. `render(template, vars)` troca cada `{{chave}}` pelo valor; ausente vira "—".
-4. O Markdown preenchido vira HTML e o HTML vira PDF, que é baixado.
+4. O Markdown preenchido vira HTML, que é impresso num iframe oculto; o usuário salva como PDF no diálogo do navegador.
 
 Com isso, mudar o layout do relatório é editar o `.md`, sem mexer em lógica.
 
@@ -52,11 +52,11 @@ Com isso, mudar o layout do relatório é editar o `.md`, sem mexer em lógica.
 | Passo | Biblioteca | Motivo |
 |---|---|---|
 | Markdown → HTML | `marked` | Pequena, sem dependências. |
-| HTML → PDF | `html2pdf.js` | Baixa o arquivo direto, sem diálogo de impressão. |
+| HTML → PDF | `window.print()` + CSS `@page` | Texto do PDF selecionável e pesquisável pelo auditor, sem dependência extra. |
 
-Limitação conhecida: o `html2pdf.js` rasteriza o HTML (o texto do PDF não é selecionável). Se isso incomodar a banca/auditor, a alternativa é trocar só o passo final por `window.print()` com CSS `@media print`, mantendo template e mapper.
+O `html2pdf.js` foi descartado: rasteriza o HTML (texto vira imagem) e pesa no bundle. Em troca, o PDF sai pelo diálogo de impressão ("Salvar como PDF") e o nome do RF-06 é sugerido pelo título do documento, sem garantia em todos os navegadores.
 
-Ambas carregadas com `import()` dinâmico no clique, para não pesar o bundle inicial.
+O `marked` é carregado com `import()` dinâmico no clique, para não pesar o bundle inicial.
 
 `angular.json` (`build.options`): `"loader": { ".md": "text" }`, e `src/typings.d.ts` com `declare module '*.md' { const content: string; export default content; }`.
 
@@ -65,11 +65,11 @@ Ambas carregadas com `import()` dinâmico no clique, para não pesar o bundle in
 | Camada | Arquivo | Papel |
 |---|---|---|
 | `domain` | `index.model.ts` | `ReportDetail` com as seções novas. |
-| `infrastructure` | `index.dto.ts` | Schema Zod do detalhe enriquecido. |
+| `infrastructure/report` | `index.dto.ts` | Schema Zod do detalhe enriquecido. |
 | `infrastructure/report-pdf` | `index.template.md` | Template. |
 | `infrastructure/report-pdf` | `index.render.ts` | `render(template, vars)` e `escapeMarkdown(value)`. |
 | `infrastructure/report-pdf` | `index.mapper.ts` | `ReportDetail` → variáveis do template (formatação + tabelas). |
-| `infrastructure/report-pdf` | `index.exporter.ts` | `marked` + `html2pdf.js` + nome do arquivo. |
+| `infrastructure/report-pdf` | `index.exporter.ts` | `marked` + impressão em iframe com o nome do arquivo como título. |
 | `application/use-cases/download-report-pdf` | `index.use-case.ts` | Busca o detalhe, monta as variáveis, renderiza e exporta. |
 | `presentation/components/reports-modal` | — | Botão "Baixar PDF" com estado de carregando por linha. |
 

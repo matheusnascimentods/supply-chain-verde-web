@@ -3,8 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import { Page } from '../../domain/index.model';
-import { Report, ReportPeriod } from '../../domain/report/index.model';
-import { GeneratedReportDTO, generatedReportSchema, reportPageSchema } from './index.dto';
+import { Report, ReportDetail, ReportPeriod } from '../../domain/report/index.model';
+import { GeneratedReportDTO, generatedReportSchema, reportDetailSchema, reportPageSchema } from './index.dto';
 
 @Injectable({ providedIn: 'root' })
 export class ReportsRepository {
@@ -18,6 +18,12 @@ export class ReportsRepository {
         return { items: page.items, totalPages: page.totalPages };
       }),
     );
+  }
+
+  loadDetail(reportId: number): Observable<ReportDetail> {
+    return this.http
+      .get<unknown>(`${environment.apiUrl}/reports`, { params: { reportId: String(reportId) } })
+      .pipe(map((raw) => reportDetailSchema.parse(raw)));
   }
 
   generate(supplierId: number, period: ReportPeriod): Observable<GeneratedReportDTO> {
