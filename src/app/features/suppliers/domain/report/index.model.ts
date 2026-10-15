@@ -4,6 +4,8 @@ import { SupplierAddress, SupplierCertification } from '../index.model';
 export interface Report {
   reportId: number;
   supplierId: number;
+  supplierCnpj?: string | null;
+  supplierName?: string | null;
   periodStartAt: string;
   periodEndAt: string;
   totalCo2Kg: number;
@@ -18,8 +20,6 @@ export interface ReportPeriod {
 
 /** Detalhe do relatório com os dados do período usados no PDF. */
 export interface ReportDetail extends Report {
-  supplierCnpj?: string | null;
-  supplierName?: string | null;
   trackedProductCount?: number | null;
   supplier: { phone?: string | null; address?: SupplierAddress | null };
   emissions: {
