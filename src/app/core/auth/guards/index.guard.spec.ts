@@ -146,16 +146,16 @@ describe('Guards', () => {
   describe('user and supplier routes', () => {
     const shellRoutes = appRoutes.find((route) => route.children)!.children!;
     const usersRoute = shellRoutes.find((route) => route.path === 'users')!;
-    const newSupplierRoute = supplierRoutes.find((route) => route.path === 'new')!;
+    const editSupplierRoute = supplierRoutes.find((route) => route.path === ':id/edit')!;
 
     it.each([
       ['manager', true],
       ['admin', true],
       ['auditor', false],
       ['supplier', false],
-    ] as const)('lets %s into /users and /suppliers/new: %s', (role, allowed) => {
+    ] as const)('lets %s into /users and /suppliers/:id/edit: %s', (role, allowed) => {
       sessionService.setSession('test-token', role);
-      for (const route of [usersRoute, newSupplierRoute]) {
+      for (const route of [usersRoute, editSupplierRoute]) {
         const result = TestBed.runInInjectionContext(() => roleGuard(mockRouteSnapshot(route.data), mockRouterStateSnapshot()));
         expect(result === true).toBe(allowed);
       }

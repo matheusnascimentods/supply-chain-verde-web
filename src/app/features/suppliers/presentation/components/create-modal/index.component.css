@@ -1,0 +1,53 @@
+@reference "tailwindcss";
+
+.create-supplier-header {
+  @apply mb-5 flex items-start justify-between gap-4;
+}
+.create-supplier-title {
+  @apply text-xl font-bold text-slate-900;
+}
+.create-supplier-subtitle {
+  @apply mt-1 text-sm text-slate-500;
+}
+.create-supplier-close {
+  @apply rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600;
+}
+.create-supplier-form {
+  @apply grid gap-6;
+}
+.create-supplier-section-title {
+  @apply mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500;
+}
+.create-supplier-grid {
+  @apply grid gap-4 sm:grid-cols-2;
+}
+.create-supplier-field-wide {
+  @apply grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2;
+}
+.create-supplier-field {
+  @apply grid gap-1.5 text-sm font-medium text-slate-700;
+}
+.create-supplier-input {
+  @apply rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
+}
+.create-supplier-optional {
+  @apply font-normal text-slate-400;
+}
+.create-supplier-checkbox {
+  @apply mb-4 flex items-center gap-2 text-sm font-medium text-slate-700;
+}
+.create-supplier-field-error {
+  @apply mt-2 text-sm text-red-700;
+}
+.create-supplier-error {
+  @apply rounded-lg bg-red-50 p-3 text-sm text-red-700;
+}
+.create-supplier-actions {
+  @apply flex flex-col-reverse gap-2 sm:flex-row sm:justify-end;
+}
+.create-supplier-cancel {
+  @apply rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50;
+}
+.create-supplier-submit {
+  @apply rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50;
+}
