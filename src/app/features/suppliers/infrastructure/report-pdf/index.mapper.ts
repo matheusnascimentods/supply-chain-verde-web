@@ -3,14 +3,20 @@ import { CERTIFICATION_STATUS_LABELS } from '../../../certifications';
 import { digitsOnly, formatCnpj, formatIsoDateBr, formatNumberBr, formatPhone, formatZipCode } from '../../../../shared/utils/format/index.utils';
 import { SupplierAddress } from '../../domain/index.model';
 import { ReportDetail } from '../../domain/report/index.model';
-import { escapeMarkdown } from './index.render';
+import { escapeMarkdown, render } from './index.render';
+import template from './index.template.md';
+
+/** `ReportDetail` → Markdown do relatório preenchido no template. */
+export function reportPdfMarkdown(report: ReportDetail): string {
+  return render(template, reportPdfVariables(report));
+}
 
 /** `ReportDetail` → variáveis do template, já formatadas e escapadas. */
 export function reportPdfVariables(report: ReportDetail): Record<string, string> {
   const { emissions } = report;
   const scalars: Record<string, string> = {
     reportId: String(report.reportId),
-    generatedAt: report.generatedAt ? formatIsoDateBr(report.generatedAt) : '',
+    generatedAt: formatIsoDateBr(report.generatedAt),
     supplierName: report.supplierName ?? '',
     supplierCnpj: report.supplierCnpj ? formatCnpj(report.supplierCnpj) : '',
     supplierAddress: formatAddress(report.supplier.address),

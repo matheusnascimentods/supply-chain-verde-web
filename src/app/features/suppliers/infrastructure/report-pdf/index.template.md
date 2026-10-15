@@ -14,7 +14,11 @@
 
 ## Emissões
 
-**Total no período:** {{totalCo2}} kg CO₂e · {{batchCount}} lotes · {{productCount}} produtos
+| | |
+|---|---|
+| Total no período | {{totalCo2}} kg CO₂e |
+| Lotes | {{batchCount}} |
+| Produtos rastreados | {{productCount}} |
 
 ### Por etapa
 
