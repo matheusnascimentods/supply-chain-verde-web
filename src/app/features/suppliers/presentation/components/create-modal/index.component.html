@@ -1,0 +1,84 @@
+<app-modal labelledBy="supplier-create-title" size="lg" initialFocusSelector="input" [closeOnEscape]="!saving()" [closeOnBackdrop]="!saving()" (dismissed)="dismissed.emit()">
+  <div class="create-supplier-header">
+    <div>
+      <h2 id="supplier-create-title" class="create-supplier-title">Novo fornecedor</h2>
+      <p class="create-supplier-subtitle">Informe os dados da empresa e do endereço.</p>
+    </div>
+    <button type="button" class="create-supplier-close" aria-label="Fechar" [disabled]="saving()" (click)="dismissed.emit()">✕</button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="create-supplier-form">
+    <section aria-labelledby="supplier-company-heading">
+      <h3 id="supplier-company-heading" class="create-supplier-section-title">Dados do fornecedor</h3>
+      <div class="create-supplier-grid">
+        <label class="create-supplier-field-wide" for="supplier-name">Razão social
+          <input id="supplier-name" class="create-supplier-input" type="text" formControlName="name" autocomplete="organization" required />
+        </label>
+        <label class="create-supplier-field" for="supplier-cnpj">CNPJ
+          <input id="supplier-cnpj" class="create-supplier-input" type="text" formControlName="cnpj" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="00.000.000/0000-00" required />
+        </label>
+        <label class="create-supplier-field" for="supplier-phone">Telefone
+          <input id="supplier-phone" class="create-supplier-input" type="tel" formControlName="phone" autocomplete="tel" maxlength="15" placeholder="(00) 00000-0000" required />
+        </label>
+      </div>
+    </section>
+
+    <section aria-labelledby="supplier-address-heading">
+      <h3 id="supplier-address-heading" class="create-supplier-section-title">Endereço</h3>
+      <div class="create-supplier-grid">
+        <label class="create-supplier-field" for="supplier-zip-code">CEP
+          <input id="supplier-zip-code" class="create-supplier-input" type="text" formControlName="zipCode" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required />
+          <span class="create-supplier-subtitle" aria-live="polite">@if (cepLoading()) { Consultando CEP… } @else { {{ cepMessage() }} }</span>
+        </label>
+        <label class="create-supplier-field" for="supplier-state">Estado (UF)
+          <input id="supplier-state" class="create-supplier-input" type="text" formControlName="state" autocomplete="address-level1" maxlength="2" required />
+        </label>
+        <label class="create-supplier-field-wide" for="supplier-street">Logradouro
+          <input id="supplier-street" class="create-supplier-input" type="text" formControlName="street" autocomplete="address-line1" required />
+        </label>
+        <label class="create-supplier-field" for="supplier-number">Número
+          <input id="supplier-number" class="create-supplier-input" type="text" formControlName="number" autocomplete="address-line2" required />
+        </label>
+        <label class="create-supplier-field" for="supplier-neighborhood">Bairro
+          <input id="supplier-neighborhood" class="create-supplier-input" type="text" formControlName="neighborhood" required />
+        </label>
+        <label class="create-supplier-field" for="supplier-complement"><span>Complemento <span class="create-supplier-optional">(opcional)</span></span>
+          <input id="supplier-complement" class="create-supplier-input" type="text" formControlName="complement" autocomplete="address-line3" />
+        </label>
+        <label class="create-supplier-field" for="supplier-city">Cidade
+          <input id="supplier-city" class="create-supplier-input" type="text" formControlName="city" autocomplete="address-level2" required />
+        </label>
+      </div>
+    </section>
+
+    <section [formGroup]="access" aria-labelledby="supplier-access-heading">
+      <h3 id="supplier-access-heading" class="create-supplier-section-title">Acesso ao sistema</h3>
+      <label class="create-supplier-checkbox" for="supplier-with-access">
+        <input id="supplier-with-access" type="checkbox" [formControl]="withAccess" />
+        Criar acesso para o fornecedor
+      </label>
+      @if (withAccess.value) {
+        <div class="create-supplier-grid">
+          <label class="create-supplier-field-wide" for="supplier-access-name">Nome do usuário
+            <input id="supplier-access-name" class="create-supplier-input" type="text" formControlName="name" autocomplete="off" required />
+          </label>
+          <label class="create-supplier-field" for="supplier-access-email">Email
+            <input id="supplier-access-email" class="create-supplier-input" type="email" formControlName="email" autocomplete="off" required />
+          </label>
+          <label class="create-supplier-field" for="supplier-access-password">Senha
+            <input id="supplier-access-password" class="create-supplier-input" type="password" formControlName="password" autocomplete="new-password" required />
+          </label>
+        </div>
+        @if (access.controls.email.touched && access.controls.email.hasError('email')) {
+          <p class="create-supplier-field-error" role="alert">Informe um email válido.</p>
+        }
+      }
+    </section>
+
+    @if (error()) { <p role="alert" class="create-supplier-error">{{ error() }}</p> }
+    <div class="create-supplier-actions">
+      <button type="button" class="create-supplier-cancel" [disabled]="saving()" (click)="dismissed.emit()">Cancelar</button>
+      <button type="submit" class="create-supplier-submit" [disabled]="invalid() || saving()">{{ saving() ? 'Salvando…' : 'Cadastrar fornecedor' }}</button>
+    </div>
+  </form>
+</app-modal>

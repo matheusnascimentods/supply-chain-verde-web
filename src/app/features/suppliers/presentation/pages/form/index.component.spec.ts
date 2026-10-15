@@ -5,7 +5,6 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { of, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../../core/auth/session/index.service';
-import { CreateSupplierUseCase } from '../../../application/use-cases/create-supplier/index.use-case';
 import { UpdateOwnSupplierUseCase } from '../../../application/use-cases/update-own-supplier/index.use-case';
 import { UpdateSupplierUseCase } from '../../../application/use-cases/update-supplier/index.use-case';
 import { SuppliersRepository } from '../../../infrastructure/index.repository';
@@ -19,7 +18,6 @@ describe('SupplierFormComponent', () => {
   let repository: { get: ReturnType<typeof vi.fn> };
   let updateSupplier: { execute: ReturnType<typeof vi.fn> };
   let updateOwnSupplier: { execute: ReturnType<typeof vi.fn> };
-  let createSupplier: { execute: ReturnType<typeof vi.fn> };
   const supplier = {
     supplierId: 8,
     name: 'Fazenda Verde',
@@ -32,7 +30,6 @@ describe('SupplierFormComponent', () => {
     repository = { get: vi.fn().mockReturnValue(of(supplier)) };
     updateSupplier = { execute: vi.fn().mockReturnValue(of(supplier)) };
     updateOwnSupplier = { execute: vi.fn().mockReturnValue(of(supplier)) };
-    createSupplier = { execute: vi.fn().mockReturnValue(of(supplier)) };
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'suppliers', component: SupplierListPage }]),
@@ -40,7 +37,6 @@ describe('SupplierFormComponent', () => {
         { provide: SessionService, useValue: { supplierId: () => supplierId } },
         { provide: CurrentUserService, useValue: { load: () => of({ userId: 4, name: 'Ana', email: 'ana@fazenda.com', role: 'supplier' }) } },
         { provide: UpdateOwnSupplierUseCase, useValue: updateOwnSupplier },
-        { provide: CreateSupplierUseCase, useValue: createSupplier },
         { provide: SuppliersRepository, useValue: repository },
         { provide: UpdateSupplierUseCase, useValue: updateSupplier },
       ],
@@ -131,47 +127,4 @@ describe('SupplierFormComponent', () => {
     expect(component.saving()).toBe(false);
   });
 
-  describe('new supplier', () => {
-    const address = { street: 'Rua A', number: '10', neighborhood: 'Centro', complement: '', zipCode: '01000-000', city: 'São Paulo', state: 'SP' };
-    const fillCompany = (component: SupplierFormComponent) =>
-      component.form.setValue({ name: 'Fazenda Verde', cnpj: '12345678000190', phone: '1633332023', ...address });
-
-    it('creates the supplier without access by default', () => {
-      const component = create({}, null, 'new');
-      expect(repository.get).not.toHaveBeenCalled();
-      expect(component.error()).toBe('');
-      fillCompany(component);
-      component.submit();
-      expect(createSupplier.execute).toHaveBeenCalledWith({
-        name: 'Fazenda Verde',
-        cnpj: '12.345.678/0001-90',
-        phone: '(16) 3333-2023',
-        address,
-      });
-    });
-
-    it('requires and sends the access data when it is enabled', () => {
-      const component = create({}, null, 'new');
-      fillCompany(component);
-      component.withAccess.setValue(true);
-      component.submit();
-      expect(createSupplier.execute).not.toHaveBeenCalled();
-
-      component.access.setValue({ name: 'Ana', email: 'ana@fazenda.com', password: 'secret' });
-      component.submit();
-      expect(createSupplier.execute).toHaveBeenCalledWith(
-        expect.objectContaining({ user: { name: 'Ana', email: 'ana@fazenda.com', password: 'secret' } }),
-      );
-    });
-
-    it('shows the API conflict message', () => {
-      const component = create({}, null, 'new');
-      createSupplier.execute.mockReturnValue(
-        throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'Email já cadastrado: ana@fazenda.com' } })),
-      );
-      fillCompany(component);
-      component.submit();
-      expect(component.error()).toBe('Email já cadastrado: ana@fazenda.com');
-    });
-  });
 });

@@ -6,7 +6,7 @@
         <p class="suppliers-subtitle">Desempenho ambiental e gestão de fornecedores</p>
       </div>
       @if (facade.canManage()) {
-        <a appButton variant="primary" routerLink="/suppliers/new">+ Novo fornecedor</a>
+        <button appButton type="button" variant="primary" (click)="createModalOpen.set(true)">+ Novo fornecedor</button>
       }
     </header>
 
@@ -107,6 +107,9 @@
       <app-pagination [page]="facade.pageNumber()" [totalPages]="facade.totalPages()" [disabled]="facade.loading()" label="Paginação do ranking" (previous)="facade.previousPage()" (next)="facade.nextPage()" />
     }
   </div>
+  @if (createModalOpen()) {
+    <app-create-supplier-modal (created)="supplierCreated()" (dismissed)="createModalOpen.set(false)" />
+  }
   @if (facade.reportsSupplier(); as supplier) {
     <app-supplier-reports-modal [supplierId]="supplier.supplierId" [supplierName]="supplier.name" [canGenerate]="facade.canGenerateReports()" (generated)="facade.load()" (dismissed)="facade.reportsSupplier.set(null)" />
   }
