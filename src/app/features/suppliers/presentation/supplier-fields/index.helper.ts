@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 import { catchError, distinctUntilChanged, finalize, map, of, startWith, switchMap, tap, timer } from 'rxjs';
 import { ViaCepService } from '../../../../core/integrations/via-cep/index.service';
 import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../../shared/utils/format/index.utils';
-import { Address } from '../../domain/index.model';
+import { Address, Supplier } from '../../domain/index.model';
 import { addressFromViaCep } from '../../domain/value-objects/address/index.vo';
 
 const ZIP_CODE_LOOKUP_DELAY = 350;
@@ -14,6 +14,23 @@ type ZipCodeForm = {
   controls: { zipCode: FormControl<string> };
   patchValue(value: Partial<Pick<Address, 'street' | 'neighborhood' | 'city' | 'state'>>, options?: { emitEvent?: boolean }): void;
 };
+
+// Valores já formatados do formulário de fornecedor: dá para usar patchValue sem emitir (e sem disparar a busca do CEP).
+export function supplierFormValue(supplier: Supplier) {
+  const address = supplier.address;
+  return {
+    name: supplier.name,
+    cnpj: formatCnpj(supplier.cnpj ?? ''),
+    phone: formatPhone(supplier.phone ?? ''),
+    street: address?.street ?? '',
+    number: address?.number ?? '',
+    neighborhood: address?.neighborhood ?? '',
+    complement: address?.complement ?? '',
+    zipCode: formatZipCode(address?.zipCode ?? ''),
+    city: address?.city ?? '',
+    state: address?.state ?? '',
+  };
+}
 
 // Chamar no construtor (contexto de injeção): formata CNPJ, telefone e CEP enquanto o usuário digita.
 export function formatSupplierFieldsWhileTyping({ cnpj, phone, zipCode }: FormattedControls): void {

@@ -1,7 +1,7 @@
 <app-modal labelledBy="supplier-create-title" size="lg" initialFocusSelector="input" [closeOnEscape]="!saving()" [closeOnBackdrop]="!saving()" (dismissed)="dismissed.emit()">
   <div class="create-supplier-header">
     <div>
-      <h2 id="supplier-create-title" class="create-supplier-title">Novo fornecedor</h2>
+      <h2 id="supplier-create-title" class="create-supplier-title">{{ supplierId() ? 'Editar fornecedor' : 'Novo fornecedor' }}</h2>
       <p class="create-supplier-subtitle">Informe os dados da empresa e do endereço.</p>
     </div>
     <button type="button" class="create-supplier-close" aria-label="Fechar" [disabled]="saving()" (click)="dismissed.emit()">✕</button>
@@ -51,34 +51,36 @@
       </div>
     </section>
 
-    <section [formGroup]="access" aria-labelledby="supplier-access-heading">
-      <h3 id="supplier-access-heading" class="create-supplier-section-title">Acesso ao sistema</h3>
-      <label class="create-supplier-checkbox" for="supplier-with-access">
-        <input id="supplier-with-access" type="checkbox" [formControl]="withAccess" />
-        Criar acesso para o fornecedor
-      </label>
-      @if (withAccess.value) {
-        <div class="create-supplier-grid">
-          <label class="create-supplier-field-wide" for="supplier-access-name">Nome do usuário
-            <input id="supplier-access-name" class="create-supplier-input" type="text" formControlName="name" autocomplete="off" required />
-          </label>
-          <label class="create-supplier-field" for="supplier-access-email">Email
-            <input id="supplier-access-email" class="create-supplier-input" type="email" formControlName="email" autocomplete="off" required />
-          </label>
-          <label class="create-supplier-field" for="supplier-access-password">Senha
-            <input id="supplier-access-password" class="create-supplier-input" type="password" formControlName="password" autocomplete="new-password" required />
-          </label>
-        </div>
-        @if (access.controls.email.touched && access.controls.email.hasError('email')) {
-          <p class="create-supplier-field-error" role="alert">Informe um email válido.</p>
+    @if (!supplierId()) {
+      <section [formGroup]="access" aria-labelledby="supplier-access-heading">
+        <h3 id="supplier-access-heading" class="create-supplier-section-title">Acesso ao sistema</h3>
+        <label class="create-supplier-checkbox" for="supplier-with-access">
+          <input id="supplier-with-access" type="checkbox" [formControl]="withAccess" />
+          Criar acesso para o fornecedor
+        </label>
+        @if (withAccess.value) {
+          <div class="create-supplier-grid">
+            <label class="create-supplier-field-wide" for="supplier-access-name">Nome do usuário
+              <input id="supplier-access-name" class="create-supplier-input" type="text" formControlName="name" autocomplete="off" required />
+            </label>
+            <label class="create-supplier-field" for="supplier-access-email">Email
+              <input id="supplier-access-email" class="create-supplier-input" type="email" formControlName="email" autocomplete="off" required />
+            </label>
+            <label class="create-supplier-field" for="supplier-access-password">Senha
+              <input id="supplier-access-password" class="create-supplier-input" type="password" formControlName="password" autocomplete="new-password" required />
+            </label>
+          </div>
+          @if (access.controls.email.touched && access.controls.email.hasError('email')) {
+            <p class="create-supplier-field-error" role="alert">Informe um email válido.</p>
+          }
         }
-      }
-    </section>
+      </section>
+    }
 
     @if (error()) { <p role="alert" class="create-supplier-error">{{ error() }}</p> }
     <div class="create-supplier-actions">
       <button type="button" class="create-supplier-cancel" [disabled]="saving()" (click)="dismissed.emit()">Cancelar</button>
-      <button type="submit" class="create-supplier-submit" [disabled]="invalid() || saving()">{{ saving() ? 'Salvando…' : 'Cadastrar fornecedor' }}</button>
+      <button type="submit" class="create-supplier-submit" [disabled]="invalid() || saving()">{{ saving() ? 'Salvando…' : supplierId() ? 'Salvar alterações' : 'Cadastrar fornecedor' }}</button>
     </div>
   </form>
 </app-modal>

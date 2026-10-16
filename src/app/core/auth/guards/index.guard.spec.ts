@@ -3,7 +3,6 @@ import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree, provideRo
 import { authGuard, roleGuard } from './index.guard';
 import { SessionService } from '../session/index.service';
 import { routes as appRoutes } from '../../../app.routes';
-import { routes as supplierRoutes } from '../../../features/suppliers/index.routes';
 
 describe('Guards', () => {
   let sessionService: SessionService;
@@ -143,22 +142,19 @@ describe('Guards', () => {
     });
   });
 
-  describe('user and supplier routes', () => {
+  describe('user routes', () => {
     const shellRoutes = appRoutes.find((route) => route.children)!.children!;
     const usersRoute = shellRoutes.find((route) => route.path === 'users')!;
-    const editSupplierRoute = supplierRoutes.find((route) => route.path === ':id/edit')!;
 
     it.each([
       ['manager', true],
       ['admin', true],
       ['auditor', false],
       ['supplier', false],
-    ] as const)('lets %s into /users and /suppliers/:id/edit: %s', (role, allowed) => {
+    ] as const)('lets %s into /users: %s', (role, allowed) => {
       sessionService.setSession('test-token', role);
-      for (const route of [usersRoute, editSupplierRoute]) {
-        const result = TestBed.runInInjectionContext(() => roleGuard(mockRouteSnapshot(route.data), mockRouterStateSnapshot()));
-        expect(result === true).toBe(allowed);
-      }
+      const result = TestBed.runInInjectionContext(() => roleGuard(mockRouteSnapshot(usersRoute.data), mockRouterStateSnapshot()));
+      expect(result === true).toBe(allowed);
     });
   });
 });
