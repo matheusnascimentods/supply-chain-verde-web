@@ -6,6 +6,5 @@ const loadForm = () => import('./presentation/pages/form/index.component').then(
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./presentation/pages/list/index.component').then((m) => m.SupplierListComponent) },
   { path: 'ranking', pathMatch: 'full', redirectTo: '' },
-  { path: 'me', canActivate: [roleGuard], data: { roles: ['supplier'], mode: 'me' }, loadComponent: loadForm },
-  { path: ':id/edit', canActivate: [roleGuard], data: { roles: ['admin', 'manager'] }, loadComponent: loadForm },
+  { path: 'me', canActivate: [roleGuard], data: { roles: ['supplier'] }, loadComponent: loadForm },
 ];

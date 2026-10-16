@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '../../../../../shared/ui/button/index.component';
 import { DataTableComponent } from '../../../../../shared/ui/data-table/index.component';
 import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
@@ -17,7 +16,6 @@ import { SupplierReportsModalComponent } from '../../components/reports-modal/in
 @Component({
   selector: 'app-suppliers-list',
   imports: [
-    RouterLink,
     FormsModule,
     SupplierReportsModalComponent,
     SupplierCertificationsModalComponent,
@@ -37,10 +35,11 @@ export class SupplierListComponent {
   protected readonly cnpj = displayCnpj;
   protected readonly number = formatNumberBr;
   protected readonly certificationTone = certificationTone;
-  readonly createModalOpen = signal(false);
+  // undefined: modal fechado; null: cadastro; número: edição desse fornecedor.
+  readonly supplierModal = signal<number | null | undefined>(undefined);
 
-  supplierCreated(): void {
-    this.createModalOpen.set(false);
+  supplierSaved(): void {
+    this.supplierModal.set(undefined);
     this.facade.load();
   }
 

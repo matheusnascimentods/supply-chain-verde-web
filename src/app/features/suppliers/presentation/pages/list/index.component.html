@@ -6,7 +6,7 @@
         <p class="suppliers-subtitle">Desempenho ambiental e gestão de fornecedores</p>
       </div>
       @if (facade.canManage()) {
-        <button appButton type="button" variant="primary" (click)="createModalOpen.set(true)">+ Novo fornecedor</button>
+        <button appButton type="button" variant="primary" (click)="supplierModal.set(null)">+ Novo fornecedor</button>
       }
     </header>
 
@@ -32,7 +32,13 @@
                   <span class="podium-position">{{ index + 1 }}</span>
                   <span class="podium-score">{{ number(supplier.sustainabilityScore) }} pontos</span>
                 </div>
-                <h3 class="podium-name">{{ supplier.name }}</h3>
+                <h3 class="podium-name">
+                  @if (facade.canManage()) {
+                    <button type="button" class="supplier-link" (click)="supplierModal.set(supplier.supplierId)">{{ supplier.name }}</button>
+                  } @else {
+                    {{ supplier.name }}
+                  }
+                </h3>
                 <p class="podium-location">{{ supplier.address?.city ?? 'Localização não informada' }}@if (supplier.address?.state) { /{{ supplier.address?.state }} }</p>
                 <dl class="podium-stats">
                   <div><dt class="podium-label">Certificações ativas</dt><dd class="podium-stat"><button type="button" class="podium-certifications" [attr.aria-label]="'Abrir certificações de ' + supplier.name" (click)="facade.certificationsSupplier.set(supplier)">{{ supplier.activeCertificationCount }}</button></dd></div>
@@ -77,7 +83,7 @@
                   <td class="ranking-position">{{ facade.firstTablePosition() + index }}</td>
                   <td class="ranking-cell">
                     @if (facade.canManage()) {
-                      <a class="supplier-link" [routerLink]="['/', 'suppliers', supplier.supplierId, 'edit']">{{ supplier.name }}</a>
+                      <button type="button" class="supplier-link" (click)="supplierModal.set(supplier.supplierId)">{{ supplier.name }}</button>
                     } @else {
                       <span class="supplier-name">{{ supplier.name }}</span>
                     }
@@ -107,8 +113,8 @@
       <app-pagination [page]="facade.pageNumber()" [totalPages]="facade.totalPages()" [disabled]="facade.loading()" label="Paginação do ranking" (previous)="facade.previousPage()" (next)="facade.nextPage()" />
     }
   </div>
-  @if (createModalOpen()) {
-    <app-create-supplier-modal (created)="supplierCreated()" (dismissed)="createModalOpen.set(false)" />
+  @if (supplierModal() !== undefined) {
+    <app-create-supplier-modal [supplierId]="supplierModal() ?? null" (saved)="supplierSaved()" (dismissed)="supplierModal.set(undefined)" />
   }
   @if (facade.reportsSupplier(); as supplier) {
     <app-supplier-reports-modal [supplierId]="supplier.supplierId" [supplierName]="supplier.name" [canGenerate]="facade.canGenerateReports()" (generated)="facade.load()" (dismissed)="facade.reportsSupplier.set(null)" />
