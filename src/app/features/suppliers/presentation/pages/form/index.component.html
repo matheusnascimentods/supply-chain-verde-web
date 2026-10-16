@@ -3,8 +3,8 @@
     <header class="supplier-form-header">
       <div>
         <a routerLink="/suppliers" class="supplier-form-back">← Voltar para fornecedores</a>
-        <h1 id="supplier-form-title" class="supplier-form-title">{{ mode === 'me' ? 'Meu perfil' : 'Editar fornecedor' }}</h1>
-        <p id="supplier-form-description" class="supplier-form-subtitle">{{ mode === 'me' ? 'Atualize os dados da empresa, do endereço e do seu acesso.' : 'Informe os dados da empresa e do endereço.' }}</p>
+        <h1 id="supplier-form-title" class="supplier-form-title">Meu perfil</h1>
+        <p id="supplier-form-description" class="supplier-form-subtitle">Atualize os dados da empresa, do endereço e do seu acesso.</p>
       </div>
     </header>
 
@@ -55,33 +55,31 @@
         </div>
       </section>
 
-      @if (mode === 'me') {
-        <section [formGroup]="account" aria-labelledby="supplier-account-heading">
-          <h2 id="supplier-account-heading" class="supplier-form-section-title">Meu acesso</h2>
-          <div class="supplier-form-grid">
-            <label class="supplier-form-field" for="supplier-user-name">Seu nome
-              <input id="supplier-user-name" class="supplier-form-input" type="text" formControlName="userName" autocomplete="name" required />
-            </label>
-            <label class="supplier-form-field" for="supplier-user-email">Email
-              <input id="supplier-user-email" class="supplier-form-input" type="email" formControlName="email" />
-            </label>
-            <label class="supplier-form-field-wide" for="supplier-current-password"><span>Senha atual <span class="supplier-form-optional">(só para trocar a senha)</span></span>
-              <input id="supplier-current-password" class="supplier-form-input" type="password" formControlName="currentPassword" autocomplete="current-password" />
-            </label>
-            <label class="supplier-form-field" for="supplier-new-password">Nova senha
-              <input id="supplier-new-password" class="supplier-form-input" type="password" formControlName="newPassword" autocomplete="new-password" />
-            </label>
-            <label class="supplier-form-field" for="supplier-confirm-password">Confirmar nova senha
-              <input id="supplier-confirm-password" class="supplier-form-input" type="password" formControlName="confirmPassword" autocomplete="new-password" />
-            </label>
-          </div>
-          @if (account.hasError('passwordMismatch') && account.controls.confirmPassword.touched) {
-            <p class="supplier-form-field-error" role="alert">A confirmação não confere com a nova senha.</p>
-          } @else if (account.hasError('currentPasswordRequired')) {
-            <p class="supplier-form-field-error" role="alert">Informe a senha atual para trocar a senha.</p>
-          }
-        </section>
-      }
+      <section [formGroup]="account" aria-labelledby="supplier-account-heading">
+        <h2 id="supplier-account-heading" class="supplier-form-section-title">Meu acesso</h2>
+        <div class="supplier-form-grid">
+          <label class="supplier-form-field" for="supplier-user-name">Seu nome
+            <input id="supplier-user-name" class="supplier-form-input" type="text" formControlName="userName" autocomplete="name" required />
+          </label>
+          <label class="supplier-form-field" for="supplier-user-email">Email
+            <input id="supplier-user-email" class="supplier-form-input" type="email" formControlName="email" />
+          </label>
+          <label class="supplier-form-field-wide" for="supplier-current-password"><span>Senha atual <span class="supplier-form-optional">(só para trocar a senha)</span></span>
+            <input id="supplier-current-password" class="supplier-form-input" type="password" formControlName="currentPassword" autocomplete="current-password" />
+          </label>
+          <label class="supplier-form-field" for="supplier-new-password">Nova senha
+            <input id="supplier-new-password" class="supplier-form-input" type="password" formControlName="newPassword" autocomplete="new-password" />
+          </label>
+          <label class="supplier-form-field" for="supplier-confirm-password">Confirmar nova senha
+            <input id="supplier-confirm-password" class="supplier-form-input" type="password" formControlName="confirmPassword" autocomplete="new-password" />
+          </label>
+        </div>
+        @if (account.hasError('passwordMismatch') && account.controls.confirmPassword.touched) {
+          <p class="supplier-form-field-error" role="alert">A confirmação não confere com a nova senha.</p>
+        } @else if (account.hasError('currentPasswordRequired')) {
+          <p class="supplier-form-field-error" role="alert">Informe a senha atual para trocar a senha.</p>
+        }
+      </section>
 
       <footer class="supplier-form-actions">
         <a routerLink="/suppliers" class="supplier-form-cancel">Cancelar</a>

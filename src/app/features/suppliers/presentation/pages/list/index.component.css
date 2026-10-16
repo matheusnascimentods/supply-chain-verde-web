@@ -143,7 +143,7 @@
   @apply px-5 py-12 text-center text-slate-500;
 }
 .supplier-link {
-  @apply font-semibold text-slate-800 hover:text-green-700 hover:underline;
+  @apply text-left font-semibold text-slate-800 hover:text-green-700 hover:underline;
 }
 .supplier-name {
   @apply font-semibold text-slate-800;

@@ -3,33 +3,42 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NEVER, of, throwError } from 'rxjs';
 import { ViaCepService } from '../../../../../core/integrations/via-cep/index.service';
 import { CreateSupplierUseCase } from '../../../application/use-cases/create-supplier/index.use-case';
+import { UpdateSupplierUseCase } from '../../../application/use-cases/update-supplier/index.use-case';
+import { SuppliersRepository } from '../../../infrastructure/index.repository';
 import { CreateSupplierModalComponent } from './index.component';
 
 describe('CreateSupplierModalComponent', () => {
   let fixture: ComponentFixture<CreateSupplierModalComponent>;
   let createSupplier: { execute: ReturnType<typeof vi.fn> };
-  let created: number;
+  let updateSupplier: { execute: ReturnType<typeof vi.fn> };
+  let repository: { get: ReturnType<typeof vi.fn> };
+  let saved: number;
   let dismissed: number;
   let viaCep: { lookup: ReturnType<typeof vi.fn> };
   const address = { street: 'Rua A', number: '10', neighborhood: 'Centro', complement: '', zipCode: '01000-000', city: 'São Paulo', state: 'SP' };
 
-  function createModal(): CreateSupplierModalComponent {
-    created = 0;
+  function createModal(supplierId: number | null = null): CreateSupplierModalComponent {
+    saved = 0;
     dismissed = 0;
     createSupplier = { execute: vi.fn().mockReturnValue(of({})) };
+    updateSupplier = { execute: vi.fn().mockReturnValue(of({})) };
+    repository = { get: vi.fn().mockReturnValue(of({ supplierId: 8, name: 'Fazenda Azul', cnpj: '11222333000181', phone: '1133334444', address: { ...address, zipCode: '01310100', complement: null } })) };
     viaCep = { lookup: vi.fn().mockReturnValue(of({ logradouro: 'Av. Paulista', bairro: 'Bela Vista', localidade: 'São Paulo', uf: 'SP' })) };
     TestBed.configureTestingModule({
       providers: [
         { provide: CreateSupplierUseCase, useValue: createSupplier },
+        { provide: UpdateSupplierUseCase, useValue: updateSupplier },
+        { provide: SuppliersRepository, useValue: repository },
         { provide: ViaCepService, useValue: viaCep },
       ],
     });
     fixture = TestBed.createComponent(CreateSupplierModalComponent);
-    fixture.componentInstance.created.subscribe(() => created++);
+    fixture.componentRef.setInput('supplierId', supplierId);
+    fixture.componentInstance.saved.subscribe(() => saved++);
     fixture.componentInstance.dismissed.subscribe(() => dismissed++);
     fixture.detectChanges();
     const modal = fixture.componentInstance;
-    modal.form.setValue({ name: 'Fazenda Verde', cnpj: '12345678000190', phone: '1633332023', ...address });
+    if (!supplierId) modal.form.setValue({ name: 'Fazenda Verde', cnpj: '12345678000190', phone: '1633332023', ...address });
     return modal;
   }
 
@@ -37,7 +46,23 @@ describe('CreateSupplierModalComponent', () => {
     const modal = createModal();
     modal.submit();
     expect(createSupplier.execute).toHaveBeenCalledWith({ name: 'Fazenda Verde', cnpj: '12.345.678/0001-90', phone: '(16) 3333-2023', address });
-    expect(created).toBe(1);
+    expect(saved).toBe(1);
+  });
+
+  it('loads the supplier, hides the access section and saves the changes', () => {
+    vi.useFakeTimers();
+    const modal = createModal(8);
+    expect(repository.get).toHaveBeenCalledWith(8);
+    expect(modal.form.getRawValue()).toEqual({ name: 'Fazenda Azul', cnpj: '11.222.333/0001-81', phone: '(11) 3333-4444', ...address, zipCode: '01310-100' });
+    vi.advanceTimersByTime(350);
+    expect(viaCep.lookup).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('#supplier-with-access')).toBeNull();
+
+    modal.submit();
+    expect(updateSupplier.execute).toHaveBeenCalledWith(8, expect.objectContaining({ name: 'Fazenda Azul', cnpj: '11.222.333/0001-81' }));
+    expect(createSupplier.execute).not.toHaveBeenCalled();
+    expect(saved).toBe(1);
+    vi.useRealTimers();
   });
 
   it('requires and sends the access data when it is enabled', () => {
@@ -59,7 +84,7 @@ describe('CreateSupplierModalComponent', () => {
     modal.submit();
     expect(modal.error()).toBe('Email já cadastrado: ana@fazenda.com');
     expect(modal.saving()).toBe(false);
-    expect(created).toBe(0);
+    expect(saved).toBe(0);
   });
 
   it('does not close while saving', () => {
