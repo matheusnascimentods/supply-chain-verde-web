@@ -2,6 +2,8 @@
 
 **Relatório nº {{reportId}}** · gerado em {{generatedAt}}
 
+*Retrato dos dados na data de geração. Lançamentos posteriores não alteram este relatório.*
+
 ## Identificação
 
 | | |

@@ -33,6 +33,9 @@
 .reports-submit {
   @apply rounded-lg bg-green-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
 }
+.reports-hint {
+  @apply text-xs text-slate-500 sm:col-span-3;
+}
 .reports-form-error {
   @apply text-sm text-red-700 sm:col-span-3;
 }
