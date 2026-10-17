@@ -19,7 +19,7 @@
     </div>
     <div class="certification-form-field">
       <label for="certification-expires-at" class="certification-form-label">Data de validade</label>
-      <input id="certification-expires-at" class="certification-form-input" type="date" formControlName="expiresAt" required />
+      <input id="certification-expires-at" class="certification-form-input" type="date" formControlName="expiresAt" [min]="form.controls.issuedAt.value > today ? form.controls.issuedAt.value : today" required />
       @if (fieldError('expiresAt')) { <p class="certification-form-field-error" role="alert">{{ fieldError('expiresAt') }}</p> }
     </div>
     <footer class="certification-form-actions">

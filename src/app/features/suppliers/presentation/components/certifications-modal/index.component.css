@@ -79,7 +79,10 @@ app-certification-form {
   @apply fixed z-[60] max-h-[min(11rem,calc(100vh-1rem))] w-44 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg;
 }
 .status-menu-option {
-  @apply flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none;
+  @apply flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-800 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-transparent;
+}
+.certification-card-hint {
+  @apply mt-1 text-xs text-slate-500;
 }
 .certifications-empty {
   @apply rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center text-sm text-slate-500;

@@ -35,12 +35,15 @@
                   </summary>
                   <div class="status-menu-list" [style.top.px]="statusMenuPosition().top" [style.left.px]="statusMenuPosition().left" role="menu" [attr.aria-label]="'Alterar status de ' + item.certification">
                     @for (status of statuses; track status) {
-                      <button type="button" class="status-menu-option" role="menuitemradio" [attr.aria-checked]="item.status === status" [disabled]="updatingStatusId() === item.certificationId" (click)="setStatus(item, status, statusMenu)">
+                      <button type="button" class="status-menu-option" role="menuitemradio" [attr.aria-checked]="item.status === status" [disabled]="updatingStatusId() === item.certificationId || (status === 'ACTIVE' && isExpired(item))" [attr.aria-describedby]="status === 'ACTIVE' && isExpired(item) ? 'expired-hint-' + item.certificationId : null" (click)="setStatus(item, status, statusMenu)">
                         {{ statusLabels[status] }} @if (item.status === status) { <span aria-hidden="true">✓</span> }
                       </button>
                     }
                   </div>
                 </details>
+                @if (isExpired(item)) {
+                  <p [id]="'expired-hint-' + item.certificationId" class="certification-card-hint">Vencida em {{ date(item.expiresAt) }}: não pode voltar a ficar ativa.</p>
+                }
               } @else {
                 <span class="status-badge" [attr.data-status]="item.status">{{ statusLabels[item.status] }}</span>
               }
