@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** não iniciado. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
+**Status:** em andamento. Task 1 entregue (#66); Task 2 implementada, falta a verificação manual. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
 
 **Ordem sugerida:** Task 1 primeiro, porque as outras usam o utilitário de data e o `apiErrorMessage`. Depois disso, as Tasks 2, 3 e 4 são independentes e podem virar PRs separados. A Task 5 é verificação e fecha a feature.
 
@@ -14,29 +14,29 @@
 
 Base comum, sem mudança de comportamento.
 
-- [ ] Criar `shared/utils/date/index.utils.ts` com `localDateDaysAgo`, movido de `features/audit-log/application/index.facade.ts`
-- [ ] A auditoria passa a importar do utilitário; nenhum outro uso muda
-- [ ] Mover os testes existentes para `shared/utils/date/index.utils.spec.ts` e incluir o caso `localDateDaysAgo(0)` = hoje local
-- [ ] `npm test` verde; a tela de auditoria abre com o mesmo período padrão
+- [x] Criar `shared/utils/date/index.utils.ts` com `localDateDaysAgo`, movido de `features/audit-log/application/index.facade.ts`
+- [x] A auditoria passa a importar do utilitário; nenhum outro uso muda
+- [x] Mover os testes existentes para `shared/utils/date/index.utils.spec.ts` e incluir o caso `localDateDaysAgo(0)` = hoje local
+- [x] `npm test` verde; a tela de auditoria abre com o mesmo período padrão
 
 **Pronto:** `localDateDaysAgo` só existe em `shared/utils/date`.
 
 ## Task 2 — `feat/certification-expiry-rules` (RF-01, RF-02, RF-03)
 
 ### Formulário de nova certificação
-- [ ] Validators `notBefore(hoje)` e `notBeforeField('issuedAt')` em `expiresAt`
-- [ ] `[min]` no `<input type="date">` de validade (emissão ou hoje, o que for maior)
-- [ ] Mudança em `issuedAt` revalida `expiresAt`
-- [ ] `fieldError('expiresAt')` com as três mensagens (obrigatório, passado, antes da emissão)
-- [ ] Erro do envio via `apiErrorMessage` com o fallback atual
-- [ ] Specs: ontem bloqueia sem chamar o use-case; antes da emissão bloqueia; hoje envia; 400 mostra a mensagem da API
+- [x] Validators `notBefore(hoje)` e `notBeforeField('issuedAt')` em `expiresAt`
+- [x] `[min]` no `<input type="date">` de validade (emissão ou hoje, o que for maior)
+- [x] Mudança em `issuedAt` revalida `expiresAt`
+- [x] `fieldError('expiresAt')` com as três mensagens (obrigatório, passado, antes da emissão)
+- [x] Erro do envio via `apiErrorMessage` com o fallback atual
+- [x] Specs: ontem bloqueia sem chamar o use-case; antes da emissão bloqueia; hoje envia; 400 mostra a mensagem da API
 
 ### Menu de status
-- [ ] `isExpired(item)` com a data local de hoje
-- [ ] "Ativa" com `disabled` e `aria-describedby` apontando para a dica "Vencida em …: não pode voltar a ficar ativa."
-- [ ] `handleStatusMenuKeydown` ignora opções desabilitadas nas setas, `Home` e `End`
-- [ ] `setStatus` recusa `ACTIVE` em vencida (defesa) e usa `apiErrorMessage` no erro
-- [ ] Specs: desabilitada só em vencida; navegação pula a opção; 400 mostra a mensagem da API
+- [x] `isExpired(item)` com a data local de hoje
+- [x] "Ativa" com `disabled` e `aria-describedby` apontando para a dica "Vencida em …: não pode voltar a ficar ativa."
+- [x] `handleStatusMenuKeydown` ignora opções desabilitadas nas setas, `Home` e `End`
+- [x] `setStatus` recusa `ACTIVE` em vencida (defesa) e usa `apiErrorMessage` no erro
+- [x] Specs: desabilitada só em vencida; navegação pula a opção; 400 mostra a mensagem da API
 
 ### Verificação manual
 - [ ] Cadastrar certificação com validade ontem → erro no campo, nenhuma requisição na aba Network

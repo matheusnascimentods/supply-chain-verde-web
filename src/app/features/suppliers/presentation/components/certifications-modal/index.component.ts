@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { CloseOnOutsideClickDirective } from '../../../../../shared/directives/close-on-outside-click/index.directive';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
+import { localDateDaysAgo } from '../../../../../shared/utils/date/index.utils';
 import { formatIsoDateBr } from '../../../../../shared/utils/format/index.utils';
+import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 import {
   CERTIFICATION_STATUSES,
   CERTIFICATION_STATUS_LABELS,
@@ -26,6 +28,7 @@ export class SupplierCertificationsModalComponent {
   protected readonly date = formatIsoDateBr;
   protected readonly statuses = CERTIFICATION_STATUSES;
   protected readonly statusLabels = CERTIFICATION_STATUS_LABELS;
+  protected readonly today = localDateDaysAgo(0);
 
   readonly supplierId = input.required<number>();
   readonly supplierName = input.required<string>();
@@ -38,10 +41,15 @@ export class SupplierCertificationsModalComponent {
   readonly statusMenuPosition = signal({ top: 0, left: 0 });
   readonly error = signal('');
 
+  /** A API recusa reativar certificação vencida. */
+  protected isExpired(item: SupplierCertification): boolean {
+    return item.expiresAt < this.today;
+  }
+
   setStatus(item: SupplierCertification, status: CertificationStatus, menu: HTMLDetailsElement): void {
     menu.open = false;
     menu.querySelector('summary')?.focus();
-    if (!this.canUpdateStatus() || status === item.status) return;
+    if (!this.canUpdateStatus() || status === item.status || (status === 'ACTIVE' && this.isExpired(item))) return;
     this.error.set('');
     this.updatingStatusId.set(item.certificationId);
     this.updateCertificationStatus.execute(item.certificationId, status).subscribe({
@@ -49,9 +57,9 @@ export class SupplierCertificationsModalComponent {
         this.updatingStatusId.set(null);
         this.updated.emit();
       },
-      error: () => {
+      error: (error: unknown) => {
         this.updatingStatusId.set(null);
-        this.error.set(`Não foi possível atualizar o status de ${item.certification}.`);
+        this.error.set(apiErrorMessage(error, `Não foi possível atualizar o status de ${item.certification}.`));
       },
     });
   }
@@ -69,7 +77,7 @@ export class SupplierCertificationsModalComponent {
 
   handleStatusMenuKeydown(event: KeyboardEvent, menu: HTMLDetailsElement): void {
     if (!menu.open) return;
-    const options = Array.from(menu.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]'));
+    const options = Array.from(menu.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]:not(:disabled)'));
     if (event.key === 'Escape') {
       event.preventDefault();
       menu.open = false;
