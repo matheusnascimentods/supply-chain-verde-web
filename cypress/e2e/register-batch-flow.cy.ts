@@ -24,11 +24,14 @@ const createdBatch = {
   stages: [],
 };
 
+// O fornecedor do usuário vem da claim `supplierId` do token.
+const supplierToken = ['e30', btoa(JSON.stringify({ supplierId: supplier.supplierId })), 'e2e'].join('.');
+
 describe('Batch registration wizard', () => {
   beforeEach(() => {
     cy.intercept('POST', '**/api/v1/auth/login', {
       statusCode: 200,
-      body: { token: 'e2e-supplier-token', expiresAt: '2099-12-31T23:59:59Z', role: 'supplier' },
+      body: { token: supplierToken, expiresAt: '2099-12-31T23:59:59Z', role: 'supplier' },
     }).as('login');
     cy.intercept('GET', '**/api/v1/batches?page=0&size=20', {
       statusCode: 200,
@@ -38,10 +41,6 @@ describe('Batch registration wizard', () => {
       statusCode: 200,
       body: { items: [product], limit: 20, offset: 0, hasNext: false, totalPages: 1 },
     }).as('loadProducts');
-    cy.intercept('GET', '**/api/v1/users/me', {
-      statusCode: 200,
-      body: { userId: 9, name: 'Fornecedor E2E', email: 'supplier@example.com', role: 'supplier' },
-    }).as('loadCurrentUser');
     cy.intercept('GET', '**/api/v1/suppliers?supplierId=9', {
       statusCode: 200,
       body: supplier,
@@ -61,7 +60,6 @@ describe('Batch registration wizard', () => {
 
     cy.contains('button', 'Novo lote').click();
     cy.wait('@loadProducts');
-    cy.wait('@loadCurrentUser');
     cy.wait('@loadSupplier');
     cy.get('input[type="number"]').type('250');
     cy.get('input[type="date"]').type('2025-05-20');
