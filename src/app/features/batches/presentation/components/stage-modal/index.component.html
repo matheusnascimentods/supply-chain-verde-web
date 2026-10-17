@@ -14,14 +14,11 @@
     <p class="stage-loading" aria-live="polite">Carregando endereços disponíveis…</p>
   } @else {
     <form [formGroup]="form" (ngSubmit)="submit()" class="stage-form">
-      <label class="stage-field">
+      <div class="stage-field">
         Tipo da etapa
-        <select formControlName="stageType" class="stage-select">
-          <option value="">Selecione o tipo</option>
-          @for (type of stageTypes; track type) { <option [value]="type">{{ stageTypeLabels[type] }}</option> }
-        </select>
-        @if (form.controls.stageType.touched && form.controls.stageType.invalid) { <span class="stage-field-error">Selecione o tipo da etapa.</span> }
-      </label>
+        <p class="stage-next">{{ stageLabel }}</p>
+        <span class="stage-hint">As etapas seguem a ordem da cadeia: {{ orderLabel }}.</span>
+      </div>
       <label class="stage-field">
         Início
         <input formControlName="startedAt" type="datetime-local" class="stage-input" />

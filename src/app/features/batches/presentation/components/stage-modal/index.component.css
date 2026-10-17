@@ -31,7 +31,7 @@
   @apply grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2;
 }
 .stage-select {
-  @apply min-h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
+  @apply min-h-11 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
 }
 .stage-input {
   @apply min-h-11 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
@@ -43,10 +43,14 @@
   @apply font-normal text-slate-400;
 }
 .stage-fieldset {
-  @apply grid gap-1.5;
+  /* fieldset tem min-inline-size: min-content por padrão; sem isso, a opção mais longa do select estoura a coluna. */
+  @apply grid min-w-0 gap-1.5;
 }
 .stage-legend {
   @apply mb-1 text-sm font-semibold text-slate-800;
+}
+.stage-next {
+  @apply font-semibold text-slate-900;
 }
 .stage-hint {
   @apply text-xs font-normal text-slate-500;
