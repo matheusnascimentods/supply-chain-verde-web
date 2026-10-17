@@ -53,10 +53,12 @@ describe('AdvanceStageUseCase', () => {
   });
 
   it('reports the failing step', () => {
-    stages.createTransport.mockReturnValue(throwError(() => new Error('500')));
+    const cause = new Error('500');
+    stages.createTransport.mockReturnValue(throwError(() => cause));
     const { events, error } = run(submission, fresh);
     expect(events).toEqual([{ step: 'stage', chainId: 50 }]);
     expect(error?.step).toBe('transport');
+    expect(error?.cause).toBe(cause);
     expect(stages.calculateEmission).not.toHaveBeenCalled();
   });
 });

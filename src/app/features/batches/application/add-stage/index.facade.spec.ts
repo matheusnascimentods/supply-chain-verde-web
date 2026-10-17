@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
@@ -76,6 +77,22 @@ describe('AddStageFacade', () => {
     facade.submit(submission)!.subscribe();
     expect(advanceStage.execute).toHaveBeenLastCalledWith(expect.anything(), { chainId: 50, transportSaved: false, emissionSaved: false });
     expect(facade.saving()).toBe(false);
+  });
+
+  it('shows the API message when the API refuses the stage', () => {
+    const message = 'Transição de etapa inválida: PROCESSING → DISTRIBUTION';
+    const cause = new HttpErrorResponse({ status: 400, error: { message } });
+    advanceStage.execute.mockReturnValue(throwError(() => new AdvanceStageError('stage', { cause })));
+    const facade = createFacade('manager');
+    facade.submit(submission)!.subscribe({ error: () => undefined });
+    expect(facade.error()).toBe(message);
+  });
+
+  it('keeps the generic message when the stage fails for another reason', () => {
+    advanceStage.execute.mockReturnValue(throwError(() => new AdvanceStageError('stage', { cause: new HttpErrorResponse({ status: 500 }) })));
+    const facade = createFacade('manager');
+    facade.submit(submission)!.subscribe({ error: () => undefined });
+    expect(facade.error()).toBe('Não foi possível registrar a etapa. Confira os dados e tente novamente.');
   });
 
   it('cannot submit without identifying the responsible user', () => {

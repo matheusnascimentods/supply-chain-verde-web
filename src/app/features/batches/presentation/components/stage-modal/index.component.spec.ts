@@ -66,4 +66,32 @@ describe('BatchStageModalComponent', () => {
     fixture.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalled();
   });
+
+  it('starts a batch without stages at production', () => {
+    expect(fixture.componentInstance.form.controls.stageType.value).toBe('PRODUCTION');
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('Produção');
+    expect(text).toContain('Produção → Armazenagem → Processamento → Transporte → Distribuição → Varejo');
+    expect(fixture.nativeElement.querySelector('select[formControlName="stageType"]')).toBeNull();
+  });
+
+  it('offers transport after processing and requires its data', () => {
+    const next = TestBed.createComponent(BatchStageModalComponent);
+    next.componentRef.setInput('batchId', 7);
+    next.componentRef.setInput('currentStage', 'PROCESSING');
+    next.detectChanges();
+    const form = next.componentInstance.form;
+    expect(form.controls.stageType.value).toBe('TRANSPORT');
+    expect(next.nativeElement.textContent).toContain('Dados do transporte');
+    form.patchValue({ startedAt: '2026-10-05T08:30' });
+    expect(form.valid).toBe(false);
+    form.patchValue({ transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 });
+    expect(form.valid).toBe(true);
+  });
+
+  it('submits the next stage of the chain', () => {
+    fixture.componentInstance.form.patchValue({ startedAt: '2026-10-05T08:30' });
+    fixture.componentInstance.submit();
+    expect(facade.submit).toHaveBeenCalledWith(expect.objectContaining({ stage: expect.objectContaining({ stageType: 'PRODUCTION' }), transport: null }));
+  });
 });
