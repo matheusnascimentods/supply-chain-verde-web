@@ -3,6 +3,7 @@ import { Observable, catchError, forkJoin, map, of, switchMap, tap, throwError }
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../core/auth/session/index.service';
 import { Supplier, SuppliersRepository } from '../../../suppliers';
+import { apiErrorMessage } from '../../../../shared/utils/http/index.utils';
 import { canCalculateEmission } from '../../domain/index.rules';
 import {
   AdvanceStageError,
@@ -66,7 +67,10 @@ export class AddStageFacade {
         complete: () => this.saving.set(false),
         error: (error: unknown) => {
           this.saving.set(false);
-          this.error.set(FAILURE_MESSAGES[error instanceof AdvanceStageError ? error.step : 'stage']);
+          const step = error instanceof AdvanceStageError ? error.step : 'stage';
+          const cause = error instanceof AdvanceStageError ? error.cause : error;
+          // Só a recusa da etapa traz regra da API (ex.: transição fora de ordem); os outros passos dizem que a etapa já foi salva.
+          this.error.set(step === 'stage' ? apiErrorMessage(cause, FAILURE_MESSAGES.stage) : FAILURE_MESSAGES[step]);
         },
       }),
     );

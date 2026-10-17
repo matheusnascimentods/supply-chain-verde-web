@@ -9,6 +9,12 @@ export const STAGE_TYPE_LABELS: Record<StageType, string> = {
   RETAIL: 'Varejo',
 };
 
+/** Próxima etapa da sequência obrigatória (mesma ordem do enum StageType da API); null depois de RETAIL. */
+export function nextStage(current: StageType | null): StageType | null {
+  if (current === null) return 'PRODUCTION';
+  return STAGE_TYPES[STAGE_TYPES.indexOf(current) + 1] ?? null;
+}
+
 export const TRANSPORT_MODES = ['ROAD', 'RAIL', 'MARITIME', 'AIR'] as const;
 export type TransportMode = (typeof TRANSPORT_MODES)[number];
 export const TRANSPORT_MODE_LABELS: Record<TransportMode, string> = {

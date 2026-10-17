@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** em andamento. Tasks 1 (#66), 2 (#67) e 3 concluídas. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
+**Status:** em andamento. Tasks 1 (#66), 2 (#67) e 3 (#68) e 4 concluídas. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
 
 **Ordem sugerida:** Task 1 primeiro, porque as outras usam o utilitário de data e o `apiErrorMessage`. Depois disso, as Tasks 2, 3 e 4 são independentes e podem virar PRs separados. A Task 5 é verificação e fecha a feature.
 
@@ -63,23 +63,23 @@ Base comum, sem mudança de comportamento.
 ## Task 4 — `feat/stage-next-only` (RF-03, RF-05, RF-06)
 
 ### Domínio
-- [ ] `nextStage(current)` em `batches/domain/stage/index.model.ts`
-- [ ] `canAddStageTo` usa `nextStage(...) !== null`
-- [ ] Specs (criar `batches/domain/stage/index.model.spec.ts`): `nextStage` para `null`, cada etapa e `RETAIL`; casos atuais de `canAddStageTo` seguem verdes
+- [x] `nextStage(current)` em `batches/domain/stage/index.model.ts`
+- [x] `canAddStageTo` usa `nextStage(...) !== null`
+- [x] Specs (criar `batches/domain/stage/index.model.spec.ts`): `nextStage` para `null`, cada etapa e `RETAIL`; casos atuais de `canAddStageTo` seguem verdes
 
 ### Modal de etapa
-- [ ] Entrada `currentStage` no `BatchStageModalComponent`
-- [ ] Lista de lotes passa `[currentStage]="batch.currentStage"`
-- [ ] `stageType` preenchido com `nextStage(currentStage())` no `ngOnInit`; `requireTransport` disparado quando for `TRANSPORT`
-- [ ] Seletor trocado por texto fixo com a etapa e a ordem completa da cadeia
-- [ ] Erro do passo `stage` no `AddStageFacade` via `apiErrorMessage(error, FAILURE_MESSAGES.stage)`; mensagens de `transport` e `emission` inalteradas
-- [ ] Specs: lote vazio → Produção; `PROCESSING` → Transporte com campos obrigatórios; `submit` envia a etapa calculada; 400 → mensagem da API
+- [x] Entrada `currentStage` no `BatchStageModalComponent`
+- [x] Lista de lotes passa `[currentStage]="batch.currentStage"`
+- [x] `stageType` preenchido com `nextStage(currentStage())` no `ngOnInit`; `requireTransport` disparado quando for `TRANSPORT`
+- [x] Seletor trocado por texto fixo com a etapa e a ordem completa da cadeia
+- [x] Erro do passo `stage` no `AddStageFacade` via `apiErrorMessage(error, FAILURE_MESSAGES.stage)`; mensagens de `transport` e `emission` inalteradas
+- [x] Specs: lote vazio → Produção; `PROCESSING` → Transporte com campos obrigatórios; `submit` envia a etapa calculada; 400 → mensagem da API
 
 ### Verificação manual
-- [ ] Lote recém-criado → modal mostra "Produção"
-- [ ] Lote em "Processamento" → modal mostra "Transporte" e exige modal, distância, combustível e capacidade
-- [ ] Lote em "Varejo" → botão "Adicionar etapa" não aparece (já é o comportamento atual)
-- [ ] Duas abas registrando a mesma etapa ao mesmo tempo → a segunda mostra "Transição de etapa inválida: …" da API
+- [x] Lote recém-criado → modal mostra "Produção"
+- [x] Lote em "Processamento" → modal mostra "Transporte" e exige modal, distância, combustível e capacidade
+- [x] Lote em "Varejo" → botão "Adicionar etapa" não aparece (já é o comportamento atual)
+- [x] Duas abas registrando a mesma etapa ao mesmo tempo → a segunda mostra "Transição de etapa inválida: …" da API
 
 **Pronto:** o usuário não consegue escolher uma etapa que a API recusaria.
 

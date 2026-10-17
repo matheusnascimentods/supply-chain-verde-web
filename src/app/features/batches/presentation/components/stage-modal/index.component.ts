@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
@@ -17,6 +17,7 @@ import {
   TRANSPORT_MODES,
   TRANSPORT_MODE_LABELS,
   TransportMode,
+  nextStage,
 } from '../../../domain/stage/index.model';
 
 const POSITIVE = Validators.min(0.000001);
@@ -29,10 +30,10 @@ const POSITIVE = Validators.min(0.000001);
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BatchStageModalComponent {
+export class BatchStageModalComponent implements OnInit {
   protected readonly facade = inject(AddStageFacade);
-  protected readonly stageTypes = STAGE_TYPES;
-  protected readonly stageTypeLabels = STAGE_TYPE_LABELS;
+  protected readonly orderLabel = STAGE_TYPES.map((type) => STAGE_TYPE_LABELS[type]).join(' → ');
+  protected stageLabel = '';
   protected readonly transportModes = TRANSPORT_MODES;
   protected readonly transportModeLabels = TRANSPORT_MODE_LABELS;
   protected readonly fuelTypes = FUEL_TYPES;
@@ -41,6 +42,7 @@ export class BatchStageModalComponent {
   protected readonly calculationMethodLabels = CALCULATION_METHOD_LABELS;
 
   readonly batchId = input.required<number>();
+  readonly currentStage = input<StageType | null>(null);
   readonly dismiss = output<void>();
   readonly created = output<void>();
   readonly changed = output<void>();
@@ -63,6 +65,13 @@ export class BatchStageModalComponent {
     this.form.controls.stageType.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((stageType) => this.requireTransport(stageType === 'TRANSPORT'));
+  }
+
+  // A API só aceita a próxima etapa da sequência; o valueChanges acima já exige o transporte quando for o caso.
+  ngOnInit(): void {
+    const stage = nextStage(this.currentStage());
+    this.stageLabel = stage ? STAGE_TYPE_LABELS[stage] : '';
+    this.form.controls.stageType.setValue(stage ?? '');
   }
 
   get isTransport(): boolean {
