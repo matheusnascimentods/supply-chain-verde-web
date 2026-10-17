@@ -1,5 +1,5 @@
 import { ReportDetail } from '../../domain/report/index.model';
-import { reportPdfFileName, reportPdfVariables } from './index.mapper';
+import { reportPdfFileName, reportPdfMarkdown, reportPdfVariables } from './index.mapper';
 import { placeholdersOf } from './index.render';
 import template from './index.template.md';
 
@@ -66,6 +66,12 @@ describe('report pdf mapper', () => {
   it('fills every placeholder of the template', () => {
     const keys = Object.keys(reportPdfVariables(report));
     expect(placeholdersOf(template).filter((key) => !keys.includes(key))).toEqual([]);
+  });
+
+  it('states right below the generation date that the report is a snapshot', () => {
+    expect(reportPdfMarkdown(report)).toMatch(
+      /gerado em .+\n\n\*Retrato dos dados na data de geração\. Lançamentos posteriores não alteram este relatório\.\*/,
+    );
   });
 
   it('names the file with the CNPJ and the period', () => {

@@ -46,6 +46,12 @@ describe('SupplierReportsModalComponent', () => {
     expect(text).toContain('01/02/2026');
   });
 
+  it('warns that a report is a snapshot of the generation date', () => {
+    const text = document.body.textContent ?? '';
+    expect(text).toContain('Retrato da data de geração. Dados lançados depois exigem gerar um novo relatório.');
+    expect(document.querySelector('.report-card')?.textContent).toContain('Retrato desta data');
+  });
+
   it('does not generate a report for an inverted period', () => {
     fixture.componentInstance.form.setValue({ startDate: '2026-02-01', endDate: '2026-01-01' });
     fixture.componentInstance.submit();
