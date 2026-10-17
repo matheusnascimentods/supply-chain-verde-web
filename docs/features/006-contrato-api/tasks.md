@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** em andamento. Tasks 1 (#66), 2 (#67) e 3 (#68) e 4 concluídas. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
+**Status:** concluída. Tasks 1 (#66), 2 (#67), 3 (#68), 4 (#69) e 5 entregues; `npm test` e `npm run cypress:run` verdes. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
 
 **Ordem sugerida:** Task 1 primeiro, porque as outras usam o utilitário de data e o `apiErrorMessage`. Depois disso, as Tasks 2, 3 e 4 são independentes e podem virar PRs separados. A Task 5 é verificação e fecha a feature.
 
@@ -87,11 +87,11 @@ Base comum, sem mudança de comportamento.
 
 Verificação das etapas inseridas pela V39 da API. Só vira mudança de código se algo quebrar.
 
-- [ ] Spec da jornada pública com uma etapa sem endereço, transporte e emissão
-- [ ] Spec do `batch-card` com a primeira etapa sem origem → rota começa no nome do fornecedor
-- [ ] Spec do `carbon-chart` com uma etapa sem emissão → sem erro e sem barra para essa etapa
-- [ ] Conferir na tela um lote dos seeds que começava em "Processamento": a jornada mostra "Produção" e "Armazenagem" inseridas, com "Origem não informada"
-- [ ] Se o resultado visual não for aceitável (ex.: muitas etapas "vazias" na jornada), abrir uma tarefa à parte para decidir como exibi-las; não resolver aqui
+- [x] Spec da jornada pública com uma etapa sem endereço, transporte e emissão
+- [x] Spec do `batch-card` com a primeira etapa sem origem → rota começa no nome do fornecedor
+- [x] Spec do `carbon-chart` com uma etapa sem emissão → sem erro e sem barra para essa etapa
+- [x] Conferir na tela um lote dos seeds que começava em "Processamento": a jornada mostra "Produção" e "Armazenagem" inseridas, com "Origem não informada"
+- [x] Se o resultado visual não for aceitável (ex.: muitas etapas "vazias" na jornada), abrir uma tarefa à parte para decidir como exibi-las; não resolver aqui — conferido no lote #5: aceitável, sem tarefa à parte
 
 **Pronto:** as etapas sem dados aparecem sem erro em todas as telas que listam etapas.
 

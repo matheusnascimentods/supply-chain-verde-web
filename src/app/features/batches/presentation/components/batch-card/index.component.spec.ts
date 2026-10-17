@@ -62,4 +62,12 @@ describe('BatchCardComponent', () => {
     expect(clicks).toBe(1);
     expect(render(batch, false).querySelector('.batch-add-stage')).toBeNull();
   });
+
+  it('starts the route at the supplier when the first stage has no origin', () => {
+    const bare = { ...batch.stages[0], chainId: 2, stageType: 'PRODUCTION' as const, originAddress: null, destinationAddress: null, transport: null, emission: null };
+    const host = render({ ...batch, currentStage: 'TRANSPORT', stages: [bare, batch.stages[0]] });
+    expect(host.querySelector('.batch-route-origin')!.textContent).toContain('Fazenda Verde');
+    expect(host.querySelector('.batch-timeline-address')!.textContent).toBe('Local não informado');
+    expect(host.querySelectorAll('.batch-timeline-details')).toHaveLength(1);
+  });
 });

@@ -67,4 +67,14 @@ describe('TraceabilityComponent', () => {
     expect(page.textContent).toContain('Produto não identificado');
     expect(page.textContent).toContain('Fornecedor não identificado');
   });
+
+  it('renders a stage without address, transport and emission', () => {
+    const bare = { ...batch.stages[0], chainId: 2, stageType: 'PRODUCTION' as const, originAddress: null, destinationAddress: null, transport: null, emission: null };
+    const { page } = render({ traceability: signal({ ...batch, stages: [bare] }) });
+    const item = page.querySelector('.journey-item')!;
+    expect(item.textContent).toContain('Produção');
+    expect(item.querySelector('.journey-place')!.textContent!.trim()).toBe('Origem não informada');
+    expect(item.querySelector('.journey-transport')).toBeNull();
+    expect(item.querySelector('.journey-emission')).toBeNull();
+  });
 });
