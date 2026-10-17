@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { ReportsRepository } from '../../infrastructure/report/index.repository';
@@ -63,6 +64,13 @@ describe('SupplierReportsFacade', () => {
     facade.generate(period).subscribe({ error: () => undefined });
     expect(facade.saveError()).toBe('Não foi possível gerar o relatório. Confira o período e tente novamente.');
     expect(facade.saving()).toBe(false);
+  });
+
+  it('shows the API message when the API refuses the report', () => {
+    const message = 'Período sem dados para o fornecedor.';
+    generate.execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 400, error: { message } })));
+    facade.generate(period).subscribe({ error: () => undefined });
+    expect(facade.saveError()).toBe(message);
   });
 
   it('downloads the PDF of a report and releases the button', () => {

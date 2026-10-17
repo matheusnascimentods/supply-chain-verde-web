@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, finalize, tap } from 'rxjs';
+import { apiErrorMessage } from '../../../../shared/utils/http/index.utils';
 import { Report, ReportPeriod } from '../../domain/report/index.model';
 import { GeneratedReportDTO } from '../../infrastructure/report/index.dto';
 import { ReportsRepository } from '../../infrastructure/report/index.repository';
@@ -66,7 +67,8 @@ export class SupplierReportsFacade {
           this.success.set('Relatório gerado com sucesso.');
           this.load(0);
         },
-        error: () => this.saveError.set('Não foi possível gerar o relatório. Confira o período e tente novamente.'),
+        error: (error: unknown) =>
+          this.saveError.set(apiErrorMessage(error, 'Não foi possível gerar o relatório. Confira o período e tente novamente.')),
       }),
       finalize(() => this.saving.set(false)),
     );

@@ -21,6 +21,7 @@
             @if (form.controls.endDate.touched && form.controls.endDate.invalid) { <span class="reports-field-error">Informe a data final.</span> }
           </label>
           <button type="submit" class="reports-submit" [disabled]="form.invalid || invalidPeriod() || facade.saving()">{{ facade.saving() ? 'Gerando…' : 'Gerar relatório' }}</button>
+          <p class="reports-hint">Retrato da data de geração. Dados lançados depois exigem gerar um novo relatório.</p>
           @if (invalidPeriod()) { <p class="reports-form-error" role="alert">A data inicial deve ser anterior ou igual à data final.</p> }
           @if (facade.saveError()) { <p class="reports-form-error" role="alert">{{ facade.saveError() }}</p> }
           @if (facade.success()) { <p class="reports-form-success" role="status" aria-live="polite">{{ facade.success() }}</p> }
@@ -58,6 +59,7 @@
               <div class="report-card-generated">
                 <p class="report-card-label">Data de geração</p>
                 <p class="report-card-date">{{ date(report.generatedAt) }}</p>
+                <p class="report-card-label">Retrato desta data</p>
                 <button type="button" class="report-card-download" [disabled]="facade.downloadingId() !== null" [attr.aria-busy]="facade.downloadingId() === report.reportId" (click)="facade.downloadPdf(report.reportId)">{{ facade.downloadingId() === report.reportId ? 'Gerando PDF…' : 'Baixar PDF' }}</button>
               </div>
             </article>
