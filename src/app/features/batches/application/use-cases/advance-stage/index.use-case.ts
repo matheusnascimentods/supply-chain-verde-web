@@ -23,13 +23,13 @@ export type AdvanceStageProgress = { step: 'stage'; chainId: number } | { step: 
 export type AdvanceStageStep = AdvanceStageProgress['step'];
 
 export class AdvanceStageError extends Error {
-  constructor(readonly step: AdvanceStageStep) {
-    super(`Falha ao salvar ${step}`);
+  constructor(readonly step: AdvanceStageStep, options?: ErrorOptions) {
+    super(`Falha ao salvar ${step}`, options);
   }
 }
 
 const failAt = <T>(step: AdvanceStageStep) =>
-  catchError<T, Observable<never>>(() => throwError(() => new AdvanceStageError(step)));
+  catchError<T, Observable<never>>((cause) => throwError(() => new AdvanceStageError(step, { cause })));
 
 /** Registra a etapa e, quando pedidos, o transporte e o cálculo de emissão dela. */
 @Injectable({ providedIn: 'root' })

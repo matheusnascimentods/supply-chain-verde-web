@@ -61,5 +61,5 @@
   <app-batch-create-modal (dismiss)="createModalOpen.set(false)" (created)="batchCreated()" />
 }
 @if (stageBatch(); as batch) {
-  <app-batch-stage-modal [batchId]="batch.batchId" (dismiss)="stageBatch.set(null)" (changed)="facade.load()" (created)="stageCreated()" />
+  <app-batch-stage-modal [batchId]="batch.batchId" [currentStage]="batch.currentStage" (dismiss)="stageBatch.set(null)" (changed)="facade.load()" (created)="stageCreated()" />
 }

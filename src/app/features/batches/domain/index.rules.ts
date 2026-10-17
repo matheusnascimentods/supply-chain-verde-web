@@ -1,6 +1,7 @@
 import { UserRole } from '../../../core/auth/session/index.model';
 import type { SupplierRanking } from '../../suppliers';
 import { Batch } from './index.model';
+import { nextStage } from './stage/index.model';
 
 type Role = UserRole | null;
 
@@ -15,7 +16,7 @@ export function canCalculateEmission(role: Role): boolean {
 // A jornada termina no varejo: um lote nessa etapa não recebe novas etapas.
 export function canAddStageTo(role: Role, batch: Batch): boolean {
   const allowed = role === 'admin' || role === 'manager' || role === 'supplier';
-  return allowed && batch.currentStage !== 'RETAIL';
+  return allowed && nextStage(batch.currentStage) !== null;
 }
 
 // O ranking recomendado vem ordenado pela API; só o topo da primeira página é o melhor, e só se tiver histórico.
