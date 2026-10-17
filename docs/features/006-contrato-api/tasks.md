@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** em andamento. Task 1 entregue (#66); Task 2 implementada, falta a verificação manual. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
+**Status:** em andamento. Tasks 1 (#66), 2 (#67) e 3 concluídas. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
 
 **Ordem sugerida:** Task 1 primeiro, porque as outras usam o utilitário de data e o `apiErrorMessage`. Depois disso, as Tasks 2, 3 e 4 são independentes e podem virar PRs separados. A Task 5 é verificação e fecha a feature.
 
@@ -39,24 +39,24 @@ Base comum, sem mudança de comportamento.
 - [x] Specs: desabilitada só em vencida; navegação pula a opção; 400 mostra a mensagem da API
 
 ### Verificação manual
-- [ ] Cadastrar certificação com validade ontem → erro no campo, nenhuma requisição na aba Network
-- [ ] Forçar a requisição (validade ontem via DevTools) → mensagem "Não é possível cadastrar uma certificação já vencida."
-- [ ] Certificação `EXPIRED` vencida: "Ativa" desabilitada com a dica; "Suspensa" e "Em análise" continuam disponíveis
+- [x] Cadastrar certificação com validade ontem → erro no campo, nenhuma requisição na aba Network
+- [x] Forçar a requisição (validade ontem via DevTools) → mensagem "Não é possível cadastrar uma certificação já vencida."
+- [x] Certificação `EXPIRED` vencida: "Ativa" desabilitada com a dica; "Suspensa" e "Em análise" continuam disponíveis
 
 **Pronto:** não há caminho pela tela que gere o 400 de certificação; se ele vier, aparece a mensagem da API.
 
 ## Task 3 — `feat/report-snapshot-notice` (RF-03, RF-04)
 
-- [ ] `report/index.facade.ts`: `saveError` via `apiErrorMessage` com o fallback atual
-- [ ] Aviso de retrato abaixo do botão "Gerar relatório"
-- [ ] "Retrato desta data" junto da data de geração em cada card
-- [ ] Frase de retrato no `report-pdf/index.template.md`, logo abaixo da data de geração
-- [ ] Specs: facade (400 → mensagem da API; 500 → fallback); modal (aviso no formulário e no card); PDF (frase no Markdown)
+- [x] `report/index.facade.ts`: `saveError` via `apiErrorMessage` com o fallback atual
+- [x] Aviso de retrato abaixo do botão "Gerar relatório"
+- [x] "Retrato desta data" junto da data de geração em cada card
+- [x] Frase de retrato no `report-pdf/index.template.md`, logo abaixo da data de geração
+- [x] Specs: facade (400 → mensagem da API; 500 → fallback); modal (aviso no formulário e no card); PDF (frase no Markdown)
 
 ### Verificação manual
-- [ ] Gerar relatório de um fornecedor com emissões → card mostra CO₂ diferente de zero e o aviso
-- [ ] Baixar o PDF → frase de retrato logo abaixo da data de geração
-- [ ] Período com fim antes do início → mensagem local atual (a validação do formulário continua antes da API)
+- [x] Gerar relatório de um fornecedor com emissões → card mostra CO₂ diferente de zero e o aviso
+- [x] Baixar o PDF → frase de retrato logo abaixo da data de geração
+- [x] Período com fim antes do início → mensagem local atual (a validação do formulário continua antes da API)
 
 **Pronto:** quem gera ou lê um relatório sabe que ele não se atualiza sozinho.
 
