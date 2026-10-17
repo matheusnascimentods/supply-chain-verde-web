@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { AuditLogRepository } from '../infrastructure/index.repository';
-import { AuditLogFacade, localDateDaysAgo } from './index.facade';
+import { localDateDaysAgo } from '../../../shared/utils/date/index.utils';
+import { AuditLogFacade } from './index.facade';
 
 describe('AuditLogFacade', () => {
   let repository: { load: ReturnType<typeof vi.fn> };
@@ -11,11 +12,6 @@ describe('AuditLogFacade', () => {
     repository = { load: vi.fn().mockReturnValue(of({ items: [], hasNext: true, totalPages: 3 })) };
     TestBed.configureTestingModule({ providers: [AuditLogFacade, { provide: AuditLogRepository, useValue: repository }] });
     facade = TestBed.inject(AuditLogFacade);
-  });
-
-  it('computes local dates relative to today', () => {
-    expect(localDateDaysAgo(6, new Date(2026, 9, 7, 23, 30))).toBe('2026-10-01');
-    expect(localDateDaysAgo(0, new Date(2026, 0, 1, 0, 15))).toBe('2026-01-01');
   });
 
   it('loads the last 7 days on creation', () => {
