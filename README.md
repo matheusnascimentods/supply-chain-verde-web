@@ -10,7 +10,7 @@
 
 > Rastreabilidade pública de lotes, gestão de fornecedores e acompanhamento das emissões de CO₂ da cadeia de suprimentos.
 
-O **Supply Chain Verde Web** é uma Single Page Application desenvolvida em **Angular 21** e **TypeScript**, organizada em **core / shared / features**, com cada feature separada nas camadas **domain, application, infrastructure e presentation**. A aplicação consome a [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api) e coloca consumidores, fornecedores, gestores, auditores e administradores em contato com os fluxos de rastreabilidade, emissões, certificações, relatórios e auditoria.
+O **Supply Chain Verde Web** é uma Single Page Application (SPA) desenvolvida em **Angular 21** e **TypeScript**, organizada em **core / shared / features**, com cada feature separada nas camadas **domain, application, infrastructure e presentation**. A aplicação consome a [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api) e coloca consumidores, fornecedores, gestores, auditores e administradores em contato com os fluxos de rastreabilidade, emissões, certificações, relatórios e auditoria.
 
 ```mermaid
 sequenceDiagram
