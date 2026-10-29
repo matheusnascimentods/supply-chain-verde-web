@@ -34,6 +34,11 @@ export const routes: Routes = [
         loadChildren: () => import('./features/suppliers').then((module) => module.routes),
       },
       {
+        path: 'profile',
+        title: 'Supply Chain | Meu perfil',
+        loadChildren: () => import('./features/profile').then((module) => module.routes),
+      },
+      {
         path: 'batches',
         title: 'Supply Chain | Lotes',
         loadChildren: () => import('./features/batches').then((module) => module.routes),

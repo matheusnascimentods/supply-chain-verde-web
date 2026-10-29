@@ -24,7 +24,6 @@ export const NAV_LINKS: Record<UserRole, NavLink[]> = {
   ],
   supplier: [
     { label: 'Meus lotes', path: '/batches' },
-    { label: 'Meu perfil', path: '/suppliers/me' },
     { label: 'Fornecedores', path: '/suppliers' },
   ],
 };

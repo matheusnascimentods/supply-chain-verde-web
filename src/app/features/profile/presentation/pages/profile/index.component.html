@@ -2,7 +2,7 @@
   <div class="supplier-form-card">
     <header class="supplier-form-header">
       <div>
-        <a routerLink="/suppliers" class="supplier-form-back">← Voltar para fornecedores</a>
+        <a routerLink="/dashboard" class="supplier-form-back">← Voltar</a>
         <h1 id="supplier-form-title" class="supplier-form-title">Meu perfil</h1>
         <p id="supplier-form-description" class="supplier-form-subtitle">Atualize os dados da empresa, do endereço e do seu acesso.</p>
       </div>
@@ -82,7 +82,7 @@
       </section>
 
       <footer class="supplier-form-actions">
-        <a routerLink="/suppliers" class="supplier-form-cancel">Cancelar</a>
+        <a routerLink="/dashboard" class="supplier-form-cancel">Cancelar</a>
         <button type="submit" class="supplier-form-submit" [disabled]="invalid() || saving()">{{ saving() ? 'Salvando…' : 'Salvar alterações' }}</button>
       </footer>
     </form>
