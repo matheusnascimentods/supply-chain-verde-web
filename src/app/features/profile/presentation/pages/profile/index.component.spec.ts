@@ -5,7 +5,9 @@ import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../../core/auth/session/index.service';
+import type { UserRole } from '../../../../../core/auth/session/index.model';
 import { SuppliersRepository, UpdateOwnSupplierUseCase } from '../../../../suppliers';
+import { ProfileRepository } from '../../../infrastructure/index.repository';
 import { ProfileComponent } from './index.component';
 
 @Component({ template: '' })
@@ -15,6 +17,7 @@ describe('ProfileComponent', () => {
   let fixture: ComponentFixture<ProfileComponent>;
   let repository: { get: ReturnType<typeof vi.fn> };
   let updateOwnSupplier: { execute: ReturnType<typeof vi.fn> };
+  let profileRepository: { updateMe: ReturnType<typeof vi.fn> };
   const supplier = {
     supplierId: 8,
     name: 'Fazenda Verde',
@@ -23,16 +26,18 @@ describe('ProfileComponent', () => {
     address: { street: 'Rua A', number: '10', neighborhood: 'Centro', complement: null, zipCode: '01000000', city: 'São Paulo', state: 'SP' },
   };
 
-  function create(supplierId: number | null): ProfileComponent {
+  function create(supplierId: number | null, role: UserRole = 'supplier'): ProfileComponent {
     repository = { get: vi.fn().mockReturnValue(of(supplier)) };
     updateOwnSupplier = { execute: vi.fn().mockReturnValue(of(supplier)) };
+    profileRepository = { updateMe: vi.fn().mockReturnValue(of({})) };
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'suppliers', component: SupplierListPage }]),
-        { provide: SessionService, useValue: { supplierId: () => supplierId } },
-        { provide: CurrentUserService, useValue: { load: () => of({ userId: 4, name: 'Ana', email: 'ana@fazenda.com', role: 'supplier' }) } },
+        { provide: SessionService, useValue: { supplierId: () => supplierId, role: () => role } },
+        { provide: CurrentUserService, useValue: { load: () => of({ userId: 4, name: 'Ana', email: 'ana@fazenda.com', role }) } },
         { provide: UpdateOwnSupplierUseCase, useValue: updateOwnSupplier },
         { provide: SuppliersRepository, useValue: repository },
+        { provide: ProfileRepository, useValue: profileRepository },
       ],
     });
     fixture = TestBed.createComponent(ProfileComponent);
@@ -48,6 +53,7 @@ describe('ProfileComponent', () => {
     expect(component.account.getRawValue()).toEqual({
       userName: 'Ana',
       email: 'ana@fazenda.com',
+      role: 'Fornecedor',
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
@@ -73,7 +79,7 @@ describe('ProfileComponent', () => {
     expect(updateOwnSupplier.execute).toHaveBeenCalledWith(
       { ...profile, userName: 'Ana' },
       { ...profile, userName: 'Ana S.' },
-      { userName: 'Ana S.', email: 'ana@fazenda.com', currentPassword: '', newPassword: '', confirmPassword: '' },
+      { userName: 'Ana S.', email: 'ana@fazenda.com', role: 'Fornecedor', currentPassword: '', newPassword: '', confirmPassword: '' },
     );
   });
 
@@ -111,4 +117,27 @@ describe('ProfileComponent', () => {
     expect(component.saving()).toBe(false);
   });
 
+  it('shows only Meu acesso to the other roles', () => {
+    const component = create(null, 'admin');
+    const headings = [...fixture.nativeElement.querySelectorAll('h2')].map((h: HTMLElement) => h.textContent?.trim());
+    expect(headings).toEqual(['Meu acesso']);
+    expect(repository.get).not.toHaveBeenCalled();
+    expect(component.error()).toBe('');
+    expect(component.account.getRawValue()).toMatchObject({ userName: 'Ana', email: 'ana@fazenda.com', role: 'Administrador' });
+  });
+
+  it('saves the other roles through PATCH /users/me with only the changed fields', () => {
+    const component = create(null, 'manager');
+    component.account.patchValue({ userName: 'Ana S.', currentPassword: 'atual', newPassword: 'nova', confirmPassword: 'nova' });
+    component.submit();
+    expect(profileRepository.updateMe).toHaveBeenCalledWith({ userName: 'Ana S.', currentPassword: 'atual', newPassword: 'nova' });
+    expect(updateOwnSupplier.execute).not.toHaveBeenCalled();
+  });
+
+  it('does not call the API when the other roles change nothing', () => {
+    const component = create(null, 'auditor');
+    component.submit();
+    expect(profileRepository.updateMe).not.toHaveBeenCalled();
+    expect(component.saving()).toBe(false);
+  });
 });
