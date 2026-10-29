@@ -133,6 +133,7 @@ flowchart LR
 - **Gráfico de emissões (004) concluído**: série mensal de CO₂ no dashboard, com os meses sem emissão zerados.
 - **Relatório em PDF (005) concluído**: download do detalhe do relatório (fornecedor, emissões por etapa, lote e metodologia e certificações vigentes no período).
 - **Contrato novo da API (006) concluído**: só a próxima etapa da cadeia é oferecida, certificações não aceitam validade vencida nem reativação depois de vencidas, e o relatório avisa que é um retrato da data de geração.
+- **Hero section (007) concluída**: `/` apresenta o produto antes do login, com o CTA **Entrar**; quem já tem sessão vai direto para o `/dashboard`, e o logout volta para a hero.
 - **Testes**: 81 arquivos de testes unitários e 3 fluxos Cypress (login, cadastro de lote e rastreio público).
 - **Pendente**: tela de perfil para os demais usuários; hoje só o fornecedor edita os próprios dados.
 
@@ -156,7 +157,7 @@ Todas as rotas carregam a feature sob demanda (`loadChildren`). As rotas autenti
 
 ```mermaid
 flowchart TD
-    Root["/"] -->|redireciona| Login["/login"]
+    Root["/<br/>hero, guestGuard"] -->|Entrar| Login["/login"]
     Public["/rastreio/:batchId<br/>público"]
     Login -->|JWT| Shell["AppShellComponent<br/>authGuard"]
     Shell --> Dashboard["/dashboard"]
@@ -176,6 +177,7 @@ flowchart TD
 
 | Rota | Tela | O que entrega | Acesso |
 | :--- | :--- | :--- | :--- |
+| `/` | Hero | Apresentação do produto e CTA **Entrar**; com sessão, redireciona para `/dashboard` | Público |
 | `/rastreio/:batchId` | Rastreio público | Jornada do lote, etapas, transporte e gráfico de CO₂ por etapa | **Público** |
 | `/login` | Login | Autenticação e criação da sessão | Público |
 | `/dashboard` | Dashboard | Indicadores, lotes por etapa, emissões mensais e lotes recentes | Autenticado |
@@ -186,6 +188,46 @@ flowchart TD
 | `/audit-log` | Auditoria | Eventos por período com filtros e exportação CSV | `admin`, `auditor` |
 
 Rotas desconhecidas dentro da área autenticada redirecionam para `/dashboard`.
+
+### Capturas de tela
+
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/00-landing.jpeg" alt="Hero section" /><br/><sub>Hero section</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/01-login.jpeg" alt="Login" /><br/><sub>Login</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/03-dashboard.jpeg" alt="Dashboard" /><br/><sub>Dashboard</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/02-dashboard-full-page.jpeg" alt="Dashboard (página inteira)" /><br/><sub>Dashboard (página inteira)</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/04-suppliers-list.jpeg" alt="Fornecedores" /><br/><sub>Fornecedores</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/08-suppliers-search.jpeg" alt="Busca de fornecedores" /><br/><sub>Busca de fornecedores</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/07-supplier-form-modal.jpeg" alt="Cadastro de fornecedor" /><br/><sub>Cadastro de fornecedor</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/05-supplier-certifications-modal.jpeg" alt="Certificações do fornecedor" /><br/><sub>Certificações do fornecedor</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/06-supplier-reports-modal.jpeg" alt="Relatórios do fornecedor" /><br/><sub>Relatórios do fornecedor</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/09-batches-list.jpeg" alt="Lotes" /><br/><sub>Lotes</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/10-batch-create-new-product.jpeg" alt="Novo lote: produto novo" /><br/><sub>Novo lote: produto novo</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/11-batch-create-select-product.jpeg" alt="Novo lote: seleção de produto" /><br/><sub>Novo lote: seleção de produto</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/12-batch-create-new-supplier.jpeg" alt="Novo lote: fornecedor novo" /><br/><sub>Novo lote: fornecedor novo</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/13-batch-create-supplier-recommendation.jpeg" alt="Novo lote: recomendação de fornecedores" /><br/><sub>Novo lote: recomendação de fornecedores</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/14-batch-create-review.jpeg" alt="Novo lote: revisão" /><br/><sub>Novo lote: revisão</sub></td>
+    <td align="center" width="50%"><img src="docs/screenshots/15-users-list.jpeg" alt="Usuários" /><br/><sub>Usuários</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/screenshots/16-audit-log.jpeg" alt="Auditoria" /><br/><sub>Auditoria</sub></td>
+  </tr>
+</table>
 
 ### Navegação por perfil
 
@@ -287,6 +329,7 @@ src/app/
 | [`docs/features/004-grafico-emissoes`](docs/features/004-grafico-emissoes/spec.md) | Gráfico de emissões por período no dashboard |
 | [`docs/features/005-relatorio-pdf`](docs/features/005-relatorio-pdf/spec.md) | Relatório de sustentabilidade em PDF |
 | [`docs/features/006-contrato-api`](docs/features/006-contrato-api/spec.md) | Ajustes ao contrato novo da API |
+| [`docs/features/007-hero-section`](docs/features/007-hero-section/spec.md) | Hero section antes do login |
 
 Cada pasta contém `spec.md` (problema e requisitos), `plan.md` (decisões técnicas) e `tasks.md` (tarefas e PRs).
 
