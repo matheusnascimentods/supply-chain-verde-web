@@ -6,7 +6,6 @@ import {
   canUpdateCertificationStatus,
   certificationTone,
   normalizeNewSupplier,
-  passwordChangeErrors,
 } from './index.rules';
 import { SupplierRanking } from './index.model';
 
@@ -59,15 +58,5 @@ describe('suppliers rules', () => {
       phone: '1133332000',
       address,
     });
-  });
-
-  it('validates the password change only when a new password is typed', () => {
-    const blank = { currentPassword: '', newPassword: '', confirmPassword: '' };
-    expect(passwordChangeErrors(blank)).toBeNull();
-    expect(passwordChangeErrors({ ...blank, currentPassword: 'atual' })).toBeNull();
-    expect(passwordChangeErrors({ ...blank, newPassword: 'nova', confirmPassword: 'outra' })).toEqual({ passwordMismatch: true });
-    expect(passwordChangeErrors({ ...blank, confirmPassword: 'nova' })).toEqual({ passwordMismatch: true });
-    expect(passwordChangeErrors({ ...blank, newPassword: 'nova', confirmPassword: 'nova' })).toEqual({ currentPasswordRequired: true });
-    expect(passwordChangeErrors({ currentPassword: 'atual', newPassword: 'nova', confirmPassword: 'nova' })).toBeNull();
   });
 });

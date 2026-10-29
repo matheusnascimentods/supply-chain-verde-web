@@ -1,6 +1,6 @@
 import { UserRole } from '../../../core/auth/session/index.model';
 import { digitsOnly } from '../../../shared/utils/format/index.utils';
-import { NewSupplier, PasswordChange, SupplierRanking } from './index.model';
+import { NewSupplier, SupplierRanking } from './index.model';
 
 type Role = UserRole | null;
 
@@ -35,12 +35,4 @@ export function certificationTone(supplier: SupplierRanking): CertificationTone 
 // A API recebe CNPJ e telefone apenas com dígitos.
 export function normalizeNewSupplier(supplier: NewSupplier): NewSupplier {
   return { ...supplier, cnpj: digitsOnly(supplier.cnpj), phone: digitsOnly(supplier.phone) };
-}
-
-// Senha em branco = não muda; nova senha exige a atual e a confirmação igual.
-export function passwordChangeErrors(change: PasswordChange): Record<string, true> | null {
-  if (!change.newPassword && !change.confirmPassword) return null;
-  if (change.newPassword !== change.confirmPassword) return { passwordMismatch: true };
-  if (!change.currentPassword) return { currentPasswordRequired: true };
-  return null;
 }

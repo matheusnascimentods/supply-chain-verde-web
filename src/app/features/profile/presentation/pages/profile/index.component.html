@@ -4,7 +4,7 @@
       <div>
         <a routerLink="/dashboard" class="supplier-form-back">← Voltar</a>
         <h1 id="supplier-form-title" class="supplier-form-title">Meu perfil</h1>
-        <p id="supplier-form-description" class="supplier-form-subtitle">Atualize os dados da empresa, do endereço e do seu acesso.</p>
+        <p id="supplier-form-description" class="supplier-form-subtitle">{{ isSupplier ? 'Atualize os dados da empresa, do endereço e do seu acesso.' : 'Atualize seu nome e sua senha.' }}</p>
       </div>
     </header>
 
@@ -13,47 +13,49 @@
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="supplier-form" aria-labelledby="supplier-form-title" aria-describedby="supplier-form-description">
-      <section aria-labelledby="supplier-company-heading">
-        <h2 id="supplier-company-heading" class="supplier-form-section-title">Dados do fornecedor</h2>
-        <div class="supplier-form-grid">
-          <label class="supplier-form-field-wide" for="supplier-name">Razão social
-            <input id="supplier-name" class="supplier-form-input" type="text" formControlName="name" autocomplete="organization" required />
-          </label>
-          <label class="supplier-form-field" for="supplier-cnpj">CNPJ
-            <input id="supplier-cnpj" class="supplier-form-input" type="text" formControlName="cnpj" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="00.000.000/0000-00" required />
-          </label>
-          <label class="supplier-form-field" for="supplier-phone">Telefone
-            <input id="supplier-phone" class="supplier-form-input" type="tel" formControlName="phone" autocomplete="tel" maxlength="15" placeholder="(00) 00000-0000" required />
-          </label>
-        </div>
-      </section>
+      @if (isSupplier) {
+        <section aria-labelledby="supplier-company-heading">
+          <h2 id="supplier-company-heading" class="supplier-form-section-title">Dados do fornecedor</h2>
+          <div class="supplier-form-grid">
+            <label class="supplier-form-field-wide" for="supplier-name">Razão social
+              <input id="supplier-name" class="supplier-form-input" type="text" formControlName="name" autocomplete="organization" required />
+            </label>
+            <label class="supplier-form-field" for="supplier-cnpj">CNPJ
+              <input id="supplier-cnpj" class="supplier-form-input" type="text" formControlName="cnpj" inputmode="numeric" autocomplete="off" maxlength="18" placeholder="00.000.000/0000-00" required />
+            </label>
+            <label class="supplier-form-field" for="supplier-phone">Telefone
+              <input id="supplier-phone" class="supplier-form-input" type="tel" formControlName="phone" autocomplete="tel" maxlength="15" placeholder="(00) 00000-0000" required />
+            </label>
+          </div>
+        </section>
 
-      <section aria-labelledby="supplier-address-heading">
-        <h2 id="supplier-address-heading" class="supplier-form-section-title">Endereço</h2>
-        <div class="supplier-form-grid">
-          <label class="supplier-form-field" for="supplier-zip-code">CEP
-            <input id="supplier-zip-code" class="supplier-form-input" type="text" formControlName="zipCode" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required />
-          </label>
-          <label class="supplier-form-field" for="supplier-state">Estado (UF)
-            <input id="supplier-state" class="supplier-form-input" type="text" formControlName="state" autocomplete="address-level1" maxlength="2" required />
-          </label>
-          <label class="supplier-form-field-wide" for="supplier-street">Logradouro
-            <input id="supplier-street" class="supplier-form-input" type="text" formControlName="street" autocomplete="address-line1" required />
-          </label>
-          <label class="supplier-form-field" for="supplier-number">Número
-            <input id="supplier-number" class="supplier-form-input" type="text" formControlName="number" autocomplete="address-line2" required />
-          </label>
-          <label class="supplier-form-field" for="supplier-neighborhood">Bairro
-            <input id="supplier-neighborhood" class="supplier-form-input" type="text" formControlName="neighborhood" required />
-          </label>
-          <label class="supplier-form-field" for="supplier-complement"><span>Complemento <span class="supplier-form-optional">(opcional)</span></span>
-            <input id="supplier-complement" class="supplier-form-input" type="text" formControlName="complement" autocomplete="address-line3" />
-          </label>
-          <label class="supplier-form-field" for="supplier-city">Cidade
-            <input id="supplier-city" class="supplier-form-input" type="text" formControlName="city" autocomplete="address-level2" required />
-          </label>
-        </div>
-      </section>
+        <section aria-labelledby="supplier-address-heading">
+          <h2 id="supplier-address-heading" class="supplier-form-section-title">Endereço</h2>
+          <div class="supplier-form-grid">
+            <label class="supplier-form-field" for="supplier-zip-code">CEP
+              <input id="supplier-zip-code" class="supplier-form-input" type="text" formControlName="zipCode" inputmode="numeric" autocomplete="postal-code" maxlength="9" placeholder="00000-000" required />
+            </label>
+            <label class="supplier-form-field" for="supplier-state">Estado (UF)
+              <input id="supplier-state" class="supplier-form-input" type="text" formControlName="state" autocomplete="address-level1" maxlength="2" required />
+            </label>
+            <label class="supplier-form-field-wide" for="supplier-street">Logradouro
+              <input id="supplier-street" class="supplier-form-input" type="text" formControlName="street" autocomplete="address-line1" required />
+            </label>
+            <label class="supplier-form-field" for="supplier-number">Número
+              <input id="supplier-number" class="supplier-form-input" type="text" formControlName="number" autocomplete="address-line2" required />
+            </label>
+            <label class="supplier-form-field" for="supplier-neighborhood">Bairro
+              <input id="supplier-neighborhood" class="supplier-form-input" type="text" formControlName="neighborhood" required />
+            </label>
+            <label class="supplier-form-field" for="supplier-complement"><span>Complemento <span class="supplier-form-optional">(opcional)</span></span>
+              <input id="supplier-complement" class="supplier-form-input" type="text" formControlName="complement" autocomplete="address-line3" />
+            </label>
+            <label class="supplier-form-field" for="supplier-city">Cidade
+              <input id="supplier-city" class="supplier-form-input" type="text" formControlName="city" autocomplete="address-level2" required />
+            </label>
+          </div>
+        </section>
+      }
 
       <section [formGroup]="account" aria-labelledby="supplier-account-heading">
         <h2 id="supplier-account-heading" class="supplier-form-section-title">Meu acesso</h2>
@@ -63,6 +65,9 @@
           </label>
           <label class="supplier-form-field" for="supplier-user-email">Email
             <input id="supplier-user-email" class="supplier-form-input" type="email" formControlName="email" />
+          </label>
+          <label class="supplier-form-field" for="supplier-user-role">Perfil
+            <input id="supplier-user-role" class="supplier-form-input" type="text" formControlName="role" />
           </label>
           <label class="supplier-form-field-wide" for="supplier-current-password"><span>Senha atual <span class="supplier-form-optional">(só para trocar a senha)</span></span>
             <input id="supplier-current-password" class="supplier-form-input" type="password" formControlName="currentPassword" autocomplete="current-password" />
