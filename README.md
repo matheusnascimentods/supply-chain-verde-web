@@ -135,7 +135,7 @@ flowchart LR
 - **Contrato novo da API (006) concluído**: só a próxima etapa da cadeia é oferecida, certificações não aceitam validade vencida nem reativação depois de vencidas, e o relatório avisa que é um retrato da data de geração.
 - **Hero section (007) concluída**: `/` apresenta o produto antes do login, com o CTA **Entrar**; quem já tem sessão vai direto para o `/dashboard`, e o logout volta para a hero.
 - **Testes**: 81 arquivos de testes unitários e 3 fluxos Cypress (login, cadastro de lote e rastreio público).
-- **Pendente**: tela de perfil para os demais usuários; hoje só o fornecedor edita os próprios dados.
+- **Meu perfil (008) concluído**: todos os perfis acessam `/profile` pelo menu do usuário e trocam nome e senha; o fornecedor edita também a empresa e o endereço.
 
 ### Principais Áreas da Aplicação
 - **`auth`**: login e criação da sessão.
@@ -182,7 +182,7 @@ flowchart TD
 | `/login` | Login | Autenticação e criação da sessão | Público |
 | `/dashboard` | Dashboard | Indicadores, lotes por etapa, emissões mensais e lotes recentes | Autenticado |
 | `/suppliers` | Fornecedores | Listagem e ranking com busca e paginação; modais de cadastro, certificações e relatórios | Autenticado |
-| `/profile` | Meu perfil | Edição do cadastro do próprio fornecedor, pelo menu do usuário (`/suppliers/me` redireciona para cá) | `supplier` |
+| `/profile` | Meu perfil | Nome e senha do próprio usuário; o fornecedor edita também empresa e endereço. Acesso pelo menu do usuário (`/suppliers/me` redireciona para cá) | Autenticado |
 | `/batches` | Lotes | Cards com a etapa atual e a timeline; criação de lote e registro de etapas | Autenticado |
 | `/users` | Usuários | Listagem com busca, criação e alteração de perfil | `admin`, `manager` |
 | `/audit-log` | Auditoria | Eventos por período com filtros e exportação CSV | `admin`, `auditor` |
@@ -330,6 +330,7 @@ src/app/
 | [`docs/features/005-relatorio-pdf`](docs/features/005-relatorio-pdf/spec.md) | Relatório de sustentabilidade em PDF |
 | [`docs/features/006-contrato-api`](docs/features/006-contrato-api/spec.md) | Ajustes ao contrato novo da API |
 | [`docs/features/007-hero-section`](docs/features/007-hero-section/spec.md) | Hero section antes do login |
+| [`docs/features/008-meu-perfil`](docs/features/008-meu-perfil/spec.md) | Meu perfil para todos os perfis |
 
 Cada pasta contém `spec.md` (problema e requisitos), `plan.md` (decisões técnicas) e `tasks.md` (tarefas e PRs).
 
@@ -418,7 +419,8 @@ O frontend consome os endpoints versionados sob `/api/v1`. Contratos completos, 
 | Método | Rota | Uso na interface | Tela |
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/v1/auth/login` | Autenticação e emissão do JWT | Login |
-| `GET` | `/api/v1/users/me` | Usuário logado (nome e `supplierId`) | Navegação e dashboard |
+| `GET` | `/api/v1/users/me` | Usuário logado (nome e `supplierId`) | Navegação, dashboard e Meu perfil |
+| `PATCH` | `/api/v1/users/me` | Troca do próprio nome e senha (perfis que não são fornecedor) | Meu perfil |
 
 ### 📊 Dashboard
 | Método | Rota | Uso na interface | Tela |
