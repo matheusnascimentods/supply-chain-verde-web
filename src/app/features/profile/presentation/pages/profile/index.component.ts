@@ -5,27 +5,30 @@ import { forkJoin } from 'rxjs';
 import { CurrentUserService } from '../../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../../core/auth/session/index.service';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
-import { UpdateOwnSupplierUseCase } from '../../../application/use-cases/update-own-supplier/index.use-case';
-import { OwnSupplierProfile } from '../../../domain/index.model';
-import { passwordChangeErrors } from '../../../domain/index.rules';
-import { SuppliersRepository } from '../../../infrastructure/index.repository';
-import { formatSupplierFieldsWhileTyping, supplierFormValue } from '../../supplier-fields/index.helper';
+import {
+  formatSupplierFieldsWhileTyping,
+  OwnSupplierProfile,
+  passwordChangeErrors,
+  supplierFormValue,
+  SuppliersRepository,
+  UpdateOwnSupplierUseCase,
+} from '../../../../suppliers';
 
 @Component({
-  selector: 'app-suppliers-form',
+  selector: 'app-profile',
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SupplierFormComponent {
+export class ProfileComponent {
   private readonly fb = inject(FormBuilder);
   private readonly repository = inject(SuppliersRepository);
   private readonly updateOwnSupplier = inject(UpdateOwnSupplierUseCase);
   private readonly currentUser = inject(CurrentUserService);
   private readonly router = inject(Router);
   private readonly session = inject(SessionService);
-  // /suppliers/me: o fornecedor vinculado à sessão. Admin/manager editam pelo modal da lista.
+  // /profile: o fornecedor vinculado à sessão. Admin/manager editam pelo modal da lista.
   private readonly supplierId = this.session.supplierId();
   private initialProfile: OwnSupplierProfile | null = null;
 

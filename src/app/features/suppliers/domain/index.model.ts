@@ -57,7 +57,7 @@ export interface NewSupplier {
   user?: SupplierAccess;
 }
 
-/** Campos que o próprio fornecedor edita em `/suppliers/me`. */
+/** Campos que o próprio fornecedor edita em `/profile`. */
 export interface OwnSupplierProfile {
   name: string;
   phone: string;

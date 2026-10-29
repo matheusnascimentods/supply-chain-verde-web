@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** planejado, nada implementado. A Task 2 depende do `PATCH /users/me` da API (`supply-chain-verde-api/docs/features/009-meu-perfil/tasks.md`).
+**Status:** Task 1 concluída; Task 2 pendente. A Task 2 depende do `PATCH /users/me` da API (`supply-chain-verde-api/docs/features/009-meu-perfil/tasks.md`).
 
 ---
 
@@ -10,11 +10,11 @@
 
 Só o fornecedor usa a tela, mas ela já fica no lugar novo. Não depende da API.
 
-- [ ] Mover a página para `features/profile` e criar a rota `/profile` (plan §2, §3)
-- [ ] `/suppliers/me` redirecionando para `/profile`
-- [ ] Remover a aba da navbar e mostrar o link do dropdown para todos (plan §1)
-- [ ] Voltar e Cancelar → `/dashboard`
-- [ ] Testes de navbar e rota (plan §5)
+- [x] Mover a página para `features/profile` e criar a rota `/profile` (plan §2, §3)
+- [x] `/suppliers/me` redirecionando para `/profile`
+- [x] Remover a aba da navbar e mostrar o link do dropdown para todos (plan §1)
+- [x] Voltar e Cancelar → `/dashboard`
+- [x] Testes de navbar e rota (plan §5)
 
 **Pronto:** o fornecedor edita o perfil em `/profile` como hoje, e nenhuma aba fica marcada.
 

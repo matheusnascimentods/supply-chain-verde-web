@@ -28,9 +28,7 @@
           <svg class="profile-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 7.47a.75.75 0 0 1 1.06 0L10 11.19l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
         </summary>
         <div class="profile-dropdown">
-          @if (isSupplier()) {
-            <a routerLink="/suppliers/me" class="profile-link">Meu perfil</a>
-          }
+          <a routerLink="/profile" class="profile-link">Meu perfil</a>
           <button type="button" (click)="logout()" class="logout-button">Sair</button>
         </div>
       </details>

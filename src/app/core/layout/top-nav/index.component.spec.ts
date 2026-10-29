@@ -18,7 +18,7 @@ describe('TopNavComponent', () => {
         provideRouter([
           { path: 'dashboard', component: TestPageComponent },
           { path: 'batches', component: TestPageComponent },
-          { path: 'suppliers/me', component: TestPageComponent },
+          { path: 'profile', component: TestPageComponent },
         ]),
         SessionService,
       ],
@@ -60,15 +60,32 @@ describe('TopNavComponent', () => {
     expect(fixture.componentInstance.mobileMenuOpen()).toBe(false);
   });
 
-  it('provides the supplier profile link only when that route is available', () => {
+  it.each(['admin', 'manager', 'auditor', 'supplier'] as const)('shows Meu perfil above Sair for %s', (role) => {
+    session.setSession('test-token', role, `${role}@example.com`);
     const fixture = TestBed.createComponent(TopNavComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).not.toContain('Meu perfil');
 
+    const items = [...fixture.nativeElement.querySelectorAll('.profile-dropdown a, .profile-dropdown button')] as HTMLElement[];
+    expect(items.map((item) => item.textContent?.trim())).toEqual(['Meu perfil', 'Sair']);
+    expect(items[0].getAttribute('href')).toBe('/profile');
+  });
+
+  it('keeps Meu perfil out of the supplier navigation bar', () => {
     session.setSession('test-token', 'supplier', 'supplier@example.com');
+    const fixture = TestBed.createComponent(TopNavComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Meu perfil');
-    expect(fixture.nativeElement.textContent).toContain('supplier@example.com');
+
+    const navigation = fixture.nativeElement.querySelector('nav[aria-label="Navegação principal"]');
+    expect(navigation.textContent).not.toContain('Meu perfil');
+  });
+
+  it('marks no link as active on /profile', async () => {
+    session.setSession('test-token', 'supplier', 'supplier@example.com');
+    const fixture = TestBed.createComponent(TopNavComponent);
+    await TestBed.inject(Router).navigateByUrl('/profile');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[aria-current]')).toBeNull();
   });
 
   it('delegates sign out to the session service', () => {

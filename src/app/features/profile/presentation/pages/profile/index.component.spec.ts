@@ -5,15 +5,14 @@ import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../../core/auth/session/index.service';
-import { UpdateOwnSupplierUseCase } from '../../../application/use-cases/update-own-supplier/index.use-case';
-import { SuppliersRepository } from '../../../infrastructure/index.repository';
-import { SupplierFormComponent } from './index.component';
+import { SuppliersRepository, UpdateOwnSupplierUseCase } from '../../../../suppliers';
+import { ProfileComponent } from './index.component';
 
 @Component({ template: '' })
 class SupplierListPage {}
 
-describe('SupplierFormComponent', () => {
-  let fixture: ComponentFixture<SupplierFormComponent>;
+describe('ProfileComponent', () => {
+  let fixture: ComponentFixture<ProfileComponent>;
   let repository: { get: ReturnType<typeof vi.fn> };
   let updateOwnSupplier: { execute: ReturnType<typeof vi.fn> };
   const supplier = {
@@ -24,7 +23,7 @@ describe('SupplierFormComponent', () => {
     address: { street: 'Rua A', number: '10', neighborhood: 'Centro', complement: null, zipCode: '01000000', city: 'São Paulo', state: 'SP' },
   };
 
-  function create(supplierId: number | null): SupplierFormComponent {
+  function create(supplierId: number | null): ProfileComponent {
     repository = { get: vi.fn().mockReturnValue(of(supplier)) };
     updateOwnSupplier = { execute: vi.fn().mockReturnValue(of(supplier)) };
     TestBed.configureTestingModule({
@@ -36,7 +35,7 @@ describe('SupplierFormComponent', () => {
         { provide: SuppliersRepository, useValue: repository },
       ],
     });
-    fixture = TestBed.createComponent(SupplierFormComponent);
+    fixture = TestBed.createComponent(ProfileComponent);
     fixture.detectChanges();
     return fixture.componentInstance;
   }
@@ -53,6 +52,13 @@ describe('SupplierFormComponent', () => {
       newPassword: '',
       confirmPassword: '',
     });
+  });
+
+  it('sends Voltar and Cancelar to the dashboard', () => {
+    create(9);
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('.supplier-form-back')?.getAttribute('href')).toBe('/dashboard');
+    expect(element.querySelector('.supplier-form-cancel')?.getAttribute('href')).toBe('/dashboard');
   });
 
   it('saves the own profile through the PATCH use case', () => {

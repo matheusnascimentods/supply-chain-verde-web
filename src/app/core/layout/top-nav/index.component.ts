@@ -29,7 +29,6 @@ export class TopNavComponent {
     const role = this.session.role();
     return role ? ROLE_LABELS[role] : '';
   });
-  readonly isSupplier = computed(() => this.session.role() === 'supplier');
   readonly mobileMenuOpen = signal(false);
   private readonly currentUrl = signal(this.router.url);
 
