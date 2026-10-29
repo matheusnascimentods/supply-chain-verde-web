@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md); imagem em [`image-prompt.md`](image-prompt.md).
 
-**Status:** Task 1 concluída; Tasks 2 e 3 pendentes. Não depende da API.
+**Status:** concluída. Não depende da API.
 
 ---
 
@@ -34,5 +34,5 @@
 
 ## Task 3 — `docs/landing-hero`
 
-- [ ] Captura `00-landing.jpeg` em `docs/screenshots/` e menção no README
-- [ ] Marcar o status desta feature como concluído
+- [x] Captura `00-landing.jpeg` em `docs/screenshots/` e menção no README
+- [x] Marcar o status desta feature como concluído
