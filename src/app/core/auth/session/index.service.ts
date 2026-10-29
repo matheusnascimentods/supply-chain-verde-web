@@ -41,7 +41,7 @@ export class SessionService {
 
   logout(): void {
     this.clearSession();
-    this.router?.navigate(['/login']);
+    this.router?.navigate(['/']);
   }
 
   get token(): string | null {
