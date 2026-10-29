@@ -10,13 +10,14 @@
 
 - [x] Gerar a imagem com o prompt de [`image-prompt.md`](image-prompt.md) §2/§3 e passar pelo checklist (§5)
 - [x] Exportar `public/landing/hero-bg.avif` conforme o plan §5
-- [ ] Registrar aqui o gerador usado, o prompt final e a seed (se houver)
+- [x] Registrar aqui o gerador usado, o prompt final e a seed (se houver)
 
 **Pronto:** `public/landing/hero-bg.avif` existe em 16:9 com no máximo 250 KB.
 
 **Feito:**
 - A primeira geração (prompt antigo) saiu com contêiner pequeno, pilha distante e cipós pendurados. O prompt foi reescrito para se aproximar da referência, e a imagem final saiu do prompt novo.
 - O recorte do contêiner (efeito de profundidade) ficou para depois: spec RF-05 e plan §3.
+- Gerador: ChatGPT (GPT-image), com o prompt de [`image-prompt.md`](image-prompt.md) §2/§3 desta versão. O ChatGPT não expõe seed. Os termos de uso da OpenAI atribuem a imagem gerada a quem a gerou, então ela pode ser usada no projeto.
 - Arquivo final: `hero-bg.avif`, 1672×941, 110 KB. Ficou na resolução nativa do gerador, sem upscale; se ficar borrado em telas grandes, fazer upscale para 1920×1080.
 
 ## Task 2 — `feat/landing-hero`
