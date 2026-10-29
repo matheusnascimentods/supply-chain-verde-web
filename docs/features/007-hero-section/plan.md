@@ -9,6 +9,7 @@
 | `{ path: '', pathMatch: 'full', redirectTo: 'login' }` | `{ path: '', pathMatch: 'full', canActivate: [guestGuard], loadChildren: () => import('./features/landing').then((m) => m.routes) }` |
 
 - `guestGuard`: se `SessionService` tem sessão válida, devolve `createUrlTree(['/dashboard'])`; senão libera (RF-03). Ele mora em `core/auth/guards/index.guard.ts`, ao lado de `authGuard`.
+- `SessionService.logout()` navega para `/` (a hero), não mais para `/login`. A sessão expirada (401 no interceptor) continua indo para `/login`.
 - `app.ts`: `showFooter` passa a ser falso para `/` e `/login` (RF-07).
 - `cypress/e2e/login.cy.ts`: o primeiro teste visita `/` e espera `/login`. Passa a visitar `/`, clicar em **Entrar** e então seguir o fluxo.
 
