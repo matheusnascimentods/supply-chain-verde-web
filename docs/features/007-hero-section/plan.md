@@ -25,18 +25,19 @@ features/landing/
     └── index.component.spec.ts
 ```
 
-## 3. Camadas visuais (efeito "texto atrás do objeto")
+## 3. Camadas visuais
 
-A imagem é gerada uma vez e depois dividida em duas, para o recorte encaixar pixel a pixel no fundo:
+Por enquanto, sem o efeito de profundidade: o "VERDE" fica por cima da imagem inteira (RF-05).
 
 | z | Camada | Origem |
 |---|---|---|
 | 0 | `hero-bg` — céu + pilha de contêineres + contêiner içado | imagem gerada inteira |
 | 1 | "VERDE" — `<span aria-hidden="true">`, `font-size: clamp(8rem, 28vw, 26rem)`, `font-weight: 900`, `letter-spacing: -0.04em`, branco, centralizado e cortado por `overflow: hidden` | CSS |
-| 2 | `hero-subject` — **só** o contêiner içado, com cabo e gancho, em PNG/WebP com transparência, no mesmo tamanho e enquadramento do fundo | recorte da mesma imagem (ver [`image-prompt.md`](image-prompt.md) §4) |
-| 3 | Nav, texto vertical, card de vidro | HTML |
+| 2 | Nav, texto vertical, card de vidro | HTML |
 
-As camadas 0 e 2 usam `position: absolute; inset: 0; object-fit: cover; object-position: <mesmo valor>`. Com o mesmo enquadramento, o recorte cai exatamente em cima do contêiner do fundo, e o "VERDE" fica entre os dois (RF-05).
+O fundo usa `position: absolute; inset: 0; object-fit: cover`.
+
+**Depois:** para o "VERDE" passar atrás do contêiner, entra uma camada `hero-subject` entre o texto e o conteúdo: o recorte do contêiner, com transparência, na mesma tela e com o mesmo `object-position` do fundo (ver [`image-prompt.md`](image-prompt.md) §4).
 
 ## 4. Card de vidro
 
@@ -49,13 +50,12 @@ As camadas 0 e 2 usam `position: absolute; inset: 0; object-fit: cover; object-p
 
 | Arquivo | Tamanho | Formato |
 |---|---|---|
-| `public/landing/hero-bg-{1280,1920,2560}.avif` + `.webp` | 16:9 | sem transparência, ≤ 250 KB no 1920 |
-| `public/landing/hero-subject-{1280,1920,2560}.webp` | 16:9, mesmo enquadramento | transparência (AVIF com alpha é opcional) |
-| `public/landing/hero-bg-mobile.avif` | 9:16, recorte vertical do fundo | ≤ 120 KB |
+| `public/landing/hero-bg.avif` | 1672×941 (16:9, resolução do gerador) | sem transparência, ≤ 250 KB |
 
-- `NgOptimizedImage` com `priority` no fundo (é o elemento de LCP) e `ngSrcset`; o recorte não leva `priority`.
-- Mobile: `<picture>` com `media="(max-width: 640px)"` troca o fundo. O recorte do contêiner continua com `object-position` ajustado, e, se não encaixar no 9:16, o mobile fica sem a camada 2 e o "VERDE" fica atrás de tudo.
-- Animação: o contêiner entra com `translateY(-24px)` → `0` em 900 ms `ease-out`, dentro de `@media (prefers-reduced-motion: no-preference)`.
+- Um arquivo só, sem `srcset`: o mobile baixa o mesmo arquivo. Se o Lighthouse mobile reprovar o LCP, gerar 1280 e 2560 e passar a usar `ngSrcset`.
+- `NgOptimizedImage` com `priority` no fundo (é o elemento de LCP).
+- Mobile: a mesma imagem com `object-position` ajustado para manter o contêiner à vista.
+- Animação: o "VERDE" entra com `translateY(-24px)` → `0` em 900 ms `ease-out`, dentro de `@media (prefers-reduced-motion: no-preference)`.
 
 ## 6. Testes
 
