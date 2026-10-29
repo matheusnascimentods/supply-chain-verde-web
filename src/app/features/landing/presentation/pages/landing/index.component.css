@@ -1,0 +1,59 @@
+@reference "tailwindcss";
+
+.landing {
+  @apply relative flex min-h-screen flex-col overflow-hidden bg-sky-600 text-white;
+}
+.landing-bg {
+  @apply object-cover object-[45%_center];
+}
+.landing-word {
+  @apply pointer-events-none absolute top-[30%] left-1/2 -translate-x-1/2 leading-none font-black tracking-[-0.04em] whitespace-nowrap select-none;
+  font-size: clamp(8rem, 28vw, 26rem);
+}
+.landing-nav {
+  @apply relative flex justify-center px-4 pt-6 sm:pt-8;
+}
+.landing-brand {
+  @apply flex items-center gap-2 text-base font-bold tracking-tight;
+}
+.landing-brand-icon {
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#16a34a];
+}
+.landing-brand-svg {
+  @apply h-5 w-5;
+}
+.landing-side {
+  @apply absolute top-1/2 left-6 hidden -translate-y-1/2 rotate-180 text-sm text-white/85 [writing-mode:vertical-rl] lg:block;
+}
+.landing-card {
+  @apply relative mx-4 mt-auto mb-4 rounded-3xl border border-white/20 bg-black/20 p-6 backdrop-blur-xl sm:mx-10 sm:mb-10 sm:max-w-xl sm:p-8;
+  background-image: linear-gradient(135deg, rgb(22 163 74 / 0.6), rgb(31 41 55 / 0.6));
+}
+.landing-title {
+  @apply text-4xl font-semibold tracking-tight sm:text-5xl;
+}
+.landing-subtitle {
+  @apply mt-4 text-white/85;
+}
+.landing-cta {
+  @apply mt-8 inline-flex items-center gap-4 rounded-full bg-white py-2 pr-2 pl-6 font-semibold text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white;
+}
+.landing-cta-icon {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#16a34a] text-white;
+}
+.landing-cta-svg {
+  @apply h-5 w-5;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .landing-word {
+    animation: landing-word-in 900ms ease-out both;
+  }
+}
+
+@keyframes landing-word-in {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+}

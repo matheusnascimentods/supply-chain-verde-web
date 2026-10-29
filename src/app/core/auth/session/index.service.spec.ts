@@ -96,7 +96,7 @@ describe('SessionService', () => {
   });
 
   describe('logout()', () => {
-    it('should clear the session and navigate to /login', () => {
+    it('should clear the session and navigate to the landing page', () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({ providers: [provideRouter([])] });
       const sessionWithRouter = TestBed.inject(SessionService);
@@ -107,7 +107,7 @@ describe('SessionService', () => {
 
       expect(sessionWithRouter.hasSession()).toBe(false);
       expect(sessionWithRouter.isAuthenticated()).toBe(false);
-      expect(navigateSpy).toHaveBeenCalledWith(['/login']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/']);
     });
   });
 

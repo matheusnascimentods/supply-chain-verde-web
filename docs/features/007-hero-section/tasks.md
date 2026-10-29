@@ -22,13 +22,13 @@
 
 ## Task 2 — `feat/landing-hero`
 
-- [ ] `features/landing` com rota e página (plan §2)
-- [ ] Camadas fundo → "VERDE" → conteúdo (plan §3)
-- [ ] Card de vidro e CTA **Entrar** (plan §4)
-- [ ] Layout mobile (spec RF-06) e animação com `prefers-reduced-motion`
-- [ ] `guestGuard` + troca da rota `''` em `app.routes.ts` (plan §1)
-- [ ] `showFooter` falso em `/`
-- [ ] Testes do plan §6; ajustar `cypress/e2e/login.cy.ts`
+- [x] `features/landing` com rota e página (plan §2)
+- [x] Camadas fundo → "VERDE" → conteúdo (plan §3)
+- [x] Card de vidro e CTA **Entrar** (plan §4)
+- [x] Layout mobile (spec RF-06) e animação com `prefers-reduced-motion`
+- [x] `guestGuard` + troca da rota `''` em `app.routes.ts` (plan §1)
+- [x] `showFooter` falso em `/`
+- [x] Testes do plan §6; ajustar `cypress/e2e/login.cy.ts`
 
 **Pronto:** `npm test` e `npm run cypress:run` verdes; Lighthouse mobile com LCP ≤ 2,5 s e acessibilidade ≥ 95; layout conferido de 375px a 2560px.
 

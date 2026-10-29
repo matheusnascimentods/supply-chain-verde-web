@@ -18,7 +18,7 @@ export class App {
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {
         const path = event.urlAfterRedirects.split(/[?#]/, 1)[0].replace(/\/+$/, '') || '/';
-        this.showFooter.set(path !== '/login');
+        this.showFooter.set(path !== '/' && path !== '/login');
       });
   }
 }

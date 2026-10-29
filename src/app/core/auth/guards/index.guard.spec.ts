@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree, provideRouter } from '@angular/router';
-import { authGuard, roleGuard } from './index.guard';
+import { authGuard, guestGuard, roleGuard } from './index.guard';
 import { SessionService } from '../session/index.service';
 import { routes as appRoutes } from '../../../app.routes';
 
@@ -51,6 +51,27 @@ describe('Guards', () => {
 
       expect(result instanceof UrlTree).toBe(true);
       expect((result as UrlTree).toString()).toBe('/login');
+    });
+  });
+
+  describe('guestGuard', () => {
+    it('should allow activation when user has no session', () => {
+      const result = TestBed.runInInjectionContext(() =>
+        guestGuard(mockRouteSnapshot(), mockRouterStateSnapshot())
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should redirect to /dashboard when user has active session', () => {
+      sessionService.setSession('test-token', 'admin');
+
+      const result = TestBed.runInInjectionContext(() =>
+        guestGuard(mockRouteSnapshot(), mockRouterStateSnapshot())
+      );
+
+      expect(result instanceof UrlTree).toBe(true);
+      expect((result as UrlTree).toString()).toBe('/dashboard');
     });
   });
 
