@@ -13,6 +13,17 @@ export const authGuard: CanActivateFn = (_route: ActivatedRouteSnapshot, _state:
   return router.createUrlTree(['/login']);
 };
 
+export const guestGuard: CanActivateFn = (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
+  const session = inject(SessionService);
+  const router = inject(Router);
+
+  if (session.hasSession()) {
+    return router.createUrlTree(['/dashboard']);
+  }
+
+  return true;
+};
+
 export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
   const session = inject(SessionService);
   const router = inject(Router);

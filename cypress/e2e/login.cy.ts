@@ -6,8 +6,9 @@ describe('Login', () => {
     }).as('login');
   });
 
-  it('opens the login from the default URL and redirects a valid user to their dashboard', () => {
+  it('opens the login from the landing page and redirects a valid user to their dashboard', () => {
     cy.visit('/');
+    cy.get('[data-testid="landing-cta"]').click();
     cy.location('pathname').should('eq', '/login');
     cy.get('[data-testid="email-input"]').type('manager@example.com');
     cy.get('[data-testid="password-input"]').type('valid-password');
