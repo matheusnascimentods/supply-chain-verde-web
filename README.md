@@ -129,7 +129,7 @@ flowchart LR
 - **Base (000) concluída**: autenticação JWT, rastreabilidade pública, dashboard, fornecedores e ranking, lotes e etapas, certificações, relatórios, usuários e auditoria com exportação CSV.
 - **Reestruturação em camadas (001) concluída**: `core`, `shared` e `features` separados; cada feature dividida em domain, application, infrastructure e presentation.
 - **Recomendação de fornecedores (002) concluída**: a criação de lotes sugere os fornecedores com menor CO₂ por unidade do produto.
-- **Vínculo usuário–fornecedor (003) concluído**: o fornecedor pode ser criado com acesso próprio; o perfil SUPPLIER usa o `supplierId` do token e edita o próprio cadastro em `/suppliers/me`.
+- **Vínculo usuário–fornecedor (003) concluído**: o fornecedor pode ser criado com acesso próprio; o perfil SUPPLIER usa o `supplierId` do token e edita o próprio cadastro em `/profile`.
 - **Gráfico de emissões (004) concluído**: série mensal de CO₂ no dashboard, com os meses sem emissão zerados.
 - **Relatório em PDF (005) concluído**: download do detalhe do relatório (fornecedor, emissões por etapa, lote e metodologia e certificações vigentes no período).
 - **Contrato novo da API (006) concluído**: só a próxima etapa da cadeia é oferecida, certificações não aceitam validade vencida nem reativação depois de vencidas, e o relatório avisa que é um retrato da data de geração.
@@ -165,7 +165,7 @@ flowchart TD
     Shell --> Batches["/batches"]
     Shell --> Users["/users<br/>roleGuard: admin, manager"]
     Shell --> Audit["/audit-log<br/>roleGuard: admin, auditor"]
-    Suppliers --> Me["/suppliers/me<br/>roleGuard: supplier"]
+    Shell --> Me["/profile<br/>menu do usuário"]
     Suppliers -.modal.-> SupplierForm[Cadastro / edição]
     Suppliers -.modal.-> Certs[Certificações]
     Suppliers -.modal.-> Reports[Relatórios + PDF]
@@ -182,7 +182,7 @@ flowchart TD
 | `/login` | Login | Autenticação e criação da sessão | Público |
 | `/dashboard` | Dashboard | Indicadores, lotes por etapa, emissões mensais e lotes recentes | Autenticado |
 | `/suppliers` | Fornecedores | Listagem e ranking com busca e paginação; modais de cadastro, certificações e relatórios | Autenticado |
-| `/suppliers/me` | Meu perfil | Edição do cadastro do próprio fornecedor | `supplier` |
+| `/profile` | Meu perfil | Edição do cadastro do próprio fornecedor, pelo menu do usuário (`/suppliers/me` redireciona para cá) | `supplier` |
 | `/batches` | Lotes | Cards com a etapa atual e a timeline; criação de lote e registro de etapas | Autenticado |
 | `/users` | Usuários | Listagem com busca, criação e alteração de perfil | `admin`, `manager` |
 | `/audit-log` | Auditoria | Eventos por período com filtros e exportação CSV | `admin`, `auditor` |
@@ -238,7 +238,7 @@ O menu superior é montado a partir de [`core/layout/navigation/index.constants.
 | `admin` | Fornecedores, Lotes, Usuários, Auditoria |
 | `manager` | Fornecedores, Lotes, Usuários |
 | `auditor` | Auditoria do sistema, Fornecedores, Lotes |
-| `supplier` | Meus lotes, Meu perfil, Fornecedores |
+| `supplier` | Meus lotes, Fornecedores |
 
 ### Fluxo de criação de lote
 
