@@ -42,4 +42,14 @@ describe('ProductsRepository', () => {
     expect(request.request.body).toEqual(newProduct);
     request.flush(product(11));
   });
+
+  it('loads the products of a supplier and keeps only the requested category and unit', () => {
+    let result: unknown[] = [];
+    repository.loadBySupplier(9, { category: 'AGRICULTURE', unit: 'KG' }).subscribe((products) => (result = products));
+    const request = http.expectOne((req) => req.url === base);
+    expect(request.request.params.get('supplierId')).toBe('9');
+    expect(request.request.params.get('limit')).toBe('100');
+    request.flush(page([product(1), { ...product(2), unit: 'TON' }, { ...product(3), category: 'TEXTILE' }], 1));
+    expect(result).toEqual([product(1)]);
+  });
 });

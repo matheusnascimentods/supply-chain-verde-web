@@ -60,7 +60,7 @@ describe('BatchesRepository', () => {
   });
 
   it('creates a batch', () => {
-    const newBatch = { productId: 3, supplierId: 9, quantity: 250, producedAt: '2026-05-20' };
+    const newBatch = { productId: 3, supplierId: 9, quantity: 250 };
     repository.create(newBatch).subscribe((created) => expect(created.batchId).toBe(7));
     const request = http.expectOne(base);
     expect(request.request.body).toEqual(newBatch);

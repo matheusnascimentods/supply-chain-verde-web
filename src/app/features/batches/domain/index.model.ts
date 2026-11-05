@@ -34,11 +34,11 @@ export interface BatchPage {
   totalElements: number;
 }
 
+/** Corpo do `POST /batches` (RF-13): o mercado vem do token, e a data de produção é do fornecedor. */
 export interface NewBatch {
   productId: number;
   supplierId: number;
   quantity: number;
-  producedAt: string;
 }
 
 export interface Page<T> {
