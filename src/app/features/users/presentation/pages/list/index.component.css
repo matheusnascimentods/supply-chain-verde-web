@@ -27,9 +27,6 @@
 .users-loading {
   @apply rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500;
 }
-.users-role-error {
-  @apply mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700;
-}
 .users-table {
   @apply w-full min-w-[720px] text-left text-sm;
 }

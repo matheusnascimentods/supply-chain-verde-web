@@ -53,11 +53,11 @@ describe('UsersRepository', () => {
     request.flush(apiUser);
   });
 
-  it('creates a supplier user linked to a supplier', () => {
-    repository.create({ name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'supplier', supplierId: 7 }).subscribe();
-    const request = http.expectOne(base);
-    expect(request.request.body).toEqual({ name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'SUPPLIER', supplierId: 7 });
-    request.flush({ ...apiUser, role: 'SUPPLIER', supplierId: 7, supplierName: 'Fazenda Verde' });
+  it('parses the user company, with its type in lower case', () => {
+    let created: unknown;
+    repository.create({ name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'supplier' }).subscribe((user) => (created = user));
+    http.expectOne(base).flush({ ...apiUser, role: 'SUPPLIER', companyId: 9, companyType: 'SUPPLIER', companyName: 'Fazenda Verde' });
+    expect(created).toMatchObject({ role: 'supplier', companyId: 9, companyType: 'supplier', companyName: 'Fazenda Verde' });
   });
 
   it('updates the role of a user', () => {

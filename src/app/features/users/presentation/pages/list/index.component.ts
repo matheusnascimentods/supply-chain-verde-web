@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../../shared/ui/button/index.component';
+import { ErrorToastComponent } from '../../../../../shared/ui/error-toast/index.component';
 import { DataTableComponent } from '../../../../../shared/ui/data-table/index.component';
 import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
 import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
@@ -16,6 +17,7 @@ import { RoleMenuComponent } from '../../components/role-menu/index.component';
     DatePipe,
     FormsModule,
     ButtonComponent,
+    ErrorToastComponent,
     DataTableComponent,
     PaginationComponent,
     TextFieldComponent,

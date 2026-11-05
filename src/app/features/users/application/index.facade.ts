@@ -5,7 +5,8 @@ import { UserRole } from '../../../core/auth/session/index.model';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { User } from '../domain/index.model';
 import { apiErrorMessage } from '../../../shared/utils/http/index.utils';
-import { canChangeRoles, canManageUsers } from '../domain/index.rules';
+import { canChangeRoles, canCreateUsers } from '../domain/index.rules';
+import { ErrorToastService } from '../../../shared/ui/error-toast/index.service';
 import { UsersRepository } from '../infrastructure/index.repository';
 import { UpdateUserRoleUseCase } from './use-cases/update-role/index.use-case';
 
@@ -16,6 +17,7 @@ export class UsersListFacade {
   private readonly repository = inject(UsersRepository);
   private readonly updateUserRole = inject(UpdateUserRoleUseCase);
   private readonly session = inject(SessionService);
+  private readonly toast = inject(ErrorToastService);
   private readonly emailChanges = new Subject<string>();
   private readonly offset = signal(0);
   private loadSequence = 0;
@@ -23,12 +25,13 @@ export class UsersListFacade {
   readonly items = signal<User[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
-  readonly roleError = signal('');
   readonly email = signal('');
   readonly totalPages = signal(0);
   readonly updatingRoleId = signal<number | null>(null);
-  readonly canManage = computed(() => canManageUsers(this.session.role()));
+  readonly canCreate = computed(() => canCreateUsers(this.session.role()));
   readonly canChangeRoles = computed(() => canChangeRoles(this.session.role()));
+  // RF-11: só o platform_admin vê usuários de várias companhias.
+  readonly showCompany = computed(() => this.session.role() === 'platform_admin');
   readonly pageNumber = computed(() =>
     this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages()),
   );
@@ -84,7 +87,6 @@ export class UsersListFacade {
 
   updateRole(user: User, role: UserRole): void {
     if (!this.canChangeRoles() || user.role === role) return;
-    this.roleError.set('');
     this.updatingRoleId.set(user.userId);
     this.updateUserRole.execute(user, role).subscribe({
       next: () => {
@@ -93,7 +95,8 @@ export class UsersListFacade {
       },
       error: (error: unknown) => {
         this.updatingRoleId.set(null);
-        this.roleError.set(apiErrorMessage(error, `Não foi possível alterar o perfil de ${user.name}.`));
+        // 409 de último admin vem com a mensagem da API (RF-11).
+        this.toast.show(apiErrorMessage(error, `Não foi possível alterar o perfil de ${user.name}.`));
       },
     });
   }

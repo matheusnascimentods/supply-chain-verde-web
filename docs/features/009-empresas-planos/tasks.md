@@ -70,11 +70,11 @@ Depende da API Task 3.
 
 Depende da API Task 3 e da Task 4.
 
-- [ ] `canManageUsers` só para `admin` e `platform_admin`; `creatableRoles(companyType)`; sai o `refine` de `supplierId` (plan §4)
-- [ ] Modal sem seletor de fornecedor; `role-menu` com os perfis do tipo da companhia
-- [ ] Lista só leitura para quem não é admin; sai "Fornecedor", entra "Empresa" para o `platform_admin` (RF-11)
-- [ ] Erro 409 de limite do plano como toast
-- [ ] Testes de regras, do modal, do menu e da lista
+- [x] `canManageUsers` só para `admin` e `platform_admin`; `creatableRoles(companyType)`; sai o `refine` de `supplierId` (plan §4)
+- [x] Modal sem seletor de fornecedor; `role-menu` com os perfis do tipo da companhia
+- [x] Lista só leitura para quem não é admin; sai "Fornecedor", entra "Empresa" para o `platform_admin` (RF-11)
+- [x] Erro 409 de limite do plano como toast
+- [x] Testes de regras, do modal, do menu e da lista
 
 **Arquivos (~14):** regras + spec, modelo, DTO, create-modal (ts, html, spec), role-menu (ts, html, spec), `pages/list` (ts, html, spec).
 

@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { ROLE_LABELS, UserRole } from '../../../../../core/auth/session/index.model';
-import { ASSIGNABLE_ROLES } from '../../../domain/index.rules';
+import { creatableRoles } from '../../../domain/index.rules';
 import { CloseOnOutsideClickDirective } from '../../../../../shared/directives/close-on-outside-click/index.directive';
 import { User } from '../../../domain/index.model';
 import { RoleBadgeComponent } from '../role-badge/index.component';
@@ -20,7 +20,8 @@ export class RoleMenuComponent {
   readonly disabled = input(false);
   readonly roleSelected = output<UserRole>();
 
-  protected readonly roles = ASSIGNABLE_ROLES;
+  // Perfis do tipo da companhia do usuário alvo, que o platform_admin vê de várias companhias (RF-11).
+  protected readonly roles = computed(() => creatableRoles(this.user().companyType));
   protected readonly roleLabels = ROLE_LABELS;
   protected readonly position = signal({ top: 0, left: 0 });
 
