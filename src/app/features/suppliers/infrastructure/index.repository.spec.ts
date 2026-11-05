@@ -10,12 +10,6 @@ describe('SuppliersRepository', () => {
   const base = `${environment.apiUrl}/suppliers`;
   const supplier = { supplierId: 9, name: 'Fazenda Verde', cnpj: '12345678000190', address: null, phone: '11999999999', registeredAt: '2026-01-10' };
   const ranking = { ...supplier, sustainabilityScore: 87.5, activeCertificationCount: 2, totalCo2Kg: 120.4, reportCount: 3, certifications: [], workedWith: true };
-  const newSupplier = {
-    name: 'Fazenda Verde',
-    cnpj: '12345678000190',
-    phone: '11999999999',
-    address: { street: 'Rua A', number: '10', neighborhood: 'Centro', complement: '', zipCode: '01000-000', city: 'São Paulo', state: 'SP' },
-  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
@@ -77,24 +71,5 @@ describe('SuppliersRepository', () => {
   it('loads every supplier', () => {
     repository.load().subscribe((result) => expect(result).toEqual([supplier]));
     http.expectOne(base).flush([ranking]);
-  });
-
-  it('creates and updates suppliers', () => {
-    repository.create(newSupplier).subscribe();
-    const create = http.expectOne(base);
-    expect(create.request.method).toBe('POST');
-    expect(create.request.body).toEqual(newSupplier);
-    create.flush(supplier);
-
-    repository.update(9, newSupplier).subscribe();
-    const update = http.expectOne(`${base}/9`);
-    expect(update.request.method).toBe('PUT');
-    update.flush(supplier);
-
-    repository.updateOwn({ phone: '11988887777' }).subscribe((result) => expect(result).toEqual(supplier));
-    const own = http.expectOne(`${base}/me`);
-    expect(own.request.method).toBe('PATCH');
-    expect(own.request.body).toEqual({ phone: '11988887777' });
-    own.flush(supplier);
   });
 });

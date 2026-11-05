@@ -6,7 +6,6 @@ import { SupplierRanking } from '../domain/index.model';
 import {
   canCreateCertification,
   canGenerateReports,
-  canManageSuppliers,
   canOpenReports,
   canUpdateCertificationStatus,
 } from '../domain/index.rules';
@@ -60,7 +59,6 @@ export class SuppliersListFacade {
   readonly tableItems = computed(() => (this.showsPodium() ? this.ranking().slice(PODIUM_SIZE) : this.ranking()));
   readonly firstTablePosition = computed(() => this.offset() + (this.podium().length ? PODIUM_SIZE : 0) + 1);
 
-  readonly canManage = computed(() => canManageSuppliers(this.session.role()));
   readonly canGenerateReports = computed(() => canGenerateReports(this.session.role()));
   readonly canUpdateCertificationStatus = computed(() => canUpdateCertificationStatus(this.session.role()));
 

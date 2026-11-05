@@ -1,22 +1,13 @@
 import {
   canCreateCertification,
   canGenerateReports,
-  canManageSuppliers,
   canOpenReports,
   canUpdateCertificationStatus,
   certificationTone,
-  normalizeNewSupplier,
 } from './index.rules';
 import { SupplierRanking } from './index.model';
 
 describe('suppliers rules', () => {
-  it('lets admins and managers manage suppliers', () => {
-    expect(canManageSuppliers('admin')).toBe(true);
-    expect(canManageSuppliers('manager')).toBe(true);
-    expect(canManageSuppliers('auditor')).toBe(false);
-    expect(canManageSuppliers('supplier')).toBe(false);
-  });
-
   it('lets admins, managers and auditors generate reports', () => {
     expect(canGenerateReports('auditor')).toBe(true);
     expect(canGenerateReports('supplier')).toBe(false);
@@ -48,15 +39,5 @@ describe('suppliers rules', () => {
     expect(certificationTone(base)).toBe('none');
     expect(certificationTone({ ...base, activeCertificationCount: 2 })).toBe('active');
     expect(certificationTone({ ...base, activeCertificationCount: 2, certifications: [expired] })).toBe('expired');
-  });
-
-  it('keeps only digits in CNPJ and phone', () => {
-    const address = { street: 'Rua A', number: '1', neighborhood: 'Centro', complement: '', zipCode: '01000-000', city: 'SP', state: 'SP' };
-    expect(normalizeNewSupplier({ name: 'Fazenda', cnpj: '12.345.678/0001-90', phone: '(11) 3333-2000', address })).toEqual({
-      name: 'Fazenda',
-      cnpj: '12345678000190',
-      phone: '1133332000',
-      address,
-    });
   });
 });

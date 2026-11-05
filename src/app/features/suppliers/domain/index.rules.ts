@@ -1,12 +1,7 @@
 import { UserRole } from '../../../core/auth/session/index.model';
-import { digitsOnly } from '../../../shared/utils/format/index.utils';
-import { NewSupplier, SupplierRanking } from './index.model';
+import { SupplierRanking } from './index.model';
 
 type Role = UserRole | null;
-
-export function canManageSuppliers(role: Role): boolean {
-  return role === 'admin' || role === 'manager';
-}
 
 export function canGenerateReports(role: Role): boolean {
   return role === 'admin' || role === 'manager' || role === 'auditor';
@@ -30,9 +25,4 @@ export type CertificationTone = 'expired' | 'active' | 'none';
 export function certificationTone(supplier: SupplierRanking): CertificationTone {
   if (supplier.certifications.some((certification) => certification.status === 'EXPIRED')) return 'expired';
   return supplier.activeCertificationCount > 0 ? 'active' : 'none';
-}
-
-// A API recebe CNPJ e telefone apenas com dígitos.
-export function normalizeNewSupplier(supplier: NewSupplier): NewSupplier {
-  return { ...supplier, cnpj: digitsOnly(supplier.cnpj), phone: digitsOnly(supplier.phone) };
 }

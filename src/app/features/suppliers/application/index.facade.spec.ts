@@ -93,7 +93,6 @@ describe('SuppliersListFacade', () => {
     role.set('supplier');
     supplierId = 2;
     const facade = createFacade();
-    expect(facade.canManage()).toBe(false);
     expect(facade.canOpenReports(five[1])).toBe(true);
     expect(facade.canOpenReports(five[0])).toBe(false);
     expect(facade.canCreateCertificationFor(five[1])).toBe(true);
