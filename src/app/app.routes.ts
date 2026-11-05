@@ -64,6 +64,14 @@ export const routes: Routes = [
         loadChildren: () => import('./features/products').then((module) => module.routes),
       },
       {
+        path: 'certifications',
+        title: 'Supply Chain | Certificações',
+        // RF-17: só a companhia fornecedora (admin e supplier) gerencia as próprias certificações.
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'supplier'], companyTypes: ['supplier'] },
+        loadChildren: () => import('./features/certifications').then((module) => module.routes),
+      },
+      {
         path: 'users',
         title: 'Supply Chain | Usuários',
         loadChildren: () => import('./features/users').then((module) => module.routes),
