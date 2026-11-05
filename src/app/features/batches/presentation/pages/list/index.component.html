@@ -38,7 +38,7 @@
     } @else if (facade.items().length) {
       <section class="batches-grid" aria-label="Lotes">
         @for (batch of facade.items(); track batch.batchId) {
-          <app-batch-card [batch]="batch" [unit]="facade.unitOf(batch)" [canAddStage]="facade.canAddStageTo(batch)" (addStage)="stageBatch.set(batch)" />
+          <app-batch-card [batch]="batch" [unit]="facade.unitOf(batch)" [canAddStage]="facade.canAddStageTo(batch)" [canReject]="facade.canReject(batch)" (addStage)="stageBatch.set(batch)" (reject)="rejectBatch.set(batch)" />
         }
       </section>
     } @else {
@@ -66,4 +66,7 @@
 }
 @if (stageBatch(); as batch) {
   <app-batch-stage-modal [batchId]="batch.batchId" [currentStage]="batch.currentStage" (dismiss)="stageBatch.set(null)" (changed)="facade.load()" (created)="stageCreated()" />
+}
+@if (rejectBatch(); as batch) {
+  <app-batch-reject-modal [batch]="batch" (dismissed)="rejectBatch.set(null)" (rejected)="batchRejected()" />
 }

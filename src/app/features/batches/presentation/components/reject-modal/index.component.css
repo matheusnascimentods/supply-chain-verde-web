@@ -1,0 +1,20 @@
+@reference "tailwindcss";
+
+.reject-form {
+  @apply flex flex-col gap-5;
+}
+.reject-eyebrow {
+  @apply font-mono text-sm font-bold tracking-wide text-slate-500;
+}
+.reject-title {
+  @apply mt-1 text-xl font-semibold text-slate-900;
+}
+.reject-description {
+  @apply mt-1 text-sm text-slate-600;
+}
+.reject-error {
+  @apply rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700;
+}
+.reject-actions {
+  @apply flex justify-end gap-3;
+}

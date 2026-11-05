@@ -31,6 +31,9 @@
         Adicionar etapa
       </button>
     }
+    @if (canReject()) {
+      <button type="button" class="batch-reject" (click)="reject.emit()">Recusar</button>
+    }
   </section>
 
   <section class="batch-journey" aria-label="Jornada do lote">

@@ -20,6 +20,10 @@ export class BatchesRepository {
     );
   }
 
+  reject(batchId: number, reason: string): Observable<Batch> {
+    return this.http.patch<unknown>(`${this.base}/${batchId}/reject`, { reason }).pipe(map((raw) => batchResponseSchema.parse(raw)));
+  }
+
   create(batch: NewBatch): Observable<Batch> {
     return this.http.post<unknown>(this.base, batch).pipe(map((raw) => batchResponseSchema.parse(raw)));
   }
