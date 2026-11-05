@@ -6,7 +6,7 @@ import { CompanyType, UserRole } from '../../../core/auth/session/index.model';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { Batch } from '../domain/index.model';
 import { BatchesRepository } from '../infrastructure/index.repository';
-import { ProductsRepository } from '../infrastructure/product/index.repository';
+import { ProductsRepository } from '../../products';
 import { BatchesListFacade } from './index.facade';
 
 describe('BatchesListFacade', () => {

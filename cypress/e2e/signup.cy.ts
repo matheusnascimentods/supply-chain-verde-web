@@ -12,6 +12,12 @@ describe('Signup', () => {
       statusCode: 200,
       body: { cep: '01001-000', logradouro: 'Praça da Sé', bairro: 'Sé', localidade: 'São Paulo', uf: 'SP' },
     }).as('viaCep');
+    // O dashboard chama a API; sem stub, o 401 da API real (token falso) derruba a sessão no meio do teste.
+    cy.intercept('GET', '**/api/v1/dashboard/summary*', {
+      statusCode: 200,
+      body: { activeBatches: 0, expiringCertifications: 0, suppliers: 0, pendingBatches: null, monthlyEmissionKgCo2e: 0, recentBatches: [] },
+    });
+    cy.intercept('GET', '**/api/v1/dashboard/emissions*', { statusCode: 200, body: [] });
     cy.intercept('POST', '**/api/v1/companies', {
       statusCode: 201,
       body: { token: 'e2e-admin-token', expiresAt: '2099-12-31T23:59:59Z', role: 'ADMIN', supplierId: null, companyId: 7, companyType: 'MARKET' },

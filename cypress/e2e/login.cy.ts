@@ -11,6 +11,12 @@ describe('Login', () => {
       statusCode: 200,
       body: { userId: 2, name: 'Gestor', email: 'manager@example.com', role: 'MANAGER', companyId: 3, companyType: 'MARKET', companyName: 'Mercado Bom Preço' },
     });
+    // O dashboard chama a API; sem stub, o 401 da API real (token falso) derruba a sessão no meio do teste.
+    cy.intercept('GET', '**/api/v1/dashboard/summary*', {
+      statusCode: 200,
+      body: { activeBatches: 0, expiringCertifications: 0, suppliers: 0, pendingBatches: null, monthlyEmissionKgCo2e: 0, recentBatches: [] },
+    });
+    cy.intercept('GET', '**/api/v1/dashboard/emissions*', { statusCode: 200, body: [] });
     cy.intercept('GET', '**/api/v1/plans', {
       statusCode: 200,
       body: [{ code: 'BASIC', name: 'Basic', maxUsers: 3 }],

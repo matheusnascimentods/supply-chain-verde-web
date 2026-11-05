@@ -1,7 +1,8 @@
 export { routes } from './index.routes';
 export { carbonEmissionResponseSchema, stageResponseSchema } from './infrastructure/stage/index.dto';
 export { CALCULATION_METHODS, CALCULATION_METHOD_LABELS, STAGE_TYPES, STAGE_TYPE_LABELS, TRANSPORT_MODE_LABELS } from './domain/stage/index.model';
-export { PRODUCT_UNITS, PRODUCT_UNIT_SYMBOLS } from './domain/product/index.model';
+// ponytail: reexportados para dashboard e suppliers seguirem iguais; eles podem importar de '../products' direto.
+export { PRODUCT_UNITS, PRODUCT_UNIT_SYMBOLS } from '../products';
 export { StageBadgeComponent } from './presentation/components/stage-badge/index.component';
 export type { CalculationMethod, CarbonEmission, Stage, StageAddress, StageType } from './domain/stage/index.model';
-export type { ProductUnit } from './domain/product/index.model';
+export type { ProductUnit } from '../products';

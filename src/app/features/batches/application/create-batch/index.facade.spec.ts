@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { SuppliersRepository } from '../../../suppliers';
-import { ProductsRepository } from '../../infrastructure/product/index.repository';
+import { ProductsRepository } from '../../../products';
 import { CreateBatchError, CreateBatchUseCase } from '../use-cases/create-batch/index.use-case';
 import { BatchCreationFacade } from './index.facade';
 

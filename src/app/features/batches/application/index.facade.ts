@@ -2,10 +2,9 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { BATCH_STATUSES, Batch, BatchStatus } from '../domain/index.model';
-import { ProductUnit } from '../domain/product/index.model';
 import { canAddStageTo, canCreateBatch, canReject } from '../domain/index.rules';
 import { BatchesRepository } from '../infrastructure/index.repository';
-import { ProductsRepository } from '../infrastructure/product/index.repository';
+import { ProductUnit, ProductsRepository } from '../../products';
 
 const PAGE_SIZE = 20;
 

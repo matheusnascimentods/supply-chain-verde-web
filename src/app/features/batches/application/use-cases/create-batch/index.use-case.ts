@@ -2,8 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { EMPTY, Observable, catchError, concat, defer, map, tap, throwError } from 'rxjs';
 import { CreateSupplierUseCase, NewSupplier, Supplier } from '../../../../suppliers';
 import { Batch } from '../../../domain/index.model';
-import { NewProduct, Product } from '../../../domain/product/index.model';
-import { ProductsRepository } from '../../../infrastructure/product/index.repository';
+import { NewProduct, Product, ProductsRepository } from '../../../../products';
 import { BatchesRepository } from '../../../infrastructure/index.repository';
 
 export interface BatchDraft {
