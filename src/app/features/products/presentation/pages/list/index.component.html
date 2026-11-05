@@ -1,0 +1,56 @@
+<main class="products-page">
+  <div class="products-container">
+    <header class="products-header">
+      <div>
+        <h1 class="products-title">Produtos</h1>
+        <p class="products-subtitle">Os produtos que sua empresa oferece. O varejista escolhe um deles ao pedir um lote.</p>
+      </div>
+      <button appButton type="button" variant="primary" (click)="createModalOpen.set(true)">+ Novo produto</button>
+    </header>
+
+    <div class="products-search">
+      <app-text-field id="products-search" label="Buscar por nome, descrição ou categoria" type="search" name="search" autocomplete="off" placeholder="Digite para buscar" [ngModel]="search()" (ngModelChange)="searchFor($event)" />
+    </div>
+
+    @if (error()) {
+      <div class="products-error" role="alert">
+        <p>{{ error() }}</p>
+        <button class="products-retry" type="button" (click)="load()">Tentar novamente</button>
+      </div>
+    } @else if (loading()) {
+      <div class="products-loading" aria-live="polite">Carregando produtos…</div>
+    } @else {
+      <app-data-table aria-label="Lista de produtos">
+        <table class="products-table">
+          <thead class="products-table-head">
+            <tr class="products-table-head-row">
+              <th scope="col" class="products-cell">Nome</th>
+              <th scope="col" class="products-cell">Categoria</th>
+              <th scope="col" class="products-cell">Unidade</th>
+              <th scope="col" class="products-cell">Descrição</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of items(); track product.productId) {
+              <tr class="products-row">
+                <td class="products-cell-name">{{ product.name }}</td>
+                <td class="products-cell">{{ categoryLabels[product.category] }}</td>
+                <td class="products-cell">{{ unitLabels[product.unit] }}</td>
+                <td class="products-cell-muted">{{ product.description || '—' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td class="products-empty" colspan="4">{{ search() ? 'Nenhum produto corresponde à busca.' : 'Nenhum produto cadastrado ainda. Cadastre o primeiro para receber pedidos de lote.' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </app-data-table>
+      <app-pagination [page]="totalPages() ? page() + 1 : 0" [totalPages]="totalPages()" [disabled]="loading()" label="Paginação de produtos" (previous)="changePage(-1)" (next)="changePage(1)" />
+    }
+  </div>
+
+  @if (createModalOpen()) {
+    <app-product-create-modal (created)="productCreated()" (dismissed)="createModalOpen.set(false)" />
+  }
+</main>

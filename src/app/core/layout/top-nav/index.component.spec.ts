@@ -46,8 +46,8 @@ describe('TopNavComponent', () => {
     ['MARKET', 'admin', 'Dashboard Fornecedores Lotes Usuários Auditoria'],
     ['MARKET', 'manager', 'Dashboard Fornecedores Lotes Usuários'],
     ['MARKET', 'auditor', 'Dashboard Auditoria Fornecedores Lotes Usuários'],
-    ['SUPPLIER', 'admin', 'Dashboard Lotes Usuários Auditoria'],
-    ['SUPPLIER', 'supplier', 'Dashboard Lotes Usuários'],
+    ['SUPPLIER', 'admin', 'Dashboard Lotes Produtos Usuários Auditoria'],
+    ['SUPPLIER', 'supplier', 'Dashboard Lotes Produtos Usuários'],
     [null, 'platform_admin', 'Dashboard Fornecedores Lotes Usuários Auditoria'],
   ] as const)('shows the %s %s menu', (companyType, role, menu) => {
     expect(navigationText(companyType, role)).toBe(menu);

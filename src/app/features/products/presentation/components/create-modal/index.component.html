@@ -1,0 +1,24 @@
+<app-modal labelledBy="product-create-title" size="lg" initialFocusSelector="input" [closeOnEscape]="!saving()" [closeOnBackdrop]="!saving()" (dismissed)="dismissed.emit()">
+  <div class="product-create-header">
+    <div>
+      <h2 id="product-create-title" class="product-create-title">Novo produto</h2>
+      <p class="product-create-subtitle">A categoria e a unidade definem em quais pedidos de lote este produto aparece.</p>
+    </div>
+    <button type="button" class="product-create-close" aria-label="Fechar" [disabled]="saving()" (click)="dismissed.emit()">✕</button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="product-create-form" novalidate>
+    <app-text-field id="product-name" label="Nome" formControlName="name" autocomplete="off" [required]="true" [error]="fieldError('name')" />
+    <div class="product-create-row">
+      <app-enum-select [id]="'product-category'" label="Categoria" placeholder="Selecione a categoria" formControlName="category" [options]="categories" [labels]="categoryLabels" [required]="true" [error]="fieldError('category')" />
+      <app-enum-select [id]="'product-unit'" label="Unidade" placeholder="Selecione a unidade" formControlName="unit" [options]="units" [labels]="unitLabels" [required]="true" [error]="fieldError('unit')" />
+    </div>
+    <app-text-field id="product-description" label="Descrição (opcional)" formControlName="description" autocomplete="off" />
+
+    @if (error()) { <p role="alert" class="product-create-error">{{ error() }}</p> }
+    <div class="product-create-actions">
+      <button appButton variant="secondary" type="button" [disabled]="saving()" (click)="dismissed.emit()">Cancelar</button>
+      <button appButton type="submit" data-testid="product-create-submit" [disabled]="saving()">{{ saving() ? 'Salvando…' : 'Cadastrar produto' }}</button>
+    </div>
+  </form>
+</app-modal>
