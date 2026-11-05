@@ -7,12 +7,8 @@ import { ROLE_LABELS } from '../../../../../core/auth/session/index.model';
 import { SessionService } from '../../../../../core/auth/session/index.service';
 import { companyFormValue, formatCompanyFieldsWhileTyping } from '../../../../../shared/forms/company-fields/index.helper';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
-import {
-  OwnSupplierProfile,
-  SuppliersRepository,
-  UpdateOwnSupplierUseCase,
-} from '../../../../suppliers';
-import { accountPatch, passwordChangeErrors } from '../../../domain/index.rules';
+import { CompanyForm } from '../../../domain/index.model';
+import { accountPatch, accountsUsage, companyPatch, passwordChangeErrors } from '../../../domain/index.rules';
 import { ProfileRepository } from '../../../infrastructure/index.repository';
 
 @Component({
@@ -24,23 +20,21 @@ import { ProfileRepository } from '../../../infrastructure/index.repository';
 })
 export class ProfileComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly repository = inject(SuppliersRepository);
-  private readonly updateOwnSupplier = inject(UpdateOwnSupplierUseCase);
-  private readonly profileRepository = inject(ProfileRepository);
+  private readonly repository = inject(ProfileRepository);
   private readonly currentUser = inject(CurrentUserService);
   private readonly router = inject(Router);
-  private readonly session = inject(SessionService);
-  // Fornecedor edita também a empresa (o vinculado à sessão); os demais perfis, só o próprio acesso.
-  readonly isSupplier = this.session.role() === 'supplier';
-  private readonly supplierId = this.session.supplierId();
-  private initialProfile: OwnSupplierProfile | null = null;
+  // RF-10: o admin de qualquer tipo de companhia edita também a companhia; os demais, só o próprio acesso.
+  readonly isAdmin = inject(SessionService).role() === 'admin';
+  private initialCompany: CompanyForm | null = null;
   private initialUserName: string | null = null;
 
   readonly saving = signal(false);
   readonly error = signal('');
+  readonly plan = signal<{ name: string; usage: string } | null>(null);
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
-    cnpj: ['', Validators.required],
+    cnpj: [{ value: '', disabled: true }],
+    email: ['', Validators.email],
     phone: ['', Validators.required],
     street: ['', Validators.required],
     number: ['', Validators.required],
@@ -64,40 +58,32 @@ export class ProfileComponent {
   );
 
   constructor() {
-    if (!this.isSupplier) {
-      this.currentUser.load().subscribe({
-        next: (user) => {
-          this.account.patchValue({ userName: user.name, email: user.email, role: ROLE_LABELS[user.role] });
-          this.initialUserName = user.name;
-        },
-        error: () => this.error.set('Não foi possível carregar o seu perfil.'),
-      });
-      return;
-    }
     formatCompanyFieldsWhileTyping(this.form.controls);
-    if (!this.supplierId) {
-      this.error.set('Não foi possível identificar o fornecedor desta sessão.');
-      return;
-    }
-    this.form.controls.cnpj.disable();
-    forkJoin({ supplier: this.repository.get(this.supplierId), user: this.currentUser.load() }).subscribe({
-      next: ({ supplier, user }) => {
-        this.form.patchValue(companyFormValue(supplier));
+    const company$ = this.isAdmin
+      ? forkJoin({ company: this.repository.getMyCompany(), usedAccounts: this.repository.countCompanyUsers() })
+      : of(null);
+    forkJoin({ user: this.currentUser.load(), company: company$ }).subscribe({
+      next: ({ user, company }) => {
         this.account.patchValue({ userName: user.name, email: user.email, role: ROLE_LABELS[user.role] });
-        this.initialProfile = this.ownProfile();
+        this.initialUserName = user.name;
+        if (!company) return;
+        this.form.patchValue({ ...companyFormValue(company.company), email: company.company.email ?? '' });
+        this.initialCompany = this.companyForm();
+        const plan = company.company.plan;
+        if (plan) this.plan.set({ name: plan.name, usage: accountsUsage(company.usedAccounts, plan.maxUsers) });
       },
-      error: () => this.error.set('Não foi possível carregar o fornecedor.'),
+      error: () => this.error.set('Não foi possível carregar o seu perfil.'),
     });
   }
 
-  // Fora do fornecedor, os campos da empresa não aparecem e não podem bloquear o envio.
+  // Fora do admin, os campos da companhia não aparecem e não podem bloquear o envio.
   invalid(): boolean {
-    return (this.isSupplier && this.form.invalid) || this.account.invalid;
+    return (this.isAdmin && this.form.invalid) || this.account.invalid;
   }
 
   submit(): void {
-    const loaded = this.isSupplier ? this.initialProfile : this.initialUserName;
-    if (this.invalid() || loaded === null) {
+    const loaded = this.initialUserName !== null && (!this.isAdmin || this.initialCompany !== null);
+    if (this.invalid() || !loaded) {
       this.form.markAllAsTouched();
       this.account.markAllAsTouched();
       return;
@@ -107,7 +93,7 @@ export class ProfileComponent {
     this.save().subscribe({
       next: () => {
         this.saving.set(false);
-        this.router.navigate(['/suppliers']);
+        this.router.navigate(['/dashboard']);
       },
       error: (error: unknown) => {
         this.saving.set(false);
@@ -116,17 +102,21 @@ export class ProfileComponent {
     });
   }
 
+  // Companhia em PATCH /companies/me e acesso em PATCH /users/me, cada um só com o que mudou.
   private save(): Observable<unknown> {
     const password = this.account.getRawValue();
-    if (this.isSupplier && this.initialProfile) {
-      return this.updateOwnSupplier.execute(this.initialProfile, this.ownProfile(), password);
+    const requests: Observable<unknown>[] = [];
+    if (this.initialCompany) {
+      const company = companyPatch(this.initialCompany, this.companyForm());
+      if (Object.keys(company).length) requests.push(this.repository.updateMyCompany(company));
     }
-    const patch = accountPatch(this.initialUserName ?? '', password.userName, password);
-    return Object.keys(patch).length ? this.profileRepository.updateMe(patch) : of(null);
+    const account = accountPatch(this.initialUserName ?? '', password.userName, password);
+    if (Object.keys(account).length) requests.push(this.repository.updateMe(account));
+    return requests.length ? forkJoin(requests) : of(null);
   }
 
-  private ownProfile(): OwnSupplierProfile {
-    const { name, cnpj: _cnpj, phone, ...address } = this.form.getRawValue();
-    return { name, phone, address, userName: this.account.controls.userName.value };
+  private companyForm(): CompanyForm {
+    const { name, cnpj: _cnpj, email, phone, ...address } = this.form.getRawValue();
+    return { name, email, phone, address };
   }
 }
