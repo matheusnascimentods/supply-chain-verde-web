@@ -129,4 +129,23 @@ describe('SessionService', () => {
       expect(service.supplierId()).toBeNull();
     });
   });
+
+  describe('companyId() and companyType()', () => {
+    const tokenWith = (claims: object) => `header.${btoa(JSON.stringify(claims))}.signature`;
+
+    it('reads the company claims from the session token', () => {
+      service.setSession(tokenWith({ companyId: 7, companyType: 'SUPPLIER' }), 'admin');
+      expect(service.companyId()).toBe(7);
+      expect(service.companyType()).toBe('supplier');
+    });
+
+    it('returns null for the platform admin, unknown types or no session', () => {
+      expect(service.companyType()).toBeNull();
+      service.setSession(tokenWith({ companyId: null, companyType: null }), 'platform_admin');
+      expect(service.companyId()).toBeNull();
+      expect(service.companyType()).toBeNull();
+      service.setSession(tokenWith({ companyId: 7, companyType: 'BANK' }), 'admin');
+      expect(service.companyType()).toBeNull();
+    });
+  });
 });

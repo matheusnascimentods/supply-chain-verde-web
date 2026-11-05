@@ -24,8 +24,8 @@ const createdBatch = {
   stages: [],
 };
 
-// O fornecedor do usuário vem da claim `supplierId` do token.
-const supplierToken = ['e30', btoa(JSON.stringify({ supplierId: supplier.supplierId })), 'e2e'].join('.');
+// O fornecedor do usuário vem da claim `supplierId` do token, e o menu, da `companyType`.
+const supplierToken = ['e30', btoa(JSON.stringify({ supplierId: supplier.supplierId, companyType: 'SUPPLIER' })), 'e2e'].join('.');
 
 describe('Batch registration wizard', () => {
   beforeEach(() => {
@@ -45,6 +45,11 @@ describe('Batch registration wizard', () => {
       statusCode: 200,
       body: supplier,
     }).as('loadSupplier');
+    // O top-nav busca o nome da companhia; sem stub, o 401 da API real derruba a sessão.
+    cy.intercept('GET', '**/api/v1/users/me', {
+      statusCode: 200,
+      body: { userId: 4, name: 'Fornecedor', email: 'supplier@example.com', role: 'SUPPLIER', supplierId: 9, companyId: 9, companyType: 'SUPPLIER', companyName: 'Fazenda Verde' },
+    });
   });
 
   it('selects existing product and own supplier, reviews, and creates the batch', () => {

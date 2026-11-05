@@ -14,6 +14,8 @@ export const ENTITY_LABELS: Record<string, string> = {
   transport: 'Transporte',
   address: 'Endereço',
   carbon_emission: 'Emissão',
+  company: 'Empresa',
+  company_plan: 'Plano da empresa',
 };
 
 export const FIELD_LABELS: Record<string, string> = {
@@ -44,4 +46,8 @@ export const FIELD_LABELS: Record<string, string> = {
   responsible_user_id: 'Responsável (ID)',
   batch_id: 'Lote (ID)',
   chain_id: 'Etapa (ID)',
+  company_id: 'Empresa (ID)',
+  market_id: 'Varejista (ID)',
+  rejection_reason: 'Motivo da recusa',
+  rejectionReason: 'Motivo da recusa',
 };

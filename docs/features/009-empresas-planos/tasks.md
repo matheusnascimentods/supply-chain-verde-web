@@ -55,12 +55,12 @@ Depende da API Task 2 e das Tasks 1 e 2.
 
 Depende da API Task 3.
 
-- [ ] `platform_admin`, `COMPANY_TYPES` e `ROLES_BY_COMPANY_TYPE` no modelo de sessão (plan §1)
-- [ ] `companyId()` e `companyType()` no `SessionService`; campos novos no DTO do current user e no `loginResponseSchema`
-- [ ] `NAV_LINKS` por tipo de companhia e `navLinksFor` (RF-08a); nome da companhia no top-nav (RF-09)
-- [ ] `roleGuard` com `data.companyTypes`; rotas `suppliers` (`['market']`), `users` (sem `roleGuard`) e `audit-log` (`+ platform_admin`) em `app.routes.ts`
-- [ ] Labels de auditoria para os campos novos (plan §4)
-- [ ] Testes de sessão, guard e top-nav
+- [x] `platform_admin`, `COMPANY_TYPES` e `ROLES_BY_COMPANY_TYPE` no modelo de sessão (plan §1)
+- [x] `companyId()` e `companyType()` no `SessionService`; campos novos no DTO do current user e no `loginResponseSchema`
+- [x] `NAV_LINKS` por tipo de companhia e `navLinksFor` (RF-08a); nome da companhia no top-nav (RF-09)
+- [x] `roleGuard` com `data.companyTypes`; rotas `suppliers` (`['market']`), `users` (sem `roleGuard`) e `audit-log` (`+ platform_admin`) em `app.routes.ts`
+- [x] Labels de auditoria para os campos novos (plan §4)
+- [x] Testes de sessão, guard e top-nav
 
 **Arquivos (~14):** `session/index.model.ts`, `session/index.service.ts` + spec, `current-user/index.dto.ts`, `auth/infrastructure/index.dto.ts`, `navigation/index.constants.ts`, guard + spec, top-nav (ts, html, spec), `app.routes.ts`, `audit-log/domain/index.labels.ts`.
 
@@ -203,7 +203,7 @@ Depende das Tasks 7 e 13 (perfil e lotes deixam de usar os use cases de forneced
 
 Depende da API Task 4 e das Tasks 4 e 12.
 
-- [ ] Rota `products` com `roleGuard` e `companyTypes: ['supplier']` (RF-16)
+- [ ] Rota `products` com `roleGuard` e `companyTypes: ['supplier']` (RF-16), e o link **Produtos** no `NAV_LINKS` do fornecedor (admin e supplier)
 - [ ] Página de lista e modal de criação; `POST /products` no repositório
 - [ ] Testes do repositório, da página e do modal
 
@@ -227,7 +227,7 @@ Não depende da API.
 
 Depende da API Task 4 e das Tasks 4 e 16.
 
-- [ ] Rota `certifications` com `companyTypes: ['supplier']` (RF-17)
+- [ ] Rota `certifications` com `companyTypes: ['supplier']` (RF-17), e o link **Certificações** no `NAV_LINKS` do fornecedor (admin e supplier)
 - [ ] Página que lista, cadastra com o `form` atual e muda o status das próprias certificações
 - [ ] Testes da página
 

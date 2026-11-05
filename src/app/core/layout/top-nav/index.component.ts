@@ -4,7 +4,8 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { SessionService } from '../../auth/session/index.service';
 import { ROLE_LABELS } from '../../auth/session/index.model';
-import { NAV_LINKS } from '../navigation/index.constants';
+import { navLinksFor } from '../navigation/index.constants';
+import { CurrentUserService } from '../../auth/session/current-user/index.service';
 import { CloseOnOutsideClickDirective } from '../../../shared/directives/close-on-outside-click/index.directive';
 
 @Component({
@@ -20,19 +21,23 @@ export class TopNavComponent {
   private readonly session = inject(SessionService);
   private readonly router = inject(Router);
 
-  readonly links = computed(() => {
-    const role = this.session.role();
-    return role ? NAV_LINKS[role] : [];
-  });
+  // companyType() vem do token, que muda junto com o signal role() em setSession.
+  readonly links = computed(() => navLinksFor(this.session.companyType(), this.session.role()));
   readonly email = this.session.email;
   readonly roleLabel = computed(() => {
     const role = this.session.role();
     return role ? ROLE_LABELS[role] : '';
   });
+  private readonly loadedCompanyName = signal<string | null>(null);
+  // RF-09: o platform_admin não tem companhia.
+  readonly companyName = computed(() => (this.session.role() === 'platform_admin' ? 'Plataforma' : this.loadedCompanyName()));
   readonly mobileMenuOpen = signal(false);
   private readonly currentUrl = signal(this.router.url);
 
   constructor() {
+    inject(CurrentUserService)
+      .load()
+      .subscribe({ next: (user) => this.loadedCompanyName.set(user.companyName ?? null), error: () => this.loadedCompanyName.set(null) });
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),

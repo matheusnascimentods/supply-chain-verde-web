@@ -18,6 +18,10 @@ export const DASHBOARDS: Record<UserRole, RoleDashboard> = {
     title: 'Acompanhamento de conformidade',
     description: 'Revise certificações e fornecedores e acompanhe os registros de auditoria.',
   },
+  platform_admin: {
+    title: 'Visão geral da plataforma',
+    description: 'Acompanhe varejistas, fornecedores e a atividade de todas as empresas.',
+  },
   supplier: {
     title: 'Sua operação',
     description: 'Acompanhe seus lotes e mantenha suas certificações. Relatórios ficam disponíveis na gestão do fornecedor.',

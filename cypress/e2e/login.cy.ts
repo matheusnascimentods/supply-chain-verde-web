@@ -1,9 +1,16 @@
+// O menu depende da claim `companyType` do token.
+const managerToken = ['e30', btoa(JSON.stringify({ companyId: 3, companyType: 'MARKET' })), 'e2e'].join('.');
+
 describe('Login', () => {
   beforeEach(() => {
     cy.intercept('POST', '**/api/v1/auth/login', {
       statusCode: 200,
-      body: { token: 'e2e-manager-token', expiresAt: '2099-12-31T23:59:59Z', role: 'manager' },
+      body: { token: managerToken, expiresAt: '2099-12-31T23:59:59Z', role: 'manager' },
     }).as('login');
+    cy.intercept('GET', '**/api/v1/users/me', {
+      statusCode: 200,
+      body: { userId: 2, name: 'Gestor', email: 'manager@example.com', role: 'MANAGER', companyId: 3, companyType: 'MARKET', companyName: 'Mercado Bom Preço' },
+    });
     cy.intercept('GET', '**/api/v1/plans', {
       statusCode: 200,
       body: [{ code: 'BASIC', name: 'Basic', maxUsers: 3 }],
@@ -26,7 +33,7 @@ describe('Login', () => {
     });
     cy.location('pathname').should('eq', '/dashboard');
     cy.contains('h1', 'Bem-vindo(a)').should('be.visible');
-    cy.contains('Gestor').should('be.visible');
+    cy.contains('Gestor · Mercado Bom Preço').should('be.visible');
     cy.contains('a', 'Produtos').should('not.exist');
     cy.contains('a', 'Lotes').should('be.visible');
   });
