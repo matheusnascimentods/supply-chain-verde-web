@@ -96,10 +96,10 @@ Depende da API Task 3 e da Task 4.
 
 Depende da API Task 3 e das Tasks 1 e 4.
 
-- [ ] `GET` e `PATCH /companies/me` no repositório de `profile` (plan §3)
-- [ ] Seção da companhia para `admin` de qualquer tipo, com plano e uso de contas (RF-10)
-- [ ] Sem imports de `suppliers` (`UpdateOwnSupplierUseCase`, `SuppliersRepository`, `PasswordChange`)
-- [ ] Testes de regras, repositório e página
+- [x] `GET` e `PATCH /companies/me` no repositório de `profile` (plan §3)
+- [x] Seção da companhia para `admin` de qualquer tipo, com plano e uso de contas (RF-10)
+- [x] Sem imports de `suppliers` (`UpdateOwnSupplierUseCase`, `SuppliersRepository`, `PasswordChange`)
+- [x] Testes de regras, repositório e página
 
 **Arquivos (~9):** modelo, regras + spec, repositório + spec, página (ts, html, css, spec).
 
