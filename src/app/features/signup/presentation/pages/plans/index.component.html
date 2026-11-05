@@ -2,18 +2,37 @@
   <app-public-header />
 
   <main class="plans-main" aria-labelledby="plans-title">
-    <h1 id="plans-title" class="plans-title">Escolha o plano da sua empresa</h1>
-    <p class="plans-subtitle">Varejistas e fornecedores usam a mesma plataforma. O plano define quantas contas sua empresa pode ter.</p>
+    <div class="plans-guides" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
+    <div class="plans-intro">
+      <p class="plans-badge">
+        <svg viewBox="0 0 24 24" class="plans-badge-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 4c-7 0-12 2-13 7-1 4 2 7 6 6 5-1 7-6 7-13Z" /><path d="M4 21c2-5 5-8 11-11" />
+        </svg>
+        Planos
+      </p>
+      <h1 id="plans-title" class="plans-title">Um plano para cada empresa</h1>
+      <p class="plans-subtitle">Varejistas e fornecedores usam a mesma plataforma. O plano define quantas contas sua empresa pode ter.</p>
+    </div>
 
     @if (failed()) {
       <p class="plans-error" role="alert">Não foi possível carregar os planos. Tente novamente mais tarde.</p>
     } @else if (plans(); as plans) {
       <ul class="plans-list">
         @for (plan of plans; track plan.code) {
-          <li class="plan-card" data-testid="plan-card">
+          @let highlighted = plan.code === highlightedPlan;
+          <li class="plan-card" [class.plan-card-highlighted]="highlighted" data-testid="plan-card">
+            @if (highlighted) { <span class="plan-tag">Recomendado</span> }
             <h2 class="plan-name">{{ plan.name }}</h2>
-            <p class="plan-users">Até <strong>{{ plan.maxUsers }}</strong> contas</p>
-            <a appButton routerLink="/cadastro" [queryParams]="{ plano: plan.code }" [attr.aria-label]="'Escolher o plano ' + plan.name">Escolher</a>
+            <p class="plan-tagline">Para equipes de até {{ plan.maxUsers }} pessoas</p>
+            <p class="plan-users"><strong class="plan-users-number">{{ plan.maxUsers }}</strong> contas</p>
+            <ul class="plan-features">
+              <li class="plan-feature">{{ plan.maxUsers }} contas de usuário</li>
+              @for (feature of features; track feature) {
+                <li class="plan-feature">{{ feature }}</li>
+              }
+            </ul>
+            <a class="plan-cta" routerLink="/cadastro" [queryParams]="{ plano: plan.code }" [attr.aria-label]="'Escolher o plano ' + plan.name">Escolher</a>
           </li>
         }
       </ul>
