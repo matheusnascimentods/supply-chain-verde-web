@@ -57,7 +57,7 @@ export class BatchCreationFacade {
   readonly recommendationCriteria = computed<RecommendationCriteria | undefined>(
     () => {
       const selected = this.selectedProduct();
-      if (selected) return { productId: selected.productId };
+      if (selected) return { category: selected.category, unit: selected.unit };
       const pending = this.pendingProduct();
       return pending ? { category: pending.category, unit: pending.unit } : undefined;
     },

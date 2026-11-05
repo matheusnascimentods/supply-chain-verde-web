@@ -39,6 +39,7 @@ export const supplierRankingSchema = supplierResponseSchema.extend({
   reportCount: z.number().int().nonnegative(),
   certifications: z.array(supplierCertificationSchema),
   co2KgPerUnit: z.number().nullable().optional(),
+  workedWith: z.boolean(),
 });
 
 export const supplierRankingPageSchema = z.object({

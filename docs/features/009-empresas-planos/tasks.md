@@ -111,10 +111,10 @@ Depende da API Task 3 e das Tasks 1 e 4.
 
 Depende da API Task 3.
 
-- [ ] `loadRanking` com `workedWith`, sem `withoutUser` e `productId`; `workedWith` no DTO e no modelo (plan §3)
-- [ ] Signal `workedWithOnly` na facade, lembrado no `localStorage` com `try/catch` (RF-12a)
-- [ ] Toggle ao lado da busca, selo "Já trabalhou" e relatórios só com `workedWith` (RF-12b)
-- [ ] Testes do repositório, da facade e da lista
+- [x] `loadRanking` com `workedWith`, sem `withoutUser` e `productId`; `workedWith` no DTO e no modelo (plan §3)
+- [x] Signal `workedWithOnly` na facade, lembrado no `localStorage` com `try/catch` (RF-12a)
+- [x] Toggle ao lado da busca, selo "Já trabalhou" e relatórios só com `workedWith` (RF-12b)
+- [x] Testes do repositório, da facade e da lista
 
 **Arquivos (~9):** DTO, modelo, repositório + spec, facade + spec, `pages/list` (ts, html, spec).
 

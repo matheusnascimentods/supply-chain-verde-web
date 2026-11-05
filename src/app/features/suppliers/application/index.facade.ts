@@ -14,6 +14,24 @@ import { SuppliersRepository } from '../infrastructure/index.repository';
 
 const PAGE_SIZE = 20;
 const PODIUM_SIZE = 3;
+const WORKED_WITH_KEY = 'suppliers.workedWithOnly';
+
+// RF-12a: a última escolha do filtro fica no navegador; sem storage (aba privada, bloqueio), começa desligado.
+function readWorkedWithOnly(): boolean {
+  try {
+    return localStorage.getItem(WORKED_WITH_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function saveWorkedWithOnly(value: boolean): void {
+  try {
+    localStorage.setItem(WORKED_WITH_KEY, String(value));
+  } catch {
+    // Sem storage, o filtro só não é lembrado.
+  }
+}
 
 @Injectable()
 export class SuppliersListFacade {
@@ -27,6 +45,9 @@ export class SuppliersListFacade {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly search = signal('');
+  // O platform_admin não trabalha com fornecedores (workedWith vem sempre falso), então não tem o filtro.
+  readonly canFilterWorkedWith = this.session.role() !== 'platform_admin';
+  readonly workedWithOnly = signal(this.canFilterWorkedWith && readWorkedWithOnly());
   readonly totalPages = signal(0);
   readonly reportsSupplier = signal<SupplierRanking | null>(null);
   readonly certificationsSupplier = signal<SupplierRanking | null>(null);
@@ -54,7 +75,8 @@ export class SuppliersListFacade {
     const sequence = ++this.loadSequence;
     this.loading.set(true);
     this.error.set('');
-    this.repository.loadRanking({ limit: PAGE_SIZE, offset: this.offset(), search: this.search() }).subscribe({
+    const query = { limit: PAGE_SIZE, offset: this.offset(), search: this.search(), workedWith: this.workedWithOnly() };
+    this.repository.loadRanking(query).subscribe({
       next: (page) => {
         if (sequence !== this.loadSequence) return;
         this.ranking.set(page.items);
@@ -76,6 +98,13 @@ export class SuppliersListFacade {
     this.searchChanges.next(value.trim());
   }
 
+  setWorkedWithOnly(value: boolean): void {
+    this.workedWithOnly.set(value);
+    saveWorkedWithOnly(value);
+    this.offset.set(0);
+    this.load();
+  }
+
   previousPage(): void {
     if (this.pageNumber() <= 1 || this.loading()) return;
     this.offset.update((offset) => Math.max(0, offset - PAGE_SIZE));
@@ -88,8 +117,9 @@ export class SuppliersListFacade {
     this.load();
   }
 
+  // RF-12b: relatórios só de fornecedores com quem a companhia já trabalhou.
   canOpenReports(supplier: SupplierRanking): boolean {
-    return canOpenReports(this.session.role(), this.session.supplierId(), supplier.supplierId);
+    return supplier.workedWith && canOpenReports(this.session.role(), this.session.supplierId(), supplier.supplierId);
   }
 
   canCreateCertificationFor(supplier: SupplierRanking): boolean {
