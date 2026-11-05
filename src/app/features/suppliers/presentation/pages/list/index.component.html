@@ -114,6 +114,6 @@
     <app-supplier-reports-modal [supplierId]="supplier.supplierId" [supplierName]="supplier.name" [canGenerate]="facade.canGenerateReports()" (generated)="facade.load()" (dismissed)="facade.reportsSupplier.set(null)" />
   }
   @if (facade.certificationsSupplier(); as supplier) {
-    <app-supplier-certifications-modal [supplierId]="supplier.supplierId" [supplierName]="supplier.name" [certifications]="supplier.certifications" [canCreate]="facade.canCreateCertificationFor(supplier)" [canUpdateStatus]="facade.canUpdateCertificationStatus()" (updated)="facade.load()" (dismissed)="facade.certificationsSupplier.set(null)" />
+    <app-supplier-certifications-modal [supplierName]="supplier.name" [certifications]="supplier.certifications" (dismissed)="facade.certificationsSupplier.set(null)" />
   }
 </main>

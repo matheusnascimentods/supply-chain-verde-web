@@ -80,22 +80,12 @@ describe('SuppliersListFacade', () => {
     expect(facade.loading()).toBe(false);
   });
 
-  it('refreshes the supplier shown in the certifications modal after reloading', () => {
-    const facade = createFacade();
-    facade.certificationsSupplier.set(five[1]);
-    const updated = supplier(2, { activeCertificationCount: 5 });
-    repository.loadRanking.mockReturnValue(of({ items: [five[0], updated], totalPages: 1 }));
-    facade.load();
-    expect(facade.certificationsSupplier()).toEqual(updated);
-  });
-
   it('applies the permission rules of the current session', () => {
     role.set('supplier');
     supplierId = 2;
     const facade = createFacade();
     expect(facade.canOpenReports(five[1])).toBe(true);
     expect(facade.canOpenReports(five[0])).toBe(false);
-    expect(facade.canCreateCertificationFor(five[1])).toBe(true);
   });
 
   it('reloads from the first page with workedWith and remembers the choice', () => {

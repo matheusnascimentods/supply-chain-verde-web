@@ -215,9 +215,9 @@ Depende da API Task 4 e das Tasks 4 e 12.
 
 Não depende da API.
 
-- [ ] Extrair a lista e as ações do `certifications-modal` para um componente de `certifications` (plan §6)
-- [ ] Modal da tela de Fornecedores usa o componente, sem mudança de status (só leitura)
-- [ ] Testes do componente e do modal
+- [x] Extrair a lista e as ações do `certifications-modal` para um componente de `certifications` (plan §6)
+- [x] Modal da tela de Fornecedores usa o componente, sem mudança de status (só leitura)
+- [x] Testes do componente e do modal
 
 **Arquivos (~8):** componente novo (ts, html, css, spec), `certifications-modal` (ts, html, spec), `certifications/index.ts`.
 
