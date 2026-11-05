@@ -16,6 +16,7 @@ describe('SupplierListComponent', () => {
     totalCo2Kg: 1234.5,
     reportCount: 2,
     certifications: [],
+    workedWith: false,
     ...extra,
   });
   const expired = { certificationId: 1, certification: 'ISO', issuingBody: 'ABNT', issuedAt: '', expiresAt: '', status: 'EXPIRED' as const };
@@ -29,6 +30,9 @@ describe('SupplierListComponent', () => {
       loading: signal(false),
       error: signal(''),
       search: signal(''),
+      canFilterWorkedWith: true,
+      workedWithOnly: signal(false),
+      setWorkedWithOnly: vi.fn(),
       totalPages: signal(1),
       pageNumber: signal(1),
       reportsSupplier: signal(null),
@@ -74,5 +78,24 @@ describe('SupplierListComponent', () => {
     expect(page.textContent).toContain('Não foi possível carregar os fornecedores e o ranking.');
     page.querySelector<HTMLButtonElement>('.suppliers-retry')!.click();
     expect(load).toHaveBeenCalled();
+  });
+
+  it('shows the "Já trabalhou" badge only on suppliers the company worked with', () => {
+    const page = render({ podium: signal([supplier(1, { workedWith: true })]) });
+    expect(page.querySelector('.podium-card')?.textContent).toContain('Já trabalhou');
+    expect(page.querySelector('tbody tr')?.textContent).not.toContain('Já trabalhou');
+  });
+
+  it('toggles the worked-with filter next to the search', () => {
+    const setWorkedWithOnly = vi.fn();
+    const page = render({ setWorkedWithOnly });
+    const toggle = page.querySelector<HTMLInputElement>('#worked-with-only')!;
+    expect(toggle.checked).toBe(false);
+    toggle.click();
+    expect(setWorkedWithOnly).toHaveBeenCalledWith(true);
+  });
+
+  it('hides the filter when it does not apply (platform admin)', () => {
+    expect(render({ canFilterWorkedWith: false }).querySelector('#worked-with-only')).toBeNull();
   });
 });

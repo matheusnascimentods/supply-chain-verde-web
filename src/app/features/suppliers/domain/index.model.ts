@@ -37,10 +37,15 @@ export interface SupplierRanking extends Supplier {
   reportCount: number;
   certifications: SupplierCertification[];
   co2KgPerUnit?: number | null;
+  /** RF-12b: a companhia já pediu lotes a este fornecedor; sempre falso para o platform_admin. */
+  workedWith: boolean;
 }
 
-/** Critério da recomendação: produto cadastrado ou categoria + unidade de um produto novo. */
-export type RecommendationCriteria = { productId: number } | { category: string; unit: string };
+/** Critério da recomendação: categoria e unidade do produto (RN-21 da API; a busca por produto saiu). */
+export interface RecommendationCriteria {
+  category: string;
+  unit: string;
+}
 
 /** Acesso (usuário `SUPPLIER`) criado junto com o fornecedor. */
 export interface SupplierAccess {

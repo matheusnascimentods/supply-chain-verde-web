@@ -46,24 +46,24 @@ describe('BatchCreationFacade', () => {
     expect(facade.suppliers.items()).toEqual([supplier]);
   });
 
-  it('reloads the supplier ranking with the chosen product as criteria', () => {
+  it('reloads the supplier ranking with the category and unit of the chosen product', () => {
     const facade = createFacade('admin');
     expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, undefined);
 
     facade.selectProduct(product);
     TestBed.tick();
-    expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, { productId: 11 });
+    expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, { category: 'AGRICULTURE', unit: 'KG' });
 
+    // Mesma categoria e unidade do produto escolhido: o critério não muda e o ranking não recarrega.
     facade.useNewProduct(newProduct);
     TestBed.tick();
-    expect(suppliers.loadRanking).toHaveBeenLastCalledWith(
-      { limit: 20, offset: 0, search: '' },
-      { category: 'AGRICULTURE', unit: 'KG' },
-    );
-
     facade.useNewProduct({ ...newProduct, name: 'Outro café' });
     TestBed.tick();
-    expect(suppliers.loadRanking).toHaveBeenCalledTimes(3);
+    expect(suppliers.loadRanking).toHaveBeenCalledTimes(2);
+
+    facade.useNewProduct({ ...newProduct, unit: 'TON' });
+    TestBed.tick();
+    expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, { category: 'AGRICULTURE', unit: 'TON' });
   });
 
   it('preselects the supplier linked to a supplier account', () => {

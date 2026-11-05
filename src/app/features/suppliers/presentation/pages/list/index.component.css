@@ -166,3 +166,19 @@
 .report-count-static {
   @apply inline-flex min-w-9 items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600;
 }
+
+.suppliers-filters {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center;
+}
+.suppliers-search {
+  @apply sm:flex-1;
+}
+.worked-with-toggle {
+  @apply flex shrink-0 cursor-pointer items-center gap-2 text-sm font-medium text-slate-700;
+}
+.worked-with-toggle input {
+  @apply h-4 w-4 accent-green-700;
+}
+.worked-with-badge {
+  @apply ml-2 inline-flex rounded-full bg-green-100 px-2 py-0.5 align-middle text-xs font-semibold text-green-800;
+}

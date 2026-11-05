@@ -36,18 +36,18 @@ export class SuppliersRepository {
   }
 
   loadRanking(
-    params: { limit: number; offset: number; search?: string; withoutUser?: boolean },
+    params: { limit: number; offset: number; search?: string; workedWith?: boolean },
     criteria?: RecommendationCriteria,
   ): Observable<Page<SupplierRanking>> {
     const search = params.search?.trim();
-    const recommendation = criteria && ('productId' in criteria ? { productId: String(criteria.productId) } : criteria);
     const query = {
       ranked: 'true',
       limit: String(params.limit),
       offset: String(params.offset),
       ...(search ? { search } : {}),
-      ...(params.withoutUser ? { withoutUser: 'true' } : {}),
-      ...recommendation,
+      // RF-12a: só os fornecedores com quem a companhia já trabalhou.
+      ...(params.workedWith ? { workedWith: 'true' } : {}),
+      ...criteria,
     };
     return this.http.get<unknown>(this.base, { params: query }).pipe(
       map((raw) => {
