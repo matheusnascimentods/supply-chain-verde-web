@@ -153,9 +153,9 @@ Depende da API Task 4 e da Task 9.
 
 Não depende da API.
 
-- [ ] Apagar `new-product-form` e `new-supplier-form` (plan §5)
-- [ ] Modal de criação e facade sem os ramos de criação inline
-- [ ] Testes do modal e da facade
+- [x] Apagar `new-product-form` e `new-supplier-form` (plan §5)
+- [x] Modal de criação e facade sem os ramos de criação inline
+- [x] Testes do modal e da facade
 
 **Arquivos (~13):** `new-product-form` (4), `new-supplier-form` (4), create-modal (ts, html, spec), create-batch facade + spec.
 

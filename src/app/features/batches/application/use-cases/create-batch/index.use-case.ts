@@ -21,13 +21,14 @@ export type CreateBatchProgress =
 export type CreateBatchStep = CreateBatchProgress['step'];
 
 export class CreateBatchError extends Error {
-  constructor(readonly step: CreateBatchStep) {
-    super(`Falha ao criar ${step}`);
+  constructor(readonly step: CreateBatchStep, options?: ErrorOptions) {
+    super(`Falha ao criar ${step}`, options);
   }
 }
 
+// Guarda o erro original em `cause`, para quem chama ler a mensagem da API.
 const failAt = <T>(step: CreateBatchStep) =>
-  catchError<T, Observable<never>>(() => throwError(() => new CreateBatchError(step)));
+  catchError<T, Observable<never>>((error: unknown) => throwError(() => new CreateBatchError(step, { cause: error })));
 
 /**
  * Cadastra, nesta ordem, o produto novo, o fornecedor novo e o lote.

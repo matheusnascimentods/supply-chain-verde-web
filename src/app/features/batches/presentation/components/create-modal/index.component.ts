@@ -6,20 +6,10 @@ import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.co
 import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { BatchCreationFacade } from '../../../application/create-batch/index.facade';
 import { isRecommended } from '../../../domain/index.rules';
-import { NewProductFormComponent } from '../new-product-form/index.component';
-import { NewSupplierFormComponent } from '../new-supplier-form/index.component';
 
 @Component({
   selector: 'app-batch-create-modal',
-  imports: [
-    ReactiveFormsModule,
-    FormsModule,
-    PaginationComponent,
-    TextFieldComponent,
-    ModalComponent,
-    NewProductFormComponent,
-    NewSupplierFormComponent,
-  ],
+  imports: [ReactiveFormsModule, FormsModule, PaginationComponent, TextFieldComponent, ModalComponent],
   providers: [BatchCreationFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
@@ -51,7 +41,7 @@ export class BatchCreateModalComponent {
 
   submit(): void {
     const facade = this.facade;
-    if (facade.step() !== 2 || facade.saving() || !facade.hasProductChoice() || !facade.hasSupplierChoice()) return;
+    if (facade.step() !== 2 || facade.saving() || !facade.selectedProduct() || !facade.selectedSupplier()) return;
     if (this.batchForm.invalid) {
       facade.step.set(0);
       this.batchForm.markAllAsTouched();
@@ -65,6 +55,6 @@ export class BatchCreateModalComponent {
   }
 
   requestDismiss(): void {
-    if (!this.facade.saving() && !this.facade.hasPartialCreation()) this.dismiss.emit();
+    if (!this.facade.saving()) this.dismiss.emit();
   }
 }
