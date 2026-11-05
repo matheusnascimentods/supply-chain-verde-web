@@ -3,11 +3,8 @@
     <header class="suppliers-header">
       <div>
         <h1 class="suppliers-title">Fornecedores</h1>
-        <p class="suppliers-subtitle">Desempenho ambiental e gestão de fornecedores</p>
+        <p class="suppliers-subtitle">Catálogo de fornecedores e desempenho ambiental</p>
       </div>
-      @if (facade.canManage()) {
-        <button appButton type="button" variant="primary" (click)="supplierModal.set(null)">+ Novo fornecedor</button>
-      }
     </header>
 
     <div class="suppliers-section suppliers-filters">
@@ -39,11 +36,7 @@
                   <span class="podium-score">{{ number(supplier.sustainabilityScore) }} pontos</span>
                 </div>
                 <h3 class="podium-name">
-                  @if (facade.canManage()) {
-                    <button type="button" class="supplier-link" (click)="supplierModal.set(supplier.supplierId)">{{ supplier.name }}</button>
-                  } @else {
-                    {{ supplier.name }}
-                  }
+                  {{ supplier.name }}
                   @if (supplier.workedWith) { <span class="worked-with-badge">Já trabalhou</span> }
                 </h3>
                 <p class="podium-location">{{ supplier.address?.city ?? 'Localização não informada' }}@if (supplier.address?.state) { /{{ supplier.address?.state }} }</p>
@@ -89,11 +82,7 @@
                 <tr class="ranking-row">
                   <td class="ranking-position">{{ facade.firstTablePosition() + index }}</td>
                   <td class="ranking-cell">
-                    @if (facade.canManage()) {
-                      <button type="button" class="supplier-link" (click)="supplierModal.set(supplier.supplierId)">{{ supplier.name }}</button>
-                    } @else {
-                      <span class="supplier-name">{{ supplier.name }}</span>
-                    }
+                    <span class="supplier-name">{{ supplier.name }}</span>
                     @if (supplier.workedWith) { <span class="worked-with-badge">Já trabalhou</span> }
                   </td>
                   <td class="ranking-score">{{ number(supplier.sustainabilityScore) }}</td>
@@ -121,9 +110,6 @@
       <app-pagination [page]="facade.pageNumber()" [totalPages]="facade.totalPages()" [disabled]="facade.loading()" label="Paginação do ranking" (previous)="facade.previousPage()" (next)="facade.nextPage()" />
     }
   </div>
-  @if (supplierModal() !== undefined) {
-    <app-create-supplier-modal [supplierId]="supplierModal() ?? null" (saved)="supplierSaved()" (dismissed)="supplierModal.set(undefined)" />
-  }
   @if (facade.reportsSupplier(); as supplier) {
     <app-supplier-reports-modal [supplierId]="supplier.supplierId" [supplierName]="supplier.name" [canGenerate]="facade.canGenerateReports()" (generated)="facade.load()" (dismissed)="facade.reportsSupplier.set(null)" />
   }

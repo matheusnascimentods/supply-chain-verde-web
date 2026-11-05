@@ -37,7 +37,6 @@ describe('SupplierListComponent', () => {
       pageNumber: signal(1),
       reportsSupplier: signal(null),
       certificationsSupplier: signal(null),
-      canManage: signal(true),
       canGenerateReports: signal(true),
       canUpdateCertificationStatus: signal(true),
       canOpenReports: () => true,
@@ -97,5 +96,13 @@ describe('SupplierListComponent', () => {
 
   it('hides the filter when it does not apply (platform admin)', () => {
     expect(render({ canFilterWorkedWith: false }).querySelector('#worked-with-only')).toBeNull();
+  });
+
+  it('is a ranking only: no create button, no supplier modal and no clickable name', () => {
+    const page = render();
+    expect(page.textContent).not.toContain('Novo fornecedor');
+    expect(page.querySelector('app-create-supplier-modal')).toBeNull();
+    expect(page.querySelector('.supplier-link')).toBeNull();
+    expect(page.querySelector('.supplier-name')?.textContent).toContain('Fornecedor 4');
   });
 });

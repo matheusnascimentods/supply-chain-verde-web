@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../../shared/ui/button/index.component';
 import { DataTableComponent } from '../../../../../shared/ui/data-table/index.component';
@@ -9,7 +9,6 @@ import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { SuppliersListFacade } from '../../../application/index.facade';
 import { SupplierRanking } from '../../../domain/index.model';
 import { certificationTone } from '../../../domain/index.rules';
-import { CreateSupplierModalComponent } from '../../components/create-modal/index.component';
 import { SupplierCertificationsModalComponent } from '../../components/certifications-modal/index.component';
 import { SupplierReportsModalComponent } from '../../components/reports-modal/index.component';
 
@@ -19,7 +18,6 @@ import { SupplierReportsModalComponent } from '../../components/reports-modal/in
     FormsModule,
     SupplierReportsModalComponent,
     SupplierCertificationsModalComponent,
-    CreateSupplierModalComponent,
     ButtonComponent,
     DataTableComponent,
     PaginationComponent,
@@ -35,14 +33,6 @@ export class SupplierListComponent {
   protected readonly cnpj = displayCnpj;
   protected readonly number = formatNumberBr;
   protected readonly certificationTone = certificationTone;
-  // undefined: modal fechado; null: cadastro; número: edição desse fornecedor.
-  readonly supplierModal = signal<number | null | undefined>(undefined);
-
-  supplierSaved(): void {
-    this.supplierModal.set(undefined);
-    this.facade.load();
-  }
-
   protected certificationLabel(supplier: SupplierRanking): string {
     const expired = supplier.certifications.filter((certification) => certification.status === 'EXPIRED').length;
     if (expired > 0) return `${expired} ${expired === 1 ? 'expirada' : 'expiradas'}`;

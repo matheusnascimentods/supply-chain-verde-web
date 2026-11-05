@@ -188,10 +188,10 @@ Depende da API Task 4 e das Tasks 9 e 12.
 
 Depende das Tasks 7 e 13 (perfil e lotes deixam de usar os use cases de fornecedor).
 
-- [ ] Apagar o create-modal de `suppliers` e os use cases `create`, `update` e `update-own` (plan §3)
-- [ ] Tirar `create`, `update` e `updateOwn` do repositório e das exportações
-- [ ] Lista sem o botão **+ Novo fornecedor**, sem o modal e sem o clique no nome (RF-12)
-- [ ] Testes da lista e dos use cases
+- [x] Apagar o create-modal de `suppliers` e os use cases `create`, `update` e `update-own` (plan §3)
+- [x] Tirar `create`, `update` e `updateOwn` do repositório e das exportações
+- [x] Lista sem o botão **+ Novo fornecedor**, sem o modal e sem o clique no nome (RF-12)
+- [x] Testes da lista e dos use cases
 
 **Arquivos (~14):** create-modal (4), 3 use cases, `use-cases/index.use-cases.spec.ts`, repositório + spec, `suppliers/index.ts`, `pages/list` (ts, html, spec).
 
