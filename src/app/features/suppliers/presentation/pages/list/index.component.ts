@@ -4,11 +4,11 @@ import { ButtonComponent } from '../../../../../shared/ui/button/index.component
 import { DataTableComponent } from '../../../../../shared/ui/data-table/index.component';
 import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
 import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
+import { displayCnpj } from '../../../../../shared/forms/company-fields/cnpj/index.vo';
 import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { SuppliersListFacade } from '../../../application/index.facade';
 import { SupplierRanking } from '../../../domain/index.model';
 import { certificationTone } from '../../../domain/index.rules';
-import { displayCnpj } from '../../../domain/value-objects/cnpj/index.vo';
 import { CreateSupplierModalComponent } from '../../components/create-modal/index.component';
 import { SupplierCertificationsModalComponent } from '../../components/certifications-modal/index.component';
 import { SupplierReportsModalComponent } from '../../components/reports-modal/index.component';

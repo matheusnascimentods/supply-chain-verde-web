@@ -3,10 +3,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
+import { companyFormValue, formatCompanyFieldsWhileTyping, lookUpCompanyZipCode } from '../../../../../shared/forms/company-fields/index.helper';
 import { CreateSupplierUseCase } from '../../../application/use-cases/create-supplier/index.use-case';
 import { UpdateSupplierUseCase } from '../../../application/use-cases/update-supplier/index.use-case';
 import { SuppliersRepository } from '../../../infrastructure/index.repository';
-import { formatSupplierFieldsWhileTyping, lookUpSupplierZipCode, supplierFormValue } from '../../supplier-fields/index.helper';
 
 @Component({
   selector: 'app-create-supplier-modal',
@@ -40,7 +40,7 @@ export class CreateSupplierModalComponent implements OnInit {
     city: ['', Validators.required],
     state: ['', Validators.required],
   });
-  private readonly zipCodeLookup = lookUpSupplierZipCode(this.form);
+  private readonly zipCodeLookup = lookUpCompanyZipCode(this.form);
   readonly cepLoading = this.zipCodeLookup.loading;
   readonly cepMessage = this.zipCodeLookup.message;
   // Acesso opcional (usuário SUPPLIER) criado junto com o fornecedor.
@@ -52,7 +52,7 @@ export class CreateSupplierModalComponent implements OnInit {
   });
 
   constructor() {
-    formatSupplierFieldsWhileTyping(this.form.controls);
+    formatCompanyFieldsWhileTyping(this.form.controls);
     this.access.disable();
     this.withAccess.valueChanges.pipe(takeUntilDestroyed()).subscribe((enabled) => (enabled ? this.access.enable() : this.access.disable()));
   }
@@ -61,7 +61,7 @@ export class CreateSupplierModalComponent implements OnInit {
     const supplierId = this.supplierId();
     if (!supplierId) return;
     this.repository.get(supplierId).subscribe({
-      next: (supplier) => this.form.patchValue(supplierFormValue(supplier), { emitEvent: false }),
+      next: (supplier) => this.form.patchValue(companyFormValue(supplier), { emitEvent: false }),
       error: () => this.error.set('Não foi possível carregar o fornecedor.'),
     });
   }

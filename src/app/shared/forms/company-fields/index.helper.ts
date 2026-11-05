@@ -2,26 +2,38 @@ import { inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { catchError, distinctUntilChanged, finalize, map, of, startWith, switchMap, tap, timer } from 'rxjs';
-import { ViaCepService } from '../../../../core/integrations/via-cep/index.service';
-import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../../../shared/utils/format/index.utils';
-import { Address, Supplier } from '../../domain/index.model';
-import { addressFromViaCep } from '../../domain/value-objects/address/index.vo';
+import { ViaCepService } from '../../../core/integrations/via-cep/index.service';
+import { digitsOnly, formatCnpj, formatPhone, formatZipCode } from '../../utils/format/index.utils';
+import { addressFromViaCep } from './address/index.vo';
 
 const ZIP_CODE_LOOKUP_DELAY = 350;
 
 type FormattedControls = { cnpj: FormControl<string>; phone: FormControl<string>; zipCode: FormControl<string> };
+type AddressFields = {
+  street: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+};
+type CompanyAddress = Partial<Record<keyof AddressFields | 'number' | 'complement' | 'zipCode', string | null>>;
+type CompanyFormSource = {
+  name: string;
+  cnpj?: string | null;
+  phone?: string | null;
+  address?: CompanyAddress | null;
+};
 type ZipCodeForm = {
   controls: { zipCode: FormControl<string> };
-  patchValue(value: Partial<Pick<Address, 'street' | 'neighborhood' | 'city' | 'state'>>, options?: { emitEvent?: boolean }): void;
+  patchValue(value: Partial<AddressFields>, options?: { emitEvent?: boolean }): void;
 };
 
-// Valores já formatados do formulário de fornecedor: dá para usar patchValue sem emitir (e sem disparar a busca do CEP).
-export function supplierFormValue(supplier: Supplier) {
-  const address = supplier.address;
+// Valores já formatados permitem patchValue sem disparar a busca do CEP.
+export function companyFormValue(company: CompanyFormSource) {
+  const address = company.address;
   return {
-    name: supplier.name,
-    cnpj: formatCnpj(supplier.cnpj ?? ''),
-    phone: formatPhone(supplier.phone ?? ''),
+    name: company.name,
+    cnpj: formatCnpj(company.cnpj ?? ''),
+    phone: formatPhone(company.phone ?? ''),
     street: address?.street ?? '',
     number: address?.number ?? '',
     neighborhood: address?.neighborhood ?? '',
@@ -33,7 +45,7 @@ export function supplierFormValue(supplier: Supplier) {
 }
 
 // Chamar no construtor (contexto de injeção): formata CNPJ, telefone e CEP enquanto o usuário digita.
-export function formatSupplierFieldsWhileTyping({ cnpj, phone, zipCode }: FormattedControls): void {
+export function formatCompanyFieldsWhileTyping({ cnpj, phone, zipCode }: FormattedControls): void {
   const fields = [
     [cnpj, formatCnpj],
     [phone, formatPhone],
@@ -48,7 +60,7 @@ export function formatSupplierFieldsWhileTyping({ cnpj, phone, zipCode }: Format
 }
 
 // Chamar no construtor (contexto de injeção): com 8 dígitos no CEP, busca no ViaCEP e preenche o endereço.
-export function lookUpSupplierZipCode(form: ZipCodeForm) {
+export function lookUpCompanyZipCode(form: ZipCodeForm) {
   const viaCep = inject(ViaCepService);
   const loading = signal(false);
   const message = signal('');

@@ -5,11 +5,10 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { CurrentUserService } from '../../../../../core/auth/session/current-user/index.service';
 import { ROLE_LABELS } from '../../../../../core/auth/session/index.model';
 import { SessionService } from '../../../../../core/auth/session/index.service';
+import { companyFormValue, formatCompanyFieldsWhileTyping } from '../../../../../shared/forms/company-fields/index.helper';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 import {
-  formatSupplierFieldsWhileTyping,
   OwnSupplierProfile,
-  supplierFormValue,
   SuppliersRepository,
   UpdateOwnSupplierUseCase,
 } from '../../../../suppliers';
@@ -75,7 +74,7 @@ export class ProfileComponent {
       });
       return;
     }
-    formatSupplierFieldsWhileTyping(this.form.controls);
+    formatCompanyFieldsWhileTyping(this.form.controls);
     if (!this.supplierId) {
       this.error.set('Não foi possível identificar o fornecedor desta sessão.');
       return;
@@ -83,7 +82,7 @@ export class ProfileComponent {
     this.form.controls.cnpj.disable();
     forkJoin({ supplier: this.repository.get(this.supplierId), user: this.currentUser.load() }).subscribe({
       next: ({ supplier, user }) => {
-        this.form.patchValue(supplierFormValue(supplier));
+        this.form.patchValue(companyFormValue(supplier));
         this.account.patchValue({ userName: user.name, email: user.email, role: ROLE_LABELS[user.role] });
         this.initialProfile = this.ownProfile();
       },
