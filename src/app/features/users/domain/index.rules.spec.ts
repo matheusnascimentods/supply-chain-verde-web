@@ -1,4 +1,3 @@
-import { USER_ROLES } from '../../../core/auth/session/index.model';
 import { newUserSchema } from './index.model';
 import { canChangeRoles, canManageUsers, creatableRoles } from './index.rules';
 
@@ -18,7 +17,7 @@ describe('users rules', () => {
   });
 
   it('limits managers to creating supplier users', () => {
-    expect(creatableRoles('admin')).toEqual(USER_ROLES);
+    expect(creatableRoles('admin')).toEqual(['admin', 'manager', 'auditor', 'supplier']);
     expect(creatableRoles('manager')).toEqual(['supplier']);
     expect(creatableRoles('auditor')).toEqual([]);
   });

@@ -163,19 +163,55 @@ describe('Guards', () => {
     });
   });
 
-  describe('user routes', () => {
+  describe('companyTypes', () => {
+    const tokenFor = (companyType: string | null) => `header.${btoa(JSON.stringify({ companyType }))}.signature`;
+    const marketOnly = () => mockRouteSnapshot({ companyTypes: ['market'] });
+
+    it('lets a matching company type in and sends the others to /dashboard', () => {
+      sessionService.setSession(tokenFor('MARKET'), 'manager');
+      expect(TestBed.runInInjectionContext(() => roleGuard(marketOnly(), mockRouterStateSnapshot()))).toBe(true);
+
+      sessionService.setSession(tokenFor('SUPPLIER'), 'admin');
+      const result = TestBed.runInInjectionContext(() => roleGuard(marketOnly(), mockRouterStateSnapshot()));
+      expect((result as UrlTree).toString()).toBe('/dashboard');
+    });
+
+    it('always lets the platform admin through', () => {
+      sessionService.setSession(tokenFor(null), 'platform_admin');
+      expect(TestBed.runInInjectionContext(() => roleGuard(marketOnly(), mockRouterStateSnapshot()))).toBe(true);
+    });
+  });
+
+  describe('app routes', () => {
     const shellRoutes = appRoutes.find((route) => route.children)!.children!;
-    const usersRoute = shellRoutes.find((route) => route.path === 'users')!;
+    const shellRoute = (path: string) => shellRoutes.find((route) => route.path === path)!;
+    const tokenFor = (companyType: string | null) => `header.${btoa(JSON.stringify({ companyType }))}.signature`;
+    const canEnter = (path: string) =>
+      TestBed.runInInjectionContext(() => roleGuard(mockRouteSnapshot(shellRoute(path).data), mockRouterStateSnapshot())) === true;
+
+    it('opens /users to any signed-in user', () => {
+      expect(shellRoute('users').canActivate).toBeUndefined();
+    });
 
     it.each([
-      ['manager', true],
+      ['MARKET', 'auditor', true],
+      ['SUPPLIER', 'admin', false],
+      ['SUPPLIER', 'supplier', false],
+      [null, 'platform_admin', true],
+    ] as const)('lets a %s %s into /suppliers: %s', (companyType, role, allowed) => {
+      sessionService.setSession(tokenFor(companyType), role);
+      expect(canEnter('suppliers')).toBe(allowed);
+    });
+
+    it.each([
       ['admin', true],
-      ['auditor', false],
+      ['auditor', true],
+      ['platform_admin', true],
+      ['manager', false],
       ['supplier', false],
-    ] as const)('lets %s into /users: %s', (role, allowed) => {
-      sessionService.setSession('test-token', role);
-      const result = TestBed.runInInjectionContext(() => roleGuard(mockRouteSnapshot(usersRoute.data), mockRouterStateSnapshot()));
-      expect(result === true).toBe(allowed);
+    ] as const)('lets %s into /audit-log: %s', (role, allowed) => {
+      sessionService.setSession(tokenFor('MARKET'), role);
+      expect(canEnter('audit-log')).toBe(allowed);
     });
   });
 });

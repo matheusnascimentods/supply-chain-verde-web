@@ -41,6 +41,8 @@ export const routes: Routes = [
       {
         path: 'suppliers',
         title: 'Supply Chain | Fornecedores',
+        canActivate: [roleGuard],
+        data: { companyTypes: ['market'] },
         loadChildren: () => import('./features/suppliers').then((module) => module.routes),
       },
       {
@@ -56,15 +58,13 @@ export const routes: Routes = [
       {
         path: 'users',
         title: 'Supply Chain | Usuários',
-        canActivate: [roleGuard],
-        data: { roles: ['admin', 'manager'] },
         loadChildren: () => import('./features/users').then((module) => module.routes),
       },
       {
         path: 'audit-log',
         title: 'Supply Chain | Autidoria',
         canActivate: [roleGuard],
-        data: { roles: ['admin', 'auditor'] },
+        data: { roles: ['admin', 'auditor', 'platform_admin'] },
         loadChildren: () => import('./features/audit-log').then((module) => module.routes),
       },
       {

@@ -1,11 +1,15 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
+import { CurrentUserService } from '../../auth/session/current-user/index.service';
 import { SessionService } from '../../auth/session/index.service';
 import { TopNavComponent } from './index.component';
 
 @Component({ template: '' })
 class TestPageComponent {}
+
+const tokenFor = (companyType: string | null) => `header.${btoa(JSON.stringify({ companyType }))}.signature`;
 
 describe('TopNavComponent', () => {
   let session: SessionService;
@@ -21,31 +25,46 @@ describe('TopNavComponent', () => {
           { path: 'profile', component: TestPageComponent },
         ]),
         SessionService,
+        { provide: CurrentUserService, useValue: { load: () => of({ companyName: 'Mercado Bom Preço' }) } },
       ],
     });
     session = TestBed.inject(SessionService);
-    session.setSession('test-token', 'admin', 'admin@example.com');
+    session.setSession(tokenFor('MARKET'), 'admin', 'admin@example.com');
   });
 
   afterEach(() => sessionStorage.clear());
 
-  it('shows only navigation links available to the current role', () => {
+  const navigationText = (companyType: string | null, role: 'admin' | 'manager' | 'auditor' | 'supplier' | 'platform_admin') => {
+    session.setSession(tokenFor(companyType), role, `${role}@example.com`);
     const fixture = TestBed.createComponent(TopNavComponent);
     fixture.detectChanges();
+    const links = fixture.nativeElement.querySelectorAll('nav[aria-label="Navegação principal"] a') as NodeListOf<HTMLElement>;
+    return [...links].map((link) => link.textContent?.trim()).join(' ');
+  };
 
-    const navigation = fixture.nativeElement.querySelector('nav[aria-label="Navegação principal"]');
-    expect(navigation.textContent).toContain('Usuários');
-    expect(navigation.textContent).toContain('Auditoria');
-    expect(navigation.textContent).not.toContain('Notificações');
+  it.each([
+    ['MARKET', 'admin', 'Dashboard Fornecedores Lotes Usuários Auditoria'],
+    ['MARKET', 'manager', 'Dashboard Fornecedores Lotes Usuários'],
+    ['MARKET', 'auditor', 'Dashboard Auditoria Fornecedores Lotes Usuários'],
+    ['SUPPLIER', 'admin', 'Dashboard Lotes Usuários Auditoria'],
+    ['SUPPLIER', 'supplier', 'Dashboard Lotes Usuários'],
+    [null, 'platform_admin', 'Dashboard Fornecedores Lotes Usuários Auditoria'],
+  ] as const)('shows the %s %s menu', (companyType, role, menu) => {
+    expect(navigationText(companyType, role)).toBe(menu);
+  });
 
-    session.setSession('test-token', 'manager', 'manager@example.com');
+  it('shows only the dashboard when the token has no company', () => {
+    expect(navigationText(null, 'admin')).toBe('Dashboard');
+  });
+
+  it('shows the company name next to the role, and "Plataforma" for the platform admin', () => {
+    const fixture = TestBed.createComponent(TopNavComponent);
     fixture.detectChanges();
-    expect(navigation.textContent).toContain('Usuários');
-    expect(navigation.textContent).not.toContain('Auditoria');
+    expect(fixture.nativeElement.querySelector('.profile-role').textContent).toContain('Administrador · Mercado Bom Preço');
 
-    session.setSession('test-token', 'auditor', 'auditor@example.com');
+    session.setSession(tokenFor(null), 'platform_admin', 'root@example.com');
     fixture.detectChanges();
-    expect(navigation.textContent).not.toContain('Usuários');
+    expect(fixture.nativeElement.querySelector('.profile-role').textContent).toContain('Admin da plataforma · Plataforma');
   });
 
   it('marks the active route and closes the mobile menu after navigation', async () => {
@@ -71,7 +90,7 @@ describe('TopNavComponent', () => {
   });
 
   it('keeps Meu perfil out of the supplier navigation bar', () => {
-    session.setSession('test-token', 'supplier', 'supplier@example.com');
+    session.setSession(tokenFor('SUPPLIER'), 'supplier', 'supplier@example.com');
     const fixture = TestBed.createComponent(TopNavComponent);
     fixture.detectChanges();
 

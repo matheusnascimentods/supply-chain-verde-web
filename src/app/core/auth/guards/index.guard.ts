@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
+import { CompanyType } from '../session/index.model';
 import { SessionService } from '../session/index.service';
 
 export const authGuard: CanActivateFn = (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
@@ -32,23 +33,18 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot, _state: 
     return router.createUrlTree(['/login']);
   }
 
-  const allowedRoles = route.data?.['roles'] as string[] | readonly string[] | undefined;
-  if (!allowedRoles || allowedRoles.length === 0) {
-    return true;
-  }
-
   const currentRole = session.role();
   if (!currentRole) {
     return router.createUrlTree(['/login']);
   }
 
-  const isAuthorized = allowedRoles.some(
-    (role) => role.toLowerCase() === currentRole.toLowerCase()
-  );
+  const allowedRoles = (route.data?.['roles'] ?? []) as readonly string[];
+  const roleAllowed = allowedRoles.length === 0 || allowedRoles.some((role) => role.toLowerCase() === currentRole);
 
-  if (isAuthorized) {
-    return true;
-  }
+  // `data.companyTypes` restringe pelo tipo da companhia; o platform_admin não tem companhia e sempre passa.
+  const companyTypes = (route.data?.['companyTypes'] ?? []) as readonly CompanyType[];
+  const companyTypeAllowed =
+    companyTypes.length === 0 || currentRole === 'platform_admin' || companyTypes.some((type) => type === session.companyType());
 
-  return router.createUrlTree(['/dashboard']);
+  return roleAllowed && companyTypeAllowed ? true : router.createUrlTree(['/dashboard']);
 };

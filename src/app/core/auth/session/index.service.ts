@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserRole, parseUserRole } from './index.model';
+import { CompanyType, UserRole, parseCompanyType, parseUserRole } from './index.model';
 
 const TOKEN_KEY = 'token';
 const ROLE_KEY = 'role';
@@ -53,14 +53,27 @@ export class SessionService {
 
   /** Fornecedor vinculado ao usuário (claim `supplierId` do token); nulo fora do role `supplier`. */
   supplierId(): number | null {
+    return positiveId(this.claims()['supplierId']);
+  }
+
+  /** Companhia do usuário (claim `companyId`); nula para o `platform_admin`. */
+  companyId(): number | null {
+    return positiveId(this.claims()['companyId']);
+  }
+
+  /** Tipo da companhia (claim `companyType`, `MARKET` ou `SUPPLIER`); nulo para o `platform_admin`. */
+  companyType(): CompanyType | null {
+    return parseCompanyType(this.claims()['companyType']);
+  }
+
+  private claims(): Record<string, unknown> {
     const payload = this.token?.split('.')[1];
-    if (!payload) return null;
+    if (!payload) return {};
     try {
-      const claims = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as { supplierId?: unknown };
-      const supplierId = Number(claims.supplierId);
-      return Number.isInteger(supplierId) && supplierId > 0 ? supplierId : null;
+      const claims: unknown = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+      return claims && typeof claims === 'object' ? (claims as Record<string, unknown>) : {};
     } catch {
-      return null;
+      return {};
     }
   }
 
@@ -82,4 +95,9 @@ export class SessionService {
     }
     return null;
   }
+}
+
+function positiveId(value: unknown): number | null {
+  const id = Number(value);
+  return Number.isInteger(id) && id > 0 ? id : null;
 }
