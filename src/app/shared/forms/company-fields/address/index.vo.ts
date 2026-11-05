@@ -1,8 +1,7 @@
-import type { ViaCepResponseDTO } from '../../../../../core/integrations/via-cep/index.dto';
-import { Address } from '../../index.model';
+import type { ViaCepResponseDTO } from '../../../../core/integrations/via-cep/index.dto';
 
 export type ZipCodeLookup =
-  | { found: true; address: Pick<Address, 'street' | 'neighborhood' | 'city' | 'state'> }
+  | { found: true; address: { street: string; neighborhood: string; city: string; state: string } }
   | { found: false };
 
 export function addressFromViaCep(response: ViaCepResponseDTO): ZipCodeLookup {

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NewSupplier, formatSupplierFieldsWhileTyping, lookUpSupplierZipCode } from '../../../../suppliers';
+import { formatCompanyFieldsWhileTyping, lookUpCompanyZipCode } from '../../../../../shared/forms/company-fields/index.helper';
+import { NewSupplier } from '../../../../suppliers';
 
 @Component({
   selector: 'app-new-supplier-form',
@@ -25,12 +26,12 @@ export class NewSupplierFormComponent {
     city: ['', Validators.required],
     state: ['', Validators.required],
   });
-  private readonly zipCodeLookup = lookUpSupplierZipCode(this.form);
+  private readonly zipCodeLookup = lookUpCompanyZipCode(this.form);
   readonly cepLoading = this.zipCodeLookup.loading;
   readonly cepMessage = this.zipCodeLookup.message;
 
   constructor() {
-    formatSupplierFieldsWhileTyping(this.form.controls);
+    formatCompanyFieldsWhileTyping(this.form.controls);
   }
 
   submit(): void {

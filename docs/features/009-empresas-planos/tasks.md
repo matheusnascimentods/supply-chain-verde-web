@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** não iniciada.
+**Status:** em andamento.
 
 As dependências "API Task N" apontam para `supply-chain-verde-api/docs/features/010-empresas-planos/tasks.md`. Cada task mexe em até 15 arquivos (contando specs, e apagar ou mover como um arquivo); a lista de arquivos é uma estimativa.
 
@@ -14,8 +14,8 @@ As dependências "API Task N" apontam para `supply-chain-verde-api/docs/features
 
 Não depende da API.
 
-- [ ] Mover `supplier-fields/index.helper.ts` e os value objects de endereço e CNPJ para `shared/forms/company-fields/`, com o nome `company` (plan §2)
-- [ ] Atualizar os imports em `suppliers`, `batches` (`new-supplier-form`) e `profile`
+- [x] Mover `supplier-fields/index.helper.ts` e os value objects de endereço e CNPJ para `shared/forms/company-fields/`, com o nome `company` (plan §2)
+- [x] Atualizar os imports em `suppliers`, `batches` (`new-supplier-form`) e `profile`
 
 **Arquivos (~10):** helper, `address` vo + spec, `cnpj` vo + spec, `suppliers/index.ts`, `suppliers` create-modal e `pages/list`, `new-supplier-form`, página de perfil.
 
