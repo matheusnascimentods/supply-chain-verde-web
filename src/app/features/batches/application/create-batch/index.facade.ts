@@ -24,7 +24,8 @@ export class BatchCreationFacade {
   private readonly role = this.session.role();
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly isAdmin = this.role === 'admin';
+  // Quem pede o lote escolhe o fornecedor no ranking (RF-13: admin e gestor do varejista).
+  readonly choosesSupplier = this.role === 'admin' || this.role === 'manager';
   readonly isSupplier = this.role === 'supplier';
   readonly step = signal<CreationStep>(0);
   readonly saving = signal(false);
@@ -68,7 +69,7 @@ export class BatchCreationFacade {
     return unit ? PRODUCT_UNIT_SYMBOLS[unit] : '';
   });
 
-  readonly loadingSuppliers = computed(() => (this.isAdmin ? this.suppliers.loading() : this.loadingOwnSupplier()));
+  readonly loadingSuppliers = computed(() => (this.choosesSupplier ? this.suppliers.loading() : this.loadingOwnSupplier()));
   readonly hasProductChoice = computed(() => !!(this.selectedProduct() || this.createdProduct() || this.pendingProduct()));
   readonly hasSupplierChoice = computed(
     () => !!(this.selectedSupplier() || this.createdSupplier() || this.pendingSupplier() || this.ownSupplierId()),
@@ -86,13 +87,13 @@ export class BatchCreationFacade {
       !this.loadingSuppliers() &&
       this.step() < 2 &&
       (!this.products.items().length ||
-        (this.isAdmin && !this.suppliers.items().length) ||
+        (this.choosesSupplier && !this.suppliers.items().length) ||
         (this.isSupplier && !this.ownSupplier())),
   );
 
   constructor() {
     this.products.load();
-    if (this.isAdmin) {
+    if (this.choosesSupplier) {
       // Recarrega o ranking do início sempre que o produto (ou categoria + unidade) muda.
       effect(() => {
         this.recommendationCriteria();
@@ -109,7 +110,7 @@ export class BatchCreationFacade {
   }
 
   useNewProduct(product: NewProduct): void {
-    if (!this.isAdmin || this.createdProduct()) return;
+    if (!this.choosesSupplier || this.createdProduct()) return;
     this.pendingProduct.set({ ...product, name: product.name.trim() });
     this.selectedProduct.set(null);
     this.savedNotice.set('Produto preenchido. Ele será cadastrado ao confirmar o lote.');
@@ -124,7 +125,7 @@ export class BatchCreationFacade {
   }
 
   useNewSupplier(supplier: NewSupplier): void {
-    if (!this.isAdmin || this.createdSupplier()) return;
+    if (!this.choosesSupplier || this.createdSupplier()) return;
     this.pendingSupplier.set({ ...supplier, name: supplier.name.trim() });
     this.selectedSupplier.set(null);
     this.savedNotice.set('Fornecedor preenchido. Ele será cadastrado ao confirmar o lote.');
@@ -165,7 +166,7 @@ export class BatchCreationFacade {
   retryChoices(): void {
     this.error.set('');
     if (!this.hasProductChoice()) this.products.load();
-    if (this.isAdmin && !this.selectedSupplier() && !this.pendingSupplier() && !this.createdSupplier()) {
+    if (this.choosesSupplier && !this.selectedSupplier() && !this.pendingSupplier() && !this.createdSupplier()) {
       this.suppliers.load();
     } else if (this.isSupplier && !this.ownSupplier()) {
       this.loadOwnSupplier();

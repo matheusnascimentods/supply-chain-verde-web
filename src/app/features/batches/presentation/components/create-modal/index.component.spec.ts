@@ -15,7 +15,7 @@ describe('BatchCreateModalComponent', () => {
 
   function createFacade() {
     return {
-      isAdmin: true,
+      choosesSupplier: true,
       isSupplier: false,
       step: signal<0 | 1 | 2>(0),
       saving: signal(false),

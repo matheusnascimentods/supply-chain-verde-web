@@ -42,7 +42,7 @@
           <h3 class="saved-card-title">{{ product.name }}</h3>
           <p class="saved-card-text">Este cadastro será reutilizado ao tentar criar o lote novamente.</p>
         </section>
-      } @else if (facade.isAdmin) {
+      } @else if (facade.choosesSupplier) {
         <app-new-product-form (submitted)="facade.useNewProduct($event)" (incomplete)="facade.reportError('Preencha nome, categoria e unidade para usar o novo produto.')" />
       }
 
@@ -83,7 +83,7 @@
 
   @if (facade.step() === 1) {
     <div class="create-body">
-      @if (facade.isAdmin) {
+      @if (facade.choosesSupplier) {
         @if (facade.createdSupplier(); as supplier) {
           <section class="saved-card" aria-label="Fornecedor já cadastrado">
             <p class="saved-card-eyebrow">Fornecedor já salvo</p>

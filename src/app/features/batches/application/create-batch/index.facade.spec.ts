@@ -46,6 +46,12 @@ describe('BatchCreationFacade', () => {
     expect(facade.suppliers.items()).toEqual([supplier]);
   });
 
+  it('lets a retailer manager choose the supplier from the ranking', () => {
+    const facade = createFacade('manager');
+    expect(facade.choosesSupplier).toBe(true);
+    expect(suppliers.loadRanking).toHaveBeenCalled();
+  });
+
   it('reloads the supplier ranking with the category and unit of the chosen product', () => {
     const facade = createFacade('admin');
     expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, undefined);
