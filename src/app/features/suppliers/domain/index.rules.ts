@@ -12,14 +12,6 @@ export function canOpenReports(role: Role, ownSupplierId: number | null, supplie
   return canGenerateReports(role);
 }
 
-export function canUpdateCertificationStatus(role: Role): boolean {
-  return role === 'admin' || role === 'auditor';
-}
-
-export function canCreateCertification(role: Role, ownSupplierId: number | null, supplierId: number): boolean {
-  return role === 'admin' || (role === 'supplier' && ownSupplierId === supplierId);
-}
-
 export type CertificationTone = 'expired' | 'active' | 'none';
 
 export function certificationTone(supplier: SupplierRanking): CertificationTone {

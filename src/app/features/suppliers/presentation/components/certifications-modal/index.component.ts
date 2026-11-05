@@ -1,96 +1,21 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
-import { CloseOnOutsideClickDirective } from '../../../../../shared/directives/close-on-outside-click/index.directive';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
-import { localDateDaysAgo } from '../../../../../shared/utils/date/index.utils';
-import { formatIsoDateBr } from '../../../../../shared/utils/format/index.utils';
-import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
-import {
-  CERTIFICATION_STATUSES,
-  CERTIFICATION_STATUS_LABELS,
-  CertificationFormComponent,
-  CertificationStatus,
-  UpdateCertificationStatusUseCase,
-} from '../../../../certifications';
+import { CertificationListComponent } from '../../../../certifications';
 import { SupplierCertification } from '../../../domain/index.model';
 
-const MENU_HEIGHT = 176;
-const MENU_WIDTH = 176;
-
+/**
+ * Consulta das certificações de um fornecedor pelo varejista, só leitura (RF-17): só o próprio fornecedor
+ * cadastra e muda o status das certificações (RN-22 da API), na tela Certificações.
+ */
 @Component({
   selector: 'app-supplier-certifications-modal',
-  imports: [CertificationFormComponent, ModalComponent, CloseOnOutsideClickDirective],
+  imports: [CertificationListComponent, ModalComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupplierCertificationsModalComponent {
-  private readonly updateCertificationStatus = inject(UpdateCertificationStatusUseCase);
-  protected readonly date = formatIsoDateBr;
-  protected readonly statuses = CERTIFICATION_STATUSES;
-  protected readonly statusLabels = CERTIFICATION_STATUS_LABELS;
-  protected readonly today = localDateDaysAgo(0);
-
-  readonly supplierId = input.required<number>();
   readonly supplierName = input.required<string>();
   readonly certifications = input.required<SupplierCertification[]>();
-  readonly canCreate = input(false);
-  readonly canUpdateStatus = input(false);
-  readonly updated = output<void>();
   readonly dismissed = output<void>();
-  readonly updatingStatusId = signal<number | null>(null);
-  readonly statusMenuPosition = signal({ top: 0, left: 0 });
-  readonly error = signal('');
-
-  /** A API recusa reativar certificação vencida. */
-  protected isExpired(item: SupplierCertification): boolean {
-    return item.expiresAt < this.today;
-  }
-
-  setStatus(item: SupplierCertification, status: CertificationStatus, menu: HTMLDetailsElement): void {
-    menu.open = false;
-    menu.querySelector('summary')?.focus();
-    if (!this.canUpdateStatus() || status === item.status || (status === 'ACTIVE' && this.isExpired(item))) return;
-    this.error.set('');
-    this.updatingStatusId.set(item.certificationId);
-    this.updateCertificationStatus.execute(item.certificationId, status).subscribe({
-      next: () => {
-        this.updatingStatusId.set(null);
-        this.updated.emit();
-      },
-      error: (error: unknown) => {
-        this.updatingStatusId.set(null);
-        this.error.set(apiErrorMessage(error, `Não foi possível atualizar o status de ${item.certification}.`));
-      },
-    });
-  }
-
-  positionStatusMenu(event: Event): void {
-    const menu = event.currentTarget as HTMLDetailsElement;
-    const summary = menu.querySelector('summary');
-    if (!menu.open || !summary) return;
-    const bounds = summary.getBoundingClientRect();
-    const placeBelow = window.innerHeight - bounds.bottom >= MENU_HEIGHT + 12;
-    const top = placeBelow ? bounds.bottom + 8 : Math.max(8, bounds.top - MENU_HEIGHT - 8);
-    const left = Math.max(8, Math.min(bounds.right - MENU_WIDTH, window.innerWidth - MENU_WIDTH - 8));
-    this.statusMenuPosition.set({ top, left });
-  }
-
-  handleStatusMenuKeydown(event: KeyboardEvent, menu: HTMLDetailsElement): void {
-    if (!menu.open) return;
-    const options = Array.from(menu.querySelectorAll<HTMLButtonElement>('[role="menuitemradio"]:not(:disabled)'));
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      menu.open = false;
-      menu.querySelector('summary')?.focus();
-    } else if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
-      event.preventDefault();
-      const currentIndex = options.indexOf(event.target as HTMLButtonElement);
-      const nextIndex = currentIndex < 0
-        ? event.key === 'ArrowUp' ? options.length - 1 : 0
-        : event.key === 'Home' ? 0
-          : event.key === 'End' ? options.length - 1
-            : (currentIndex + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
-      options[nextIndex]?.focus();
-    }
-  }
 }

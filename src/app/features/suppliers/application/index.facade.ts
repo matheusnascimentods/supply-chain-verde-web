@@ -4,10 +4,8 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { SupplierRanking } from '../domain/index.model';
 import {
-  canCreateCertification,
   canGenerateReports,
   canOpenReports,
-  canUpdateCertificationStatus,
 } from '../domain/index.rules';
 import { SuppliersRepository } from '../infrastructure/index.repository';
 
@@ -60,7 +58,6 @@ export class SuppliersListFacade {
   readonly firstTablePosition = computed(() => this.offset() + (this.podium().length ? PODIUM_SIZE : 0) + 1);
 
   readonly canGenerateReports = computed(() => canGenerateReports(this.session.role()));
-  readonly canUpdateCertificationStatus = computed(() => canUpdateCertificationStatus(this.session.role()));
 
   constructor() {
     this.searchChanges
@@ -79,7 +76,6 @@ export class SuppliersListFacade {
         if (sequence !== this.loadSequence) return;
         this.ranking.set(page.items);
         this.totalPages.set(page.totalPages);
-        this.refreshSelectedCertificationsSupplier(page.items);
         this.loading.set(false);
       },
       error: () => {
@@ -118,16 +114,5 @@ export class SuppliersListFacade {
   // RF-12b: relatórios só de fornecedores com quem a companhia já trabalhou.
   canOpenReports(supplier: SupplierRanking): boolean {
     return supplier.workedWith && canOpenReports(this.session.role(), this.session.supplierId(), supplier.supplierId);
-  }
-
-  canCreateCertificationFor(supplier: SupplierRanking): boolean {
-    return canCreateCertification(this.session.role(), this.session.supplierId(), supplier.supplierId);
-  }
-
-  // Mantém o modal de certificações aberto com os dados recarregados após um cadastro ou troca de status.
-  private refreshSelectedCertificationsSupplier(items: SupplierRanking[]): void {
-    const selected = this.certificationsSupplier();
-    const refreshed = selected && items.find((item) => item.supplierId === selected.supplierId);
-    if (refreshed) this.certificationsSupplier.set(refreshed);
   }
 }
