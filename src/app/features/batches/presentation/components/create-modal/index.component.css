@@ -39,26 +39,8 @@
 .create-error-retry {
   @apply font-semibold underline;
 }
-.create-notice {
-  @apply mx-5 mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 sm:mx-7;
-}
-.create-warning {
-  @apply mx-5 mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:mx-7;
-}
 .create-body {
   @apply grid gap-6 px-5 py-5 sm:px-7;
-}
-.saved-card {
-  @apply rounded-xl border border-amber-200 bg-amber-50 p-4;
-}
-.saved-card-eyebrow {
-  @apply text-xs font-semibold uppercase tracking-wide text-amber-800;
-}
-.saved-card-title {
-  @apply mt-1 font-bold text-slate-900;
-}
-.saved-card-text {
-  @apply mt-1 text-xs text-amber-900;
 }
 .batch-data {
   @apply grid gap-4 rounded-xl border border-slate-200 p-4 sm:grid-cols-2 sm:p-5;
@@ -108,21 +90,6 @@
 .choice-summary {
   @apply rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900;
 }
-.own-supplier-loading {
-  @apply rounded-lg bg-slate-50 p-8 text-center text-sm text-slate-500;
-}
-.own-supplier-card {
-  @apply rounded-xl border border-emerald-200 bg-emerald-50 p-5;
-}
-.own-supplier-eyebrow {
-  @apply text-xs font-semibold uppercase tracking-wide text-emerald-800;
-}
-.own-supplier-name {
-  @apply mt-2 text-lg font-bold text-slate-900;
-}
-.own-supplier-cnpj {
-  @apply mt-1 text-sm text-slate-600;
-}
 .review {
   @apply space-y-4 px-5 py-6 sm:px-7;
 }
@@ -140,9 +107,6 @@
 }
 .review-value {
   @apply font-semibold text-slate-900;
-}
-.review-badge {
-  @apply ml-2 rounded-full bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800;
 }
 .review-value-plain {
   @apply text-slate-800;

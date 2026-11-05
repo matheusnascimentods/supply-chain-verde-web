@@ -48,11 +48,13 @@ describe('CreateBatchUseCase', () => {
   });
 
   it('reports the failing step and stops the sequence', () => {
-    suppliers.execute.mockReturnValue(throwError(() => new Error('500')));
+    const original = new Error('500');
+    suppliers.execute.mockReturnValue(throwError(() => original));
     const { events, error } = run({ product: newProduct, supplier: newSupplier, quantity: 1, producedAt: '2026-10-05' });
     expect(events.map((event) => event.step)).toEqual(['product']);
     expect(error).toBeInstanceOf(CreateBatchError);
     expect(error?.step).toBe('supplier');
+    expect(error?.cause).toBe(original);
     expect(batches.create).not.toHaveBeenCalled();
   });
 });
