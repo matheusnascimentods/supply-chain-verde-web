@@ -36,6 +36,17 @@ export class ProductsRepository {
     );
   }
 
+  // ponytail: a API filtra só por supplierId; categoria e unidade são filtradas aqui. Um fornecedor tem poucos
+  // produtos, então uma página basta. Se a API ganhar `category`/`unit`, o filtro sai daqui.
+  loadBySupplier(supplierId: number, filter: Pick<Product, 'category' | 'unit'>): Observable<Product[]> {
+    return this.http
+      .get<unknown>(this.base, { params: { supplierId: String(supplierId), limit: String(MAX_PAGE_SIZE), offset: '0' } })
+      .pipe(
+        map((raw) => productPageSchema.parse(raw).items),
+        map((products) => products.filter((product) => product.category === filter.category && product.unit === filter.unit)),
+      );
+  }
+
   create(product: NewProduct): Observable<Product> {
     return this.http.post<unknown>(this.base, product).pipe(map((raw) => productResponseSchema.parse(raw)));
   }

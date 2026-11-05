@@ -56,6 +56,10 @@ describe('Batch registration wizard', () => {
       statusCode: 200,
       body: { items: [product], limit: 20, offset: 0, hasNext: false, totalPages: 1 },
     }).as('loadProducts');
+    cy.intercept({ method: 'GET', pathname: '/api/v1/products', query: { supplierId: '9' } }, {
+      statusCode: 200,
+      body: { items: [product, { ...product, productId: 4, name: 'Café em tonelada', unit: 'TON' }], limit: 100, offset: 0, hasNext: false, totalPages: 1 },
+    }).as('loadSupplierProducts');
     cy.intercept({ method: 'GET', pathname: '/api/v1/suppliers', query: { ranked: 'true' } }, {
       statusCode: 200,
       body: { items: [ranking], limit: 20, offset: 0, hasNext: false, totalPages: 1 },
@@ -67,7 +71,7 @@ describe('Batch registration wizard', () => {
     });
   });
 
-  it('lets a retailer manager pick an existing product and a ranked supplier, review, and create the batch', () => {
+  it('lets a retailer manager request a batch: category and unit, ranked supplier, its product, then the quantity', () => {
     cy.intercept('POST', '**/api/v1/batches', { statusCode: 201, body: createdBatch }).as('createBatch');
     cy.visit('/login');
     cy.get('[data-testid="email-input"]').type('manager@example.com');
@@ -76,28 +80,30 @@ describe('Batch registration wizard', () => {
     cy.wait('@login');
     cy.visit('/batches');
     cy.wait('@loadBatches');
-    cy.wait('@loadProducts');
 
     cy.contains('button', 'Novo lote').click();
-    cy.wait('@loadProducts');
-    cy.get('input[type="number"]').type('250');
-    cy.get('input[type="date"]').type('2025-05-20');
-    cy.contains('button', 'Café orgânico').click();
+    cy.get('select#batch-category').select('AGRICULTURE');
+    cy.get('select#batch-unit').select('KG');
     cy.contains('button', 'Avançar').click();
-    cy.wait('@loadRanking');
+
+    cy.wait('@loadRanking').its('request.query').should('include', { category: 'AGRICULTURE', unit: 'KG' });
     cy.contains('button', 'Fazenda Verde').click();
     cy.contains('button', 'Avançar').click();
-    cy.contains('h3', 'Revise os dados do lote').should('be.visible');
-    cy.contains('button', 'Confirmar e criar lote').click();
 
-    cy.wait('@createBatch').its('request.body').should('deep.equal', {
-      productId: 3,
-      supplierId: 9,
-      quantity: 250,
-      producedAt: '2025-05-20',
-    });
+    cy.wait('@loadSupplierProducts');
+    cy.contains('h3', 'Produtos de Fazenda Verde').should('be.visible');
+    // Só o produto em KG é do pedido; sendo o único, ele já vem escolhido.
+    cy.contains('button', 'Café em tonelada').should('not.exist');
+    cy.contains('Produto selecionado').should('contain.text', 'Café orgânico');
+    cy.contains('button', 'Avançar').click();
+
+    cy.contains('h3', 'Revise o pedido').should('be.visible');
+    cy.get('input[type="date"]').should('not.exist');
+    cy.get('#batch-quantity').type('250');
+    cy.get('[data-testid="confirm-batch"]').click();
+
+    cy.wait('@createBatch').its('request.body').should('deep.equal', { productId: 3, supplierId: 9, quantity: 250 });
     cy.location('pathname').should('eq', '/batches');
-    cy.wait('@loadBatches');
-    cy.contains('Cadastrar novo lote').should('not.exist');
+    cy.contains('Pedir novo lote').should('not.exist');
   });
 });

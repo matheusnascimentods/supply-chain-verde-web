@@ -176,9 +176,9 @@ Depende da Task 11.
 
 Depende da API Task 4 e das Tasks 9 e 12.
 
-- [ ] Modal com os 4 passos e passo 3 com `GET /products?supplierId=` por categoria e unidade (RF-13)
-- [ ] `NewBatch` sem `producedAt`; `CreateBatchUseCase` com um único POST, sem `concat` nem `CreateSupplierUseCase`
-- [ ] Testes do modal, da facade e do use case; `register-batch-flow.cy.ts` com `manager` e o body novo
+- [x] Modal com os 4 passos e passo 3 com `GET /products?supplierId=` por categoria e unidade (RF-13)
+- [x] `NewBatch` sem `producedAt`; `CreateBatchUseCase` com um único POST, sem `concat` nem `CreateSupplierUseCase`
+- [x] Testes do modal, da facade e do use case; `register-batch-flow.cy.ts` com `manager` e o body novo
 
 **Arquivos (~12):** create-modal (ts, html, spec), create-batch facade + spec, use case + spec, modelo, repositório de produto + spec, `register-batch-flow.cy.ts`.
 

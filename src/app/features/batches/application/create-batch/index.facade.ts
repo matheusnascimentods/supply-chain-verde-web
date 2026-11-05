@@ -1,16 +1,17 @@
 import { DestroyRef, Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { RecommendationCriteria, SupplierRanking, SuppliersRepository } from '../../../suppliers';
 import { apiErrorMessage } from '../../../../shared/utils/http/index.utils';
-import { PRODUCT_UNIT_SYMBOLS, Product, ProductsRepository } from '../../../products';
+import { PRODUCT_UNIT_SYMBOLS, Product, ProductCategory, ProductUnit, ProductsRepository } from '../../../products';
+import { RecommendationCriteria, SupplierRanking, SuppliersRepository } from '../../../suppliers';
+import { Batch } from '../../domain/index.model';
 import { PagedSearch } from '../paged-search/index.helper';
-import { CreateBatchError, CreateBatchProgress, CreateBatchUseCase } from '../use-cases/create-batch/index.use-case';
+import { CreateBatchUseCase } from '../use-cases/create-batch/index.use-case';
 
-export type CreationStep = 0 | 1 | 2;
+export type CreationStep = 0 | 1 | 2 | 3;
 
 /**
- * Assistente de pedido de lote pelo varejista (RF-13): escolhe um produto e um fornecedor
- * já cadastrados. A criação inline de produto e de fornecedor saiu.
+ * Pedido de lote pelo varejista (RF-13), em 4 passos:
+ * 1. categoria e unidade; 2. fornecedor (recomendação global); 3. produto desse fornecedor; 4. revisão com a quantidade.
  */
 @Injectable()
 export class BatchCreationFacade {
@@ -23,11 +24,20 @@ export class BatchCreationFacade {
   readonly saving = signal(false);
   readonly error = signal('');
 
-  readonly products = new PagedSearch<Product>(
-    (query) => this.productsRepository.load(query),
-    { load: 'Não foi possível carregar os produtos. Tente novamente.', page: 'Não foi possível carregar esta página de produtos.' },
-    (message) => this.error.set(message),
-    this.destroyRef,
+  readonly category = signal<ProductCategory | null>(null);
+  readonly unit = signal<ProductUnit | null>(null);
+  readonly selectedSupplier = signal<SupplierRanking | null>(null);
+  readonly supplierProducts = signal<Product[]>([]);
+  readonly loadingProducts = signal(false);
+  readonly selectedProduct = signal<Product | null>(null);
+
+  readonly recommendationCriteria = computed<RecommendationCriteria | undefined>(
+    () => {
+      const category = this.category();
+      const unit = this.unit();
+      return category && unit ? { category, unit } : undefined;
+    },
+    { equal: (a, b) => JSON.stringify(a) === JSON.stringify(b) },
   );
   readonly suppliers = new PagedSearch<SupplierRanking>(
     (query) => this.suppliersRepository.loadRanking(query, this.recommendationCriteria()),
@@ -35,65 +45,48 @@ export class BatchCreationFacade {
     (message) => this.error.set(message),
     this.destroyRef,
   );
-
-  readonly selectedProduct = signal<Product | null>(null);
-  readonly selectedSupplier = signal<SupplierRanking | null>(null);
-
-  readonly recommendationCriteria = computed<RecommendationCriteria | undefined>(
-    () => {
-      const product = this.selectedProduct();
-      return product ? { category: product.category, unit: product.unit } : undefined;
-    },
-    { equal: (a, b) => JSON.stringify(a) === JSON.stringify(b) },
-  );
-  readonly productUnitSymbol = computed(() => {
-    const unit = this.selectedProduct()?.unit;
+  readonly unitSymbol = computed(() => {
+    const unit = this.unit();
     return unit ? PRODUCT_UNIT_SYMBOLS[unit] : '';
   });
-  readonly productName = computed(() => this.selectedProduct()?.name ?? '');
-  readonly supplierName = computed(() => this.selectedSupplier()?.name ?? '');
-  readonly canRetryChoices = computed(
-    () =>
-      !this.products.loading() &&
-      !this.suppliers.loading() &&
-      this.step() < 2 &&
-      (!this.products.items().length || !this.suppliers.items().length),
-  );
 
   constructor() {
-    this.products.load();
-    // Recarrega o ranking do início sempre que a categoria ou a unidade do produto muda.
+    // O ranking só faz sentido com categoria e unidade; recarrega do início quando elas mudam.
     effect(() => {
-      this.recommendationCriteria();
-      untracked(() => this.suppliers.load());
+      const criteria = this.recommendationCriteria();
+      untracked(() => {
+        this.selectedSupplier.set(null);
+        if (criteria) this.suppliers.load();
+      });
     });
   }
 
-  selectProduct(product: Product): void {
-    this.selectedProduct.set(product);
+  setCategory(category: ProductCategory | null): void {
+    this.category.set(category);
+  }
+
+  setUnit(unit: ProductUnit | null): void {
+    this.unit.set(unit);
   }
 
   selectSupplier(supplier: SupplierRanking): void {
     this.selectedSupplier.set(supplier);
   }
 
-  /** Avança o assistente; `batchValid` informa se quantidade e data de produção são válidas. */
-  next(batchValid: boolean): boolean {
-    if (this.step() === 0) {
-      if (!this.selectedProduct() || !batchValid) {
-        this.error.set(
-          !this.selectedProduct()
-            ? 'Selecione um produto para continuar.'
-            : 'Informe uma quantidade maior que zero e a data de produção.',
-        );
-        return false;
-      }
-    } else if (this.step() === 1 && !this.selectedSupplier()) {
-      this.error.set('Selecione um fornecedor para continuar.');
+  selectProduct(product: Product): void {
+    this.selectedProduct.set(product);
+  }
+
+  /** Avança o assistente se o passo atual estiver completo; a quantidade é validada pelo formulário da revisão. */
+  next(): boolean {
+    const problem = this.stepProblem();
+    if (problem) {
+      this.error.set(problem);
       return false;
     }
     this.error.set('');
-    this.step.update((step) => Math.min(step + 1, 2) as CreationStep);
+    this.step.update((step) => (step + 1) as CreationStep);
+    if (this.step() === 2) this.loadSupplierProducts();
     return true;
   }
 
@@ -104,30 +97,62 @@ export class BatchCreationFacade {
     }
   }
 
-  retryChoices(): void {
+  retrySuppliers(): void {
     this.error.set('');
-    if (!this.products.items().length) this.products.load();
-    if (!this.suppliers.items().length) this.suppliers.load();
+    this.suppliers.load();
   }
 
-  /** Cria o lote com o produto e o fornecedor escolhidos; completa quando o lote é criado. */
-  submit(batch: { quantity: number; producedAt: string }): Observable<CreateBatchProgress> {
-    const product = this.selectedProduct()!;
-    const supplier = this.selectedSupplier()!;
+  /** Pede o lote com o produto do fornecedor escolhido; completa quando a API cria o lote (PENDING). */
+  submit(quantity: number): Observable<Batch> {
     this.saving.set(true);
     this.error.set('');
     return this.createBatch
-      .execute({ product: { productId: product.productId }, supplier: { supplierId: supplier.supplierId }, ...batch })
+      .execute({ productId: this.selectedProduct()!.productId, supplierId: this.selectedSupplier()!.supplierId, quantity })
       .pipe(
         tap({
           next: () => this.saving.set(false),
           error: (error: unknown) => {
             this.saving.set(false);
             // 400/409 trazem a regra da API, ex.: "O produto 3 não é do fornecedor 9.".
-            const cause = error instanceof CreateBatchError ? error.cause : error;
-            this.error.set(apiErrorMessage(cause, 'Não foi possível criar o lote. Tente novamente.'));
+            this.error.set(apiErrorMessage(error, 'Não foi possível pedir o lote. Tente novamente.'));
           },
         }),
       );
+  }
+
+  private stepProblem(): string {
+    switch (this.step()) {
+      case 0:
+        return this.recommendationCriteria() ? '' : 'Escolha a categoria e a unidade do produto para continuar.';
+      case 1:
+        return this.selectedSupplier() ? '' : 'Selecione um fornecedor para continuar.';
+      case 2:
+        return this.selectedProduct() ? '' : 'Selecione um produto do fornecedor para continuar.';
+      default:
+        return '';
+    }
+  }
+
+  // Passo 3: os produtos do fornecedor escolhido na categoria e unidade do passo 1.
+  private loadSupplierProducts(): void {
+    const supplier = this.selectedSupplier();
+    const category = this.category();
+    const unit = this.unit();
+    if (!supplier || !category || !unit) return;
+    this.selectedProduct.set(null);
+    this.supplierProducts.set([]);
+    this.loadingProducts.set(true);
+    this.productsRepository.loadBySupplier(supplier.supplierId, { category, unit }).subscribe({
+      next: (products) => {
+        this.supplierProducts.set(products);
+        // Com um único produto, ele já vem escolhido.
+        if (products.length === 1) this.selectedProduct.set(products[0]);
+        this.loadingProducts.set(false);
+      },
+      error: () => {
+        this.loadingProducts.set(false);
+        this.error.set('Não foi possível carregar os produtos deste fornecedor. Volte e tente novamente.');
+      },
+    });
   }
 }
