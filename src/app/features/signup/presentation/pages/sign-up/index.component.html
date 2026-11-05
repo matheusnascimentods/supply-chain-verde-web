@@ -1,0 +1,93 @@
+<div class="sign-up-page">
+  <app-public-header />
+
+  <main class="sign-up-main">
+    @if (plan(); as plan) {
+      <h1 class="sign-up-title">Cadastre sua empresa</h1>
+      <p class="sign-up-plan">
+        Plano <strong>{{ plan.name }}</strong> · até {{ plan.maxUsers }} contas ·
+        <a routerLink="/planos" class="sign-up-link">Trocar plano</a>
+      </p>
+
+      <ol class="sign-up-steps" aria-label="Etapas do cadastro">
+        @for (label of steps; track label; let index = $index) {
+          <li class="sign-up-step" [class.sign-up-step-current]="index === step()" [attr.aria-current]="index === step() ? 'step' : null">
+            <span class="sign-up-step-number" aria-hidden="true">{{ index + 1 }}</span>{{ label }}
+          </li>
+        }
+      </ol>
+
+      <section class="sign-up-card" aria-labelledby="sign-up-step-title">
+        <h2 #stepHeading id="sign-up-step-title" class="sign-up-step-title" tabindex="-1">{{ step() + 1 }}. {{ steps[step()] }}</h2>
+
+        @switch (step()) {
+          @case (0) {
+            <form [formGroup]="companyForm" (ngSubmit)="next()" novalidate class="sign-up-form">
+              <fieldset class="sign-up-type">
+                <legend class="sign-up-legend">Tipo de empresa</legend>
+                @for (type of companyTypes; track type[0]) {
+                  <label class="sign-up-radio">
+                    <input type="radio" formControlName="type" [value]="type[0]" />
+                    {{ type[1] }}
+                  </label>
+                }
+              </fieldset>
+              <div class="sign-up-grid">
+                <app-text-field class="sign-up-wide" id="company-name" label="Razão social" formControlName="name" autocomplete="organization" [required]="true" [error]="fieldError(companyForm.controls.name)" />
+                <app-text-field id="company-cnpj" label="CNPJ" formControlName="cnpj" inputMode="numeric" placeholder="00.000.000/0000-00" [maxLength]="18" [required]="true" [error]="fieldError(companyForm.controls.cnpj)" />
+                <app-text-field id="company-phone" label="Telefone" type="tel" formControlName="phone" autocomplete="tel" placeholder="(00) 00000-0000" [maxLength]="15" [required]="true" [error]="fieldError(companyForm.controls.phone)" />
+                <app-text-field class="sign-up-wide" id="company-email" label="Email da empresa" type="email" formControlName="email" autocomplete="email" [required]="true" [error]="fieldError(companyForm.controls.email)" />
+                <div>
+                  <app-text-field id="company-zip-code" label="CEP" formControlName="zipCode" inputMode="numeric" autocomplete="postal-code" placeholder="00000-000" [maxLength]="9" [required]="true" [error]="fieldError(companyForm.controls.zipCode)" />
+                  <p class="sign-up-hint" aria-live="polite">@if (zipCodeLookup.loading()) { Consultando CEP… } @else { {{ zipCodeLookup.message() }} }</p>
+                </div>
+                <app-text-field id="company-state" label="Estado (UF)" formControlName="state" autocomplete="address-level1" [maxLength]="2" [required]="true" [error]="fieldError(companyForm.controls.state)" />
+                <app-text-field class="sign-up-wide" id="company-street" label="Logradouro" formControlName="street" autocomplete="address-line1" [required]="true" [error]="fieldError(companyForm.controls.street)" />
+                <app-text-field id="company-number" label="Número" formControlName="number" autocomplete="address-line2" [required]="true" [error]="fieldError(companyForm.controls.number)" />
+                <app-text-field id="company-neighborhood" label="Bairro" formControlName="neighborhood" [required]="true" [error]="fieldError(companyForm.controls.neighborhood)" />
+                <app-text-field id="company-complement" label="Complemento (opcional)" formControlName="complement" autocomplete="address-line3" />
+                <app-text-field id="company-city" label="Cidade" formControlName="city" autocomplete="address-level2" [required]="true" [error]="fieldError(companyForm.controls.city)" />
+              </div>
+              <div class="sign-up-actions">
+                <a appButton variant="secondary" routerLink="/planos">Voltar</a>
+                <button appButton type="submit" data-testid="sign-up-next">Continuar</button>
+              </div>
+            </form>
+          }
+          @case (1) {
+            <form [formGroup]="adminForm" (ngSubmit)="next()" novalidate class="sign-up-form">
+              <p class="sign-up-hint">O administrador entra logado ao fim do cadastro e cria os demais usuários.</p>
+              <div class="sign-up-grid">
+                <app-text-field class="sign-up-wide" id="admin-name" label="Nome" formControlName="name" autocomplete="name" [required]="true" [error]="fieldError(adminForm.controls.name)" />
+                <app-text-field class="sign-up-wide" id="admin-email" label="Email" type="email" formControlName="email" autocomplete="username" [required]="true" [error]="fieldError(adminForm.controls.email)" />
+                <app-text-field id="admin-password" label="Senha" type="password" formControlName="password" autocomplete="new-password" [required]="true" [error]="passwordError()" />
+                <app-text-field id="admin-confirm-password" label="Confirmação da senha" type="password" formControlName="confirmPassword" autocomplete="new-password" [required]="true" [error]="confirmPasswordError()" />
+              </div>
+              <div class="sign-up-actions">
+                <button appButton variant="secondary" type="button" (click)="back()">Voltar</button>
+                <button appButton type="submit" data-testid="sign-up-next">Continuar</button>
+              </div>
+            </form>
+          }
+          @default {
+            @let company = companyForm.getRawValue();
+            @let admin = adminForm.getRawValue();
+            <dl class="sign-up-review">
+              <div><dt>Plano</dt><dd>{{ plan.name }} (até {{ plan.maxUsers }} contas)</dd></div>
+              <div><dt>Empresa</dt><dd>{{ company.name }} · {{ typeLabels[company.type] }}<br />CNPJ {{ company.cnpj }} · {{ company.email }} · {{ company.phone }}</dd></div>
+              <div><dt>Endereço</dt><dd>{{ company.street }}, {{ company.number }}@if (company.complement) { – {{ company.complement }} } · {{ company.neighborhood }}<br />{{ company.city }}/{{ company.state.toUpperCase() }} · CEP {{ company.zipCode }}</dd></div>
+              <div><dt>Administrador</dt><dd>{{ admin.name }} · {{ admin.email }}</dd></div>
+            </dl>
+            <div class="sign-up-actions">
+              <button appButton variant="secondary" type="button" [disabled]="saving()" (click)="back()">Voltar</button>
+              <button appButton type="button" data-testid="sign-up-submit" [disabled]="saving()" (click)="submit()">{{ saving() ? 'Cadastrando…' : 'Concluir cadastro' }}</button>
+            </div>
+          }
+        }
+      </section>
+    } @else {
+      <app-spinner [message]="'Carregando plano…'" />
+    }
+  </main>
+  <app-error-toast />
+</div>

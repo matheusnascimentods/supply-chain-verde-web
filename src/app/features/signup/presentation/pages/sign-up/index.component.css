@@ -1,0 +1,68 @@
+@reference "tailwindcss";
+
+.sign-up-page {
+  @apply min-h-screen bg-slate-50 text-slate-800;
+}
+.sign-up-main {
+  @apply mx-auto max-w-3xl px-4 py-10;
+}
+.sign-up-title {
+  @apply text-3xl font-semibold tracking-tight text-slate-900;
+}
+.sign-up-plan {
+  @apply mt-2 text-slate-600;
+}
+.sign-up-link {
+  @apply font-medium text-green-700 underline;
+}
+.sign-up-steps {
+  @apply mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500;
+}
+.sign-up-step {
+  @apply flex items-center gap-2;
+}
+.sign-up-step-current {
+  @apply font-semibold text-slate-900;
+}
+.sign-up-step-number {
+  @apply flex h-6 w-6 items-center justify-center rounded-full border border-current text-xs;
+}
+.sign-up-card {
+  @apply mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8;
+}
+.sign-up-step-title {
+  @apply text-xl font-semibold text-slate-900 focus:outline-none;
+}
+.sign-up-form {
+  @apply mt-6 flex flex-col gap-6;
+}
+.sign-up-type {
+  @apply flex flex-wrap gap-6;
+}
+.sign-up-legend {
+  @apply mb-2 text-sm font-medium text-slate-700;
+}
+.sign-up-radio {
+  @apply flex items-center gap-2;
+}
+.sign-up-grid {
+  @apply grid gap-4 sm:grid-cols-2;
+}
+.sign-up-wide {
+  @apply sm:col-span-2;
+}
+.sign-up-hint {
+  @apply mt-1 text-sm text-slate-500;
+}
+.sign-up-review {
+  @apply mt-6 flex flex-col gap-4;
+}
+.sign-up-review dt {
+  @apply text-sm text-slate-500;
+}
+.sign-up-review dd {
+  @apply text-slate-900;
+}
+.sign-up-actions {
+  @apply mt-6 flex justify-between gap-3;
+}

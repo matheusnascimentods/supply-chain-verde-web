@@ -20,10 +20,10 @@ describe('LandingComponent', () => {
     expect(element.querySelector('h1')?.textContent).toContain('O futuro da cadeia de suprimentos é verde');
   });
 
-  it('links the CTA to /login', () => {
+  it('links the CTA to /planos', () => {
     const cta = element.querySelector('[data-testid="landing-cta"]');
-    expect(cta?.getAttribute('href')).toBe('/login');
-    expect(cta?.textContent).toContain('Entrar');
+    expect(cta?.getAttribute('href')).toBe('/planos');
+    expect(cta?.textContent).toContain('Conhecer os planos');
   });
 
   it('hides the decorative word from assistive technology', () => {

@@ -1,1 +1,1 @@
-export { routes } from './index.routes';
+export { routes, signUpRoutes } from './index.routes';

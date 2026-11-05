@@ -4,11 +4,17 @@ describe('Login', () => {
       statusCode: 200,
       body: { token: 'e2e-manager-token', expiresAt: '2099-12-31T23:59:59Z', role: 'manager' },
     }).as('login');
+    cy.intercept('GET', '**/api/v1/plans', {
+      statusCode: 200,
+      body: [{ code: 'BASIC', name: 'Basic', maxUsers: 3 }],
+    });
   });
 
-  it('opens the login from the landing page and redirects a valid user to their dashboard', () => {
+  it('opens the login from the plans page and redirects a valid user to their dashboard', () => {
     cy.visit('/');
     cy.get('[data-testid="landing-cta"]').click();
+    cy.location('pathname').should('eq', '/planos');
+    cy.get('[data-testid="public-header-login"]').click();
     cy.location('pathname').should('eq', '/login');
     cy.get('[data-testid="email-input"]').type('manager@example.com');
     cy.get('[data-testid="password-input"]').type('valid-password');

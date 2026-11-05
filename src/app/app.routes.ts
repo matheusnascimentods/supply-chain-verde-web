@@ -18,6 +18,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/signup').then((module) => module.routes),
   },
   {
+    path: 'cadastro',
+    canActivate: [guestGuard],
+    loadChildren: () => import('./features/signup').then((module) => module.signUpRoutes),
+  },
+  {
     path: '',
     pathMatch: 'full',
     canActivate: [guestGuard],

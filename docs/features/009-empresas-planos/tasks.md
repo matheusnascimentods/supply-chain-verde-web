@@ -39,11 +39,11 @@ Depende da API Task 2.
 
 Depende da API Task 2 e das Tasks 1 e 2.
 
-- [ ] Modelo `CompanySignup` e validação de senha
-- [ ] `POST /companies` no repositório e `SignUpUseCase` com `setSession` e mapeamento do 409 por passo (RF-06, RF-07)
-- [ ] Página `sign-up` com os 3 passos e rota `cadastro`; plano inválido volta para `/planos` (RF-04, RF-05, RNF-02)
-- [ ] CTA da landing → `/planos` (RF-01)
-- [ ] Testes do use case e da página; `login.cy.ts` e o novo `signup.cy.ts`
+- [x] Modelo `CompanySignup` e validação de senha
+- [x] `POST /companies` no repositório e `SignUpUseCase` com `setSession` e mapeamento do 409 por passo (RF-06, RF-07)
+- [x] Página `sign-up` com os 3 passos e rota `cadastro`; plano inválido volta para `/planos` (RF-04, RF-05, RNF-02)
+- [x] CTA da landing → `/planos` (RF-01)
+- [x] Testes do use case e da página; `login.cy.ts` e o novo `signup.cy.ts`
 
 **Arquivos (~15):** modelo, DTO, repositório + spec, use case + spec, `pages/sign-up` (ts, html, css, spec), `index.routes.ts`, landing html + spec, `login.cy.ts`, `signup.cy.ts`.
 
