@@ -1,0 +1,24 @@
+<div class="plans-page">
+  <app-public-header />
+
+  <main class="plans-main" aria-labelledby="plans-title">
+    <h1 id="plans-title" class="plans-title">Escolha o plano da sua empresa</h1>
+    <p class="plans-subtitle">Varejistas e fornecedores usam a mesma plataforma. O plano define quantas contas sua empresa pode ter.</p>
+
+    @if (failed()) {
+      <p class="plans-error" role="alert">Não foi possível carregar os planos. Tente novamente mais tarde.</p>
+    } @else if (plans(); as plans) {
+      <ul class="plans-list">
+        @for (plan of plans; track plan.code) {
+          <li class="plan-card" data-testid="plan-card">
+            <h2 class="plan-name">{{ plan.name }}</h2>
+            <p class="plan-users">Até <strong>{{ plan.maxUsers }}</strong> contas</p>
+            <a appButton routerLink="/cadastro" [queryParams]="{ plano: plan.code }" [attr.aria-label]="'Escolher o plano ' + plan.name">Escolher</a>
+          </li>
+        }
+      </ul>
+    } @else {
+      <app-spinner [message]="'Carregando planos…'" />
+    }
+  </main>
+</div>

@@ -25,11 +25,11 @@ Não depende da API.
 
 Depende da API Task 2.
 
-- [ ] Esqueleto da feature `signup`: `index.ts`, `index.routes.ts` e modelo `Plan` (plan §2)
-- [ ] Repositório e DTO Zod de `GET /plans`
-- [ ] Componente `public-header` (marca + **Entrar**)
-- [ ] Página de planos e rota `planos` com `guestGuard` em `app.routes.ts` (RF-02, RF-03)
-- [ ] Testes do repositório e da página: três planos; **Escolher** → `/cadastro?plano=PRO`
+- [x] Esqueleto da feature `signup`: `index.ts`, `index.routes.ts` e modelo `Plan` (plan §2)
+- [x] Repositório e DTO Zod de `GET /plans`
+- [x] Componente `public-header` (marca + **Entrar**)
+- [x] Página de planos e rota `planos` com `guestGuard` em `app.routes.ts` (RF-02, RF-03)
+- [x] Testes do repositório e da página: três planos; **Escolher** → `/cadastro?plano=PRO`
 
 **Arquivos (~13):** `index.ts`, `index.routes.ts`, `domain/index.model.ts`, DTO, repositório + spec, `public-header` (ts, html, css), `pages/plans` (ts, html, css, spec), `app.routes.ts`.
 

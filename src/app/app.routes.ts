@@ -13,6 +13,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth').then((module) => module.routes),
   },
   {
+    path: 'planos',
+    canActivate: [guestGuard],
+    loadChildren: () => import('./features/signup').then((module) => module.routes),
+  },
+  {
     path: '',
     pathMatch: 'full',
     canActivate: [guestGuard],
