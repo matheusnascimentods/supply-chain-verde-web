@@ -1,0 +1,26 @@
+@reference "tailwindcss";
+
+.certifications-page {
+  @apply min-w-0 flex-1 bg-slate-50 px-4 py-6 text-slate-800 sm:px-8 sm:py-8;
+}
+.certifications-container {
+  @apply mx-auto flex max-w-5xl flex-col gap-6;
+}
+.certifications-page-title {
+  @apply text-2xl font-bold tracking-tight text-slate-900;
+}
+.certifications-page-subtitle {
+  @apply mt-1 max-w-3xl text-sm text-slate-500;
+}
+.certifications-card {
+  @apply flex flex-col gap-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6;
+}
+.certifications-page-error {
+  @apply rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700;
+}
+.certifications-retry {
+  @apply mt-2 font-semibold underline;
+}
+.certifications-loading {
+  @apply py-8 text-center text-sm text-slate-500;
+}

@@ -1,3 +1,4 @@
+export { routes } from './index.routes';
 export { CertificationFormComponent } from './presentation/components/form/index.component';
 export { CertificationListComponent } from './presentation/components/list/index.component';
 export type { CertificationItem } from './presentation/components/list/index.component';

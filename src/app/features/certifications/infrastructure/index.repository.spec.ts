@@ -48,4 +48,22 @@ describe('CertificationsRepository', () => {
     http.expectOne(`${environment.apiUrl}/certifications/5/status`).flush({ ...apiCertification, status: 'active' });
     expect(failed).toBe(true);
   });
+
+  it('loads a page of the company certifications', () => {
+    let result: unknown;
+    repository.load({ page: 1, size: 20 }).subscribe((page) => (result = page));
+    const request = http.expectOne((req) => req.url === `${environment.apiUrl}/certifications`);
+    expect(request.request.method).toBe('GET');
+    expect(request.request.params.get('page')).toBe('1');
+    expect(request.request.params.get('size')).toBe('20');
+    request.flush({ content: [apiCertification], page: 1, size: 20, totalElements: 21, totalPages: 2 });
+    expect(result).toEqual({ items: [apiCertification], totalPages: 2 });
+  });
+
+  it('rejects a page outside the contract', () => {
+    let failed = false;
+    repository.load({ page: 0, size: 20 }).subscribe({ error: () => (failed = true) });
+    http.expectOne((req) => req.url === `${environment.apiUrl}/certifications`).flush({ items: [apiCertification] });
+    expect(failed).toBe(true);
+  });
 });

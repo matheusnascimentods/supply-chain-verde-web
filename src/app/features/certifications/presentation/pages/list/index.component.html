@@ -1,0 +1,29 @@
+<main class="certifications-page">
+  <div class="certifications-container">
+    <header class="certifications-page-header">
+      <h1 class="certifications-page-title">Certificações</h1>
+      <p class="certifications-page-subtitle">Registre os certificados da sua empresa e mantenha o status de cada um em dia. Os varejistas consultam essas certificações no ranking de fornecedores.</p>
+    </header>
+
+    <!-- O formulário já tem o próprio título e moldura. -->
+    @if (supplierId) {
+      <app-certification-form [supplierId]="supplierId" (saved)="certificationCreated()" />
+    } @else {
+      <p class="certifications-page-error" role="alert">Não foi possível identificar o fornecedor desta sessão. Entre novamente.</p>
+    }
+
+    <section class="certifications-card">
+      @if (error()) {
+        <div class="certifications-page-error" role="alert">
+          <p>{{ error() }}</p>
+          <button class="certifications-retry" type="button" (click)="load()">Tentar novamente</button>
+        </div>
+      } @else if (loading()) {
+        <p class="certifications-loading" aria-live="polite">Carregando certificações…</p>
+      } @else {
+        <app-certification-list [certifications]="items()" [canUpdateStatus]="true" emptyMessage="Nenhuma certificação cadastrada ainda." (updated)="load()" />
+        <app-pagination [page]="totalPages() ? page() + 1 : 0" [totalPages]="totalPages()" [disabled]="loading()" label="Paginação de certificações" (previous)="changePage(-1)" (next)="changePage(1)" />
+      }
+    </section>
+  </div>
+</main>

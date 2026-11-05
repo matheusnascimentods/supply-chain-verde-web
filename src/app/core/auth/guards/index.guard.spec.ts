@@ -209,9 +209,10 @@ describe('Guards', () => {
       ['MARKET', 'admin', false],
       ['MARKET', 'manager', false],
       [null, 'platform_admin', false],
-    ] as const)('lets a %s %s into /products: %s', (companyType, role, allowed) => {
+    ] as const)('lets a %s %s into /products and /certifications: %s', (companyType, role, allowed) => {
       sessionService.setSession(tokenFor(companyType), role);
       expect(canEnter('products')).toBe(allowed);
+      expect(canEnter('certifications')).toBe(allowed);
     });
 
     it.each([

@@ -11,4 +11,12 @@ export const certificationResponseSchema = z.object({
   status: z.enum(CERTIFICATION_STATUSES),
 });
 
+export const certificationPageSchema = z.object({
+  content: z.array(certificationResponseSchema),
+  page: z.number(),
+  size: z.number(),
+  totalElements: z.number(),
+  totalPages: z.number(),
+});
+
 export type CertificationResponseDTO = z.infer<typeof certificationResponseSchema>;

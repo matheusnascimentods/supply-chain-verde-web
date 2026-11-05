@@ -227,9 +227,9 @@ Não depende da API.
 
 Depende da API Task 4 e das Tasks 4 e 16.
 
-- [ ] Rota `certifications` com `companyTypes: ['supplier']` (RF-17), e o link **Certificações** no `NAV_LINKS` do fornecedor (admin e supplier)
-- [ ] Página que lista, cadastra com o `form` atual e muda o status das próprias certificações
-- [ ] Testes da página
+- [x] Rota `certifications` com `companyTypes: ['supplier']` (RF-17), e o link **Certificações** no `NAV_LINKS` do fornecedor (admin e supplier)
+- [x] Página que lista, cadastra com o `form` atual e muda o status das próprias certificações
+- [x] Testes da página
 
 **Arquivos (~8):** `index.routes.ts`, `pages/list` (ts, html, css, spec), repositório + spec, `app.routes.ts`.
 
