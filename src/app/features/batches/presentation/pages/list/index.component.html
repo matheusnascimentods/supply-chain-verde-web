@@ -18,6 +18,10 @@
       }
     </header>
 
+    <div class="batches-filters">
+      <app-enum-select [id]="'batches-status'" label="Status" placeholder="Todos os status" [options]="statuses" [labels]="statusLabels" [value]="facade.status() ?? ''" (valueChange)="facade.setStatus($event)" />
+    </div>
+
     @if (facade.error()) {
       <section role="alert" class="batches-error">
         <span>{{ facade.error() }}</span>
@@ -45,7 +49,7 @@
             <path d="m4.3 7.7 7.7 4.4 7.7-4.4M12 12v9" />
           </svg>
         </span>
-        <h2 class="batches-empty-title">Nenhum lote por aqui ainda</h2>
+        <h2 class="batches-empty-title">{{ facade.status() ? 'Nenhum lote com esse status' : 'Nenhum lote por aqui ainda' }}</h2>
         <p class="batches-empty-text">Quando um lote for cadastrado, você poderá acompanhar cada etapa da cadeia nesta tela.</p>
         @if (facade.canCreate()) {
           <button type="button" class="batches-empty-create" (click)="createModalOpen.set(true)">Cadastrar primeiro lote</button>

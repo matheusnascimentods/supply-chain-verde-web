@@ -6,7 +6,7 @@ import { BatchListComponent } from './index.component';
 
 describe('BatchListComponent', () => {
   let fixture: ComponentFixture<BatchListComponent>;
-  const batch = { batchId: 7, productId: 3, productName: 'Café', supplierId: 9, supplierName: 'Fazenda', quantity: 1, producedAt: '2026-05-20', currentStage: null, stages: [] } as Batch;
+  const batch = { batchId: 7, productId: 3, productName: 'Café', supplierId: 9, supplierName: 'Fazenda', marketId: 2, marketName: 'Mercado', status: 'ACTIVE', rejectionReason: null, quantity: 1, producedAt: '2026-05-20', currentStage: null, stages: [] } as Batch;
 
   function render(overrides: Record<string, unknown> = {}): HTMLElement {
     const facade = {
@@ -17,6 +17,8 @@ describe('BatchListComponent', () => {
       totalPages: signal(1),
       pageNumber: signal(1),
       canCreate: signal(false),
+      status: signal(null),
+      setStatus: vi.fn(),
       canAddStageTo: () => true,
       unitOf: () => 'KG',
       load: vi.fn(),
@@ -49,5 +51,20 @@ describe('BatchListComponent', () => {
     const page = render({ error: signal('Não foi possível carregar os lotes. Tente novamente.'), load });
     page.querySelector<HTMLButtonElement>('.batches-retry')!.click();
     expect(load).toHaveBeenCalled();
+  });
+
+  it('filters by status through the select', () => {
+    const setStatus = vi.fn();
+    const page = render({ setStatus });
+    const select = page.querySelector<HTMLSelectElement>('#batches-status')!;
+    expect([...select.options].map((option) => option.textContent?.trim())).toEqual(['Todos os status', 'Pendente', 'Em andamento', 'Recusado']);
+    select.value = 'PENDING';
+    select.dispatchEvent(new Event('change'));
+    expect(setStatus).toHaveBeenCalledWith('PENDING');
+  });
+
+  it('explains an empty filtered list', () => {
+    const page = render({ items: signal([]), status: signal('REJECTED') });
+    expect(page.textContent).toContain('Nenhum lote com esse status');
   });
 });
