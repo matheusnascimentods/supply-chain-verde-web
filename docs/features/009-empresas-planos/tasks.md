@@ -203,9 +203,9 @@ Depende das Tasks 7 e 13 (perfil e lotes deixam de usar os use cases de forneced
 
 Depende da API Task 4 e das Tasks 4 e 12.
 
-- [ ] Rota `products` com `roleGuard` e `companyTypes: ['supplier']` (RF-16), e o link **Produtos** no `NAV_LINKS` do fornecedor (admin e supplier)
-- [ ] Página de lista e modal de criação; `POST /products` no repositório
-- [ ] Testes do repositório, da página e do modal
+- [x] Rota `products` com `roleGuard` e `companyTypes: ['supplier']` (RF-16), e o link **Produtos** no `NAV_LINKS` do fornecedor (admin e supplier)
+- [x] Página de lista e modal de criação; `POST /products` no repositório
+- [x] Testes do repositório, da página e do modal
 
 **Arquivos (~14):** `index.routes.ts`, `index.ts`, `pages/list` (ts, html, css, spec), create-modal (ts, html, css, spec), repositório + spec, `app.routes.ts`.
 

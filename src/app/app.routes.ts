@@ -56,6 +56,14 @@ export const routes: Routes = [
         loadChildren: () => import('./features/batches').then((module) => module.routes),
       },
       {
+        path: 'products',
+        title: 'Supply Chain | Produtos',
+        // RF-16: só a companhia fornecedora (admin e supplier) cadastra produtos.
+        canActivate: [roleGuard],
+        data: { roles: ['admin', 'supplier'], companyTypes: ['supplier'] },
+        loadChildren: () => import('./features/products').then((module) => module.routes),
+      },
+      {
         path: 'users',
         title: 'Supply Chain | Usuários',
         loadChildren: () => import('./features/users').then((module) => module.routes),

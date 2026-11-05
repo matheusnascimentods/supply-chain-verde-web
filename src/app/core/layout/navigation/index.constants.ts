@@ -7,11 +7,12 @@ export interface NavLink {
 
 const SUPPLIERS: NavLink = { label: 'Fornecedores', path: '/suppliers' };
 const BATCHES: NavLink = { label: 'Lotes', path: '/batches' };
+const PRODUCTS: NavLink = { label: 'Produtos', path: '/products' };
 const USERS: NavLink = { label: 'Usuários', path: '/users' };
 const AUDIT: NavLink = { label: 'Auditoria', path: '/audit-log' };
 
 // Menu por tipo de companhia e perfil (RF-08a); admin de varejista e de fornecedor veem menus diferentes.
-// ponytail: Produtos e Certificações do fornecedor entram junto com as rotas (Tasks 15 e 17), para não ter link quebrado.
+// ponytail: Certificações do fornecedor entra junto com a rota (Task 17), para não ter link quebrado.
 export const NAV_LINKS: Record<CompanyType | 'platform', Partial<Record<UserRole, NavLink[]>>> = {
   market: {
     admin: [SUPPLIERS, BATCHES, USERS, AUDIT],
@@ -19,8 +20,8 @@ export const NAV_LINKS: Record<CompanyType | 'platform', Partial<Record<UserRole
     auditor: [AUDIT, SUPPLIERS, BATCHES, USERS],
   },
   supplier: {
-    admin: [BATCHES, USERS, AUDIT],
-    supplier: [BATCHES, USERS],
+    admin: [BATCHES, PRODUCTS, USERS, AUDIT],
+    supplier: [BATCHES, PRODUCTS, USERS],
   },
   platform: {
     platform_admin: [SUPPLIERS, BATCHES, USERS, AUDIT],

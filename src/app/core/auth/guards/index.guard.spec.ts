@@ -204,6 +204,17 @@ describe('Guards', () => {
     });
 
     it.each([
+      ['SUPPLIER', 'admin', true],
+      ['SUPPLIER', 'supplier', true],
+      ['MARKET', 'admin', false],
+      ['MARKET', 'manager', false],
+      [null, 'platform_admin', false],
+    ] as const)('lets a %s %s into /products: %s', (companyType, role, allowed) => {
+      sessionService.setSession(tokenFor(companyType), role);
+      expect(canEnter('products')).toBe(allowed);
+    });
+
+    it.each([
       ['admin', true],
       ['auditor', true],
       ['platform_admin', true],
