@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { UserRole } from '../../../core/auth/session/index.model';
 import { SessionService } from '../../../core/auth/session/index.service';
+import { ErrorToastService } from '../../../shared/ui/error-toast/index.service';
 import { UsersRepository } from '../infrastructure/index.repository';
 import { UpdateUserRoleUseCase } from './use-cases/update-role/index.use-case';
 import { UsersListFacade } from './index.facade';
@@ -13,6 +14,7 @@ describe('UsersListFacade', () => {
   let repository: { load: ReturnType<typeof vi.fn> };
   let updateRole: { execute: ReturnType<typeof vi.fn> };
   const role = signal<UserRole | null>('admin');
+  let toast: { show: ReturnType<typeof vi.fn> };
 
   function createFacade(): UsersListFacade {
     TestBed.configureTestingModule({
@@ -21,6 +23,7 @@ describe('UsersListFacade', () => {
         { provide: UsersRepository, useValue: repository },
         { provide: UpdateUserRoleUseCase, useValue: updateRole },
         { provide: SessionService, useValue: { role } },
+        { provide: ErrorToastService, useValue: toast },
       ],
     });
     return TestBed.inject(UsersListFacade);
@@ -28,6 +31,7 @@ describe('UsersListFacade', () => {
 
   beforeEach(() => {
     role.set('admin');
+    toast = { show: vi.fn() };
     repository = { load: vi.fn().mockReturnValue(of({ items: [ana], totalPages: 3 })) };
     updateRole = { execute: vi.fn().mockReturnValue(of(ana)) };
   });
@@ -90,20 +94,28 @@ describe('UsersListFacade', () => {
     expect(updateRole.execute).not.toHaveBeenCalled();
   });
 
-  it('shows the API message when the role change is refused', () => {
+  it('shows the API message as a toast when the role change is refused (last admin)', () => {
     updateRole.execute.mockReturnValue(
-      throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'Não é possível alterar o perfil de um fornecedor.' } })),
+      throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'A companhia precisa de pelo menos um ADMIN.' } })),
     );
     const facade = createFacade();
     facade.updateRole(ana, 'auditor');
-    expect(facade.roleError()).toBe('Não é possível alterar o perfil de um fornecedor.');
+    expect(toast.show).toHaveBeenCalledWith('A companhia precisa de pelo menos um ADMIN.');
+  });
+
+  it('lets the platform admin change roles and see the company column, but not create users', () => {
+    role.set('platform_admin');
+    const facade = createFacade();
+    expect(facade.canCreate()).toBe(false);
+    expect(facade.canChangeRoles()).toBe(true);
+    expect(facade.showCompany()).toBe(true);
   });
 
   it('shows an error when the role update fails', () => {
     updateRole.execute.mockReturnValue(throwError(() => new Error('500')));
     const facade = createFacade();
     facade.updateRole(ana, 'auditor');
-    expect(facade.roleError()).toBe('Não foi possível alterar o perfil de Ana.');
+    expect(toast.show).toHaveBeenCalledWith('Não foi possível alterar o perfil de Ana.');
     expect(facade.updatingRoleId()).toBeNull();
   });
 });

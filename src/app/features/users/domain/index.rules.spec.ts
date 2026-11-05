@@ -1,31 +1,31 @@
 import { newUserSchema } from './index.model';
-import { canChangeRoles, canManageUsers, creatableRoles } from './index.rules';
+import { canChangeRoles, canCreateUsers, creatableRoles } from './index.rules';
 
 describe('users rules', () => {
-  it('lets administrators and managers manage users', () => {
-    expect(canManageUsers('admin')).toBe(true);
-    expect(canManageUsers('manager')).toBe(true);
-    expect(canManageUsers('auditor')).toBe(false);
-    expect(canManageUsers('supplier')).toBe(false);
-    expect(canManageUsers(null)).toBe(false);
+  it('lets only company administrators create users', () => {
+    expect(canCreateUsers('admin')).toBe(true);
+    expect(canCreateUsers('platform_admin')).toBe(false);
+    expect(canCreateUsers('manager')).toBe(false);
+    expect(canCreateUsers('auditor')).toBe(false);
+    expect(canCreateUsers('supplier')).toBe(false);
+    expect(canCreateUsers(null)).toBe(false);
   });
 
-  it('lets only administrators change roles', () => {
+  it('lets administrators and the platform admin change roles', () => {
     expect(canChangeRoles('admin')).toBe(true);
+    expect(canChangeRoles('platform_admin')).toBe(true);
     expect(canChangeRoles('manager')).toBe(false);
     expect(canChangeRoles(null)).toBe(false);
   });
 
-  it('limits managers to creating supplier users', () => {
-    expect(creatableRoles('admin')).toEqual(['admin', 'manager', 'auditor', 'supplier']);
-    expect(creatableRoles('manager')).toEqual(['supplier']);
-    expect(creatableRoles('auditor')).toEqual([]);
+  it('offers only the roles of the company type', () => {
+    expect(creatableRoles('market')).toEqual(['admin', 'manager', 'auditor']);
+    expect(creatableRoles('supplier')).toEqual(['admin', 'supplier']);
+    expect(creatableRoles(null)).toEqual([]);
   });
 
-  it('requires a supplier only for supplier users', () => {
-    const user = { name: 'Ana', email: 'ana@example.com', password: 'secret' };
-    expect(newUserSchema.safeParse({ ...user, role: 'supplier', supplierId: null }).success).toBe(false);
-    expect(newUserSchema.parse({ ...user, role: 'supplier', supplierId: 7 })).toEqual({ ...user, role: 'supplier', supplierId: 7 });
-    expect(newUserSchema.parse({ ...user, role: 'manager', supplierId: 7 })).toEqual({ ...user, role: 'manager' });
+  it('creates users without a supplier link', () => {
+    const user = { name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'supplier' };
+    expect(newUserSchema.parse({ ...user, supplierId: 7 })).toEqual(user);
   });
 });

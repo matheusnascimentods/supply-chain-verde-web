@@ -1,20 +1,18 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, output, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SessionService } from '../../../../../core/auth/session/index.service';
 import { EnumSelectComponent } from '../../../../../shared/ui/enum-select/index.component';
+import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.service';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
-import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
-import { PagedSearch } from '../../../../batches/application/paged-search/index.helper';
-import { SupplierRanking, SuppliersRepository } from '../../../../suppliers';
 import { CreateUserUseCase } from '../../../application/use-cases/create-user/index.use-case';
 import { newUserSchema } from '../../../domain/index.model';
 import { creatableRoles } from '../../../domain/index.rules';
 
 @Component({
   selector: 'app-create-user-modal',
-  imports: [ReactiveFormsModule, EnumSelectComponent, ModalComponent, PaginationComponent],
+  imports: [ReactiveFormsModule, EnumSelectComponent, ModalComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,12 +20,13 @@ import { creatableRoles } from '../../../domain/index.rules';
 export class CreateUserModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly createUser = inject(CreateUserUseCase);
-  private readonly suppliersRepository = inject(SuppliersRepository);
+  private readonly toast = inject(ErrorToastService);
 
   readonly created = output<void>();
   readonly dismissed = output<void>();
 
-  protected readonly roles = creatableRoles(inject(SessionService).role());
+  // O usuário nasce na companhia de quem cria, então só os perfis do tipo dela (RF-11).
+  protected readonly roles = creatableRoles(inject(SessionService).companyType());
   readonly saving = signal(false);
   readonly error = signal('');
   readonly form = this.fb.group({
@@ -35,34 +34,7 @@ export class CreateUserModalComponent {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
     role: ['', [Validators.required]],
-    supplierId: [null as number | null],
   });
-  // Só fornecedores ainda sem usuário podem receber um acesso SUPPLIER.
-  readonly suppliers = new PagedSearch<SupplierRanking>(
-    (query) => this.suppliersRepository.loadRanking({ ...query, withoutUser: true }),
-    { load: 'Não foi possível carregar os fornecedores.', page: 'Não foi possível carregar esta página de fornecedores.' },
-    (message) => this.error.set(message),
-    inject(DestroyRef),
-  );
-
-  constructor() {
-    const { role, supplierId } = this.form.controls;
-    role.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
-      if (value === 'supplier') {
-        supplierId.setValidators(Validators.required);
-        this.suppliers.load();
-      } else {
-        supplierId.clearValidators();
-        supplierId.setValue(null);
-      }
-      supplierId.updateValueAndValidity();
-    });
-    if (this.roles.length === 1) role.setValue(this.roles[0]);
-  }
-
-  searchSuppliers(event: Event): void {
-    this.suppliers.searchFor((event.target as HTMLInputElement).value);
-  }
 
   submit(): void {
     const parsed = newUserSchema.safeParse(this.form.getRawValue());
@@ -79,7 +51,10 @@ export class CreateUserModalComponent {
       },
       error: (error: unknown) => {
         this.saving.set(false);
-        this.error.set(apiErrorMessage(error, 'Não foi possível salvar. Confira os dados e tente novamente.'));
+        const message = apiErrorMessage(error, 'Não foi possível salvar. Confira os dados e tente novamente.');
+        // 409 (limite do plano ou email em uso) vira toast com a mensagem da API (RF-11); o resto fica no modal.
+        if (error instanceof HttpErrorResponse && error.status === 409) this.toast.show(message);
+        else this.error.set(message);
       },
     });
   }

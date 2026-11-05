@@ -6,21 +6,21 @@ import { UserListComponent } from './index.component';
 
 describe('UserListComponent', () => {
   let fixture: ComponentFixture<UserListComponent>;
-  let facade: Record<string, unknown> & { canManage: ReturnType<typeof signal<boolean>>; canChangeRoles: ReturnType<typeof signal<boolean>>; updateRole: ReturnType<typeof vi.fn>; reloadFromFirstPage: ReturnType<typeof vi.fn> };
-  const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager', createdAt: null };
-  const bia = { userId: 2, name: 'Bia', email: 'bia@example.com', role: 'supplier', createdAt: null, supplierId: 7, supplierName: 'Fazenda Verde' };
+  let facade: Record<string, unknown> & { canCreate: ReturnType<typeof signal<boolean>>; showCompany: ReturnType<typeof signal<boolean>>; canChangeRoles: ReturnType<typeof signal<boolean>>; updateRole: ReturnType<typeof vi.fn>; reloadFromFirstPage: ReturnType<typeof vi.fn> };
+  const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager', createdAt: null, companyType: 'market', companyName: 'Mercado Bom Preço' };
+  const root = { userId: 3, name: 'Root', email: 'root@example.com', role: 'platform_admin', createdAt: null, companyType: null, companyName: null };
 
   beforeEach(() => {
     facade = {
       items: signal([ana]),
       loading: signal(false),
       error: signal(''),
-      roleError: signal(''),
       email: signal(''),
       totalPages: signal(1),
       pageNumber: signal(1),
       updatingRoleId: signal(null),
-      canManage: signal(true),
+      canCreate: signal(true),
+      showCompany: signal(false),
       canChangeRoles: signal(true),
       reload: vi.fn(),
       searchFor: vi.fn(),
@@ -42,20 +42,29 @@ describe('UserListComponent', () => {
     expect(page.textContent).toContain('+ Adicionar usuário');
   });
 
-  it('shows only the role badge for users who cannot change roles', () => {
+  it('is read-only for users who cannot manage: no create button and no role menu', () => {
+    facade.canCreate.set(false);
     facade.canChangeRoles.set(false);
     fixture.detectChanges();
     const page: HTMLElement = fixture.nativeElement;
+    expect(page.textContent).not.toContain('+ Adicionar usuário');
     expect(page.querySelector('app-role-menu')).toBeNull();
     expect(page.querySelector('app-role-badge')?.textContent?.trim()).toBe('Gestor');
   });
 
-  it('shows the linked supplier of each user', () => {
-    (facade['items'] as ReturnType<typeof signal<unknown[]>>).set([ana, bia]);
+  it('has no supplier column and shows "Empresa" only to the platform admin', () => {
+    const headers = () => Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('th')).map((th) => th.textContent?.trim());
+    expect(headers()).not.toContain('Fornecedor');
+    expect(headers()).not.toContain('Empresa');
+
+    facade.showCompany.set(true);
+    (facade['items'] as ReturnType<typeof signal<unknown[]>>).set([ana, root]);
     fixture.detectChanges();
+    expect(headers()).toContain('Empresa');
     const rows = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('tbody tr'));
-    expect(rows[0].textContent).toContain('—');
-    expect(rows[1].textContent).toContain('Fazenda Verde');
+    expect(rows[0].textContent).toContain('Mercado Bom Preço');
+    expect(rows[1].textContent).toContain('Plataforma');
+    expect(rows[1].querySelector('app-role-menu')).toBeNull();
   });
 
   it('forwards the selected role to the facade', () => {

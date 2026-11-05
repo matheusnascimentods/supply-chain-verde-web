@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { userRoleSchema } from '../../../core/auth/session/index.model';
+import { COMPANY_TYPES, userRoleSchema } from '../../../core/auth/session/index.model';
 
 export const userResponseSchema = z.object({
   userId: z.number(),
@@ -7,8 +7,9 @@ export const userResponseSchema = z.object({
   email: z.string().email(),
   role: z.preprocess((value) => (typeof value === 'string' ? value.toLowerCase() : value), userRoleSchema),
   createdAt: z.string().nullable().optional(),
-  supplierId: z.number().nullable().optional(),
-  supplierName: z.string().nullable().optional(),
+  companyId: z.number().nullable().optional(),
+  companyType: z.preprocess((value) => (typeof value === 'string' ? value.toLowerCase() : value), z.enum(COMPANY_TYPES)).nullable().optional(),
+  companyName: z.string().nullable().optional(),
 }).passthrough();
 
 export const userPageSchema = z.object({
