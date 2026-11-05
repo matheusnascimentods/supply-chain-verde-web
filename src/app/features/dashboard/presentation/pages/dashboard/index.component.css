@@ -123,3 +123,7 @@
 .dashboard-emissions-change[data-tone='up'] {
   @apply text-red-600;
 }
+
+.dashboard-metric-link {
+  @apply block rounded-2xl transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-700;
+}

@@ -7,6 +7,7 @@ import { formatKgCo2e, formatNumberBr } from '../../../../../shared/utils/format
 import { PRODUCT_UNIT_SYMBOLS, StageBadgeComponent } from '../../../../batches';
 import { DashboardFacade } from '../../../application/index.facade';
 import { RecentBatch } from '../../../domain/index.model';
+import { partnerMetric } from '../../../domain/index.rules';
 import { EmissionLineChartComponent } from '../../components/emission-line-chart/index.component';
 import { MetricCardComponent, MetricTone } from '../../components/metric-card/index.component';
 import { StageBarChartComponent } from '../../components/stage-bar-chart/index.component';
@@ -17,6 +18,8 @@ interface Metric {
   label: string;
   value: string;
   tone: MetricTone;
+  // Card clicável: os lotes pendentes abrem a lista filtrada por status.
+  link?: { path: string; query: Record<string, string> };
 }
 
 @Component({
@@ -47,11 +50,17 @@ export class DashboardComponent {
 
   readonly metrics = computed<Metric[]>(() => {
     const summary = this.facade.summary();
-    const count = (value: number | undefined) => (value === undefined ? '—' : formatNumberBr(value, 0));
+    const count = (value: number | null | undefined) => (value == null ? '—' : formatNumberBr(value, 0));
+    const partner = summary ? partnerMetric(summary) : null;
     return [
       { label: 'Lotes Ativos', value: count(summary?.activeBatches), tone: 'batches' },
       { label: 'Certificações Expirando', value: count(summary?.expiringCertifications), tone: 'certifications' },
-      { label: 'Fornecedores', value: count(summary?.suppliers), tone: 'suppliers' },
+      {
+        label: partner?.label ?? 'Fornecedores',
+        value: count(partner?.count),
+        tone: 'suppliers',
+        link: partner?.pendingLink ? { path: '/batches', query: { status: 'PENDING' } } : undefined,
+      },
       {
         label: 'Emissão Total (mês)',
         value: summary ? formatKgCo2e(summary.monthlyEmissionKgCo2e) : '—',

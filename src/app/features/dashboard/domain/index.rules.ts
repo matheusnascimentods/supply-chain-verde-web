@@ -1,5 +1,5 @@
 import { STAGE_TYPES, STAGE_TYPE_LABELS } from '../../batches';
-import { MAX_RANGE_MONTHS, MONTH_PATTERN, MonthRange, MonthlyEmission, RangeProblem, RecentBatch, StageShare } from './index.model';
+import { DashboardSummary, MAX_RANGE_MONTHS, MONTH_PATTERN, MonthRange, MonthlyEmission, RangeProblem, RecentBatch, StageShare } from './index.model';
 
 /** Distribuição dos lotes por etapa, na ordem da cadeia, sem etapas vazias. */
 export function stageDistribution(batches: RecentBatch[]): StageShare[] {
@@ -55,4 +55,18 @@ export function periodVariation(series: MonthlyEmission[]): number | null {
   if (withEmission.length < 2) return null;
   const first = withEmission[0].co2Kg;
   return ((withEmission[withEmission.length - 1].co2Kg - first) / first) * 100;
+}
+
+/** Terceiro card do resumo (RF-08b): a companhia fornecedora vê os lotes pendentes no lugar dos fornecedores. */
+export interface PartnerMetric {
+  label: string;
+  count: number | null;
+  pendingLink: boolean;
+}
+
+// A API manda `pendingBatches` só para a companhia fornecedora, então o resumo já diz qual card mostrar.
+export function partnerMetric(summary: DashboardSummary): PartnerMetric {
+  return summary.pendingBatches === null
+    ? { label: 'Fornecedores', count: summary.suppliers, pendingLink: false }
+    : { label: 'Lotes pendentes', count: summary.pendingBatches, pendingLink: true };
 }

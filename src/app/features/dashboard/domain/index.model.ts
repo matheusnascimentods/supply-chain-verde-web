@@ -12,7 +12,8 @@ export interface RecentBatch {
 export interface DashboardSummary {
   activeBatches: number;
   expiringCertifications: number;
-  suppliers: number;
+  suppliers: number | null;
+  pendingBatches: number | null;
   monthlyEmissionKgCo2e: number;
   recentBatches: RecentBatch[];
 }

@@ -12,6 +12,7 @@ const summary: DashboardSummary = {
   activeBatches: 12,
   expiringCertifications: 3,
   suppliers: 8,
+  pendingBatches: null,
   monthlyEmissionKgCo2e: 42.5,
   recentBatches: [
     { batchId: 101, productName: 'Café orgânico', supplierName: 'Fazenda Verde', quantity: 500, unit: 'KG', status: 'TRANSPORT' },
@@ -70,6 +71,22 @@ describe('DashboardComponent', () => {
     expect(page.textContent).toContain('42,5 kg CO₂e');
     expect(page.textContent).toContain('Olá, Maria Gabriela Brito');
     expect(currentUserService.load).toHaveBeenCalledOnce();
+  });
+
+  it('shows "Lotes pendentes" linking to the pending batches for a supplier company', () => {
+    dashboardService.loadSummary.mockReturnValue(of({ ...summary, suppliers: null, pendingBatches: 4 }));
+    const page = renderAs('supplier');
+    const link = page.querySelector<HTMLAnchorElement>('[data-testid="pending-batches-link"]');
+    expect(link?.getAttribute('href')).toBe('/batches?status=PENDING');
+    expect(link?.textContent).toContain('Lotes pendentes');
+    expect(link?.textContent).toContain('4');
+    expect(page.textContent).not.toContain('Fornecedores');
+  });
+
+  it('keeps the "Fornecedores" card, without a link, for a retailer', () => {
+    const page = renderAs('manager');
+    expect(page.querySelector('[data-testid="pending-batches-link"]')).toBeNull();
+    expect(page.querySelector('app-metric-card[data-tone="suppliers"]')?.textContent).toContain('Fornecedores');
   });
 
   it('renders charts from the real status distribution in the latest batches', () => {
