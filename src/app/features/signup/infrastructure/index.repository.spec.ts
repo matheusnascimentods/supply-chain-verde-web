@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { environment } from '../../../../environments/environment';
+import { CompanySignup } from '../domain/index.model';
 import { SignupRepository } from './index.repository';
 
 describe('SignupRepository', () => {
@@ -28,6 +29,17 @@ describe('SignupRepository', () => {
     expect(request.request.method).toBe('GET');
     request.flush(plans);
     expect(result).toEqual(plans);
+  });
+
+  it('posts the company signup and parses the login-like response', () => {
+    const signup = { planCode: 'PRO', type: 'MARKET' } as CompanySignup;
+    let result: unknown;
+    repository.register(signup).subscribe((value) => (result = value));
+    const request = http.expectOne(`${environment.apiUrl}/companies`);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toBe(signup);
+    request.flush({ token: 'jwt', expiresAt: '2099-01-01', role: 'ADMIN', supplierId: null, companyId: 7, companyType: 'MARKET' });
+    expect(result).toEqual({ token: 'jwt', expiresAt: '2099-01-01', role: 'admin' });
   });
 
   it('fails when the API returns an invalid payload', () => {
