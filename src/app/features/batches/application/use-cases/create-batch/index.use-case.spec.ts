@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { CreateSupplierUseCase } from '../../../../suppliers';
 import { BatchesRepository } from '../../../infrastructure/index.repository';
-import { ProductsRepository } from '../../../infrastructure/product/index.repository';
+import { ProductsRepository } from '../../../../products';
 import { BatchDraft, CreateBatchError, CreateBatchProgress, CreateBatchUseCase } from './index.use-case';
 
 describe('CreateBatchUseCase', () => {

@@ -165,8 +165,8 @@ Não depende da API.
 
 Depende da Task 11.
 
-- [ ] Mover `batches/infrastructure/product` e `batches/domain/product` para `features/products`, exportados pelo `index.ts` (plan §5)
-- [ ] Atualizar os imports em `batches`
+- [x] Mover `batches/infrastructure/product` e `batches/domain/product` para `features/products`, exportados pelo `index.ts` (plan §5)
+- [x] Atualizar os imports em `batches`
 
 **Arquivos (~13):** repositório, DTO e spec de produto, modelo de produto, `products/index.ts`, `batches/index.ts`, facade + spec, create-batch facade + spec, use case + spec, batch-card.
 

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { Batch } from '../../../domain/index.model';
-import { PRODUCT_UNIT_SYMBOLS, ProductUnit } from '../../../domain/product/index.model';
+import { PRODUCT_UNIT_SYMBOLS, ProductUnit } from '../../../../products';
 import { STAGE_TYPE_LABELS, Stage, StageAddress, TRANSPORT_MODE_LABELS } from '../../../domain/stage/index.model';
 import { StatusBadgeComponent } from '../status-badge/index.component';
 

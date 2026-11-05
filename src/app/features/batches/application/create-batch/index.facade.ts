@@ -2,8 +2,7 @@ import { DestroyRef, Injectable, computed, effect, inject, signal, untracked } f
 import { Observable, tap } from 'rxjs';
 import { RecommendationCriteria, SupplierRanking, SuppliersRepository } from '../../../suppliers';
 import { apiErrorMessage } from '../../../../shared/utils/http/index.utils';
-import { PRODUCT_UNIT_SYMBOLS, Product } from '../../domain/product/index.model';
-import { ProductsRepository } from '../../infrastructure/product/index.repository';
+import { PRODUCT_UNIT_SYMBOLS, Product, ProductsRepository } from '../../../products';
 import { PagedSearch } from '../paged-search/index.helper';
 import { CreateBatchError, CreateBatchProgress, CreateBatchUseCase } from '../use-cases/create-batch/index.use-case';
 

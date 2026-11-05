@@ -34,3 +34,9 @@ export interface NewProduct {
   category: ProductCategory;
   unit: ProductUnit;
 }
+
+// Próprio de products, para a feature não depender de batches (que a consome).
+export interface Page<T> {
+  items: T[];
+  totalPages: number;
+}

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PRODUCT_CATEGORIES, PRODUCT_UNITS } from '../../domain/product/index.model';
+import { PRODUCT_CATEGORIES, PRODUCT_UNITS } from '../domain/index.model';
 
 export const productResponseSchema = z.object({
   productId: z.number(),

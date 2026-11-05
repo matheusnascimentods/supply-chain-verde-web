@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
-import { environment } from '../../../../../environments/environment';
-import { Page } from '../../domain/index.model';
-import { NewProduct, Product } from '../../domain/product/index.model';
+import { environment } from '../../../../environments/environment';
+import { NewProduct, Page, Product } from '../domain/index.model';
 import { productPageSchema, productResponseSchema } from './index.dto';
 
 const MAX_PAGE_SIZE = 100;
