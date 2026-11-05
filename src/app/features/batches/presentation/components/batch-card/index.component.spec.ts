@@ -11,6 +11,10 @@ describe('BatchCardComponent', () => {
     productName: 'Café orgânico',
     supplierId: 9,
     supplierName: 'Fazenda Verde',
+    marketId: 2,
+    marketName: 'Mercado Bom Preço',
+    status: 'ACTIVE',
+    rejectionReason: null,
     quantity: 1250.5,
     producedAt: '2026-05-20',
     currentStage: 'TRANSPORT',
@@ -69,5 +73,21 @@ describe('BatchCardComponent', () => {
     expect(host.querySelector('.batch-route-origin')!.textContent).toContain('Fazenda Verde');
     expect(host.querySelector('.batch-timeline-address')!.textContent).toBe('Local não informado');
     expect(host.querySelectorAll('.batch-timeline-details')).toHaveLength(1);
+  });
+
+  it('shows the batch status badge', () => {
+    expect(render(batch).querySelector('app-status-badge')?.textContent?.trim()).toBe('Em andamento');
+  });
+
+  it('shows a pending batch as not produced yet, without a rejection reason', () => {
+    const card = render({ ...batch, status: 'PENDING', producedAt: null, stages: [], currentStage: null });
+    expect(card.querySelector('app-status-badge')?.textContent?.trim()).toBe('Pendente');
+    expect(card.textContent).toContain('Ainda não produzido');
+    expect(card.querySelector('[data-testid="batch-rejection"]')).toBeNull();
+  });
+
+  it('shows the reason of a rejected batch', () => {
+    const card = render({ ...batch, status: 'REJECTED', rejectionReason: 'Produto em entressafra.', producedAt: null, stages: [] });
+    expect(card.querySelector('[data-testid="batch-rejection"]')?.textContent).toContain('Produto em entressafra.');
   });
 });

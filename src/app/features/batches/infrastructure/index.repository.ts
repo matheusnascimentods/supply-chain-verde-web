@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { Batch, BatchPage, NewBatch } from '../domain/index.model';
+import { Batch, BatchPage, BatchStatus, NewBatch } from '../domain/index.model';
 import { batchPageSchema, batchResponseSchema } from './index.dto';
 
 @Injectable({ providedIn: 'root' })
@@ -10,8 +10,9 @@ export class BatchesRepository {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/batches`;
 
-  load(params: { page: number; size: number }): Observable<BatchPage> {
-    return this.http.get<unknown>(this.base, { params: { page: String(params.page), size: String(params.size) } }).pipe(
+  load(params: { page: number; size: number; status?: BatchStatus | null }): Observable<BatchPage> {
+    const query = { page: String(params.page), size: String(params.size), ...(params.status ? { status: params.status } : {}) };
+    return this.http.get<unknown>(this.base, { params: query }).pipe(
       map((raw) => {
         const page = batchPageSchema.parse(raw);
         return { items: page.content, page: page.page, totalPages: page.totalPages, totalElements: page.totalElements };

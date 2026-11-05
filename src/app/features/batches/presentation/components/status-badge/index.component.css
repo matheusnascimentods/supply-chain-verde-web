@@ -1,0 +1,14 @@
+@reference "tailwindcss";
+
+:host {
+  @apply inline-flex rounded-full px-2.5 py-1 text-xs font-semibold;
+}
+:host([data-status='PENDING']) {
+  @apply bg-amber-100 text-amber-900;
+}
+:host([data-status='ACTIVE']) {
+  @apply bg-green-100 text-green-800;
+}
+:host([data-status='REJECTED']) {
+  @apply bg-red-100 text-red-800;
+}

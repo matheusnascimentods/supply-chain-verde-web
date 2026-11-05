@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BATCH_STATUSES } from '../domain/index.model';
 import { STAGE_TYPES } from '../domain/stage/index.model';
 import { stageResponseSchema } from './stage/index.dto';
 
@@ -8,8 +9,12 @@ export const batchResponseSchema = z.object({
   productName: z.string().nullable(),
   supplierId: z.number().nullable(),
   supplierName: z.string().nullable(),
+  marketId: z.number().nullable(),
+  marketName: z.string().nullable(),
+  status: z.enum(BATCH_STATUSES),
+  rejectionReason: z.string().nullable(),
   quantity: z.number(),
-  producedAt: z.string(),
+  producedAt: z.string().nullable(),
   currentStage: z.enum(STAGE_TYPES).nullable(),
   stages: z.array(stageResponseSchema),
 });

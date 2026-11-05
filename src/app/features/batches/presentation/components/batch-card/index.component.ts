@@ -3,9 +3,11 @@ import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import { Batch } from '../../../domain/index.model';
 import { PRODUCT_UNIT_SYMBOLS, ProductUnit } from '../../../domain/product/index.model';
 import { STAGE_TYPE_LABELS, Stage, StageAddress, TRANSPORT_MODE_LABELS } from '../../../domain/stage/index.model';
+import { StatusBadgeComponent } from '../status-badge/index.component';
 
 @Component({
   selector: 'app-batch-card',
+  imports: [StatusBadgeComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

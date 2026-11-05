@@ -126,11 +126,11 @@ Depende da API Task 3.
 
 Depende da API Task 4.
 
-- [ ] `status`, `rejectionReason`, `marketId` e `marketName` no DTO e no modelo; `producedAt` nullable (plan §5)
-- [ ] `status` no repositório e filtro `app-enum-select` na lista (RF-14)
-- [ ] Componente `status-badge` no card
-- [ ] `canCreateBatch` por tipo de companhia e `canAddStageTo` por status
-- [ ] Testes de regras, repositório, card e lista
+- [x] `status`, `rejectionReason`, `marketId` e `marketName` no DTO e no modelo; `producedAt` nullable (plan §5)
+- [x] `status` no repositório e filtro `app-enum-select` na lista (RF-14)
+- [x] Componente `status-badge` no card
+- [x] `canCreateBatch` por tipo de companhia e `canAddStageTo` por status
+- [x] Testes de regras, repositório, card e lista
 
 **Arquivos (~15):** DTO, modelo, repositório + spec, regras + spec, `status-badge` (ts, css, spec), batch-card (ts, html, spec), `pages/list` (ts, html, spec).
 
