@@ -1,5 +1,5 @@
 <app-modal labelledBy="reject-modal-title" describedBy="reject-modal-description" initialFocusSelector="input" [closeOnEscape]="!saving()" [closeOnBackdrop]="!saving()" (dismissed)="dismissed.emit()">
-  <form class="reject-form" (ngSubmit)="submit()" novalidate>
+  <form class="reject-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <header>
       <p class="reject-eyebrow">Lote #{{ batch().batchId }}</p>
       <h2 id="reject-modal-title" class="reject-title">Recusar lote</h2>
@@ -9,7 +9,7 @@
       </p>
     </header>
 
-    <app-text-field id="reject-reason" label="Motivo da recusa" [formControl]="reason" [required]="true" [maxLength]="maxLength" placeholder="Ex.: Sem capacidade de produção para o período." [error]="reasonError()" />
+    <app-text-field id="reject-reason" label="Motivo da recusa" formControlName="reason" [required]="true" [maxLength]="maxLength" placeholder="Ex.: Sem capacidade de produção para o período." [error]="reasonError()" />
 
     @if (error()) { <p class="reject-error" role="alert">{{ error() }}</p> }
 

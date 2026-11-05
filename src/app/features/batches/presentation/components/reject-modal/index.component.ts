@@ -24,8 +24,10 @@ export class BatchRejectModalComponent {
   protected readonly maxLength = MAX_REJECTION_REASON_LENGTH;
   readonly saving = signal(false);
   readonly error = signal('');
+  // O [formGroup] no <form> é o que faz o (ngSubmit) do Angular existir; sem ele, o navegador envia o form sozinho.
   // Espaços em branco não contam como motivo.
-  readonly reason = inject(FormBuilder).nonNullable.control('', [Validators.required, Validators.pattern(/\S/)]);
+  readonly form = inject(FormBuilder).nonNullable.group({ reason: ['', [Validators.required, Validators.pattern(/\S/)]] });
+  readonly reason = this.form.controls.reason;
 
   protected reasonError(): string {
     return this.reason.touched && this.reason.invalid ? 'Informe o motivo da recusa.' : '';

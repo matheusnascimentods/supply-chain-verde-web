@@ -52,6 +52,15 @@ describe('BatchRejectModalComponent', () => {
     expect(rejected).toBe(1);
   });
 
+  it('submits through Angular when the confirm button is clicked, without a native form submission', () => {
+    const modal = render();
+    type('Sem capacidade de produção.');
+    const submitEvent = new SubmitEvent('submit', { bubbles: true, cancelable: true });
+    modal.querySelector('form')!.dispatchEvent(submitEvent);
+    expect(submitEvent.defaultPrevented).toBe(true);
+    expect(execute).toHaveBeenCalledWith(7, 'Sem capacidade de produção.');
+  });
+
   it('shows the API message when the batch is no longer pending', () => {
     render();
     execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'Lote não está pendente.' } })));
