@@ -6,7 +6,7 @@ import { DashboardFacade } from './index.facade';
 
 describe('DashboardFacade', () => {
   const recent = { batchId: 1, productName: 'Café', supplierName: 'Fazenda', quantity: 500, unit: 'KG' as const, status: 'TRANSPORT' as const };
-  const summary = { activeBatches: 12, expiringCertifications: 3, suppliers: 8, monthlyEmissionKgCo2e: 42.5, recentBatches: [recent] };
+  const summary = { activeBatches: 12, expiringCertifications: 3, suppliers: 8, pendingBatches: null, monthlyEmissionKgCo2e: 42.5, recentBatches: [recent] };
   let repository: { loadSummary: ReturnType<typeof vi.fn>; loadEmissions: ReturnType<typeof vi.fn> };
   const series = [{ month: '2026-01', co2Kg: 100 }, { month: '2026-02', co2Kg: 80 }];
   let currentUser: { load: ReturnType<typeof vi.fn> };

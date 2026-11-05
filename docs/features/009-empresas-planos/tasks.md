@@ -84,9 +84,9 @@ Depende da API Task 3 e da Task 4.
 
 Depende da API Task 3 e da Task 4.
 
-- [ ] `pendingBatches` nullable no schema e no modelo do summary
-- [ ] Card "Lotes pendentes" para o fornecedor, com link para `/batches?status=PENDING` (RF-08b)
-- [ ] Testes de regras e da página
+- [x] `pendingBatches` nullable no schema e no modelo do summary
+- [x] Card "Lotes pendentes" para o fornecedor, com link para `/batches?status=PENDING` (RF-08b)
+- [x] Testes de regras e da página
 
 **Arquivos (~8):** DTO, modelo, regras + spec, repositório spec, página (ts, html, spec).
 

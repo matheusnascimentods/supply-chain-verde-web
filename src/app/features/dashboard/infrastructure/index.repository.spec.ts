@@ -21,6 +21,7 @@ describe('DashboardRepository', () => {
       activeBatches: 12,
       expiringCertifications: 3,
       suppliers: 8,
+      pendingBatches: null,
       monthlyEmissionKgCo2e: 42.5,
       recentBatches: [
         {
@@ -50,7 +51,20 @@ describe('DashboardRepository', () => {
       activeBatches: 0,
       expiringCertifications: 0,
       suppliers: 0,
+      pendingBatches: null,
       monthlyEmissionKgCo2e: 0,
+      recentBatches: [],
+    });
+  });
+
+  it('accepts a supplier company summary, with pending batches and no supplier count', () => {
+    repository.loadSummary(10).subscribe((response) => expect(response).toMatchObject({ suppliers: null, pendingBatches: 4 }));
+    http.expectOne(`${environment.apiUrl}/dashboard/summary?limit=10`).flush({
+      activeBatches: 2,
+      expiringCertifications: 1,
+      suppliers: null,
+      pendingBatches: 4,
+      monthlyEmissionKgCo2e: 10,
       recentBatches: [],
     });
   });

@@ -18,7 +18,13 @@
     } @else if (facade.summary()) {
       <section class="dashboard-metrics-grid" aria-label="Indicadores da operação">
         @for (metric of metrics(); track metric.label) {
-          <app-metric-card [label]="metric.label" [value]="metric.value" [tone]="metric.tone" />
+          @if (metric.link; as link) {
+            <a class="dashboard-metric-link" [routerLink]="link.path" [queryParams]="link.query" data-testid="pending-batches-link">
+              <app-metric-card [label]="metric.label" [value]="metric.value" [tone]="metric.tone" />
+            </a>
+          } @else {
+            <app-metric-card [label]="metric.label" [value]="metric.value" [tone]="metric.tone" />
+          }
         }
       </section>
     } @else {

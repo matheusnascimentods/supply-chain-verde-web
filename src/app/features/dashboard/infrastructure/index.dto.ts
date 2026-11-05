@@ -14,7 +14,9 @@ export const recentBatchSchema = z.object({
 export const dashboardSummaryResponseSchema = z.object({
   activeBatches: z.number().nonnegative(),
   expiringCertifications: z.number().nonnegative(),
-  suppliers: z.number().nonnegative(),
+  // RN-13c: o mercado recebe `suppliers` e o fornecedor recebe `pendingBatches`; o outro vem nulo.
+  suppliers: z.number().nonnegative().nullable(),
+  pendingBatches: z.number().nonnegative().nullable(),
   monthlyEmissionKgCo2e: z.number().nonnegative(),
   recentBatches: z.array(recentBatchSchema),
 });

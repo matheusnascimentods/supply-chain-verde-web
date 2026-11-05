@@ -1,5 +1,5 @@
-import { RecentBatch } from './index.model';
-import { defaultRange, describeDistribution, greetingFor, periodTotal, periodVariation, rangeProblem, stageDistribution } from './index.rules';
+import { DashboardSummary, RecentBatch } from './index.model';
+import { defaultRange, describeDistribution, greetingFor, partnerMetric, periodTotal, periodVariation, rangeProblem, stageDistribution } from './index.rules';
 
 describe('dashboard rules', () => {
   const batch = (status: RecentBatch['status']) => ({ status }) as RecentBatch;
@@ -54,5 +54,17 @@ describe('dashboard rules', () => {
     expect(periodVariation(series)).toBeCloseTo(-30.4);
     expect(periodVariation([{ month: '2026-01', co2Kg: 10 }, { month: '2026-02', co2Kg: 0 }])).toBeNull();
     expect(periodVariation([])).toBeNull();
+  });
+
+  describe('partnerMetric', () => {
+    const base: DashboardSummary = { activeBatches: 1, expiringCertifications: 0, suppliers: null, pendingBatches: null, monthlyEmissionKgCo2e: 0, recentBatches: [] };
+
+    it('counts the suppliers worked with for a retailer', () => {
+      expect(partnerMetric({ ...base, suppliers: 8 })).toEqual({ label: 'Fornecedores', count: 8, pendingLink: false });
+    });
+
+    it('swaps the card for the pending batches of a supplier company, even at zero', () => {
+      expect(partnerMetric({ ...base, pendingBatches: 0 })).toEqual({ label: 'Lotes pendentes', count: 0, pendingLink: true });
+    });
   });
 });
