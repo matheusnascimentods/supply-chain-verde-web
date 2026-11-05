@@ -20,6 +20,7 @@ describe('BatchListComponent', () => {
       status: signal(null),
       setStatus: vi.fn(),
       canAddStageTo: () => true,
+      canReject: () => false,
       unitOf: () => 'KG',
       load: vi.fn(),
       previousPage: vi.fn(),
@@ -66,5 +67,18 @@ describe('BatchListComponent', () => {
   it('explains an empty filtered list', () => {
     const page = render({ items: signal([]), status: signal('REJECTED') });
     expect(page.textContent).toContain('Nenhum lote com esse status');
+  });
+
+  it('opens the reject modal from a card and reloads the list after rejecting', () => {
+    const load = vi.fn();
+    const page = render({ canReject: () => true, load });
+    page.querySelector<HTMLButtonElement>('.batch-reject')!.click();
+    fixture.detectChanges();
+    expect(page.querySelector('app-batch-reject-modal')).not.toBeNull();
+
+    fixture.componentInstance.batchRejected();
+    fixture.detectChanges();
+    expect(page.querySelector('app-batch-reject-modal')).toBeNull();
+    expect(load).toHaveBeenCalled();
   });
 });

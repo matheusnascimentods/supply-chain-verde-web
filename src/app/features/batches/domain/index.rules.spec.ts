@@ -1,6 +1,6 @@
 import { Batch } from './index.model';
 import type { SupplierRanking } from '../../suppliers';
-import { canAddStageTo, canCalculateEmission, canCreateBatch, isRecommended } from './index.rules';
+import { canAddStageTo, canCalculateEmission, canCreateBatch, canReject, isRecommended } from './index.rules';
 
 describe('batches rules', () => {
   const batch = { currentStage: 'TRANSPORT', status: 'ACTIVE' } as Batch;
@@ -34,6 +34,17 @@ describe('batches rules', () => {
     expect(canAddStageTo('admin', 'supplier', pending)).toBe(true);
     expect(canAddStageTo('admin', 'market', pending)).toBe(false);
     expect(canAddStageTo('manager', 'market', pending)).toBe(false);
+  });
+
+  it('lets only the supplier company reject a pending batch', () => {
+    const pending = { ...batch, status: 'PENDING' } as Batch;
+    expect(canReject('supplier', 'supplier', pending)).toBe(true);
+    expect(canReject('admin', 'supplier', pending)).toBe(true);
+    expect(canReject('admin', 'market', pending)).toBe(false);
+    expect(canReject('manager', 'market', pending)).toBe(false);
+    expect(canReject('platform_admin', null, pending)).toBe(false);
+    expect(canReject('supplier', 'supplier', batch)).toBe(false);
+    expect(canReject('supplier', 'supplier', { ...batch, status: 'REJECTED' })).toBe(false);
   });
 
   it('recommends only the first supplier of the first page with emission history', () => {

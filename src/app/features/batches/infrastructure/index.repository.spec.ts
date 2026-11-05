@@ -49,6 +49,16 @@ describe('BatchesRepository', () => {
     expect(failed).toBe(true);
   });
 
+  it('rejects a batch with the reason and parses the updated batch', () => {
+    let status = '';
+    repository.reject(7, 'Sem capacidade de produção.').subscribe((updated) => (status = updated.status));
+    const request = http.expectOne(`${base}/7/reject`);
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({ reason: 'Sem capacidade de produção.' });
+    request.flush({ ...batch, status: 'REJECTED', rejectionReason: 'Sem capacidade de produção.', producedAt: null });
+    expect(status).toBe('REJECTED');
+  });
+
   it('creates a batch', () => {
     const newBatch = { productId: 3, supplierId: 9, quantity: 250, producedAt: '2026-05-20' };
     repository.create(newBatch).subscribe((created) => expect(created.batchId).toBe(7));

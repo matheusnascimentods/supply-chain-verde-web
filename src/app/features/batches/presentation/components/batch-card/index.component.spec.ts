@@ -90,4 +90,16 @@ describe('BatchCardComponent', () => {
     const card = render({ ...batch, status: 'REJECTED', rejectionReason: 'Produto em entressafra.', producedAt: null, stages: [] });
     expect(card.querySelector('[data-testid="batch-rejection"]')?.textContent).toContain('Produto em entressafra.');
   });
+
+  it('emits reject only when allowed', () => {
+    const pending = { ...batch, status: 'PENDING' as const, producedAt: null, stages: [], currentStage: null };
+    expect(render(pending).querySelector('.batch-reject')).toBeNull();
+
+    fixture.componentRef.setInput('canReject', true);
+    fixture.detectChanges();
+    let rejected = 0;
+    fixture.componentInstance.reject.subscribe(() => rejected++);
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.batch-reject')!.click();
+    expect(rejected).toBe(1);
+  });
 });

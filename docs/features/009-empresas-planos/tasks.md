@@ -140,10 +140,10 @@ Depende da API Task 4.
 
 Depende da API Task 4 e da Task 9.
 
-- [ ] Regra `canReject(batch)`
-- [ ] `PATCH /batches/{id}/reject` no repositório e use case de recusa
-- [ ] `reject-modal` com motivo obrigatório; **Recusar** no card e motivo no lote recusado (RF-15)
-- [ ] Testes de regra, use case, repositório e modal
+- [x] Regra `canReject(batch)`
+- [x] `PATCH /batches/{id}/reject` no repositório e use case de recusa
+- [x] `reject-modal` com motivo obrigatório; **Recusar** no card e motivo no lote recusado (RF-15)
+- [x] Testes de regra, use case, repositório e modal
 
 **Arquivos (~14):** regras + spec, repositório + spec, use case + spec, `reject-modal` (ts, html, css, spec), batch-card (ts, html), facade.
 

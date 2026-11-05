@@ -23,6 +23,11 @@ export function canAddStageTo(role: Role, companyType: Company, batch: Batch): b
   return batch.status !== 'PENDING' || companyType === 'supplier';
 }
 
+// RF-15: o fornecedor recusa um lote pendente (RN-19 da API); recusado é final.
+export function canReject(role: Role, companyType: Company, batch: Batch): boolean {
+  return companyType === 'supplier' && (role === 'admin' || role === 'supplier') && batch.status === 'PENDING';
+}
+
 // O ranking recomendado vem ordenado pela API; só o topo da primeira página é o melhor, e só se tiver histórico.
 export function isRecommended(supplier: SupplierRanking, index: number, page: number): boolean {
   return page === 0 && index === 0 && supplier.co2KgPerUnit != null;

@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { BATCH_STATUSES, Batch, BatchStatus } from '../domain/index.model';
 import { ProductUnit } from '../domain/product/index.model';
-import { canAddStageTo, canCreateBatch } from '../domain/index.rules';
+import { canAddStageTo, canCreateBatch, canReject } from '../domain/index.rules';
 import { BatchesRepository } from '../infrastructure/index.repository';
 import { ProductsRepository } from '../infrastructure/product/index.repository';
 
@@ -82,6 +82,10 @@ export class BatchesListFacade {
 
   canAddStageTo(batch: Batch): boolean {
     return canAddStageTo(this.session.role(), this.session.companyType(), batch);
+  }
+
+  canReject(batch: Batch): boolean {
+    return canReject(this.session.role(), this.session.companyType(), batch);
   }
 
   unitOf(batch: Batch): ProductUnit | undefined {
