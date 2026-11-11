@@ -10,7 +10,7 @@
 
 > Rastreabilidade pública de lotes, gestão de fornecedores e acompanhamento das emissões de CO₂ da cadeia de suprimentos.
 
-O **Supply Chain Verde Web** é uma Single Page Application (SPA) desenvolvida em **Angular 21** e **TypeScript**, organizada em **core / shared / features**, com cada feature separada nas camadas **domain, application, infrastructure e presentation**. A aplicação consome a [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api) e coloca consumidores, fornecedores, gestores, auditores e administradores em contato com os fluxos de rastreabilidade, emissões, certificações, relatórios e auditoria.
+O **Supply Chain Verde Web** é um projeto acadêmico da disciplina **Banco de Dados**, do curso de **Ciência da Computação** da **Universidade Anhembi Morumbi**: uma Single Page Application (SPA) desenvolvida em **Angular 21** e **TypeScript**, organizada em **core / shared / features**, com cada feature separada nas camadas **domain, application, infrastructure e presentation**. A aplicação consome a [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api) e coloca consumidores, fornecedores, gestores, auditores e administradores em contato com os fluxos de rastreabilidade, emissões, certificações, relatórios e auditoria.
 
 ```mermaid
 sequenceDiagram
@@ -509,6 +509,12 @@ O Angular não lê variáveis de ambiente em tempo de execução: a configuraç�
 - **Auditoria somente leitura**: o frontend só exibe os eventos gravados pelas triggers do banco; não cria logs nem define o autor das operações.
 - **Sem refresh token**: quando o JWT expira, o usuário precisa entrar de novo.
 - **Credenciais seed**: a senha de demonstração só deve ser usada localmente.
+
+---
+
+## 🎓 Contexto Acadêmico
+
+Projeto acadêmico desenvolvido para a disciplina **Banco de Dados**, do curso de **Ciência da Computação** da **Universidade Anhembi Morumbi**. A API consumida por este frontend está no repositório [supply-chain-verde-api](https://github.com/matheusnascimentods/supply-chain-verde-api).
 
 ---
 
