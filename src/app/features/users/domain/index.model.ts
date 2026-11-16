@@ -17,12 +17,10 @@ export interface UserPage {
   totalPages: number;
 }
 
-// O usuário nasce na companhia de quem cria (RN-09); a API recusa perfis fora do tipo da companhia.
-export const newUserSchema = z.object({
-  name: z.string().min(1),
+// O convidado entra na companhia de quem convida (RN-09); a API recusa perfis fora do tipo da companhia.
+export const newInviteSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1),
   role: userRoleSchema,
 });
 
-export type NewUser = z.output<typeof newUserSchema>;
+export type NewInvite = z.output<typeof newInviteSchema>;

@@ -4,6 +4,7 @@ export interface ToastItem {
   id: string;
   message: string;
   duration?: number;
+  variant?: 'error' | 'success';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -13,10 +14,10 @@ export class ErrorToastService {
 
   private counter = 0;
 
-  show(message: string, duration = 5000): string {
+  show(message: string, duration = 5000, variant: ToastItem['variant'] = 'error'): string {
     this.counter += 1;
     const id = `toast-${Date.now()}-${this.counter}`;
-    const newToast: ToastItem = { id, message, duration };
+    const newToast: ToastItem = { id, message, duration, variant };
 
     this._toasts.update((current) => [...current, newToast]);
 
@@ -27,6 +28,10 @@ export class ErrorToastService {
     }
 
     return id;
+  }
+
+  success(message: string, duration = 5000): string {
+    return this.show(message, duration, 'success');
   }
 
   dismiss(id: string): void {

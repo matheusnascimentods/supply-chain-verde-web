@@ -80,11 +80,6 @@ export class UsersListFacade {
     this.reload();
   }
 
-  reloadFromFirstPage(): void {
-    this.offset.set(0);
-    this.reload();
-  }
-
   updateRole(user: User, role: UserRole): void {
     if (!this.canChangeRoles() || user.role === role) return;
     this.updatingRoleId.set(user.userId);

@@ -69,4 +69,14 @@ describe('ErrorToastComponent', () => {
     expect(item).toBeTruthy();
     expect(item?.getAttribute('aria-live')).toBe('assertive');
   });
+
+  it('renders a success toast in green, as a polite status', () => {
+    service.success('Convite enviado.');
+    fixture.detectChanges();
+
+    const item = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="toast-item"]');
+    expect(item?.classList).toContain('toast-item--success');
+    expect(item?.getAttribute('role')).toBe('status');
+    expect(item?.getAttribute('aria-live')).toBe('polite');
+  });
 });

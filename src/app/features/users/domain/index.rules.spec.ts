@@ -1,4 +1,4 @@
-import { newUserSchema } from './index.model';
+import { newInviteSchema } from './index.model';
 import { canChangeRoles, canCreateUsers, creatableRoles } from './index.rules';
 
 describe('users rules', () => {
@@ -24,8 +24,8 @@ describe('users rules', () => {
     expect(creatableRoles(null)).toEqual([]);
   });
 
-  it('creates users without a supplier link', () => {
-    const user = { name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'supplier' };
-    expect(newUserSchema.parse({ ...user, supplierId: 7 })).toEqual(user);
+  it('invites with only the e-mail and the role', () => {
+    const invite = { email: 'ana@example.com', role: 'supplier' };
+    expect(newInviteSchema.parse({ ...invite, name: 'Ana', password: 'secret', supplierId: 7 })).toEqual(invite);
   });
 });

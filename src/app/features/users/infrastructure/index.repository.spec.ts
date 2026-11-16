@@ -43,21 +43,14 @@ describe('UsersRepository', () => {
     expect(failed).toBe(true);
   });
 
-  it('creates a user sending the role in uppercase', () => {
-    repository.create({ name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'manager' }).subscribe((user) => {
-      expect(user.role).toBe('manager');
-    });
-    const request = http.expectOne(base);
+  it('sends an invite with the role in uppercase', () => {
+    let done = false;
+    repository.invite({ email: 'ana@example.com', role: 'manager' }).subscribe(() => (done = true));
+    const request = http.expectOne(`${environment.apiUrl}/invites`);
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({ name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'MANAGER' });
-    request.flush(apiUser);
-  });
-
-  it('parses the user company, with its type in lower case', () => {
-    let created: unknown;
-    repository.create({ name: 'Ana', email: 'ana@example.com', password: 'secret', role: 'supplier' }).subscribe((user) => (created = user));
-    http.expectOne(base).flush({ ...apiUser, role: 'SUPPLIER', companyId: 9, companyType: 'SUPPLIER', companyName: 'Fazenda Verde' });
-    expect(created).toMatchObject({ role: 'supplier', companyId: 9, companyType: 'supplier', companyName: 'Fazenda Verde' });
+    expect(request.request.body).toEqual({ email: 'ana@example.com', role: 'MANAGER' });
+    request.flush(null, { status: 201, statusText: 'Created' });
+    expect(done).toBe(true);
   });
 
   it('updates the role of a user', () => {

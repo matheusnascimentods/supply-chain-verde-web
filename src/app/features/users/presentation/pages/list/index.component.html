@@ -7,8 +7,8 @@
         <p class="users-subtitle">Gerencie os usuários e os perfis de acesso ao sistema.</p>
       </div>
       @if (facade.canCreate()) {
-        <button appButton type="button" variant="primary" (click)="createModalOpen.set(true)">
-          + Adicionar usuário
+        <button appButton type="button" variant="primary" (click)="inviteModalOpen.set(true)">
+          + Convidar usuário
         </button>
       }
     </header>
@@ -55,7 +55,7 @@
     }
   </div>
 
-  @if (createModalOpen()) {
-    <app-create-user-modal (created)="userCreated()" (dismissed)="createModalOpen.set(false)" />
+  @if (inviteModalOpen()) {
+    <app-invite-user-modal (invited)="userInvited($event)" (dismissed)="inviteModalOpen.set(false)" />
   }
 </main>
