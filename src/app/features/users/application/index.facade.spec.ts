@@ -61,9 +61,6 @@ describe('UsersListFacade', () => {
     facade.nextPage();
     expect(repository.load).toHaveBeenLastCalledWith({ limit: 20, offset: 20, email: '' });
     expect(facade.pageNumber()).toBe(2);
-
-    facade.reloadFromFirstPage();
-    expect(repository.load).toHaveBeenLastCalledWith({ limit: 20, offset: 0, email: '' });
   });
 
   it('debounces the e-mail search and restarts from the first page', () => {

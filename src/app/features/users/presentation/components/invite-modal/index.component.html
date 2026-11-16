@@ -1,0 +1,28 @@
+<app-modal labelledBy="user-invite-title" size="lg" initialFocusSelector="input" [closeOnEscape]="!saving()" [closeOnBackdrop]="!saving()" (dismissed)="dismissed.emit()">
+  <div class="invite-header">
+    <div>
+      <h2 id="user-invite-title" class="invite-title">Convidar usuário</h2>
+      <p class="invite-subtitle">O convidado recebe um link por email para definir nome e senha.</p>
+    </div>
+    <button type="button" class="invite-close" aria-label="Fechar" [disabled]="saving()" (click)="dismissed.emit()">✕</button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="invite-form">
+    <div class="invite-row">
+      <label class="invite-field" for="invite-email">Email
+        <input id="invite-email" class="invite-input" type="email" autocomplete="off" formControlName="email" />
+        @if (form.controls.email.touched && form.controls.email.hasError('required')) { <span class="invite-field-error">Informe o email.</span> }
+        @else if (form.controls.email.touched && form.controls.email.hasError('email')) { <span class="invite-field-error">Informe um email válido.</span> }
+      </label>
+      <label class="invite-field" for="invite-role">Perfil
+        <app-enum-select id="invite-role" [options]="roles" [labels]="roleLabels" [formControlName]="'role'" />
+        @if (form.controls.role.touched && form.controls.role.hasError('required')) { <span class="invite-field-error">Selecione um perfil.</span> }
+      </label>
+    </div>
+    @if (error()) { <p role="alert" class="invite-error">{{ error() }}</p> }
+    <div class="invite-actions">
+      <button type="button" class="invite-cancel" [disabled]="saving()" (click)="dismissed.emit()">Cancelar</button>
+      <button type="submit" class="invite-submit" [disabled]="form.invalid || saving()">{{ saving() ? 'Enviando…' : 'Enviar convite' }}</button>
+    </div>
+  </form>
+</app-modal>

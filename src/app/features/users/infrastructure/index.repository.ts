@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { UserRole } from '../../../core/auth/session/index.model';
-import { NewUser, User, UserPage } from '../domain/index.model';
+import { NewInvite, User, UserPage } from '../domain/index.model';
 import { userPageSchema, userResponseSchema } from './index.dto';
 
 @Injectable({ providedIn: 'root' })
@@ -22,10 +22,9 @@ export class UsersRepository {
     );
   }
 
-  create(user: NewUser): Observable<User> {
-    return this.http
-      .post<unknown>(this.base, { ...user, role: user.role.toUpperCase() })
-      .pipe(map((raw) => userResponseSchema.parse(raw)));
+  // 201 sem corpo.
+  invite(invite: NewInvite): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/invites`, { ...invite, role: invite.role.toUpperCase() });
   }
 
   updateRole(userId: number, role: UserRole): Observable<User> {

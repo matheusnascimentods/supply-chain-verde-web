@@ -12,10 +12,10 @@ As dependências "API Task N" apontam para `supply-chain-verde-api/docs/features
 
 Depende da API Task 4, que remove o `POST /users`. Pode começar depois da API Task 2, mas o merge só acontece depois da Task 4, para o front não perder a criação antes da hora.
 
-- [ ] `NewUser` → `NewInvite` e `UsersRepository.create` → `invite` (`POST /invites`) (plan §1)
-- [ ] Use case `create-user` → `send-invite`
-- [ ] `create-modal` → `invite-modal` (só email e perfil) (RF-02)
-- [ ] Lista: botão **Convidar usuário** e toast de sucesso (RF-01, RF-03, RF-04)
+- [x] `NewUser` → `NewInvite` e `UsersRepository.create` → `invite` (`POST /invites`) (plan §1)
+- [x] Use case `create-user` → `send-invite`
+- [x] `create-modal` → `invite-modal` (só email e perfil) (RF-02)
+- [x] Lista: botão **Convidar usuário** e toast de sucesso (RF-01, RF-03, RF-04)
 
 **Arquivos (~13):** `domain/index.model.ts`, repositório + spec, use case + spec, `invite-modal` (ts, html, css, spec), `pages/list` (ts, html, spec), `index.facade.ts`.
 

@@ -6,6 +6,7 @@ describe('apiErrorMessage', () => {
 
   it('uses the API message for business errors', () => {
     expect(apiErrorMessage(response(409, 'Email já cadastrado: ana@x.com'), 'padrão')).toBe('Email já cadastrado: ana@x.com');
+    expect(apiErrorMessage(response(502, 'Falha ao enviar o email.'), 'padrão')).toBe('Falha ao enviar o email.');
     expect(apiErrorMessage(response(400, 'Senha atual incorreta.'), 'padrão')).toBe('Senha atual incorreta.');
   });
 

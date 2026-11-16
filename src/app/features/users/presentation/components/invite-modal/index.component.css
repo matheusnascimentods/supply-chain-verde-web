@@ -1,41 +1,41 @@
 @reference "tailwindcss";
 
-.create-user-header {
+.invite-header {
   @apply mb-5 flex items-start justify-between gap-4;
 }
-.create-user-title {
+.invite-title {
   @apply text-xl font-bold text-slate-900;
 }
-.create-user-subtitle {
+.invite-subtitle {
   @apply mt-1 text-sm text-slate-500;
 }
-.create-user-close {
+.invite-close {
   @apply rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-green-600 disabled:opacity-50;
 }
-.create-user-form {
+.invite-form {
   @apply grid gap-4;
 }
-.create-user-row {
+.invite-row {
   @apply grid gap-4 sm:grid-cols-2;
 }
-.create-user-field {
+.invite-field {
   @apply grid gap-1.5 text-sm font-medium text-slate-700;
 }
-.create-user-input {
+.invite-input {
   @apply rounded-lg border border-slate-300 px-3 py-2.5 font-normal focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-100;
 }
-.create-user-field-error {
+.invite-field-error {
   @apply text-xs font-normal text-red-700;
 }
-.create-user-error {
+.invite-error {
   @apply rounded-lg bg-red-50 p-3 text-sm text-red-700;
 }
-.create-user-actions {
+.invite-actions {
   @apply mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end;
 }
-.create-user-cancel {
+.invite-cancel {
   @apply rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50;
 }
-.create-user-submit {
+.invite-submit {
   @apply rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50;
 }
