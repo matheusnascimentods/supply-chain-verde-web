@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** planejada.
+**Status:** concluída. Tasks 1 (#101), 2 (#102) e 3 entregues; `npm test` e `npm run cypress:run` verdes.
 
 As dependências "API Task N" apontam para `supply-chain-verde-api/docs/features/011-convites/tasks.md`. Cada task mexe em até 15 arquivos. Specs contam, e apagar ou mover conta como um arquivo. A lista de arquivos é uma estimativa.
 
@@ -41,9 +41,9 @@ Os estilos da página reusam os do cadastro, então não entra `.css` novo. Se p
 
 Depende das Tasks 1 e 2.
 
-- [ ] `cypress/e2e/invite.cy.ts` com os 3 cenários do plan §3
-- [ ] `<meta name="referrer" content="no-referrer">` em `src/index.html` (RF-11)
-- [ ] README: fluxo de convite no lugar da criação de usuário
+- [x] `cypress/e2e/invite.cy.ts` com os 3 cenários do plan §3
+- [x] `<meta name="referrer" content="no-referrer">` em `src/index.html` (RF-11)
+- [x] README: fluxo de convite no lugar da criação de usuário
 
 **Arquivos (~3):** `invite.cy.ts`, `src/index.html`, `README.md`.
 
