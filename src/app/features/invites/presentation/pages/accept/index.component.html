@@ -1,0 +1,54 @@
+<div class="sign-up-page">
+  <app-public-header />
+
+  <main class="sign-up-main">
+    @switch (state()) {
+      @case ('loading') {
+        <app-spinner [message]="'Carregando convite…'" />
+      }
+      @case ('invalid') {
+        <section class="sign-up-card" role="alert" data-testid="invite-invalid">
+          <h1 class="sign-up-step-title">Convite inválido ou expirado</h1>
+          <p class="sign-up-hint">Convite inválido ou expirado. Peça um novo convite ao administrador da sua empresa.</p>
+          <div class="sign-up-actions">
+            <a appButton routerLink="/login">Entrar</a>
+          </div>
+        </section>
+      }
+      @case ('error') {
+        <section class="sign-up-card" role="alert" data-testid="invite-error">
+          <p>Não foi possível carregar o convite.</p>
+          <div class="sign-up-actions">
+            <button appButton type="button" (click)="load()">Tentar novamente</button>
+          </div>
+        </section>
+      }
+      @default {
+        @if (invite(); as invite) {
+          <h1 class="sign-up-title">Aceite seu convite</h1>
+          <p class="sign-up-plan">Crie sua conta para entrar na <strong>{{ invite.companyName }}</strong>.</p>
+
+          <section class="sign-up-card" aria-labelledby="invite-form-title">
+            <h2 id="invite-form-title" class="sign-up-step-title">Seus dados</h2>
+            <dl class="sign-up-review">
+              <div><dt>Email</dt><dd>{{ invite.email }}</dd></div>
+              <div><dt>Empresa</dt><dd>{{ invite.companyName }}</dd></div>
+              <div><dt>Perfil</dt><dd>{{ roleLabels[invite.role] }}</dd></div>
+            </dl>
+            <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="sign-up-form">
+              <div class="sign-up-grid">
+                <app-text-field class="sign-up-wide" id="invite-name" label="Nome" formControlName="name" autocomplete="name" [required]="true" [error]="nameError()" />
+                <app-text-field id="invite-password" label="Senha" type="password" formControlName="password" autocomplete="new-password" [required]="true" [error]="passwordError()" />
+                <app-text-field id="invite-confirm-password" label="Confirmação da senha" type="password" formControlName="confirmPassword" autocomplete="new-password" [required]="true" [error]="confirmPasswordError()" />
+              </div>
+              <div class="sign-up-actions">
+                <button appButton type="submit" data-testid="invite-submit" [disabled]="saving()">{{ saving() ? 'Criando conta…' : 'Criar conta e entrar' }}</button>
+              </div>
+            </form>
+          </section>
+        }
+      }
+    }
+  </main>
+  <app-error-toast />
+</div>
