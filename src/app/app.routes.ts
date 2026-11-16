@@ -23,6 +23,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/signup').then((module) => module.signUpRoutes),
   },
   {
+    path: 'convites/:token',
+    canActivate: [guestGuard],
+    loadChildren: () => import('./features/invites').then((module) => module.routes),
+  },
+  {
     path: '',
     pathMatch: 'full',
     canActivate: [guestGuard],

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Injector, afterNextRender, inject, signal, viewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MIN_PASSWORD_LENGTH, passwordErrors } from '../../../../../shared/forms/password/index.validator';
 import { formatCompanyFieldsWhileTyping, lookUpCompanyZipCode } from '../../../../../shared/forms/company-fields/index.helper';
 import { ButtonComponent } from '../../../../../shared/ui/button/index.component';
 import { ErrorToastComponent } from '../../../../../shared/ui/error-toast/index.component';
@@ -10,7 +11,7 @@ import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.co
 import { digitsOnly } from '../../../../../shared/utils/format/index.utils';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 import { SignUpConflict, SignUpUseCase } from '../../../application/use-cases/sign-up/index.use-case';
-import { COMPANY_TYPE_LABELS, CompanySignup, MIN_PASSWORD_LENGTH, Plan, SignupCompanyType, passwordErrors } from '../../../domain/index.model';
+import { COMPANY_TYPE_LABELS, CompanySignup, Plan, SignupCompanyType } from '../../../domain/index.model';
 import { SignupRepository } from '../../../infrastructure/index.repository';
 import { PublicHeaderComponent } from '../../components/public-header/index.component';
 

@@ -25,11 +25,11 @@ Depende da API Task 4, que remove o `POST /users`. Pode começar depois da API T
 
 Depende da API Task 3.
 
-- [ ] Mover `passwordErrors`/`MIN_PASSWORD_LENGTH` para `shared/forms/password/` e atualizar o `signup` (plan §2)
-- [ ] Esqueleto da feature `invites`: `index.ts`, rotas, modelo, DTO Zod e repositório + spec
-- [ ] Use case `accept` + spec (grava a sessão)
-- [ ] Página `accept` com os estados loading, invalid e form (RF-06 a RF-10) + spec
-- [ ] Rota `convites/:token` com `guestGuard` em `app.routes.ts` (RF-05)
+- [x] Mover `passwordErrors`/`MIN_PASSWORD_LENGTH` para `shared/forms/password/` e atualizar o `signup` (plan §2)
+- [x] Esqueleto da feature `invites`: `index.ts`, rotas, modelo, DTO Zod e repositório + spec
+- [x] Use case `accept` + spec (grava a sessão)
+- [x] Página `accept` com os estados loading, invalid e form (RF-06 a RF-10) + spec
+- [x] Rota `convites/:token` com `guestGuard` em `app.routes.ts` (RF-05)
 
 **Arquivos (~15):** `shared/forms/password/index.validator.ts`, `signup/domain/index.model.ts`, `sign-up` page ts, `invites/index.ts`, `index.routes.ts`, `domain/index.model.ts`, DTO, repositório + spec, use case + spec, `pages/accept` (ts, html, spec), `app.routes.ts`.
 
