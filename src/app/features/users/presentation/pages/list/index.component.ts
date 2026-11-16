@@ -39,6 +39,6 @@ export class UserListComponent {
   // O convidado ainda não é usuário, então a lista não muda (RF-03).
   userInvited(email: string): void {
     this.inviteModalOpen.set(false);
-    this.toast.show(`Convite enviado para ${email}.`);
+    this.toast.success(`Convite enviado para ${email}.`);
   }
 }

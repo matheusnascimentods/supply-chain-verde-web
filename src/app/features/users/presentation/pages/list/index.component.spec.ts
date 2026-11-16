@@ -86,7 +86,7 @@ describe('UserListComponent', () => {
     fixture.componentInstance.inviteModalOpen.set(true);
     fixture.componentInstance.userInvited('ana@example.com');
     expect(fixture.componentInstance.inviteModalOpen()).toBe(false);
-    expect(toast.toasts().map((item) => item.message)).toEqual(['Convite enviado para ana@example.com.']);
+    expect(toast.toasts().map(({ message, variant }) => ({ message, variant }))).toEqual([{ message: 'Convite enviado para ana@example.com.', variant: 'success' }]);
     expect(facade['reload']).not.toHaveBeenCalled();
     toast.clear();
   });
