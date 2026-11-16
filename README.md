@@ -134,8 +134,9 @@ flowchart LR
 - **Relatório em PDF (005) concluído**: download do detalhe do relatório (fornecedor, emissões por etapa, lote e metodologia e certificações vigentes no período).
 - **Contrato novo da API (006) concluído**: só a próxima etapa da cadeia é oferecida, certificações não aceitam validade vencida nem reativação depois de vencidas, e o relatório avisa que é um retrato da data de geração.
 - **Hero section (007) concluída**: `/` apresenta o produto antes do login, com o CTA **Entrar**; quem já tem sessão vai direto para o `/dashboard`, e o logout volta para a hero.
-- **Testes**: 81 arquivos de testes unitários e 3 fluxos Cypress (login, cadastro de lote e rastreio público).
+- **Testes**: 96 arquivos de testes unitários e 5 fluxos Cypress (login, cadastro de empresa, cadastro de lote, rastreio público e convite de usuários).
 - **Meu perfil (008) concluído**: todos os perfis acessam `/profile` pelo menu do usuário e trocam nome e senha; o fornecedor edita também a empresa e o endereço.
+- **Convite de usuários (010) concluído**: o admin convida por email e perfil, e o convidado abre o link `/convites/:token`, define nome e senha e entra logado. A criação direta de usuário com senha deixou de existir.
 
 ### Principais Áreas da Aplicação
 - **`auth`**: login e criação da sessão.
@@ -144,7 +145,8 @@ flowchart LR
 - **`suppliers`**: listagem e ranking, cadastro e edição, perfil do fornecedor e modais de certificações e relatórios (com exportação em PDF).
 - **`certifications`**: domínio e formulário de certificações usados no modal do fornecedor.
 - **`batches`**: lotes, produtos, criação em etapas, registro de etapas, transporte e emissões.
-- **`users`**: listagem, criação e alteração de perfil de acesso.
+- **`users`**: listagem, convite por email e alteração de perfil de acesso.
+- **`invites`**: página pública de aceite do convite (nome e senha) com abertura da sessão.
 - **`audit-log`**: consulta de eventos e exportação CSV.
 
 ---
@@ -159,6 +161,7 @@ Todas as rotas carregam a feature sob demanda (`loadChildren`). As rotas autenti
 flowchart TD
     Root["/<br/>hero, guestGuard"] -->|Entrar| Login["/login"]
     Public["/rastreio/:batchId<br/>público"]
+    Invite["/convites/:token<br/>guestGuard"] -->|aceite, JWT| Shell
     Login -->|JWT| Shell["AppShellComponent<br/>authGuard"]
     Shell --> Dashboard["/dashboard"]
     Shell --> Suppliers["/suppliers"]
@@ -171,7 +174,7 @@ flowchart TD
     Suppliers -.modal.-> Reports[Relatórios + PDF]
     Batches -.modal.-> BatchCreate[Criação de lote<br/>produto e fornecedor inline]
     Batches -.modal.-> Stage[Registro de etapa<br/>transporte e emissão]
-    Users -.modal.-> UserCreate[Criação de usuário]
+    Users -.modal.-> UserInvite[Convite de usuário]
     Audit -.modal.-> Csv[Exportação CSV]
 ```
 
@@ -180,11 +183,12 @@ flowchart TD
 | `/` | Hero | Apresentação do produto e CTA **Entrar**; com sessão, redireciona para `/dashboard` | Público |
 | `/rastreio/:batchId` | Rastreio público | Jornada do lote, etapas, transporte e gráfico de CO₂ por etapa | **Público** |
 | `/login` | Login | Autenticação e criação da sessão | Público |
+| `/convites/:token` | Aceite de convite | Mostra empresa e perfil do convite, pede nome e senha e entra logado; link inválido ou expirado mostra o aviso. Com sessão, redireciona para `/dashboard` | Público |
 | `/dashboard` | Dashboard | Indicadores, lotes por etapa, emissões mensais e lotes recentes | Autenticado |
 | `/suppliers` | Fornecedores | Listagem e ranking com busca e paginação; modais de cadastro, certificações e relatórios | Autenticado |
 | `/profile` | Meu perfil | Nome e senha do próprio usuário; o fornecedor edita também empresa e endereço. Acesso pelo menu do usuário (`/suppliers/me` redireciona para cá) | Autenticado |
 | `/batches` | Lotes | Cards com a etapa atual e a timeline; criação de lote e registro de etapas | Autenticado |
-| `/users` | Usuários | Listagem com busca, criação e alteração de perfil | `admin`, `manager` |
+| `/users` | Usuários | Listagem com busca, convite de usuário por email e alteração de perfil | `admin`, `manager` |
 | `/audit-log` | Auditoria | Eventos por período com filtros e exportação CSV | `admin`, `auditor` |
 
 Rotas desconhecidas dentro da área autenticada redirecionam para `/dashboard`.
@@ -331,6 +335,7 @@ src/app/
 | [`docs/features/006-contrato-api`](docs/features/006-contrato-api/spec.md) | Ajustes ao contrato novo da API |
 | [`docs/features/007-hero-section`](docs/features/007-hero-section/spec.md) | Hero section antes do login |
 | [`docs/features/008-meu-perfil`](docs/features/008-meu-perfil/spec.md) | Meu perfil para todos os perfis |
+| [`docs/features/010-convites`](docs/features/010-convites/spec.md) | Convite de usuários por email |
 
 Cada pasta contém `spec.md` (problema e requisitos), `plan.md` (decisões técnicas) e `tasks.md` (tarefas e PRs).
 
@@ -472,8 +477,10 @@ O frontend consome os endpoints versionados sob `/api/v1`. Contratos completos, 
 | Método | Rota | Uso na interface | Tela |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/v1/users?limit=&offset=&email=` | Listagem paginada com busca por e-mail | Usuários |
-| `POST` | `/api/v1/users` | Criação de usuário | Modal de usuário |
+| `POST` | `/api/v1/invites` | Envio do convite por email | Modal de convite |
 | `PATCH` | `/api/v1/users/{userId}/role` | Alteração do perfil de acesso | Usuários |
+| `GET` | `/api/v1/invites/{token}` | Dados do convite (email, perfil e empresa) | Aceite de convite |
+| `POST` | `/api/v1/invites/accept` | Aceite com nome e senha; responde como o login | Aceite de convite |
 
 ### 🧾 Auditoria
 | Método | Rota | Uso na interface | Tela |
