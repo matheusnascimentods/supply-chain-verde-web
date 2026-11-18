@@ -99,6 +99,6 @@ Os quatro jobs atuais não mudam. O pacote também precisa ser marcado como púb
 - `npm run build`, seguido de `grep -r "localhost:8080" dist/` sem resultado.
 - Fumaça da imagem com a API local rodando (`./mvnw spring-boot:run`):
   - `docker build -t web .`
-  - `docker run --rm -p 8080:80 -e API_UPSTREAM=host.docker.internal:8080 --add-host=host.docker.internal:host-gateway web`
-  - login, navegação e F5 em `/dashboard` em `http://localhost:8080`.
+  - `docker run --rm -p 4200:80 -e API_UPSTREAM=host.docker.internal:8080 --add-host=host.docker.internal:host-gateway web`
+  - login, navegação e F5 em `/dashboard` em `http://localhost:4200`.
 - O teste com HTTPS e o compose completo fica na Task 3 da API.

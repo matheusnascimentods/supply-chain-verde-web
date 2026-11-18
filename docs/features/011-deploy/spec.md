@@ -36,7 +36,7 @@
 ## 5. Critérios de aceite
 
 - `npm run build` gera um bundle que chama `/api/v1/...`. Isso se confere buscando `localhost:8080` em `dist/`, o que não deve retornar nada.
-- `docker run -e SITE_ADDRESS=:80 -e API_UPSTREAM=host.docker.internal:8080 -p 8080:80 ...` abre o app em `http://localhost:8080`. O login funciona contra a API local, e um F5 em `/dashboard` não dá 404.
+- `docker run -e SITE_ADDRESS=:80 -e API_UPSTREAM=host.docker.internal:8080 -p 4200:80 ...` abre o app em `http://localhost:4200` (a 8080 do host fica com a API). O login funciona contra a API local, e um F5 em `/dashboard` não dá 404.
 - No compose de produção da API, `https://<domínio>/` abre o app e `https://<domínio>/swagger-ui.html` abre o Swagger.
 - O `.env.example` só lista variáveis que alguém realmente lê.
 - Um push na `main` com o CI verde publica `ghcr.io/matheusnascimentods/supply-chain-verde-web:latest`.
