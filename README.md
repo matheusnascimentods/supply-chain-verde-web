@@ -350,6 +350,8 @@ O workflow de GitHub Actions roda em pull requests e em pushes para `main`, com 
 
 Todos os jobs instalam as dependências com `npm ci` para builds reproduzíveis.
 
+Em push na `main`, depois que os quatro jobs passam, o job `publish` gera a imagem Docker e a publica em `ghcr.io/matheusnascimentods/supply-chain-verde-web`, com as tags `latest` e o SHA do commit.
+
 ---
 
 ## ⚡ Quick Start (Frontend + API)
@@ -376,6 +378,20 @@ npm start
 A aplicação estará disponível em: **`http://localhost:4200`**
 
 O rastreio público pode ser aberto direto pela URL, sem login: **`http://localhost:4200/rastreio/{batchId}`**
+
+### 4. Rodar a imagem Docker (opcional)
+
+A imagem usa o [Caddy](https://caddyserver.com/) para servir o build de produção. Ele devolve o `index.html` em qualquer rota da SPA e repassa `/api`, `/swagger-ui` e `/v3/api-docs` para a API. Com a API rodando em `http://localhost:8080`:
+
+```bash
+docker build -t supply-chain-verde-web .
+docker run --rm -p 4200:80 \
+  -e API_UPSTREAM=host.docker.internal:8080 \
+  --add-host=host.docker.internal:host-gateway \
+  supply-chain-verde-web
+```
+
+O app abre em **`http://localhost:4200`** e chama a API pelo mesmo endereço (`/api/v1`), sem CORS. O deploy em produção (compose com API, banco e front, HTTPS automático) está documentado na [feature de deploy da API](https://github.com/matheusnascimentods/supply-chain-verde-api/tree/main/docs/features/012-deploy).
 
 ### Usuários Seed
 
@@ -504,6 +520,13 @@ O Angular não lê variáveis de ambiente em tempo de execução: a configuraç�
 | `environment.ts` → `viaCepUrl` | URL base do ViaCEP | `https://viacep.com.br/ws` |
 | `environment.prod.ts` → `apiUrl` | URL base da API no build de produção | `/api/v1` (relativa: a API fica no mesmo domínio) |
 | `CORS_ALLOWED_ORIGINS` (na API) | Origem liberada para o frontend | `http://localhost:4200` |
+
+A imagem Docker lê duas variáveis, listadas no [`.env.example`](.env.example):
+
+| Variável | Descrição | Valor Default |
+| :--- | :--- | :--- |
+| `SITE_ADDRESS` | Domínio público. Com um domínio real, o Caddy emite e renova o HTTPS sozinho; `:80` serve só HTTP | `:80` |
+| `API_UPSTREAM` | Endereço da API na rede do Docker | `api:8080` |
 
 ---
 

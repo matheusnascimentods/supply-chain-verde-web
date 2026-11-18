@@ -1,0 +1,14 @@
+{$SITE_ADDRESS::80} {
+	encode zstd gzip
+
+	@api path /api/* /swagger-ui* /v3/api-docs*
+	handle @api {
+		reverse_proxy {$API_UPSTREAM:api:8080}
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

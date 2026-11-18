@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.angular/
+.git/
+coverage/
+cypress/videos/
+cypress/screenshots/
+.env
+.env.*
