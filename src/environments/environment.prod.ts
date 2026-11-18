@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: '',
+  apiUrl: '/api/v1',
   viaCepUrl: 'https://viacep.com.br/ws',
 };

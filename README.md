@@ -502,7 +502,7 @@ O Angular não lê variáveis de ambiente em tempo de execução: a configuraç�
 | :--- | :--- | :--- |
 | `environment.ts` → `apiUrl` | URL base da API no desenvolvimento | `http://localhost:8080/api/v1` |
 | `environment.ts` → `viaCepUrl` | URL base do ViaCEP | `https://viacep.com.br/ws` |
-| `environment.prod.ts` → `apiUrl` | URL base da API no build de produção | Definida conforme o ambiente de deploy |
+| `environment.prod.ts` → `apiUrl` | URL base da API no build de produção | `/api/v1` (relativa: a API fica no mesmo domínio) |
 | `CORS_ALLOWED_ORIGINS` (na API) | Origem liberada para o frontend | `http://localhost:4200` |
 
 ---
