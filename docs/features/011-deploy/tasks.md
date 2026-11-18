@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** não iniciada.
+**Status:** Task 1 concluída.
 
 As dependências "API Task N" apontam para `supply-chain-verde-api/docs/features/012-deploy/tasks.md`. Cada task mexe em até 15 arquivos. Specs contam, e apagar ou mover conta como um arquivo. A lista de arquivos é uma estimativa.
 
@@ -12,9 +12,9 @@ As dependências "API Task N" apontam para `supply-chain-verde-api/docs/features
 
 Não depende da API.
 
-- [ ] `fileReplacements` na configuração `production` do `angular.json` (plan §1)
-- [ ] `environment.prod.ts` com `apiUrl: '/api/v1'` (RF-01)
-- [ ] README: tabela de variáveis com o valor de produção do `apiUrl`
+- [x] `fileReplacements` na configuração `production` do `angular.json` (plan §1)
+- [x] `environment.prod.ts` com `apiUrl: '/api/v1'` (RF-01)
+- [x] README: tabela de variáveis com o valor de produção do `apiUrl`
 
 **Arquivos (~3):** `angular.json`, `src/environments/environment.prod.ts`, `README.md`.
 
