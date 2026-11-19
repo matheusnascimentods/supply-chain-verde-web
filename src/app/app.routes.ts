@@ -83,7 +83,7 @@ export const routes: Routes = [
       },
       {
         path: 'audit-log',
-        title: 'Supply Chain | Autidoria',
+        title: 'Supply Chain | Auditoria',
         canActivate: [roleGuard],
         data: { roles: ['admin', 'auditor', 'platform_admin'] },
         loadChildren: () => import('./features/audit-log').then((module) => module.routes),
