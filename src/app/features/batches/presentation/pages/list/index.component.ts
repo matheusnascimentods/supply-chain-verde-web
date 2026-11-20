@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { EnumSelectComponent } from '../../../../../shared/ui/enum-select/index.component';
 import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
 import { BatchesListFacade } from '../../../application/index.facade';
 import { BATCH_STATUSES, BATCH_STATUS_LABELS, Batch } from '../../../domain/index.model';
@@ -10,7 +9,7 @@ import { BatchStageModalComponent } from '../../components/stage-modal/index.com
 
 @Component({
   selector: 'app-batches-list',
-  imports: [BatchCardComponent, BatchCreateModalComponent, BatchRejectModalComponent, BatchStageModalComponent, EnumSelectComponent, PaginationComponent],
+  imports: [BatchCardComponent, BatchCreateModalComponent, BatchRejectModalComponent, BatchStageModalComponent, PaginationComponent],
   providers: [BatchesListFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
