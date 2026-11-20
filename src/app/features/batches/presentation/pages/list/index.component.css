@@ -59,5 +59,11 @@
 }
 
 .batches-filters {
-  @apply mb-6 max-w-xs;
+  @apply mb-6 flex flex-wrap gap-2;
+}
+.batches-filter {
+  @apply rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 transition hover:border-emerald-300 hover:text-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700;
+}
+.batches-filter[aria-pressed='true'] {
+  @apply border-emerald-700 bg-emerald-700 text-white hover:text-white;
 }

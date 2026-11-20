@@ -68,7 +68,7 @@ export class BatchesListFacade {
     this.load();
   }
 
-  // Valor do select; vazio ("Todos os status") ou desconhecido limpa o filtro.
+  // Valor da badge; vazio ("Todos") ou desconhecido limpa o filtro.
   setStatus(value: string): void {
     this.status.set(statusFrom(value));
     this.reloadFromFirstPage();

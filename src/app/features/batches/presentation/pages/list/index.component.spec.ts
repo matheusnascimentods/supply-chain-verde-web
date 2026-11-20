@@ -54,14 +54,16 @@ describe('BatchListComponent', () => {
     expect(load).toHaveBeenCalled();
   });
 
-  it('filters by status through the select', () => {
+  it('filters by status through the badges', () => {
     const setStatus = vi.fn();
-    const page = render({ setStatus });
-    const select = page.querySelector<HTMLSelectElement>('#batches-status')!;
-    expect([...select.options].map((option) => option.textContent?.trim())).toEqual(['Todos os status', 'Pendente', 'Em andamento', 'Recusado']);
-    select.value = 'PENDING';
-    select.dispatchEvent(new Event('change'));
+    const page = render({ setStatus, status: signal('ACTIVE') });
+    const badges = [...page.querySelectorAll<HTMLButtonElement>('.batches-filter')];
+    expect(badges.map((badge) => badge.textContent?.trim())).toEqual(['Todos', 'Pendente', 'Em andamento', 'Recusado']);
+    expect(badges.filter((badge) => badge.getAttribute('aria-pressed') === 'true').map((badge) => badge.textContent?.trim())).toEqual(['Em andamento']);
+    badges[1].click();
     expect(setStatus).toHaveBeenCalledWith('PENDING');
+    badges[0].click();
+    expect(setStatus).toHaveBeenCalledWith('');
   });
 
   it('explains an empty filtered list', () => {
