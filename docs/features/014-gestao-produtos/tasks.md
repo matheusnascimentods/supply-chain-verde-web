@@ -1,0 +1,49 @@
+# Tarefas — Gestão de produtos no pedido de lote
+
+> Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
+
+**Status:** não iniciada.
+
+Depende da `013-busca-full-text`. A dependência "API Task N" aponta para `supply-chain-verde-api/docs/features/015-gestao-produtos/tasks.md`. Cada task mexe em **no máximo 10 arquivos** (specs contam). A lista de arquivos é uma estimativa.
+
+Ordem entre os repositórios: **API Task 1 → web Task 1 → web Task 2 → web Task 3 → API Task 2 → API Task 3**.
+
+---
+
+### Task 1 — `feat/produtos-catalogo-repositorio`
+
+O merge não depende da API, porque os specs usam `HttpTestingController` e os campos novos são opcionais. Só tem efeito em produção depois da API Task 1.
+
+- [ ] `Product` com `supplierId`, `supplierName`, `co2KgPerUnit` e `acceptedBatchesLast30Days` (plan §1)
+- [ ] `productResponseSchema` com os campos `.nullable().optional()`
+- [ ] `ProductsRepository.load` com `category?`/`unit?`
+- [ ] Spec do repositório (plan §5)
+
+**Arquivos (~4):** `products/domain/index.model.ts`, `products/infrastructure/index.dto.ts`, `products/infrastructure/index.repository.ts` + spec.
+
+**Pronto:** `npm test` verde, e a tela de produtos do fornecedor continua igual.
+
+### Task 2 — `feat/pedido-lote-por-produto`
+
+Depende da Task 1. Só tem efeito em produção depois da API Task 1.
+
+- [ ] Facade com 2 passos, `PagedSearch<Product>` e filtros opcionais (plan §2) + spec
+- [ ] Modal: passo de produto com busca, filtros, cards e paginação, mais a revisão (plan §3) + spec
+- [ ] `isRecommended` com `Product` + spec
+- [ ] `register-batch-flow.cy.ts` com o fluxo novo (plan §5)
+
+**Arquivos (~10):** `create-batch/index.facade.ts` + spec, `create-modal/index.component.{ts,html,css}` + spec, `batches/domain/index.rules.ts` + spec, `cypress/e2e/register-batch-flow.cy.ts`.
+
+**Pronto:** `npm test` e `npm run cypress:run` verdes. Com a API local, o modal abre direto na lista de produtos ordenada, e o pedido é criado.
+
+### Task 3 — `refactor/remove-recomendacao-fornecedor`
+
+Depende da Task 2. Libera a API Task 2.
+
+- [ ] `grep` do plan §4
+- [ ] Sai `ProductsRepository.loadBySupplier` + o caso no spec
+- [ ] Saem `RecommendationCriteria`, o parâmetro `criteria` de `loadRanking` e `SupplierRanking.co2KgPerUnit` (model, barrel, dto, repositório + spec)
+
+**Arquivos (~7):** `products/infrastructure/index.repository.ts` + spec, `suppliers/domain/index.model.ts`, `suppliers/index.ts`, `suppliers/infrastructure/index.dto.ts`, `suppliers/infrastructure/index.repository.ts` + spec.
+
+**Pronto:** `npm test` e `npm run lint` verdes, e o grep do plan §4 não acha nada.
