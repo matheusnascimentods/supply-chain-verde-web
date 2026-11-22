@@ -10,9 +10,16 @@ describe('apiErrorMessage', () => {
     expect(apiErrorMessage(response(400, 'Senha atual incorreta.'), 'padrão')).toBe('Senha atual incorreta.');
   });
 
+  it('uses the API message when the client is rate limited', () => {
+    expect(apiErrorMessage(response(429, 'Muitas requisições. Tente novamente em instantes.'), 'padrão')).toBe(
+      'Muitas requisições. Tente novamente em instantes.',
+    );
+  });
+
   it('falls back for other errors or missing messages', () => {
     expect(apiErrorMessage(response(500, 'Erro interno inesperado.'), 'padrão')).toBe('padrão');
     expect(apiErrorMessage(response(409), 'padrão')).toBe('padrão');
+    expect(apiErrorMessage(response(429), 'padrão')).toBe('padrão');
     expect(apiErrorMessage(new Error('x'), 'padrão')).toBe('padrão');
   });
 });

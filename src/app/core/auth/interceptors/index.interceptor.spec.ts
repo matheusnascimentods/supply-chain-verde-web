@@ -129,6 +129,32 @@ describe('authInterceptor', () => {
     expect(errorReceived).toBeDefined();
   });
 
+  // Feature 012: o rate limit da API não é problema de sessão; o usuário continua logado.
+  it('should not clear session or navigate on 429 Too Many Requests', () => {
+    sessionService.setSession('test-token-123', 'manager');
+    const navigateSpy = vi.spyOn(router, 'navigate');
+    const clearSessionSpy = vi.spyOn(sessionService, 'clearSession');
+
+    let errorReceived: unknown;
+    httpClient.get('/api/test').subscribe({
+      next: () => expect.fail('should have failed with 429'),
+      error: (err) => {
+        errorReceived = err;
+      },
+    });
+
+    const req = httpTestingController.expectOne('/api/test');
+    req.flush(
+      { message: 'Muitas requisições. Tente novamente em instantes.' },
+      { status: 429, statusText: 'Too Many Requests' },
+    );
+
+    expect(clearSessionSpy).not.toHaveBeenCalled();
+    expect(sessionService.token).toBe('test-token-123');
+    expect(navigateSpy).not.toHaveBeenCalled();
+    expect(errorReceived).toBeDefined();
+  });
+
   it('should not clear session or navigate on 400 Bad Request', () => {
     sessionService.setSession('test-token-123', 'admin');
     const navigateSpy = vi.spyOn(router, 'navigate');
