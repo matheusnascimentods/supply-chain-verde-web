@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
@@ -136,6 +137,33 @@ describe('LoginComponent', () => {
     expect(errorAlert.textContent).toContain(expectedError);
 
     expect(toastSpy).toHaveBeenCalledWith(expectedError);
+  });
+
+  it('should keep the generic message when the API rejects the credentials with 401', () => {
+    vi.mocked(loginUseCase.execute).mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 401, error: { message: 'Credenciais inválidas.' } })),
+    );
+
+    component.loginForm.setValue({ email: 'user@supply.com', password: 'wrongpassword' });
+    component.onSubmit();
+
+    expect(component.errorMessage()).toBe('Email ou senha incorretos. Verifique suas credenciais e tente novamente.');
+  });
+
+  it('should show the API message instead of blaming the credentials when rate limited', () => {
+    const toastSpy = vi.spyOn(errorToastService, 'show');
+    const message = 'Muitas requisições. Tente novamente em instantes.';
+    vi.mocked(loginUseCase.execute).mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 429, error: { message } })),
+    );
+
+    component.loginForm.setValue({ email: 'user@supply.com', password: 'rightpassword' });
+    component.onSubmit();
+    fixture.detectChanges();
+
+    expect(component.errorMessage()).toBe(message);
+    expect(fixture.nativeElement.querySelector('[data-testid="error-alert"]').textContent).toContain(message);
+    expect(toastSpy).toHaveBeenCalledWith(message);
   });
 
   it('should toggle password visibility between text and password', () => {

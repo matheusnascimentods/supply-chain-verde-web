@@ -61,4 +61,25 @@ describe('Login', () => {
       .and('contain.text', 'Email ou senha incorretos');
     cy.location('pathname').should('eq', '/login');
   });
+
+  // Feature 012: bloqueado pelo rate limit, o usuário vê o motivo em vez de achar que errou a senha.
+  it('shows the API message when the login is rate limited', () => {
+    cy.intercept('POST', '**/api/v1/auth/login', {
+      statusCode: 429,
+      headers: { 'Retry-After': '42' },
+      body: { message: 'Muitas requisições. Tente novamente em instantes.' },
+    }).as('rateLimitedLogin');
+
+    cy.visit('/login');
+    cy.get('[data-testid="email-input"]').type('manager@example.com');
+    cy.get('[data-testid="password-input"]').type('valid-password');
+    cy.get('[data-testid="submit-button"]').click();
+
+    cy.wait('@rateLimitedLogin');
+    cy.get('[data-testid="error-alert"]')
+      .should('be.visible')
+      .and('contain.text', 'Muitas requisições. Tente novamente em instantes.')
+      .and('not.contain.text', 'Email ou senha incorretos');
+    cy.location('pathname').should('eq', '/login');
+  });
 });

@@ -11,6 +11,7 @@ import { SpinnerComponent } from '../../../../../shared/ui/spinner/index.compone
 import { ErrorToastComponent } from '../../../../../shared/ui/error-toast/index.component';
 import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.service';
 import { LoginUseCase } from '../../../application/use-cases/login/index.use-case';
+import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 
 @Component({
   selector: 'app-login',
@@ -83,12 +84,16 @@ export class LoginComponent {
         this.isLoading.set(false);
         this.router.navigate(['/dashboard']);
       },
-      error: () => {
+      error: (error: unknown) => {
         this.isLoading.set(false);
-        const genericMessage =
-          'Email ou senha incorretos. Verifique suas credenciais e tente novamente.';
-        this.errorMessage.set(genericMessage);
-        this.toastService.show(genericMessage);
+        // O 401 não está entre os status do apiErrorMessage: credencial errada cai sempre na mensagem genérica,
+        // que não diz se o email existe. O 429 (rate limit) mostra a mensagem da API.
+        const message = apiErrorMessage(
+          error,
+          'Email ou senha incorretos. Verifique suas credenciais e tente novamente.',
+        );
+        this.errorMessage.set(message);
+        this.toastService.show(message);
         this.cdr.markForCheck();
       },
     });
