@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** planejada.
+**Status:** concluída.
 
 Cada task mexe em **no máximo 10 arquivos** (specs contam) e deixa o `npm test` verde. A dependência "API Task N" aponta para `supply-chain-verde-api/docs/features/016-assinatura-assentos/tasks.md`.
 
@@ -71,7 +71,7 @@ Depende da API Task 3 em produção (`role` e `active` em `GET /users`).
 
 Depende das Tasks 1 a 4.
 
-- [ ] `docs/features/009-empresas-planos/spec.md`: nota de que a escolha de plano foi substituída por esta feature
-- [ ] Status desta feature: concluída
+- [x] `docs/features/009-empresas-planos/spec.md`: nota de que a escolha de plano foi substituída por esta feature
+- [x] Status desta feature: concluída
 
 **Pronto:** a documentação bate com a tela.
