@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** em andamento.
+**Status:** concluída no front; falta a verificação com a API local (API Task 1).
 
 Depende da `013-busca-full-text`. A dependência "API Task N" aponta para `supply-chain-verde-api/docs/features/015-gestao-produtos/tasks.md`. Cada task mexe em **no máximo 10 arquivos** (specs contam). A lista de arquivos é uma estimativa.
 
@@ -40,9 +40,9 @@ Depende da Task 1. Só tem efeito em produção depois da API Task 1.
 
 Depende da Task 2. Libera a API Task 2.
 
-- [ ] `grep` do plan §4
-- [ ] Sai `ProductsRepository.loadBySupplier` + o caso no spec
-- [ ] Saem `RecommendationCriteria`, o parâmetro `criteria` de `loadRanking` e `SupplierRanking.co2KgPerUnit` (model, barrel, dto, repositório + spec)
+- [x] `grep` do plan §4
+- [x] Sai `ProductsRepository.loadBySupplier` + o caso no spec
+- [x] Saem `RecommendationCriteria`, o parâmetro `criteria` de `loadRanking` e `SupplierRanking.co2KgPerUnit` (model, barrel, dto, repositório + spec)
 
 **Arquivos (~7):** `products/infrastructure/index.repository.ts` + spec, `suppliers/domain/index.model.ts`, `suppliers/index.ts`, `suppliers/infrastructure/index.dto.ts`, `suppliers/infrastructure/index.repository.ts` + spec.
 

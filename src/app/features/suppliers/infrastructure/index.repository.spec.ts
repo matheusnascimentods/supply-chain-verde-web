@@ -30,17 +30,6 @@ describe('SuppliersRepository', () => {
     request.flush({ items: [ranking], limit: 20, offset: 20, hasNext: false, totalPages: 2 });
   });
 
-  it('sends the recommendation criteria (category and unit) with the ranking query', () => {
-    repository.loadRanking({ limit: 20, offset: 0 }, { category: 'AGRICULTURE', unit: 'KG' }).subscribe((page) => {
-      expect(page.items[0].co2KgPerUnit).toBe(0.421);
-    });
-    const request = http.expectOne((req) => req.url === base);
-    expect(request.request.params.get('category')).toBe('AGRICULTURE');
-    expect(request.request.params.get('unit')).toBe('KG');
-    expect(request.request.params.has('productId')).toBe(false);
-    request.flush({ items: [{ ...ranking, co2KgPerUnit: 0.421 }], limit: 20, offset: 0, hasNext: false, totalPages: 1 });
-  });
-
   it('filters the ranking to suppliers the company worked with, and reads the flag', () => {
     repository.loadRanking({ limit: 20, offset: 0, workedWith: true }).subscribe((page) => expect(page.items[0].workedWith).toBe(false));
     const request = http.expectOne((req) => req.url === base);
