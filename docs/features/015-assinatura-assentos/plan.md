@@ -79,8 +79,8 @@ A sessão (`core/auth/session`) não guarda o `userId`, então a própria linha 
 - Facade:
   - `roles = signal<UserRole[]>([])` e `active = signal<boolean | null>(null)`.
   - `toggleRole(r)` liga ou desliga a role na lista, e `setActive(v)` troca a situação. Os dois zeram o `offset` e fazem `reload()` direto, sem debounce, porque não há digitação.
-  - `filterRoles = computed(() => role === 'platform_admin' ? ALL_ROLES : ROLES_BY_COMPANY_TYPE[companyType])`.
-- Tela: entre a busca e a tabela, dois `role="group"`, reaproveitando o padrão `batches-filter` (`features/batches/.../list/index.component.html:21-24`):
+  - `filterRoles = computed(() => role === 'platform_admin' ? USER_ROLES : ROLES_BY_COMPANY_TYPE[companyType] ?? [])`. Sem perfis, o grupo Perfil não aparece.
+- Tela: dentro do card da busca, abaixo do campo, dois `role="group"` com rótulo (Perfil e Situação), reaproveitando o padrão `batches-filter` (`features/batches/.../list/index.component.html:21-24`):
   - Perfis: um `<button [attr.aria-pressed]="facade.roles().includes(r)">` por role, com o rótulo de `ROLE_LABELS`. Vários podem ficar pressionados.
   - Situação: Todos / Ativos / Inativos, com um só pressionado.
 - `// ponytail: CSS do filtro copiado de batches; extrair para shared/ui quando houver uma terceira tela com o mesmo filtro.`

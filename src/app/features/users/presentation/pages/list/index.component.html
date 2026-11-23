@@ -20,6 +20,22 @@
 
     <div class="users-search">
       <app-text-field id="users-email-search" label="Buscar por email" type="search" name="email" autocomplete="off" placeholder="Digite um email" [ngModel]="facade.email()" (ngModelChange)="facade.searchFor($event)" />
+      <div class="users-filters">
+        @if (facade.filterRoles().length) {
+          <div class="users-filter-group" role="group" aria-labelledby="users-filter-roles">
+            <span id="users-filter-roles" class="users-filter-label">Perfil</span>
+            @for (role of facade.filterRoles(); track role) {
+              <button type="button" class="users-filter" data-testid="role-filter" [attr.aria-pressed]="facade.roles().includes(role)" (click)="facade.toggleRole(role)">{{ roleLabels[role] }}</button>
+            }
+          </div>
+        }
+        <div class="users-filter-group" role="group" aria-labelledby="users-filter-status">
+          <span id="users-filter-status" class="users-filter-label">Situação</span>
+          @for (option of statusOptions; track option.label) {
+            <button type="button" class="users-filter" data-testid="status-filter" [attr.aria-pressed]="facade.active() === option.value" (click)="facade.setActive(option.value)">{{ option.label }}</button>
+          }
+        </div>
+      </div>
     </div>
 
     @if (facade.error()) {
