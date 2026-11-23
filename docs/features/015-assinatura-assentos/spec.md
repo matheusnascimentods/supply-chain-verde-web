@@ -12,7 +12,7 @@
 
 - `/planos` vira `/assinatura`: uma página que explica a assinatura única, **até 10 usuários ativos**, e o modelo de assentos (desativar libera vaga, reativar ocupa), com CTA para o cadastro.
 - O cadastro deixa de ter passo ou parâmetro de plano.
-- A tela de usuários ganha um botão Desativar/Reativar por linha, badges de filtro por perfil (múltipla escolha), filtro Todos/Ativos/Inativos e o contador de assentos.
+- A tela de usuários ganha, em cada linha, uma pílula Ativo/Inativo que desativa ou reativa com um clique, badges de filtro por perfil (múltipla escolha), filtro Todos/Ativos/Inativos e o contador de assentos.
 
 ## 3. Requisitos
 
@@ -23,9 +23,9 @@
 | RF-03 | `/cadastro` não lê `?plano`, não chama `GET /plans` e não envia `planCode`. O resumo mostra "Assinatura · até 10 usuários ativos". "Voltar" e "Trocar plano" levam a `/assinatura`, e "Trocar plano" sai. |
 | RF-04 | A landing troca "Conhecer os planos" por "Conhecer a assinatura" → `/assinatura`. |
 | RF-05 | O perfil do admin perde a seção "Plano". Os assentos aparecem só no contador da lista de usuários (RF-08), que lê `seatsUsed`/`maxUsers` de `GET /companies/me`. O `countCompanyUsers` sai. |
-| RF-06 | A lista de usuários ganha a coluna **Situação**, com o badge Ativo/Inativo e um botão "Desativar" ou "Reativar" (`PATCH /users/{id}/status`). O botão aparece só para quem troca perfil (`canChangeRoles`) e não aparece na própria linha nem em usuário sem companhia (`PLATFORM_ADMIN`). |
+| RF-06 | A lista de usuários ganha a coluna **Situação**, com uma pílula Ativo (verde) ou Inativo (cinza). Para quem troca perfil (`canChangeRoles`), a pílula é um botão que desativa ou reativa (`PATCH /users/{id}/status`). Na própria linha e em usuário sem companhia (`PLATFORM_ADMIN`), ela é só leitura. |
 | RF-07 | Em linha inativa, o menu de perfil fica desabilitado (RN-12 da API). |
-| RF-08 | Contador "X de 10 assentos em uso" no topo da lista, só para o `admin` de companhia. Com o contador cheio, "Reativar" e "+ Convidar usuário" ficam desabilitados, com `title` explicando o motivo. |
+| RF-08 | Contador "X de 10 assentos em uso" no topo da lista, só para o `admin` de companhia. Com o contador cheio, a pílula de um inativo e "+ Convidar usuário" ficam desabilitados, com `title` explicando o motivo. |
 | RF-09 | Badges de perfil com múltipla escolha. As opções vêm de `ROLES_BY_COMPANY_TYPE` do usuário logado. Para o `platform_admin`, todos os perfis. Nenhum badge marcado significa todos. |
 | RF-10 | Filtro de situação Todos / Ativos / Inativos, começando em Todos. |
 | RF-11 | Mudar qualquer filtro volta para a página 1 e combina com a busca por email. |
@@ -42,7 +42,7 @@
 
 - `/assinatura` mostra "até 10 usuários ativos" e leva ao cadastro sem query param. `/planos` não existe mais.
 - O cadastro completo funciona sem `GET /plans` (Cypress `signup.cy.ts`).
-- Um admin com 10/10 vê "Reativar" e "Convidar" desabilitados. Ele desativa alguém, o contador vai a 9/10 e "Reativar" habilita.
-- A própria linha do admin não tem botão de desativar.
+- Um admin com 10/10 vê a pílula dos inativos e "Convidar" desabilitados. Ele desativa alguém, o contador vai a 9/10 e a reativação habilita.
+- A pílula da própria linha do admin é só leitura.
 - Marcar Gestor + Auditor e Inativos lista só os gestores e auditores inativos.
 - `npm test` verde.
