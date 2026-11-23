@@ -10,6 +10,7 @@ export const userResponseSchema = z.object({
   companyId: z.number().nullable().optional(),
   companyType: z.preprocess((value) => (typeof value === 'string' ? value.toLowerCase() : value), z.enum(COMPANY_TYPES)).nullable().optional(),
   companyName: z.string().nullable().optional(),
+  active: z.boolean(),
 }).passthrough();
 
 export const userPageSchema = z.object({

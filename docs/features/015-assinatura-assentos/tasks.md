@@ -44,12 +44,11 @@ Depende da API Task 1 (`maxUsers`/`seatsUsed` em `/companies/me`).
 
 Depende da API Task 2 em produção (`PATCH /users/{id}/status` e `active` no usuário).
 
-- [ ] `users` model, dto e repository: `active` e `updateStatus` (plan §3)
-- [ ] `users/domain/index.rules.ts`: `canToggleStatus`
-- [ ] `use-cases/update-status` e o facade (`toggleStatus`, recarregando a lista e `loadSeats()`)
-- [ ] `components/status-badge`
-- [ ] `pages/list` (ts, html, css): coluna Situação, "Reativar" desabilitado com `seatsFull()` e o menu de perfil travado em inativo
-- [ ] Specs de rules, repository, facade e lista
+- [x] `users` model, dto e repository: `active` e `updateStatus` (plan §3)
+- [x] `users/domain/index.rules.ts`: `canToggleStatus`
+- [x] Facade: `updatingStatusId` e `toggleStatus`, recarregando a lista e `loadSeats()`
+- [x] `pages/list` (html, css): coluna Situação com um botão só, colorido pela situação, a reativação desabilitada com `seatsFull()` e o menu de perfil travado em inativo
+- [x] Specs de rules, repository, facade e lista
 
 **Arquivos (~10).**
 

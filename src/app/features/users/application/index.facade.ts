@@ -5,7 +5,7 @@ import { UserRole } from '../../../core/auth/session/index.model';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { Seats, User } from '../domain/index.model';
 import { apiErrorMessage } from '../../../shared/utils/http/index.utils';
-import { canChangeRoles, canCreateUsers, seatsFull } from '../domain/index.rules';
+import { canChangeRoles, canCreateUsers, canToggleStatus, seatsFull } from '../domain/index.rules';
 import { ErrorToastService } from '../../../shared/ui/error-toast/index.service';
 import { UsersRepository } from '../infrastructure/index.repository';
 import { UpdateUserRoleUseCase } from './use-cases/update-role/index.use-case';
@@ -28,6 +28,7 @@ export class UsersListFacade {
   readonly email = signal('');
   readonly totalPages = signal(0);
   readonly updatingRoleId = signal<number | null>(null);
+  readonly updatingStatusId = signal<number | null>(null);
   readonly seats = signal<Seats | null>(null);
   readonly seatsFull = computed(() => seatsFull(this.seats()));
   readonly canCreate = computed(() => canCreateUsers(this.session.role()));
@@ -101,6 +102,29 @@ export class UsersListFacade {
         this.updatingRoleId.set(null);
         // 409 de último admin vem com a mensagem da API (RF-11).
         this.toast.show(apiErrorMessage(error, `Não foi possível alterar o perfil de ${user.name}.`));
+      },
+    });
+  }
+
+  canToggleStatus(user: User): boolean {
+    return canToggleStatus(this.session.role(), this.session.email(), user);
+  }
+
+  // Desativar libera um assento e reativar ocupa um, então a lista e o contador recarregam (RF-12).
+  toggleStatus(user: User): void {
+    if (!this.canToggleStatus(user) || this.updatingStatusId() !== null) return;
+    this.updatingStatusId.set(user.userId);
+    this.repository.updateStatus(user.userId, !user.active).subscribe({
+      next: () => {
+        this.updatingStatusId.set(null);
+        this.reload();
+        this.loadSeats();
+      },
+      error: (error: unknown) => {
+        this.updatingStatusId.set(null);
+        // 409 de assentos cheios, de si mesmo ou do último admin vem com a mensagem da API.
+        const action = user.active ? 'desativar' : 'reativar';
+        this.toast.show(apiErrorMessage(error, `Não foi possível ${action} ${user.name}.`));
       },
     });
   }

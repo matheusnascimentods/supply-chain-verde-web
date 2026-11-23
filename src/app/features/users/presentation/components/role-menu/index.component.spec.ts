@@ -9,7 +9,7 @@ describe('RoleMenuComponent', () => {
   beforeEach(() => {
     selected = [];
     fixture = TestBed.createComponent(RoleMenuComponent);
-    fixture.componentRef.setInput('user', { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager', companyType: 'market' });
+    fixture.componentRef.setInput('user', { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager', active: true, companyType: 'market' });
     fixture.componentInstance.roleSelected.subscribe((role) => selected.push(role));
     fixture.detectChanges();
   });
@@ -27,7 +27,7 @@ describe('RoleMenuComponent', () => {
   });
 
   it('lists only admin and supplier for a supplier company', () => {
-    fixture.componentRef.setInput('user', { userId: 2, name: 'Bia', email: 'bia@example.com', role: 'supplier', companyType: 'supplier' });
+    fixture.componentRef.setInput('user', { userId: 2, name: 'Bia', email: 'bia@example.com', role: 'supplier', active: true, companyType: 'supplier' });
     fixture.detectChanges();
     expect(labels()).toEqual(['Administrador', 'Fornecedor ✓']);
   });

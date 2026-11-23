@@ -8,7 +8,7 @@ describe('UsersRepository', () => {
   let repository: UsersRepository;
   let http: HttpTestingController;
   const base = `${environment.apiUrl}/users`;
-  const apiUser = { userId: 7, name: 'Ana', email: 'ana@example.com', role: 'MANAGER' };
+  const apiUser = { userId: 7, name: 'Ana', email: 'ana@example.com', role: 'MANAGER', active: true };
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
@@ -59,6 +59,16 @@ describe('UsersRepository', () => {
     expect(request.request.method).toBe('PATCH');
     expect(request.request.body).toEqual({ role: 'AUDITOR' });
     request.flush({ ...apiUser, role: 'AUDITOR' });
+  });
+
+  it('sends the new status of a user', () => {
+    let user: unknown;
+    repository.updateStatus(7, false).subscribe((value) => (user = value));
+    const request = http.expectOne(`${base}/7/status`);
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({ active: false });
+    request.flush({ ...apiUser, active: false });
+    expect(user).toMatchObject({ userId: 7, active: false });
   });
 
   it('reads the seats from GET /companies/me', () => {

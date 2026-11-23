@@ -36,6 +36,11 @@ export class UsersRepository {
       .pipe(map((raw) => userResponseSchema.parse(raw)));
   }
 
+  // RF-06: desativar libera um assento; reativar ocupa um e recebe 409 com a companhia cheia.
+  updateStatus(userId: number, active: boolean): Observable<User> {
+    return this.http.patch<unknown>(`${this.base}/${userId}/status`, { active }).pipe(map((raw) => userResponseSchema.parse(raw)));
+  }
+
   // Lê só os assentos de /companies/me, sem importar o repositório do perfil.
   seats(): Observable<Seats> {
     return this.http.get<unknown>(`${environment.apiUrl}/companies/me`).pipe(
