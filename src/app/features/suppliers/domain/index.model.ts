@@ -36,15 +36,8 @@ export interface SupplierRanking extends Supplier {
   totalCo2Kg: number;
   reportCount: number;
   certifications: SupplierCertification[];
-  co2KgPerUnit?: number | null;
   /** RF-12b: a companhia já pediu lotes a este fornecedor; sempre falso para o platform_admin. */
   workedWith: boolean;
-}
-
-/** Critério da recomendação: categoria e unidade do produto (RN-21 da API; a busca por produto saiu). */
-export interface RecommendationCriteria {
-  category: string;
-  unit: string;
 }
 
 export interface Page<T> {

@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { z } from 'zod';
 import { environment } from '../../../../environments/environment';
-import { Page, RecommendationCriteria, Supplier, SupplierRanking } from '../domain/index.model';
+import { Page, Supplier, SupplierRanking } from '../domain/index.model';
 import { supplierRankingPageSchema, supplierResponseSchema } from './index.dto';
 
 @Injectable({ providedIn: 'root' })
@@ -21,10 +21,7 @@ export class SuppliersRepository {
       .pipe(map((raw) => supplierResponseSchema.parse(raw)));
   }
 
-  loadRanking(
-    params: { limit: number; offset: number; search?: string; workedWith?: boolean },
-    criteria?: RecommendationCriteria,
-  ): Observable<Page<SupplierRanking>> {
+  loadRanking(params: { limit: number; offset: number; search?: string; workedWith?: boolean }): Observable<Page<SupplierRanking>> {
     const search = params.search?.trim();
     const query = {
       ranked: 'true',
@@ -33,7 +30,6 @@ export class SuppliersRepository {
       ...(search ? { search } : {}),
       // RF-12a: só os fornecedores com quem a companhia já trabalhou.
       ...(params.workedWith ? { workedWith: 'true' } : {}),
-      ...criteria,
     };
     return this.http.get<unknown>(this.base, { params: query }).pipe(
       map((raw) => {
