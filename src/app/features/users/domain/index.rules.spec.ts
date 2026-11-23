@@ -1,5 +1,5 @@
 import { newInviteSchema } from './index.model';
-import { canChangeRoles, canCreateUsers, creatableRoles, seatsFull, seatsUsage } from './index.rules';
+import { canChangeRoles, canCreateUsers, canToggleStatus, creatableRoles, seatsFull, seatsUsage } from './index.rules';
 
 describe('users rules', () => {
   it('lets only company administrators create users', () => {
@@ -16,6 +16,15 @@ describe('users rules', () => {
     expect(canChangeRoles('platform_admin')).toBe(true);
     expect(canChangeRoles('manager')).toBe(false);
     expect(canChangeRoles(null)).toBe(false);
+  });
+
+  it('lets who changes roles toggle the status, except on the own row and on users without company', () => {
+    const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager' as const, active: true, companyType: 'market' as const };
+    expect(canToggleStatus('admin', 'boss@example.com', ana)).toBe(true);
+    expect(canToggleStatus('platform_admin', 'root@example.com', ana)).toBe(true);
+    expect(canToggleStatus('admin', 'ana@example.com', ana)).toBe(false);
+    expect(canToggleStatus('manager', 'boss@example.com', ana)).toBe(false);
+    expect(canToggleStatus('platform_admin', 'root@example.com', { ...ana, companyType: null })).toBe(false);
   });
 
   it('offers only the roles of the company type', () => {

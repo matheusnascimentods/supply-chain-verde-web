@@ -6,6 +6,8 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  // Inativo não entra no sistema e não ocupa assento.
+  active: boolean;
   createdAt?: string | null;
   companyId?: number | null;
   companyType?: CompanyType | null;

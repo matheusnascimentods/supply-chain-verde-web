@@ -7,7 +7,7 @@ describe('UpdateUserRoleUseCase', () => {
   it('updates the role of the given user through the repository', () => {
     const repository = { updateRole: vi.fn().mockReturnValue(of({})) };
     TestBed.configureTestingModule({ providers: [{ provide: UsersRepository, useValue: repository }] });
-    const user = { userId: 9, name: 'Ana', email: 'ana@example.com', role: 'manager' as const };
+    const user = { userId: 9, name: 'Ana', email: 'ana@example.com', role: 'manager' as const, active: true };
 
     TestBed.inject(UpdateUserRoleUseCase).execute(user, 'auditor').subscribe();
 
