@@ -22,6 +22,11 @@ describe('UserListComponent', () => {
       pageNumber: signal(1),
       updatingRoleId: signal(null),
       updatingStatusId: signal(null),
+      roles: signal([]),
+      active: signal(null),
+      filterRoles: signal(['admin', 'manager', 'auditor']),
+      toggleRole: vi.fn(),
+      setActive: vi.fn(),
       canToggleStatus: vi.fn((user: { email: string; companyType: string | null }) => !!user.companyType && user.email !== 'boss@example.com'),
       toggleStatus: vi.fn(),
       seats: signal({ used: 8, max: 10 }),
@@ -163,6 +168,41 @@ describe('UserListComponent', () => {
       expect(toggle(0)?.disabled).toBe(true);
       expect(toggle(0)?.getAttribute('title')).toBe('Sem assentos livres');
       expect(toggle(1)?.disabled).toBe(false);
+    });
+  });
+
+  describe('filters', () => {
+    const buttons = (testId: string) => Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>(`[data-testid="${testId}"]`));
+    const pressed = (testId: string) => buttons(testId).filter((button) => button.getAttribute('aria-pressed') === 'true').map((button) => button.textContent?.trim());
+
+    it('shows the role badges of the company and "Todos" pressed by default', () => {
+      expect(buttons('role-filter').map((button) => button.textContent?.trim())).toEqual(['Administrador', 'Gestor', 'Auditor']);
+      expect(pressed('role-filter')).toEqual([]);
+      expect(pressed('status-filter')).toEqual(['Todos']);
+    });
+
+    it('presses several roles and one status at a time', () => {
+      (facade['roles'] as ReturnType<typeof signal<string[]>>).set(['manager', 'auditor']);
+      (facade['active'] as ReturnType<typeof signal<boolean | null>>).set(false);
+      fixture.detectChanges();
+      expect(pressed('role-filter')).toEqual(['Gestor', 'Auditor']);
+      expect(pressed('status-filter')).toEqual(['Inativos']);
+    });
+
+    it('forwards the clicks to the facade', () => {
+      buttons('role-filter')[1].click();
+      buttons('status-filter')[2].click();
+      buttons('status-filter')[0].click();
+      expect(facade['toggleRole']).toHaveBeenCalledWith('manager');
+      expect(facade['setActive']).toHaveBeenCalledWith(false);
+      expect(facade['setActive']).toHaveBeenLastCalledWith(null);
+    });
+
+    it('hides the role group when there are no roles to filter', () => {
+      (facade['filterRoles'] as ReturnType<typeof signal<string[]>>).set([]);
+      fixture.detectChanges();
+      expect(buttons('role-filter')).toEqual([]);
+      expect(buttons('status-filter').length).toBe(3);
     });
   });
 });

@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
-import { UserRole } from '../../../core/auth/session/index.model';
+import { ROLES_BY_COMPANY_TYPE, USER_ROLES, UserRole } from '../../../core/auth/session/index.model';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { Seats, User } from '../domain/index.model';
 import { apiErrorMessage } from '../../../shared/utils/http/index.utils';
@@ -26,6 +26,9 @@ export class UsersListFacade {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly email = signal('');
+  // RF-09 e RF-10: nenhum perfil marcado e situação nula significam todos.
+  readonly roles = signal<UserRole[]>([]);
+  readonly active = signal<boolean | null>(null);
   readonly totalPages = signal(0);
   readonly updatingRoleId = signal<number | null>(null);
   readonly updatingStatusId = signal<number | null>(null);
@@ -35,6 +38,12 @@ export class UsersListFacade {
   readonly canChangeRoles = computed(() => canChangeRoles(this.session.role()));
   // RF-11: só o platform_admin vê usuários de várias companhias.
   readonly showCompany = computed(() => this.session.role() === 'platform_admin');
+  // Perfis do tipo da companhia logada; o platform_admin vê todos.
+  readonly filterRoles = computed<readonly UserRole[]>(() => {
+    if (this.session.role() === 'platform_admin') return USER_ROLES;
+    const companyType = this.session.companyType();
+    return companyType ? ROLES_BY_COMPANY_TYPE[companyType] : [];
+  });
   readonly pageNumber = computed(() =>
     this.totalPages() === 0 ? 0 : Math.min(Math.floor(this.offset() / PAGE_SIZE) + 1, this.totalPages()),
   );
@@ -57,7 +66,7 @@ export class UsersListFacade {
     const sequence = ++this.loadSequence;
     this.loading.set(true);
     this.error.set('');
-    this.repository.load({ limit: PAGE_SIZE, offset: this.offset(), email: this.email() }).subscribe({
+    this.repository.load({ limit: PAGE_SIZE, offset: this.offset(), email: this.email(), roles: this.roles(), active: this.active() }).subscribe({
       next: (page) => {
         if (sequence !== this.loadSequence) return;
         this.items.set(page.items);
@@ -76,6 +85,20 @@ export class UsersListFacade {
     this.email.set(value);
     this.offset.set(0);
     this.emailChanges.next(value.trim());
+  }
+
+  // Clique não precisa de debounce como a busca; volta à página 1 (RF-11).
+  toggleRole(role: UserRole): void {
+    this.roles.update((roles) => (roles.includes(role) ? roles.filter((current) => current !== role) : [...roles, role]));
+    this.offset.set(0);
+    this.reload();
+  }
+
+  setActive(active: boolean | null): void {
+    if (this.active() === active) return;
+    this.active.set(active);
+    this.offset.set(0);
+    this.reload();
   }
 
   previousPage(): void {

@@ -7,6 +7,7 @@ import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.se
 import { DataTableComponent } from '../../../../../shared/ui/data-table/index.component';
 import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
 import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
+import { ROLE_LABELS } from '../../../../../core/auth/session/index.model';
 import { UsersListFacade } from '../../../application/index.facade';
 import { seatsUsage } from '../../../domain/index.rules';
 import { InviteUserModalComponent } from '../../components/invite-modal/index.component';
@@ -36,6 +37,12 @@ export class UserListComponent {
   protected readonly facade = inject(UsersListFacade);
   private readonly toast = inject(ErrorToastService);
   protected readonly seatsUsage = seatsUsage;
+  protected readonly roleLabels = ROLE_LABELS;
+  protected readonly statusOptions = [
+    { label: 'Todos', value: null },
+    { label: 'Ativos', value: true },
+    { label: 'Inativos', value: false },
+  ];
   readonly inviteModalOpen = signal(false);
 
   // O convidado ainda não é usuário, então a lista não muda (RF-03); o convite pendente já ocupa assento.

@@ -22,7 +22,7 @@ describe('UsersListFacade', () => {
         UsersListFacade,
         { provide: UsersRepository, useValue: repository },
         { provide: UpdateUserRoleUseCase, useValue: updateRole },
-        { provide: SessionService, useValue: { role, email: () => 'boss@example.com' } },
+        { provide: SessionService, useValue: { role, email: () => 'boss@example.com', companyType: () => (role() === 'platform_admin' ? null : 'market') } },
         { provide: ErrorToastService, useValue: toast },
       ],
     });
@@ -44,7 +44,7 @@ describe('UsersListFacade', () => {
 
   it('loads the first page on creation', () => {
     const facade = createFacade();
-    expect(repository.load).toHaveBeenCalledWith({ limit: 20, offset: 0, email: '' });
+    expect(repository.load).toHaveBeenCalledWith({ limit: 20, offset: 0, email: '', roles: [], active: null });
     expect(facade.items()).toEqual([ana]);
     expect(facade.loading()).toBe(false);
     expect(facade.pageNumber()).toBe(1);
@@ -63,7 +63,7 @@ describe('UsersListFacade', () => {
     expect(repository.load).toHaveBeenCalledTimes(1);
 
     facade.nextPage();
-    expect(repository.load).toHaveBeenLastCalledWith({ limit: 20, offset: 20, email: '' });
+    expect(repository.load).toHaveBeenLastCalledWith({ limit: 20, offset: 20, email: '', roles: [], active: null });
     expect(facade.pageNumber()).toBe(2);
   });
 
@@ -76,7 +76,33 @@ describe('UsersListFacade', () => {
     expect(repository.load).toHaveBeenCalledTimes(2);
     vi.advanceTimersByTime(300);
 
-    expect(repository.load).toHaveBeenLastCalledWith({ limit: 20, offset: 0, email: 'ana' });
+    expect(repository.load).toHaveBeenLastCalledWith({ limit: 20, offset: 0, email: 'ana', roles: [], active: null });
+  });
+
+  it('toggles role filters and restarts from the first page, without debounce', () => {
+    const facade = createFacade();
+    facade.nextPage();
+    facade.toggleRole('manager');
+    facade.toggleRole('auditor');
+    expect(repository.load).toHaveBeenLastCalledWith({ limit: 20, offset: 0, email: '', roles: ['manager', 'auditor'], active: null });
+    facade.toggleRole('manager');
+    expect(facade.roles()).toEqual(['auditor']);
+  });
+
+  it('filters by status and ignores the same status twice', () => {
+    const facade = createFacade();
+    facade.nextPage();
+    facade.setActive(false);
+    expect(repository.load).toHaveBeenLastCalledWith({ limit: 20, offset: 0, email: '', roles: [], active: false });
+    facade.setActive(false);
+    expect(repository.load).toHaveBeenCalledTimes(3);
+  });
+
+  it('offers the roles of the company type, and every role to the platform admin', () => {
+    expect(createFacade().filterRoles()).toEqual(['admin', 'manager', 'auditor']);
+    TestBed.resetTestingModule();
+    role.set('platform_admin');
+    expect(createFacade().filterRoles()).toEqual(['admin', 'manager', 'auditor', 'supplier', 'platform_admin']);
   });
 
   it('updates the role and reloads the list', () => {
