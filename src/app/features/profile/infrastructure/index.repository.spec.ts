@@ -16,7 +16,8 @@ describe('ProfileRepository', () => {
     type: 'MARKET',
     address: { addressId: 3, street: 'Praça da Sé', number: '10', neighborhood: 'Sé', complement: null, zipCode: '01001000', city: 'São Paulo', state: 'SP' },
     registeredAt: '2026-11-01',
-    plan: { code: 'BASIC', name: 'Basic', maxUsers: 3 },
+    maxUsers: 10,
+    seatsUsed: 8,
   };
 
   beforeEach(() => {
@@ -37,20 +38,20 @@ describe('ProfileRepository', () => {
     expect(name).toBe('Ana S.');
   });
 
-  it('loads the own company with its plan', () => {
+  it('loads the own company', () => {
     let company: unknown;
     repository.getMyCompany().subscribe((value) => (company = value));
     const request = http.expectOne(`${environment.apiUrl}/companies/me`);
     expect(request.request.method).toBe('GET');
     request.flush(apiCompany);
-    expect(company).toMatchObject({ companyId: 7, type: 'market', plan: { name: 'Basic', maxUsers: 3 } });
+    expect(company).toMatchObject({ companyId: 7, type: 'market', name: 'Mercado Bom Preço' });
   });
 
-  it('accepts a company without email, phone or plan', () => {
+  it('accepts a company without email or phone', () => {
     let company: unknown;
     repository.getMyCompany().subscribe((value) => (company = value));
-    http.expectOne(`${environment.apiUrl}/companies/me`).flush({ ...apiCompany, email: null, phone: null, plan: null });
-    expect(company).toMatchObject({ email: null, phone: null, plan: null });
+    http.expectOne(`${environment.apiUrl}/companies/me`).flush({ ...apiCompany, email: null, phone: null });
+    expect(company).toMatchObject({ email: null, phone: null });
   });
 
   it('sends the company patch to PATCH /companies/me', () => {
@@ -59,14 +60,5 @@ describe('ProfileRepository', () => {
     expect(request.request.method).toBe('PATCH');
     expect(request.request.body).toEqual({ phone: '1133334444' });
     request.flush(apiCompany);
-  });
-
-  it('counts the users of the own company', () => {
-    let used = 0;
-    repository.countCompanyUsers().subscribe((value) => (used = value));
-    http
-      .expectOne(`${environment.apiUrl}/users?limit=100&offset=0`)
-      .flush({ items: [{ userId: 1 }, { userId: 2 }], limit: 100, offset: 0, hasNext: false, totalPages: 1 });
-    expect(used).toBe(2);
   });
 });

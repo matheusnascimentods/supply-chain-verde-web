@@ -31,23 +31,24 @@ Se passar de 10 arquivos, o Cypress vai num commit próprio da mesma branch.
 
 Depende da API Task 1 (`maxUsers`/`seatsUsed` em `/companies/me`).
 
-- [ ] `profile` model, rules e repository (plan §2)
-- [ ] `pages/profile` (ts, html, css) com a seção "Assinatura"
-- [ ] Specs de rules, repository e componente
+- [x] `profile` model, rules, repository e `pages/profile` sem plano e sem `countCompanyUsers` (plan §2)
+- [x] `users` model, rules e repository: `Seats`, `seatsUsage`, `seatsFull` e `seats()`
+- [x] Facade (`seats`, `loadSeats`) e `pages/list`: contador no cabeçalho e "+ Convidar usuário" desabilitado com 10/10
+- [x] Specs de rules, repository, facade e componentes
 
-**Arquivos (~9).**
+**Arquivos (~19).** Passou de 10 porque o contador veio da Task 3 para cá; os commits separam perfil e lista.
 
-**Pronto:** `npm test` verde. O perfil de `h.kane@bayern.com` mostra "10 de 10 em uso", e a página não chama `GET /users`.
+**Pronto:** `npm test` verde. Em `/users`, `h.kane@bayern.com` vê "10 de 10 assentos em uso" e o convite desabilitado. O perfil não tem mais a seção de plano e não chama `GET /users`.
 
 ### Task 3 — `feat/ativacao-usuarios`
 
 Depende da API Task 2 em produção (`PATCH /users/{id}/status` e `active` no usuário).
 
-- [ ] `users` model, dto e repository: `active`, `updateStatus` e `seats` (plan §3)
-- [ ] `users/domain/index.rules.ts`: `canToggleStatus` e `seatsFull`
-- [ ] `use-cases/update-status` e o facade (`seats`, `toggleStatus`)
+- [ ] `users` model, dto e repository: `active` e `updateStatus` (plan §3)
+- [ ] `users/domain/index.rules.ts`: `canToggleStatus`
+- [ ] `use-cases/update-status` e o facade (`toggleStatus`, recarregando a lista e `loadSeats()`)
 - [ ] `components/status-badge`
-- [ ] `pages/list` (ts, html, css): coluna Situação, contador, botões desabilitados e o menu de perfil travado em inativo
+- [ ] `pages/list` (ts, html, css): coluna Situação, "Reativar" desabilitado com `seatsFull()` e o menu de perfil travado em inativo
 - [ ] Specs de rules, repository, facade e lista
 
 **Arquivos (~10).**

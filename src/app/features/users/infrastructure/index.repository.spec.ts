@@ -60,4 +60,13 @@ describe('UsersRepository', () => {
     expect(request.request.body).toEqual({ role: 'AUDITOR' });
     request.flush({ ...apiUser, role: 'AUDITOR' });
   });
+
+  it('reads the seats from GET /companies/me', () => {
+    let seats: unknown;
+    repository.seats().subscribe((value) => (seats = value));
+    const request = http.expectOne(`${environment.apiUrl}/companies/me`);
+    expect(request.request.method).toBe('GET');
+    request.flush({ companyId: 7, name: 'Mercado Bom Preço', maxUsers: 10, seatsUsed: 8 });
+    expect(seats).toEqual({ used: 8, max: 10 });
+  });
 });

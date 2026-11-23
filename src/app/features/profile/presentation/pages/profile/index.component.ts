@@ -8,7 +8,7 @@ import { SessionService } from '../../../../../core/auth/session/index.service';
 import { companyFormValue, formatCompanyFieldsWhileTyping } from '../../../../../shared/forms/company-fields/index.helper';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 import { CompanyForm } from '../../../domain/index.model';
-import { accountPatch, accountsUsage, companyPatch, passwordChangeErrors } from '../../../domain/index.rules';
+import { accountPatch, companyPatch, passwordChangeErrors } from '../../../domain/index.rules';
 import { ProfileRepository } from '../../../infrastructure/index.repository';
 
 @Component({
@@ -30,7 +30,6 @@ export class ProfileComponent {
 
   readonly saving = signal(false);
   readonly error = signal('');
-  readonly plan = signal<{ name: string; usage: string } | null>(null);
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
     cnpj: [{ value: '', disabled: true }],
@@ -59,18 +58,14 @@ export class ProfileComponent {
 
   constructor() {
     formatCompanyFieldsWhileTyping(this.form.controls);
-    const company$ = this.isAdmin
-      ? forkJoin({ company: this.repository.getMyCompany(), usedAccounts: this.repository.countCompanyUsers() })
-      : of(null);
+    const company$ = this.isAdmin ? this.repository.getMyCompany() : of(null);
     forkJoin({ user: this.currentUser.load(), company: company$ }).subscribe({
       next: ({ user, company }) => {
         this.account.patchValue({ userName: user.name, email: user.email, role: ROLE_LABELS[user.role] });
         this.initialUserName = user.name;
         if (!company) return;
-        this.form.patchValue({ ...companyFormValue(company.company), email: company.company.email ?? '' });
+        this.form.patchValue({ ...companyFormValue(company), email: company.email ?? '' });
         this.initialCompany = this.companyForm();
-        const plan = company.company.plan;
-        if (plan) this.plan.set({ name: plan.name, usage: accountsUsage(company.usedAccounts, plan.maxUsers) });
       },
       error: () => this.error.set('Não foi possível carregar o seu perfil.'),
     });

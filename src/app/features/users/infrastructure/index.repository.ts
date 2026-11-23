@@ -1,10 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { z } from 'zod';
 import { environment } from '../../../../environments/environment';
 import { UserRole } from '../../../core/auth/session/index.model';
-import { NewInvite, User, UserPage } from '../domain/index.model';
+import { NewInvite, Seats, User, UserPage } from '../domain/index.model';
 import { userPageSchema, userResponseSchema } from './index.dto';
+
+const companySeatsSchema = z.object({ maxUsers: z.number(), seatsUsed: z.number() });
 
 @Injectable({ providedIn: 'root' })
 export class UsersRepository {
@@ -31,5 +34,15 @@ export class UsersRepository {
     return this.http
       .patch<unknown>(`${this.base}/${userId}/role`, { role: role.toUpperCase() })
       .pipe(map((raw) => userResponseSchema.parse(raw)));
+  }
+
+  // Lê só os assentos de /companies/me, sem importar o repositório do perfil.
+  seats(): Observable<Seats> {
+    return this.http.get<unknown>(`${environment.apiUrl}/companies/me`).pipe(
+      map((raw) => {
+        const company = companySeatsSchema.parse(raw);
+        return { used: company.seatsUsed, max: company.maxUsers };
+      }),
+    );
   }
 }

@@ -60,16 +60,6 @@
         </section>
       }
 
-      @if (plan(); as plan) {
-        <section aria-labelledby="company-plan-heading">
-          <h2 id="company-plan-heading" class="supplier-form-section-title">Plano</h2>
-          <dl class="profile-plan" data-testid="company-plan">
-            <div><dt class="profile-plan-label">Plano ativo</dt><dd class="profile-plan-value">{{ plan.name }}</dd></div>
-            <div><dt class="profile-plan-label">Contas</dt><dd class="profile-plan-value">{{ plan.usage }}</dd></div>
-          </dl>
-        </section>
-      }
-
       <section [formGroup]="account" aria-labelledby="supplier-account-heading">
         <h2 id="supplier-account-heading" class="supplier-form-section-title">Meu acesso</h2>
         <div class="supplier-form-grid">

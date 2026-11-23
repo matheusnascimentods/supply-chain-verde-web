@@ -40,8 +40,3 @@ export function companyPatch(initial: CompanyForm, current: CompanyForm): Compan
   if (JSON.stringify(after.address) !== JSON.stringify(before.address)) patch.address = after.address;
   return patch;
 }
-
-/** Uso do plano, ex.: "2 de 3 contas". */
-export function accountsUsage(used: number, maxUsers: number): string {
-  return `${used} de ${maxUsers} ${maxUsers === 1 ? 'conta' : 'contas'}`;
-}

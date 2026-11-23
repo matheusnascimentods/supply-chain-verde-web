@@ -3,9 +3,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { UserRole } from '../../../core/auth/session/index.model';
 import { SessionService } from '../../../core/auth/session/index.service';
-import { User } from '../domain/index.model';
+import { Seats, User } from '../domain/index.model';
 import { apiErrorMessage } from '../../../shared/utils/http/index.utils';
-import { canChangeRoles, canCreateUsers } from '../domain/index.rules';
+import { canChangeRoles, canCreateUsers, seatsFull } from '../domain/index.rules';
 import { ErrorToastService } from '../../../shared/ui/error-toast/index.service';
 import { UsersRepository } from '../infrastructure/index.repository';
 import { UpdateUserRoleUseCase } from './use-cases/update-role/index.use-case';
@@ -28,6 +28,8 @@ export class UsersListFacade {
   readonly email = signal('');
   readonly totalPages = signal(0);
   readonly updatingRoleId = signal<number | null>(null);
+  readonly seats = signal<Seats | null>(null);
+  readonly seatsFull = computed(() => seatsFull(this.seats()));
   readonly canCreate = computed(() => canCreateUsers(this.session.role()));
   readonly canChangeRoles = computed(() => canChangeRoles(this.session.role()));
   // RF-11: só o platform_admin vê usuários de várias companhias.
@@ -41,6 +43,13 @@ export class UsersListFacade {
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed())
       .subscribe(() => this.reload());
     this.reload();
+    this.loadSeats();
+  }
+
+  // RF-08: só o admin de companhia vê o contador. Se falhar, o contador some e a API segue barrando o excesso.
+  loadSeats(): void {
+    if (!this.canCreate()) return;
+    this.repository.seats().subscribe({ next: (seats) => this.seats.set(seats), error: () => this.seats.set(null) });
   }
 
   reload(): void {

@@ -1,5 +1,5 @@
 import { newInviteSchema } from './index.model';
-import { canChangeRoles, canCreateUsers, creatableRoles } from './index.rules';
+import { canChangeRoles, canCreateUsers, creatableRoles, seatsFull, seatsUsage } from './index.rules';
 
 describe('users rules', () => {
   it('lets only company administrators create users', () => {
@@ -22,6 +22,13 @@ describe('users rules', () => {
     expect(creatableRoles('market')).toEqual(['admin', 'manager', 'auditor']);
     expect(creatableRoles('supplier')).toEqual(['admin', 'supplier']);
     expect(creatableRoles(null)).toEqual([]);
+  });
+
+  it('describes the seats usage and tells when they are full', () => {
+    expect(seatsUsage({ used: 8, max: 10 })).toBe('8 de 10 assentos em uso');
+    expect(seatsFull({ used: 9, max: 10 })).toBe(false);
+    expect(seatsFull({ used: 10, max: 10 })).toBe(true);
+    expect(seatsFull(null)).toBe(false);
   });
 
   it('invites with only the e-mail and the role', () => {

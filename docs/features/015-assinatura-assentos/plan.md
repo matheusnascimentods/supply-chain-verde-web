@@ -20,22 +20,31 @@
 - Landing (`features/landing/.../landing/index.component.html:31`): o texto é "Conhecer a assinatura" e o link `/assinatura`.
 - Cypress: `signup.cy.ts` sem intercept de `/plans`, `plan-card` e `planCode`. `login.cy.ts` sem `/plans`, e o pathname esperado passa a ser `/assinatura`.
 
-## 2. Perfil (`features/profile`, Task 2)
+## 2. Perfil sem plano e contador na lista (Task 2)
 
-- `domain/index.model.ts`: sai `CompanyPlan`. `OwnCompany` troca `plan` por `maxUsers: number` e `seatsUsed: number`.
-- `domain/index.rules.ts`: `accountsUsage(used, max)` vira `seatsUsage(used, max)` → `"8 de 10 em uso"`. A Task 3 também usa essa função, que fica exportada daqui.
-- `infrastructure/index.repository.ts`: no schema, sai `plan` e entram `maxUsers`/`seatsUsed`. Saem `countCompanyUsers` e `COMPANY_USERS_LIMIT`, o que resolve o ponytail que já pedia isso.
-- `pages/profile`: o `forkJoin` vira só `getMyCompany()`, e a seção passa a se chamar "Assinatura", com a linha "Assentos" → `seatsUsage(...)`. `data-testid="company-plan"` vira `company-subscription`, e as classes `.profile-plan*` viram `.profile-subscription*`.
+O contador de assentos fica na lista de usuários, ao lado de "+ Convidar usuário", e não no perfil.
+
+- `features/profile`:
+  - `domain/index.model.ts`: sai `CompanyPlan`, e `OwnCompany` perde `plan`.
+  - `domain/index.rules.ts`: sai `accountsUsage`.
+  - `infrastructure/index.repository.ts`: sai `plan` do schema. Saem `countCompanyUsers` e `COMPANY_USERS_LIMIT`, o que resolve o ponytail que já pedia isso.
+  - `pages/profile`: o `forkJoin` vira só `getMyCompany()`, e a seção "Plano" sai.
+- `features/users`:
+  - `domain/index.model.ts`: `Seats = { used: number; max: number }`.
+  - `domain/index.rules.ts`: `seatsUsage(seats)` → `"8 de 10 assentos em uso"` e `seatsFull(seats)`.
+  - `infrastructure/index.repository.ts`: `seats()` faz `GET /companies/me` e mapeia para `{ used: seatsUsed, max: maxUsers }`. Ele não importa o repositório do perfil, para não acoplar features.
+  - `UsersListFacade`: os signals `seats` e `seatsFull`, e `loadSeats()`, chamado no `init` só quando `canCreate()` (admin de companhia). Se falhar, o contador some, e a API continua barrando com 409.
+  - `pages/list`: `<p data-testid="seats-counter">` no cabeçalho. "+ Convidar usuário" fica `disabled` com `title="Sem assentos livres"` quando `seatsFull()`. Depois de um convite, `loadSeats()`, porque o convite pendente já ocupa assento.
 
 ## 3. Ativação e contador (`features/users`, Task 3)
 
 ### Modelo e repositório
 
-- `domain/index.model.ts`: `User.active: boolean`, e um tipo `Seats = { used: number; max: number }`.
+O `Seats`, o `seats()`, o `seatsFull` e o contador já vêm da Task 2 (§2).
+
+- `domain/index.model.ts`: `User.active: boolean`.
 - `infrastructure/index.dto.ts`: `userResponseSchema` com `active: z.boolean()`.
-- `infrastructure/index.repository.ts`:
-  - `updateStatus(userId, active)` faz `PATCH /users/{id}/status` com o corpo `{ active }`.
-  - `seats()` faz `GET /companies/me` e mapeia para `{ used: seatsUsed, max: maxUsers }`. Ele não importa o repositório do perfil, para não acoplar features: são 3 linhas.
+- `infrastructure/index.repository.ts`: `updateStatus(userId, active)` faz `PATCH /users/{id}/status` com o corpo `{ active }`.
 
 ### Regras (`domain/index.rules.ts`)
 
@@ -88,7 +97,8 @@ O `actor.userId` sai da sessão em `core/auth/session`. Se a sessão não tiver 
 
 - `subscription/index.component.spec.ts`: mostra "10 usuários ativos" e o CTA aponta para `/cadastro` sem query.
 - `sign-up`: o envio não tem `planCode`, e não há chamada a `/plans` (`http.expectNone`).
-- `profile`: a linha "Assentos" vem de `seatsUsed`/`maxUsers`, e não há chamada a `GET /users`.
+- `profile`: sem seção de plano e sem chamada a `GET /users`.
+- `users`: o contador mostra "8 de 10 assentos em uso", só para o admin de companhia, e com 10/10 o convite fica desabilitado.
 - `users/domain/index.rules.spec.ts`: `canToggleStatus` (a própria linha, `platform_admin` alvo, perfil sem permissão) e `seatsFull`.
 - `users/infrastructure/index.repository.spec.ts`: `PATCH /status` com corpo, `role` repetido em `getAll('role')`, e `active` ausente quando `null`.
 - `users/application/index.facade.spec.ts`: `toggleStatus` recarrega a lista e os assentos, o erro vai ao toast, e `toggleRole`/`setActive` zeram o offset.

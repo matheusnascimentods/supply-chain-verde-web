@@ -21,6 +21,9 @@ describe('UserListComponent', () => {
       totalPages: signal(1),
       pageNumber: signal(1),
       updatingRoleId: signal(null),
+      seats: signal({ used: 8, max: 10 }),
+      seatsFull: signal(false),
+      loadSeats: vi.fn(),
       canCreate: signal(true),
       showCompany: signal(false),
       canChangeRoles: signal(true),
@@ -82,12 +85,37 @@ describe('UserListComponent', () => {
     expect(page.querySelector('app-invite-user-modal')).not.toBeNull();
   });
 
-  it('closes the modal and shows a toast after an invite, without reloading the list', () => {
+  it('closes the modal and shows a toast after an invite, reloading only the seats', () => {
     fixture.componentInstance.inviteModalOpen.set(true);
     fixture.componentInstance.userInvited('ana@example.com');
     expect(fixture.componentInstance.inviteModalOpen()).toBe(false);
     expect(toast.toasts().map(({ message, variant }) => ({ message, variant }))).toEqual([{ message: 'Convite enviado para ana@example.com.', variant: 'success' }]);
     expect(facade['reload']).not.toHaveBeenCalled();
+    expect(facade['loadSeats']).toHaveBeenCalled();
     toast.clear();
+  });
+
+  const inviteButton = () =>
+    Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('button')).find((button) => button.textContent?.includes('Convidar usuário'))!;
+  const counter = () => (fixture.nativeElement as HTMLElement).querySelector('[data-testid="seats-counter"]');
+
+  it('shows the seats counter next to the invite button', () => {
+    expect(counter()?.textContent?.trim()).toBe('8 de 10 assentos em uso');
+    expect(inviteButton().disabled).toBe(false);
+  });
+
+  it('disables the invite with an explanation when the seats are full', () => {
+    (facade['seats'] as ReturnType<typeof signal<unknown>>).set({ used: 10, max: 10 });
+    (facade['seatsFull'] as ReturnType<typeof signal<boolean>>).set(true);
+    fixture.detectChanges();
+    expect(counter()?.textContent?.trim()).toBe('10 de 10 assentos em uso');
+    expect(inviteButton().disabled).toBe(true);
+    expect(inviteButton().getAttribute('title')).toBe('Sem assentos livres');
+  });
+
+  it('hides the counter when the seats are not loaded', () => {
+    (facade['seats'] as ReturnType<typeof signal<unknown>>).set(null);
+    fixture.detectChanges();
+    expect(counter()).toBeNull();
   });
 });
