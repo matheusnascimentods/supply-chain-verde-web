@@ -27,10 +27,10 @@ O merge não depende da API, porque os specs usam `HttpTestingController` e os c
 
 Depende da Task 1. Só tem efeito em produção depois da API Task 1.
 
-- [ ] Facade com 2 passos, `PagedSearch<Product>` e filtros opcionais (plan §2) + spec
-- [ ] Modal: passo de produto com busca, filtros, cards e paginação, mais a revisão (plan §3) + spec
-- [ ] `isRecommended` com `Product` + spec
-- [ ] `register-batch-flow.cy.ts` com o fluxo novo (plan §5)
+- [x] Facade com 2 passos, `PagedSearch<Product>` e filtros opcionais (plan §2) + spec
+- [x] Modal: passo de produto com busca, filtros, cards e paginação, mais a revisão (plan §3) + spec
+- [x] `isRecommended` com `Product` + spec
+- [x] `register-batch-flow.cy.ts` com o fluxo novo (plan §5)
 
 **Arquivos (~10):** `create-batch/index.facade.ts` + spec, `create-modal/index.component.{ts,html,css}` + spec, `batches/domain/index.rules.ts` + spec, `cypress/e2e/register-batch-flow.cy.ts`.
 

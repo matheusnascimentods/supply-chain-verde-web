@@ -3,7 +3,7 @@
     <div>
       <p class="create-eyebrow">Supply Chain Verde</p>
       <h2 id="create-batch-title" class="create-title">Pedir novo lote</h2>
-      <p class="create-subtitle">Escolha o tipo de produto, o fornecedor e o produto dele, depois informe a quantidade.</p>
+      <p class="create-subtitle">Escolha o produto, depois informe a quantidade.</p>
     </div>
     <button type="button" class="create-close" aria-label="Fechar pedido de lote" [disabled]="facade.saving()" (click)="requestDismiss()">&times;</button>
   </header>
@@ -20,96 +20,70 @@
   @if (facade.error()) {
     <div role="alert" class="create-error">
       <span>{{ facade.error() }}</span>
-      @if (facade.step() === 1 && !facade.suppliers.loading() && !facade.suppliers.items().length) {
-        <button type="button" class="create-error-retry" (click)="facade.retrySuppliers()">Tentar carregar novamente</button>
+      @if (facade.step() === 0 && !facade.products.loading() && !facade.products.items().length) {
+        <button type="button" class="create-error-retry" (click)="facade.retryProducts()">Tentar carregar novamente</button>
       }
     </div>
   }
 
   @switch (facade.step()) {
     @case (0) {
-      <section class="create-body" aria-labelledby="batch-product-heading">
-        <div>
-          <h3 id="batch-product-heading" class="batch-data-title">Que produto você precisa?</h3>
-          <p class="picker-hint">A categoria e a unidade definem a recomendação de fornecedores, pelo menor CO₂ por unidade.</p>
-        </div>
-        <div class="batch-data">
-          <app-enum-select [id]="'batch-category'" label="Categoria" placeholder="Selecione a categoria" [options]="categories" [labels]="categoryLabels" [value]="facade.category() ?? ''" (valueChange)="setCategory($event)" />
-          <app-enum-select [id]="'batch-unit'" label="Unidade" placeholder="Selecione a unidade" [options]="units" [labels]="unitLabels" [value]="facade.unit() ?? ''" (valueChange)="setUnit($event)" />
-        </div>
-      </section>
-    }
-    @case (1) {
-      <section class="create-body" aria-labelledby="choose-supplier-heading">
+      <section class="create-body" aria-labelledby="choose-product-heading">
         <div class="picker-header">
           <div>
-            <h3 id="choose-supplier-heading" class="picker-title">Selecione um fornecedor</h3>
-            <p class="picker-hint">{{ categoryOf(facade.category()) }} em {{ unitOf(facade.unit()) }}, ordenados pelo menor CO₂ por unidade.</p>
+            <h3 id="choose-product-heading" class="picker-title">Selecione um produto</h3>
+            <p class="picker-hint">Os mais pedidos pela sua empresa nos últimos 30 dias vêm primeiro, depois os de menor CO₂ por unidade.</p>
           </div>
-          <app-text-field id="batch-supplier-search" class="picker-search" label="Buscar fornecedores" type="search" placeholder="Buscar fornecedor..." [ngModel]="facade.suppliers.search()" (ngModelChange)="facade.suppliers.searchFor($event)" />
+          <app-text-field id="batch-product-search" class="picker-search" label="Buscar produtos" type="search" placeholder="Produto ou fornecedor..." [ngModel]="facade.products.search()" (ngModelChange)="facade.searchFor($event)" />
         </div>
-        @if (facade.suppliers.loading()) {
-          <p class="picker-loading" aria-live="polite">Carregando fornecedores…</p>
+        <div class="picker-filters">
+          <app-enum-select [id]="'batch-category'" label="Categoria" placeholder="Todas" [options]="categories" [labels]="categoryLabels" [value]="facade.category() ?? ''" (valueChange)="setCategory($event)" />
+          <app-enum-select [id]="'batch-unit'" label="Unidade" placeholder="Todas" [options]="units" [labels]="unitLabels" [value]="facade.unit() ?? ''" (valueChange)="setUnit($event)" />
+        </div>
+        @if (facade.products.loading()) {
+          <p class="picker-loading" aria-live="polite">Carregando produtos…</p>
         } @else {
           <div class="picker-grid">
-            @for (supplier of facade.suppliers.items(); track supplier.supplierId; let index = $index) {
-              <button type="button" class="picker-option" [attr.aria-pressed]="facade.selectedSupplier()?.supplierId === supplier.supplierId" (click)="facade.selectSupplier(supplier)">
-                <span class="picker-option-name">{{ supplier.name }} @if (isRecommended(supplier, index, facade.suppliers.page())) { <span class="recommended-badge">Recomendado</span> }</span>
-                <span class="picker-option-meta">{{ supplier.cnpj ?? 'CNPJ não informado' }} · {{ score(supplier.sustainabilityScore) }} pontos</span>
-                <span class="picker-option-meta">{{ typeof supplier.co2KgPerUnit === 'number' ? score(supplier.co2KgPerUnit) + ' kg CO₂e/' + facade.unitSymbol() : 'Sem histórico' }}</span>
-              </button>
-            } @empty {
-              <p class="picker-empty">Nenhum fornecedor encontrado.</p>
-            }
-          </div>
-          <app-pagination [page]="facade.suppliers.totalPages() ? facade.suppliers.page() + 1 : 0" [totalPages]="facade.suppliers.totalPages()" [disabled]="facade.suppliers.loading()" label="Paginação de fornecedores" (previous)="facade.suppliers.changePage(-1)" (next)="facade.suppliers.changePage(1)" />
-        }
-        @if (facade.selectedSupplier(); as supplier) { <p class="choice-summary">Fornecedor selecionado: <strong>{{ supplier.name }}</strong></p> }
-      </section>
-    }
-    @case (2) {
-      <section class="create-body" aria-labelledby="choose-product-heading">
-        <div>
-          <h3 id="choose-product-heading" class="picker-title">Produtos de {{ facade.selectedSupplier()?.name }}</h3>
-          <p class="picker-hint">{{ categoryOf(facade.category()) }} em {{ unitOf(facade.unit()) }}.</p>
-        </div>
-        @if (facade.loadingProducts()) {
-          <p class="picker-loading" aria-live="polite">Carregando produtos do fornecedor…</p>
-        } @else {
-          <div class="picker-grid">
-            @for (product of facade.supplierProducts(); track product.productId) {
+            @for (product of facade.products.items(); track product.productId; let index = $index) {
               <button type="button" class="picker-option" [attr.aria-pressed]="facade.selectedProduct()?.productId === product.productId" (click)="facade.selectProduct(product)">
-                <span class="picker-option-name">{{ product.name }}</span>
-                @if (product.description) { <span class="picker-option-meta">{{ product.description }}</span> }
+                <span class="picker-option-name">{{ product.name }} @if (isRecommended(product, index, facade.products.page())) { <span class="recommended-badge">Recomendado</span> }</span>
+                <span class="picker-option-meta">{{ product.supplierName }}</span>
+                <span class="picker-option-meta">{{ typeof product.co2KgPerUnit === 'number' ? score(product.co2KgPerUnit) + ' kg CO₂e/' + unitSymbols[product.unit] : 'Sem histórico' }}</span>
+                @if (product.acceptedBatchesLast30Days; as batches) {
+                  <span class="picker-option-meta">{{ batches }} {{ batches === 1 ? 'lote' : 'lotes' }} nos últimos 30 dias</span>
+                }
               </button>
             } @empty {
-              <p class="picker-empty" data-testid="no-supplier-products">Este fornecedor não tem produtos nessa categoria e unidade. Volte e escolha outro fornecedor.</p>
+              <p class="picker-empty">Nenhum produto encontrado.</p>
             }
           </div>
+          <app-pagination [page]="facade.products.totalPages() ? facade.products.page() + 1 : 0" [totalPages]="facade.products.totalPages()" [disabled]="facade.products.loading()" label="Paginação de produtos" (previous)="facade.products.changePage(-1)" (next)="facade.products.changePage(1)" />
         }
-        @if (facade.selectedProduct(); as product) { <p class="choice-summary">Produto selecionado: <strong>{{ product.name }}</strong></p> }
+        @if (facade.selectedProduct(); as product) { <p class="choice-summary">Produto selecionado: <strong>{{ product.name }}</strong> de {{ product.supplierName }}</p> }
       </section>
     }
     @default {
-      <section class="review" aria-labelledby="batch-review-heading">
-        <div>
-          <h3 id="batch-review-heading" class="review-title">Revise o pedido</h3>
-          <p class="create-subtitle">O lote nasce pendente, e o fornecedor executa ou recusa o pedido.</p>
-        </div>
-        <app-text-field id="batch-quantity" [label]="'Quantidade (' + facade.unitSymbol() + ')'" type="number" inputMode="decimal" [min]="0.000001" step="any" placeholder="Ex.: 500" [required]="true" [formControl]="quantity" [error]="quantityError()" />
-        <dl class="review-list">
-          <div class="review-row"><dt class="review-label">Produto</dt><dd class="review-value">{{ facade.selectedProduct()?.name }}</dd></div>
-          <div class="review-row"><dt class="review-label">Fornecedor</dt><dd class="review-value">{{ facade.selectedSupplier()?.name }}</dd></div>
-          <div class="review-row"><dt class="review-label">Categoria e unidade</dt><dd class="review-value-plain">{{ categoryOf(facade.category()) }} · {{ unitOf(facade.unit()) }}</dd></div>
-        </dl>
-      </section>
+      @if (facade.selectedProduct(); as product) {
+        <section class="review" aria-labelledby="batch-review-heading">
+          <div>
+            <h3 id="batch-review-heading" class="review-title">Revise o pedido</h3>
+            <p class="create-subtitle">O lote nasce pendente, e o fornecedor executa ou recusa o pedido.</p>
+          </div>
+          <app-text-field id="batch-quantity" [label]="'Quantidade (' + facade.unitSymbol() + ')'" type="number" inputMode="decimal" [min]="0.000001" step="any" placeholder="Ex.: 500" [required]="true" [formControl]="quantity" [error]="quantityError()" />
+          <dl class="review-list">
+            <div class="review-row"><dt class="review-label">Produto</dt><dd class="review-value">{{ product.name }}</dd></div>
+            <div class="review-row"><dt class="review-label">Fornecedor</dt><dd class="review-value">{{ product.supplierName }}</dd></div>
+            <div class="review-row"><dt class="review-label">Categoria e unidade</dt><dd class="review-value-plain">{{ categoryLabels[product.category] }} · {{ unitLabels[product.unit] }}</dd></div>
+          </dl>
+        </section>
+      }
     }
   }
 
   <footer class="create-footer">
     <button type="button" class="footer-secondary" [disabled]="facade.saving()" (click)="back()">{{ facade.step() === 0 ? 'Cancelar' : 'Voltar' }}</button>
-    @if (facade.step() < 3) {
-      <button type="button" class="footer-primary" [disabled]="facade.saving() || (facade.step() === 2 && facade.loadingProducts())" (click)="next()">Avançar</button>
+    @if (facade.step() === 0) {
+      <button type="button" class="footer-primary" [disabled]="facade.saving()" (click)="next()">Avançar</button>
     } @else {
       <button type="button" class="footer-confirm" data-testid="confirm-batch" [disabled]="facade.saving()" (click)="submit()">{{ facade.saving() ? 'Enviando…' : 'Pedir lote' }}</button>
     }

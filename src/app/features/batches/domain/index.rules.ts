@@ -1,5 +1,5 @@
 import { CompanyType, UserRole } from '../../../core/auth/session/index.model';
-import type { SupplierRanking } from '../../suppliers';
+import type { Product } from '../../products';
 import { Batch } from './index.model';
 import { nextStage } from './stage/index.model';
 
@@ -28,7 +28,7 @@ export function canReject(role: Role, companyType: Company, batch: Batch): boole
   return companyType === 'supplier' && (role === 'admin' || role === 'supplier') && batch.status === 'PENDING';
 }
 
-// O ranking recomendado vem ordenado pela API; só o topo da primeira página é o melhor, e só se tiver histórico.
-export function isRecommended(supplier: SupplierRanking, index: number, page: number): boolean {
-  return page === 0 && index === 0 && supplier.co2KgPerUnit != null;
+// O catálogo vem ordenado pela API; só o topo da primeira página é o melhor, e só se tiver histórico de CO₂.
+export function isRecommended(product: Product, index: number, page: number): boolean {
+  return page === 0 && index === 0 && product.co2KgPerUnit != null;
 }

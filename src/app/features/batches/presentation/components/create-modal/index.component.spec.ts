@@ -8,28 +8,26 @@ describe('BatchCreateModalComponent', () => {
   let fixture: ComponentFixture<BatchCreateModalComponent>;
   let facade: ReturnType<typeof createFacade>;
   let created: number;
-  const coffee = { productId: 3, name: 'Café orgânico', category: 'AGRICULTURE', unit: 'KG' };
+  const coffee = { productId: 3, supplierId: 9, supplierName: 'Fazenda Verde', name: 'Café orgânico', category: 'AGRICULTURE', unit: 'KG', co2KgPerUnit: 0.42, acceptedBatchesLast30Days: 3 };
+  const rice = { productId: 5, supplierId: 7, supplierName: 'Grãos da Serra', name: 'Arroz', category: 'AGRICULTURE', unit: 'TON', co2KgPerUnit: null, acceptedBatchesLast30Days: 0 };
 
   function createFacade() {
     return {
-      step: signal<0 | 1 | 2 | 3>(0),
+      step: signal<0 | 1>(0),
       saving: signal(false),
       error: signal(''),
       category: signal<string | null>(null),
       unit: signal<string | null>(null),
       unitSymbol: signal('kg'),
-      suppliers: { items: signal([]), page: signal(0), totalPages: signal(0), search: signal(''), loading: signal(false), searchFor: vi.fn(), changePage: vi.fn() },
-      selectedSupplier: signal<object | null>({ supplierId: 9, name: 'Fazenda Verde' }),
-      supplierProducts: signal<object[]>([]),
-      loadingProducts: signal(false),
+      products: { items: signal<object[]>([]), page: signal(0), totalPages: signal(0), search: signal(''), loading: signal(false), changePage: vi.fn() },
       selectedProduct: signal<object | null>(coffee),
       setCategory: vi.fn(),
       setUnit: vi.fn(),
-      selectSupplier: vi.fn(),
+      searchFor: vi.fn(),
       selectProduct: vi.fn(),
       next: vi.fn(),
       previous: vi.fn(),
-      retrySuppliers: vi.fn(),
+      retryProducts: vi.fn(),
       submit: vi.fn().mockReturnValue(of({ batchId: 77 })),
     };
   }
@@ -44,42 +42,58 @@ describe('BatchCreateModalComponent', () => {
   });
 
   const element = () => fixture.nativeElement as HTMLElement;
-  const show = (step: 0 | 1 | 2 | 3) => {
+  const text = (node: Element | null | undefined) => node?.textContent?.replace(/\s+/g, ' ').trim();
+  const show = (step: 0 | 1) => {
     facade.step.set(step);
     fixture.detectChanges();
   };
 
-  it('shows the four steps of the request', () => {
-    const steps = [...element().querySelectorAll('.create-step')].map((step) => step.textContent?.replace(/\s+/g, ' ').trim());
-    expect(steps).toEqual(['1Produto', '2Fornecedor', '3Produto do fornecedor', '4Revisão']);
+  it('shows the two steps of the request', () => {
+    expect([...element().querySelectorAll('.create-step')].map(text)).toEqual(['1Produto', '2Revisão']);
   });
 
-  it('asks only category and unit in the first step, with no catalog, no inline creation and no production date', () => {
+  it('offers search and optional category and unit filters, with no production date', () => {
     const page = element();
-    expect(page.querySelector('#batch-category')).not.toBeNull();
-    expect(page.querySelector('#batch-unit')).not.toBeNull();
+    expect(page.querySelector('#batch-product-search')).not.toBeNull();
+    expect(text(page.querySelector('#batch-category option'))).toBe('Todas');
+    expect(text(page.querySelector('#batch-unit option'))).toBe('Todas');
     expect(page.querySelector('input[type="date"]')).toBeNull();
-    expect(page.textContent).not.toContain('Data de produção');
 
     const category = page.querySelector<HTMLSelectElement>('#batch-category')!;
     category.value = 'AGRICULTURE';
     category.dispatchEvent(new Event('change'));
     expect(facade.setCategory).toHaveBeenCalledWith('AGRICULTURE');
+    category.value = '';
+    category.dispatchEvent(new Event('change'));
+    expect(facade.setCategory).toHaveBeenLastCalledWith(null);
   });
 
-  it('lists the products of the chosen supplier in the third step, and explains when there are none', () => {
-    facade.supplierProducts.set([coffee]);
-    show(2);
-    expect(element().textContent).toContain('Produtos de Fazenda Verde');
-    expect(element().textContent).toContain('Café orgânico');
-
-    facade.supplierProducts.set([]);
+  it('shows each product with its supplier, CO₂ and recent batches, recommending the first one with history', () => {
+    facade.products.items.set([coffee, rice]);
     fixture.detectChanges();
-    expect(element().querySelector('[data-testid="no-supplier-products"]')).not.toBeNull();
+    const [first, second] = [...element().querySelectorAll('.picker-option')].map((card) => [...card.children].map(text));
+    expect(first).toEqual(['Café orgânico Recomendado', 'Fazenda Verde', '0,42 kg CO₂e/kg', '3 lotes nos últimos 30 dias']);
+    expect(second).toEqual(['Arroz', 'Grãos da Serra', 'Sem histórico']);
+  });
+
+  it('explains when no product is found and offers to retry after an error', () => {
+    facade.error.set('Não foi possível carregar os produtos. Tente novamente.');
+    fixture.detectChanges();
+    expect(element().textContent).toContain('Nenhum produto encontrado.');
+    [...element().querySelectorAll('button')].find((button) => button.textContent?.includes('Tentar carregar novamente'))!.click();
+    expect(facade.retryProducts).toHaveBeenCalled();
+  });
+
+  it('reviews the product and its supplier', () => {
+    show(1);
+    const review = text(element().querySelector('.review-list'));
+    expect(review).toContain('Café orgânico');
+    expect(review).toContain('Fazenda Verde');
+    expect(review).toContain('Agricultura · Quilograma (kg)');
   });
 
   it('asks the quantity in the review and requests the batch', () => {
-    show(3);
+    show(1);
     expect(element().textContent).toContain('Revise o pedido');
     fixture.componentInstance.submit();
     expect(facade.submit).not.toHaveBeenCalled();
@@ -94,7 +108,7 @@ describe('BatchCreateModalComponent', () => {
 
   it('stays open when the request fails', () => {
     facade.submit.mockReturnValue(throwError(() => new Error('400')));
-    show(3);
+    show(1);
     fixture.componentInstance.quantity.setValue(10);
     fixture.componentInstance.submit();
     expect(created).toBe(0);

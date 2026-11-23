@@ -2,16 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { ProductsRepository } from '../../../products';
-import { SuppliersRepository } from '../../../suppliers';
 import { CreateBatchUseCase } from '../use-cases/create-batch/index.use-case';
 import { BatchCreationFacade } from './index.facade';
 
 describe('BatchCreationFacade', () => {
-  const coffee = { productId: 3, name: 'Café orgânico', category: 'AGRICULTURE' as const, unit: 'KG' as const };
-  const beans = { productId: 4, name: 'Feijão', category: 'AGRICULTURE' as const, unit: 'KG' as const };
-  const farm = { supplierId: 9, name: 'Fazenda Verde' } as never;
-  let products: { loadBySupplier: ReturnType<typeof vi.fn> };
-  let suppliers: { loadRanking: ReturnType<typeof vi.fn> };
+  const coffee = { productId: 3, supplierId: 9, supplierName: 'Fazenda Verde', name: 'Café orgânico', category: 'AGRICULTURE' as const, unit: 'KG' as const };
+  let products: { load: ReturnType<typeof vi.fn> };
   let createBatch: { execute: ReturnType<typeof vi.fn> };
 
   function createFacade(): BatchCreationFacade {
@@ -19,98 +15,71 @@ describe('BatchCreationFacade', () => {
       providers: [
         BatchCreationFacade,
         { provide: ProductsRepository, useValue: products },
-        { provide: SuppliersRepository, useValue: suppliers },
         { provide: CreateBatchUseCase, useValue: createBatch },
       ],
     });
-    const facade = TestBed.inject(BatchCreationFacade);
-    TestBed.tick();
-    return facade;
-  }
-
-  function toSupplierProducts(facade: BatchCreationFacade): void {
-    facade.setCategory('AGRICULTURE');
-    facade.setUnit('KG');
-    TestBed.tick();
-    facade.next();
-    facade.selectSupplier(farm);
-    facade.next();
+    return TestBed.inject(BatchCreationFacade);
   }
 
   beforeEach(() => {
-    products = { loadBySupplier: vi.fn().mockReturnValue(of([coffee, beans])) };
-    suppliers = { loadRanking: vi.fn().mockReturnValue(of({ items: [farm], totalPages: 1 })) };
+    products = { load: vi.fn().mockReturnValue(of({ items: [coffee], totalPages: 1 })) };
     createBatch = { execute: vi.fn().mockReturnValue(of({ batchId: 77, status: 'PENDING' })) };
   });
 
-  it('loads the supplier ranking only once category and unit are chosen, recommended by them', () => {
+  it('loads the whole catalog on creation, with no filter', () => {
     const facade = createFacade();
-    expect(suppliers.loadRanking).not.toHaveBeenCalled();
-    facade.setCategory('AGRICULTURE');
-    TestBed.tick();
-    expect(suppliers.loadRanking).not.toHaveBeenCalled();
-    facade.setUnit('KG');
-    TestBed.tick();
-    expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, { category: 'AGRICULTURE', unit: 'KG' });
+    expect(products.load).toHaveBeenCalledWith({ limit: 20, offset: 0, search: '', category: undefined, unit: undefined });
+    expect(facade.products.items()).toEqual([coffee]);
   });
 
-  it('clears the chosen supplier when the category or unit changes', () => {
+  it('reloads from the first page and clears the selection when a filter changes', () => {
     const facade = createFacade();
+    facade.selectProduct(coffee);
     facade.setCategory('AGRICULTURE');
-    facade.setUnit('KG');
-    TestBed.tick();
-    facade.selectSupplier(farm);
+    expect(facade.selectedProduct()).toBeNull();
+    expect(products.load).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '', category: 'AGRICULTURE', unit: undefined });
+
+    facade.selectProduct(coffee);
     facade.setUnit('TON');
-    TestBed.tick();
-    expect(facade.selectedSupplier()).toBeNull();
-    expect(suppliers.loadRanking).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '' }, { category: 'AGRICULTURE', unit: 'TON' });
+    expect(facade.selectedProduct()).toBeNull();
+    expect(products.load).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '', category: 'AGRICULTURE', unit: 'TON' });
+
+    facade.setCategory(null);
+    expect(products.load).toHaveBeenLastCalledWith({ limit: 20, offset: 0, search: '', category: undefined, unit: 'TON' });
   });
 
-  it('requires each step before advancing', () => {
+  it('clears the selection when the search changes', () => {
+    const facade = createFacade();
+    facade.selectProduct(coffee);
+    facade.searchFor('serra');
+    expect(facade.selectedProduct()).toBeNull();
+    expect(facade.products.search()).toBe('serra');
+  });
+
+  it('does not advance without a product', () => {
     const facade = createFacade();
     expect(facade.next()).toBe(false);
-    expect(facade.error()).toBe('Escolha a categoria e a unidade do produto para continuar.');
-    facade.setCategory('AGRICULTURE');
-    facade.setUnit('KG');
-    TestBed.tick();
-    expect(facade.next()).toBe(true);
-    expect(facade.next()).toBe(false);
-    expect(facade.error()).toBe('Selecione um fornecedor para continuar.');
-    facade.selectSupplier(farm);
-    expect(facade.next()).toBe(true);
-    expect(facade.next()).toBe(false);
-    expect(facade.error()).toBe('Selecione um produto do fornecedor para continuar.');
+    expect(facade.error()).toBe('Selecione um produto para continuar.');
     facade.selectProduct(coffee);
     expect(facade.next()).toBe(true);
-    expect(facade.step()).toBe(3);
+    expect(facade.step()).toBe(1);
+    expect(facade.unitSymbol()).toBe('kg');
+    facade.previous();
+    expect(facade.step()).toBe(0);
   });
 
-  it('loads the products of the chosen supplier in that category and unit', () => {
+  it('explains when the catalog cannot be loaded, and retries', () => {
+    products.load.mockReturnValue(throwError(() => new Error('500')));
     const facade = createFacade();
-    toSupplierProducts(facade);
-    expect(products.loadBySupplier).toHaveBeenCalledWith(9, { category: 'AGRICULTURE', unit: 'KG' });
-    expect(facade.supplierProducts()).toEqual([coffee, beans]);
-    expect(facade.selectedProduct()).toBeNull();
+    expect(facade.error()).toBe('Não foi possível carregar os produtos. Tente novamente.');
+    products.load.mockReturnValue(of({ items: [coffee], totalPages: 1 }));
+    facade.retryProducts();
+    expect(facade.error()).toBe('');
+    expect(facade.products.items()).toEqual([coffee]);
   });
 
-  it('preselects the only product of the supplier', () => {
-    products.loadBySupplier.mockReturnValue(of([coffee]));
+  it('requests the batch with the product, its supplier and the quantity', () => {
     const facade = createFacade();
-    toSupplierProducts(facade);
-    expect(facade.selectedProduct()).toEqual(coffee);
-  });
-
-  it('explains when the supplier products cannot be loaded', () => {
-    products.loadBySupplier.mockReturnValue(throwError(() => new Error('500')));
-    const facade = createFacade();
-    toSupplierProducts(facade);
-    expect(facade.error()).toBe('Não foi possível carregar os produtos deste fornecedor. Volte e tente novamente.');
-    expect(facade.loadingProducts()).toBe(false);
-  });
-
-  it('requests the batch with product, supplier and quantity only', () => {
-    const facade = createFacade();
-    toSupplierProducts(facade);
     facade.selectProduct(coffee);
     facade.next();
     let created: unknown;
@@ -125,7 +94,6 @@ describe('BatchCreationFacade', () => {
       throwError(() => new HttpErrorResponse({ status: 400, error: { message: 'O produto 3 não é do fornecedor 9.' } })),
     );
     const facade = createFacade();
-    toSupplierProducts(facade);
     facade.selectProduct(coffee);
     facade.submit(1).subscribe({ error: () => undefined });
     expect(facade.error()).toBe('O produto 3 não é do fornecedor 9.');
