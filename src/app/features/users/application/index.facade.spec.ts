@@ -10,8 +10,8 @@ import { UpdateUserRoleUseCase } from './use-cases/update-role/index.use-case';
 import { UsersListFacade } from './index.facade';
 
 describe('UsersListFacade', () => {
-  const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager' as UserRole };
-  let repository: { load: ReturnType<typeof vi.fn>; seats: ReturnType<typeof vi.fn> };
+  const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager' as UserRole, active: true, companyType: 'market' as const };
+  let repository: { load: ReturnType<typeof vi.fn>; seats: ReturnType<typeof vi.fn>; updateStatus: ReturnType<typeof vi.fn> };
   let updateRole: { execute: ReturnType<typeof vi.fn> };
   const role = signal<UserRole | null>('admin');
   let toast: { show: ReturnType<typeof vi.fn> };
@@ -22,7 +22,7 @@ describe('UsersListFacade', () => {
         UsersListFacade,
         { provide: UsersRepository, useValue: repository },
         { provide: UpdateUserRoleUseCase, useValue: updateRole },
-        { provide: SessionService, useValue: { role } },
+        { provide: SessionService, useValue: { role, email: () => 'boss@example.com' } },
         { provide: ErrorToastService, useValue: toast },
       ],
     });
@@ -35,6 +35,7 @@ describe('UsersListFacade', () => {
     repository = {
       load: vi.fn().mockReturnValue(of({ items: [ana], totalPages: 3 })),
       seats: vi.fn().mockReturnValue(of({ used: 8, max: 10 })),
+      updateStatus: vi.fn().mockReturnValue(of({ ...ana, active: false })),
     };
     updateRole = { execute: vi.fn().mockReturnValue(of(ana)) };
   });
@@ -133,6 +134,38 @@ describe('UsersListFacade', () => {
     const facade = createFacade();
     expect(facade.seats()).toBeNull();
     expect(facade.seatsFull()).toBe(false);
+  });
+
+  it('deactivates a user and reloads the list and the seats', () => {
+    const facade = createFacade();
+    facade.toggleStatus(ana);
+    expect(repository.updateStatus).toHaveBeenCalledWith(1, false);
+    expect(repository.load).toHaveBeenCalledTimes(2);
+    expect(repository.seats).toHaveBeenCalledTimes(2);
+    expect(facade.updatingStatusId()).toBeNull();
+  });
+
+  it('reactivates an inactive user', () => {
+    const facade = createFacade();
+    facade.toggleStatus({ ...ana, active: false });
+    expect(repository.updateStatus).toHaveBeenCalledWith(1, true);
+  });
+
+  it('does not toggle the own row', () => {
+    const facade = createFacade();
+    facade.toggleStatus({ ...ana, email: 'boss@example.com' });
+    expect(repository.updateStatus).not.toHaveBeenCalled();
+  });
+
+  it('shows the API message when the reactivation is refused (no free seat)', () => {
+    repository.updateStatus.mockReturnValue(
+      throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'A companhia atingiu o limite de 10 usuários ativos.' } })),
+    );
+    const facade = createFacade();
+    facade.toggleStatus({ ...ana, active: false });
+    expect(toast.show).toHaveBeenCalledWith('A companhia atingiu o limite de 10 usuários ativos.');
+    expect(facade.updatingStatusId()).toBeNull();
+    expect(repository.load).toHaveBeenCalledTimes(1);
   });
 
   it('shows an error when the role update fails', () => {

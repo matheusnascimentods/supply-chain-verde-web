@@ -9,8 +9,8 @@ describe('UserListComponent', () => {
   let fixture: ComponentFixture<UserListComponent>;
   let toast: ErrorToastService;
   let facade: Record<string, unknown> & { canCreate: ReturnType<typeof signal<boolean>>; showCompany: ReturnType<typeof signal<boolean>>; canChangeRoles: ReturnType<typeof signal<boolean>>; updateRole: ReturnType<typeof vi.fn> };
-  const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager', createdAt: null, companyType: 'market', companyName: 'Mercado Bom Preço' };
-  const root = { userId: 3, name: 'Root', email: 'root@example.com', role: 'platform_admin', createdAt: null, companyType: null, companyName: null };
+  const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager', active: true, createdAt: null, companyType: 'market', companyName: 'Mercado Bom Preço' };
+  const root = { userId: 3, name: 'Root', email: 'root@example.com', role: 'platform_admin', active: true, createdAt: null, companyType: null, companyName: null };
 
   beforeEach(() => {
     facade = {
@@ -21,6 +21,9 @@ describe('UserListComponent', () => {
       totalPages: signal(1),
       pageNumber: signal(1),
       updatingRoleId: signal(null),
+      updatingStatusId: signal(null),
+      canToggleStatus: vi.fn((user: { email: string; companyType: string | null }) => !!user.companyType && user.email !== 'boss@example.com'),
+      toggleStatus: vi.fn(),
       seats: signal({ used: 8, max: 10 }),
       seatsFull: signal(false),
       loadSeats: vi.fn(),
@@ -117,5 +120,49 @@ describe('UserListComponent', () => {
     (facade['seats'] as ReturnType<typeof signal<unknown>>).set(null);
     fixture.detectChanges();
     expect(counter()).toBeNull();
+  });
+
+  describe('status column', () => {
+    const items = () => facade['items'] as ReturnType<typeof signal<unknown[]>>;
+    const row = (index: number) => (fixture.nativeElement as HTMLElement).querySelectorAll('tbody tr')[index] as HTMLElement;
+    const toggle = (index: number) => row(index).querySelector<HTMLButtonElement>('[data-testid="toggle-status"]');
+
+    it('shows the status as a single colored toggle that deactivates on click', () => {
+      expect(row(0).querySelectorAll('.users-status').length).toBe(1);
+      expect(toggle(0)?.textContent?.trim()).toBe('Ativo');
+      expect(toggle(0)?.getAttribute('data-status')).toBe('active');
+      expect(toggle(0)?.getAttribute('aria-label')).toBe('Ativo, desativar Ana');
+      expect(toggle(0)?.getAttribute('title')).toBe('Clique para desativar');
+      toggle(0)!.click();
+      expect(facade['toggleStatus']).toHaveBeenCalledWith(ana);
+    });
+
+    it('shows a read-only status on the own row and on a user without company', () => {
+      items().set([{ ...ana, email: 'boss@example.com' }, root]);
+      fixture.detectChanges();
+      expect(toggle(0)).toBeNull();
+      expect(toggle(1)).toBeNull();
+      expect(row(0).querySelector('span.users-status')?.textContent?.trim()).toBe('Ativo');
+    });
+
+    it('marks an inactive user, locks its role menu and reactivates from the toggle', () => {
+      items().set([{ ...ana, active: false }]);
+      fixture.detectChanges();
+      expect(row(0).classList).toContain('users-row-inactive');
+      expect(row(0).querySelector<HTMLButtonElement>('app-role-menu button')?.disabled).toBe(true);
+      expect(toggle(0)?.textContent?.trim()).toBe('Inativo');
+      expect(toggle(0)?.getAttribute('data-status')).toBe('inactive');
+      expect(toggle(0)?.getAttribute('aria-label')).toBe('Inativo, reativar Ana');
+      expect(toggle(0)?.disabled).toBe(false);
+    });
+
+    it('disables the reactivation with an explanation when the seats are full, but keeps the deactivation', () => {
+      items().set([{ ...ana, active: false }, { ...ana, userId: 2, active: true }]);
+      (facade['seatsFull'] as ReturnType<typeof signal<boolean>>).set(true);
+      fixture.detectChanges();
+      expect(toggle(0)?.disabled).toBe(true);
+      expect(toggle(0)?.getAttribute('title')).toBe('Sem assentos livres');
+      expect(toggle(1)?.disabled).toBe(false);
+    });
   });
 });

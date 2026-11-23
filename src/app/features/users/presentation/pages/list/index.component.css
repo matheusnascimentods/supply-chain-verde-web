@@ -51,6 +51,32 @@
 .users-row {
   @apply border-b border-slate-100 last:border-b-0 hover:bg-slate-50/70;
 }
+.users-row-inactive .users-cell-name,
+.users-row-inactive .users-cell-email,
+.users-row-inactive .users-cell-date {
+  @apply opacity-50;
+}
+.users-status {
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1;
+}
+.users-status[data-status='active'] {
+  @apply bg-green-100 text-green-800 ring-green-200;
+}
+.users-status[data-status='inactive'] {
+  @apply bg-slate-100 text-slate-600 ring-slate-300;
+}
+.users-status-toggle {
+  @apply cursor-pointer transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-700 disabled:cursor-not-allowed disabled:opacity-50;
+}
+.users-status-toggle[data-status='active']:not(:disabled):hover {
+  @apply bg-green-200;
+}
+.users-status-toggle[data-status='inactive']:not(:disabled):hover {
+  @apply bg-slate-200;
+}
+.users-status-icon {
+  @apply h-3 w-3;
+}
 .users-cell-name {
   @apply px-5 py-4 font-medium text-slate-800;
 }
