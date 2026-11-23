@@ -49,31 +49,28 @@ O `Seats`, o `seats()`, o `seatsFull` e o contador já vêm da Task 2 (§2).
 ### Regras (`domain/index.rules.ts`)
 
 ```ts
-export const canToggleStatus = (actor: Session, target: User) =>
-  canChangeRoles(actor.role) && !!target.companyType && target.userId !== actor.userId;
-export const seatsFull = (seats: Seats | null) => !!seats && seats.used >= seats.max;
+export function canToggleStatus(role: Role, actorEmail: string | null, target: User): boolean {
+  return canChangeRoles(role) && !!target.companyType && target.email !== actorEmail;
+}
 ```
 
-O `actor.userId` sai da sessão em `core/auth/session`. Se a sessão não tiver `userId`, a comparação usa `email`.
+A sessão (`core/auth/session`) não guarda o `userId`, então a própria linha é achada pelo `email`. O `seatsFull` já vem da Task 2.
 
-### Facade e use case
+### Facade
 
-- `application/use-cases/update-status/` segue o mesmo formato do `update-role`: uma casca fina sobre o repositório.
+- Sem use case: o facade chama `repository.updateStatus` direto, porque a casca do `update-role` não acrescenta nada.
 - `UsersListFacade`:
-  - O signal `seats`, carregado no `init` só quando `canCreate()` (admin de companhia).
   - `updatingStatusId`, igual ao `updatingRoleId`.
   - `toggleStatus(user)` chama `updateStatus(user.userId, !user.active)`. Se der certo, faz `reload()` + `loadSeats()`. Se der erro, `toast.show(apiErrorMessage(...))`.
-  - Depois de enviar um convite, também chama `loadSeats()`.
 
 ### Tela (`pages/list`)
 
 - Coluna **Situação** depois de Role:
-  - o badge `Ativo`/`Inativo`, num componente `components/status-badge` copiado do padrão de `features/batches/.../status-badge` (host `data-status` + CSS);
-  - o botão `app-button` pequeno "Desativar"/"Reativar" quando `canToggleStatus`;
-  - "Reativar" fica `disabled` quando `seatsFull(seats())`, com `title="Sem assentos livres"`.
+  - quando `canToggleStatus`, um botão só, em formato de pílula, com o texto `Ativo`/`Inativo`. A cor vem de `data-status` (verde ou cinza), e o clique troca a situação. O `aria-label` diz a ação ("Ativo, desativar Ana"), e o `title` também ("Clique para desativar");
+  - sem permissão (a própria linha, usuário sem companhia, perfis que não gerenciam), um `<span>` com o mesmo visual, só para leitura;
+  - o botão de um inativo fica `disabled` quando `seatsFull(seats())`, com `title="Sem assentos livres"`.
 - `role-menu`: `[disabled]` passa a ser `updatingRoleId === item.userId || !item.active`.
-- Linha inativa com `class="is-inactive"` (opacidade reduzida).
-- Cabeçalho: `<p data-testid="seats-counter">{{ seatsUsage(seats.used, seats.max) }} assentos</p>` quando `seats()`. "+ Convidar usuário" fica `disabled` quando `seatsFull`.
+- Linha inativa com `class="users-row-inactive"`: nome, email e data com opacidade reduzida.
 - O `colspan` da linha vazia sobe 1 (6/5).
 
 ## 4. Filtros (`features/users`, Task 4)
