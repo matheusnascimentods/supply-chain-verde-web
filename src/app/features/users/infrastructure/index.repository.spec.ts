@@ -61,6 +61,22 @@ describe('UsersRepository', () => {
     request.flush({ ...apiUser, role: 'AUDITOR' });
   });
 
+  it('repeats the role filter and sends the status filter', () => {
+    repository.load({ limit: 20, offset: 0, roles: ['manager', 'auditor'], active: false }).subscribe();
+    const request = http.expectOne((req) => req.url === base);
+    expect(request.request.params.getAll('role')).toEqual(['MANAGER', 'AUDITOR']);
+    expect(request.request.params.get('active')).toBe('false');
+    request.flush({ items: [], limit: 20, offset: 0, hasNext: false, totalPages: 0 });
+  });
+
+  it('omits the role and status filters when they are empty', () => {
+    repository.load({ limit: 20, offset: 0, roles: [], active: null }).subscribe();
+    const request = http.expectOne((req) => req.url === base);
+    expect(request.request.params.has('role')).toBe(false);
+    expect(request.request.params.has('active')).toBe(false);
+    request.flush({ items: [], limit: 20, offset: 0, hasNext: false, totalPages: 0 });
+  });
+
   it('sends the new status of a user', () => {
     let user: unknown;
     repository.updateStatus(7, false).subscribe((value) => (user = value));

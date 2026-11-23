@@ -14,9 +14,16 @@ export class UsersRepository {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/users`;
 
-  load(params: { limit: number; offset: number; email?: string }): Observable<UserPage> {
+  // Filtros por E; role repete na query (role=MANAGER&role=AUDITOR traz um ou outro). Vazio ou nulo não filtra.
+  load(params: { limit: number; offset: number; email?: string; roles?: readonly UserRole[]; active?: boolean | null }): Observable<UserPage> {
     const email = params.email?.trim();
-    const query = { limit: String(params.limit), offset: String(params.offset), ...(email ? { email } : {}) };
+    const query = {
+      limit: String(params.limit),
+      offset: String(params.offset),
+      ...(email ? { email } : {}),
+      ...(params.roles?.length ? { role: params.roles.map((role) => role.toUpperCase()) } : {}),
+      ...(params.active != null ? { active: String(params.active) } : {}),
+    };
     return this.http.get<unknown>(this.base, { params: query }).pipe(
       map((raw) => {
         const page = userPageSchema.parse(raw);
