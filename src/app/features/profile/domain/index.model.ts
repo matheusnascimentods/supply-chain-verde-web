@@ -23,13 +23,7 @@ export interface CompanyAddress {
   state: string;
 }
 
-export interface CompanyPlan {
-  code: string;
-  name: string;
-  maxUsers: number;
-}
-
-/** `GET /companies/me`: dados da companhia do usuário e o plano ativo. */
+/** `GET /companies/me`: dados da companhia do usuário. Os assentos aparecem na lista de usuários. */
 export interface OwnCompany {
   companyId: number;
   name: string;
@@ -38,7 +32,6 @@ export interface OwnCompany {
   phone: string | null;
   type: CompanyType;
   address: Partial<Record<keyof CompanyAddress, string | null>> | null;
-  plan: CompanyPlan | null;
 }
 
 /** Campos editáveis da companhia, como no formulário; CNPJ e tipo não mudam (RN-05). */

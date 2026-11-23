@@ -1,5 +1,5 @@
 import { CompanyForm } from './index.model';
-import { accountPatch, accountsUsage, companyPatch, passwordChangeErrors } from './index.rules';
+import { accountPatch, companyPatch, passwordChangeErrors } from './index.rules';
 
 describe('profile rules', () => {
   const blank = { currentPassword: '', newPassword: '', confirmPassword: '' };
@@ -45,10 +45,5 @@ describe('profile rules', () => {
         phone: '1133334444',
       });
     });
-  });
-
-  it('describes the plan usage', () => {
-    expect(accountsUsage(2, 3)).toBe('2 de 3 contas');
-    expect(accountsUsage(1, 1)).toBe('1 de 1 conta');
   });
 });

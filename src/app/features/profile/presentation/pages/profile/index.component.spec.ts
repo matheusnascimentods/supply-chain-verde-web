@@ -14,7 +14,7 @@ class DashboardPage {}
 
 describe('ProfileComponent', () => {
   let fixture: ComponentFixture<ProfileComponent>;
-  let repository: Record<'updateMe' | 'getMyCompany' | 'updateMyCompany' | 'countCompanyUsers', ReturnType<typeof vi.fn>>;
+  let repository: Record<'updateMe' | 'getMyCompany' | 'updateMyCompany', ReturnType<typeof vi.fn>>;
   const company = {
     companyId: 9,
     name: 'Fazenda Verde',
@@ -23,7 +23,6 @@ describe('ProfileComponent', () => {
     phone: '1633332023',
     type: 'supplier',
     address: { street: 'Rua A', number: '10', neighborhood: 'Centro', complement: null, zipCode: '01000000', city: 'São Paulo', state: 'SP' },
-    plan: { code: 'BASIC', name: 'Basic', maxUsers: 3 },
   };
 
   function create(role: UserRole, overrides: Partial<typeof repository> = {}): ProfileComponent {
@@ -31,7 +30,6 @@ describe('ProfileComponent', () => {
       updateMe: vi.fn().mockReturnValue(of({})),
       getMyCompany: vi.fn().mockReturnValue(of(company)),
       updateMyCompany: vi.fn().mockReturnValue(of(company)),
-      countCompanyUsers: vi.fn().mockReturnValue(of(2)),
       ...overrides,
     };
     TestBed.configureTestingModule({
@@ -51,21 +49,13 @@ describe('ProfileComponent', () => {
 
   it('loads the own company for the admin, formatted and with CNPJ and email read-only', () => {
     const component = create('admin');
-    expect(headings()).toEqual(['Dados da empresa', 'Endereço', 'Plano', 'Meu acesso']);
+    expect(headings()).toEqual(['Dados da empresa', 'Endereço', 'Meu acesso']);
     expect(component.form.controls.cnpj.disabled).toBe(true);
     expect(component.form.controls.cnpj.value).toBe('12.345.678/0001-90');
     expect(component.form.controls.phone.value).toBe('(16) 3333-2023');
     expect(component.form.controls.zipCode.value).toBe('01000-000');
     expect(component.form.controls.email.value).toBe('contato@fazenda.com');
     expect(component.account.controls.email.disabled).toBe(true);
-  });
-
-  it('shows the active plan and the account usage, read-only', () => {
-    create('admin');
-    const plan: HTMLElement = fixture.nativeElement.querySelector('[data-testid="company-plan"]');
-    expect(plan.textContent).toContain('Basic');
-    expect(plan.textContent).toContain('2 de 3 contas');
-    expect(plan.querySelector('input')).toBeNull();
   });
 
   it('sends Voltar and Cancelar to the dashboard', () => {
@@ -121,7 +111,6 @@ describe('ProfileComponent', () => {
     const component = create(role);
     expect(headings()).toEqual(['Meu acesso']);
     expect(repository.getMyCompany).not.toHaveBeenCalled();
-    expect(repository.countCompanyUsers).not.toHaveBeenCalled();
     expect(component.account.getRawValue()).toMatchObject({ userName: 'Ana', email: 'ana@fazenda.com' });
   });
 
