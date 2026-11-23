@@ -1,13 +1,5 @@
 describe('Signup', () => {
   beforeEach(() => {
-    cy.intercept('GET', '**/api/v1/plans', {
-      statusCode: 200,
-      body: [
-        { code: 'BASIC', name: 'Basic', maxUsers: 3 },
-        { code: 'PRO', name: 'Pro', maxUsers: 10 },
-        { code: 'PRO_MAX', name: 'Pro Max', maxUsers: 15 },
-      ],
-    }).as('plans');
     cy.intercept('GET', 'https://viacep.com.br/ws/01001000/json/', {
       statusCode: 200,
       body: { cep: '01001-000', logradouro: 'Praça da Sé', bairro: 'Sé', localidade: 'São Paulo', uf: 'SP' },
@@ -27,10 +19,11 @@ describe('Signup', () => {
   it('signs up a retailer from the landing page and lands on the dashboard logged in', () => {
     cy.visit('/');
     cy.get('[data-testid="landing-cta"]').click();
-    cy.wait('@plans');
-    cy.contains('[data-testid="plan-card"]', 'Pro Max').should('be.visible');
-    cy.get('[data-testid="plan-card"]').eq(1).contains('a', 'Escolher').click();
-    cy.location('search').should('eq', '?plano=PRO');
+    cy.location('pathname').should('eq', '/assinatura');
+    cy.contains('[data-testid="subscription-card"]', '10 usuários ativos').should('be.visible');
+    cy.get('[data-testid="subscription-cta"]').click();
+    cy.location('pathname').should('eq', '/cadastro');
+    cy.location('search').should('eq', '');
 
     cy.contains('h2', '1. Empresa').should('be.visible');
     cy.contains('label', 'Varejista').find('input').should('be.checked');
@@ -56,7 +49,6 @@ describe('Signup', () => {
     cy.get('[data-testid="sign-up-submit"]').click();
 
     cy.wait('@signUp').its('request.body').should('deep.equal', {
-      planCode: 'PRO',
       type: 'MARKET',
       company: {
         name: 'Mercado Bom Preço LTDA',
@@ -69,10 +61,5 @@ describe('Signup', () => {
     });
     cy.location('pathname').should('eq', '/dashboard');
     cy.contains('h1', 'Bem-vindo(a)').should('be.visible');
-  });
-
-  it('sends an unknown plan back to the plans page', () => {
-    cy.visit('/cadastro?plano=GOLD');
-    cy.location('pathname').should('eq', '/planos');
   });
 });

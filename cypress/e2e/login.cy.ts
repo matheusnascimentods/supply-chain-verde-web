@@ -17,16 +17,12 @@ describe('Login', () => {
       body: { activeBatches: 0, expiringCertifications: 0, suppliers: 0, pendingBatches: null, monthlyEmissionKgCo2e: 0, recentBatches: [] },
     });
     cy.intercept('GET', '**/api/v1/dashboard/emissions*', { statusCode: 200, body: [] });
-    cy.intercept('GET', '**/api/v1/plans', {
-      statusCode: 200,
-      body: [{ code: 'BASIC', name: 'Basic', maxUsers: 3 }],
-    });
   });
 
-  it('opens the login from the plans page and redirects a valid user to their dashboard', () => {
+  it('opens the login from the subscription page and redirects a valid user to their dashboard', () => {
     cy.visit('/');
     cy.get('[data-testid="landing-cta"]').click();
-    cy.location('pathname').should('eq', '/planos');
+    cy.location('pathname').should('eq', '/assinatura');
     cy.get('[data-testid="public-header-login"]').click();
     cy.location('pathname').should('eq', '/login');
     cy.get('[data-testid="email-input"]').type('manager@example.com');
