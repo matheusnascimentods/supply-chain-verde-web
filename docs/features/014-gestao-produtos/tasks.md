@@ -2,7 +2,7 @@
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
 
-**Status:** não iniciada.
+**Status:** em andamento.
 
 Depende da `013-busca-full-text`. A dependência "API Task N" aponta para `supply-chain-verde-api/docs/features/015-gestao-produtos/tasks.md`. Cada task mexe em **no máximo 10 arquivos** (specs contam). A lista de arquivos é uma estimativa.
 
@@ -14,10 +14,10 @@ Ordem entre os repositórios: **API Task 1 → web Task 1 → web Task 2 → web
 
 O merge não depende da API, porque os specs usam `HttpTestingController` e os campos novos são opcionais. Só tem efeito em produção depois da API Task 1.
 
-- [ ] `Product` com `supplierId`, `supplierName`, `co2KgPerUnit` e `acceptedBatchesLast30Days` (plan §1)
-- [ ] `productResponseSchema` com os campos `.nullable().optional()`
-- [ ] `ProductsRepository.load` com `category?`/`unit?`
-- [ ] Spec do repositório (plan §5)
+- [x] `Product` com `supplierId`, `supplierName`, `co2KgPerUnit` e `acceptedBatchesLast30Days` (plan §1)
+- [x] `productResponseSchema` com os campos `.nullable().optional()`
+- [x] `ProductsRepository.load` com `category?`/`unit?`
+- [x] Spec do repositório (plan §5)
 
 **Arquivos (~4):** `products/domain/index.model.ts`, `products/infrastructure/index.dto.ts`, `products/infrastructure/index.repository.ts` + spec.
 

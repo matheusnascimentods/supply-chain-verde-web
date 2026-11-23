@@ -20,12 +20,17 @@ export const PRODUCT_UNIT_LABELS: Record<ProductUnit, string> = {
 };
 export const PRODUCT_UNIT_SYMBOLS: Record<ProductUnit, string> = { KG: 'kg', TON: 't', LITER: 'L', UNIT: 'un', M3: 'm³' };
 
+// supplierId em diante: campos do catálogo do mercado; null na visão do fornecedor (API RN-07).
 export interface Product {
   productId: number;
+  supplierId?: number | null;
   name: string;
   description?: string | null;
   category: ProductCategory;
   unit: ProductUnit;
+  supplierName?: string | null;
+  co2KgPerUnit?: number | null;
+  acceptedBatchesLast30Days?: number | null;
 }
 
 export interface NewProduct {
