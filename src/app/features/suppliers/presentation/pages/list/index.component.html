@@ -8,7 +8,7 @@
     </header>
 
     <div class="suppliers-section suppliers-filters">
-      <app-text-field class="suppliers-search" id="supplier-search" label="Buscar por nome ou CNPJ" [labelHidden]="true" type="search" name="search" [ngModel]="facade.search()" (ngModelChange)="facade.searchFor($event)" placeholder="Buscar por nome ou CNPJ..." />
+      <app-text-field class="suppliers-search" id="supplier-search" label="Buscar por nome ou CNPJ" [labelHidden]="true" type="search" name="search" [ngModel]="facade.search()" (ngModelChange)="facade.searchFor($event)" placeholder="Nome ou início do CNPJ" />
       @if (facade.canFilterWorkedWith) {
         <label class="worked-with-toggle" for="worked-with-only">
           <input #workedWithToggle id="worked-with-only" type="checkbox" role="switch" [checked]="facade.workedWithOnly()" (change)="facade.setWorkedWithOnly(workedWithToggle.checked)" />
