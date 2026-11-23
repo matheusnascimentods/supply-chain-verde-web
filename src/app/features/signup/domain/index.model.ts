@@ -1,14 +1,7 @@
-export interface Plan {
-  code: string;
-  name: string;
-  maxUsers: number;
-}
-
 export const COMPANY_TYPE_LABELS = { MARKET: 'Varejista', SUPPLIER: 'Fornecedor' } as const;
 export type SignupCompanyType = keyof typeof COMPANY_TYPE_LABELS;
 
 export interface CompanySignup {
-  planCode: string;
   type: SignupCompanyType;
   company: {
     name: string;

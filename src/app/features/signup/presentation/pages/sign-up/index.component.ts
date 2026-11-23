@@ -1,18 +1,16 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Injector, afterNextRender, inject, signal, viewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MIN_PASSWORD_LENGTH, passwordErrors } from '../../../../../shared/forms/password/index.validator';
 import { formatCompanyFieldsWhileTyping, lookUpCompanyZipCode } from '../../../../../shared/forms/company-fields/index.helper';
 import { ButtonComponent } from '../../../../../shared/ui/button/index.component';
 import { ErrorToastComponent } from '../../../../../shared/ui/error-toast/index.component';
 import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.service';
-import { SpinnerComponent } from '../../../../../shared/ui/spinner/index.component';
 import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
 import { digitsOnly } from '../../../../../shared/utils/format/index.utils';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 import { SignUpConflict, SignUpUseCase } from '../../../application/use-cases/sign-up/index.use-case';
-import { COMPANY_TYPE_LABELS, CompanySignup, Plan, SignupCompanyType } from '../../../domain/index.model';
-import { SignupRepository } from '../../../infrastructure/index.repository';
+import { COMPANY_TYPE_LABELS, CompanySignup, SignupCompanyType } from '../../../domain/index.model';
 import { PublicHeaderComponent } from '../../components/public-header/index.component';
 
 const FIELD_MESSAGES: Record<string, string> = {
@@ -23,7 +21,7 @@ const FIELD_MESSAGES: Record<string, string> = {
 
 @Component({
   selector: 'app-sign-up',
-  imports: [ReactiveFormsModule, RouterLink, ButtonComponent, ErrorToastComponent, SpinnerComponent, TextFieldComponent, PublicHeaderComponent],
+  imports: [ReactiveFormsModule, RouterLink, ButtonComponent, ErrorToastComponent, TextFieldComponent, PublicHeaderComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,7 +38,6 @@ export class SignUpComponent {
   protected readonly typeLabels = COMPANY_TYPE_LABELS;
   protected readonly companyTypes = Object.entries(COMPANY_TYPE_LABELS);
   protected readonly step = signal(0);
-  protected readonly plan = signal<Plan | null>(null);
   protected readonly saving = signal(false);
 
   protected readonly companyForm = this.fb.nonNullable.group({
@@ -70,17 +67,6 @@ export class SignUpComponent {
 
   constructor() {
     formatCompanyFieldsWhileTyping(this.companyForm.controls);
-    const code = inject(ActivatedRoute).snapshot.queryParamMap.get('plano');
-    inject(SignupRepository)
-      .listPlans()
-      .subscribe({
-        next: (plans) => {
-          const plan = plans.find((candidate) => candidate.code === code);
-          if (plan) this.plan.set(plan);
-          else this.backToPlans();
-        },
-        error: () => this.backToPlans(),
-      });
   }
 
   protected fieldError(control: AbstractControl): string {
@@ -117,10 +103,9 @@ export class SignUpComponent {
   }
 
   protected submit(): void {
-    const plan = this.plan();
-    if (!plan || this.saving()) return;
+    if (this.saving()) return;
     this.saving.set(true);
-    this.signUp.execute(this.payload(plan.code)).subscribe({
+    this.signUp.execute(this.payload()).subscribe({
       next: () => this.router.navigate(['/dashboard']),
       error: (error: unknown) => {
         this.saving.set(false);
@@ -139,11 +124,10 @@ export class SignUpComponent {
     });
   }
 
-  private payload(planCode: string): CompanySignup {
+  private payload(): CompanySignup {
     const { type, name, cnpj, email, phone, complement, zipCode, state, ...address } = this.companyForm.getRawValue();
     const admin = this.adminForm.getRawValue();
     return {
-      planCode,
       type,
       company: {
         name,
@@ -160,9 +144,5 @@ export class SignUpComponent {
   private goTo(step: number): void {
     this.step.set(step);
     afterNextRender(() => this.stepHeading()?.nativeElement.focus(), { injector: this.injector });
-  }
-
-  private backToPlans(): void {
-    this.router.navigate(['/planos'], { replaceUrl: true });
   }
 }

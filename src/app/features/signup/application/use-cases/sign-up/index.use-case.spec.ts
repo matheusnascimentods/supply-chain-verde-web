@@ -10,7 +10,7 @@ describe('SignUpUseCase', () => {
   let useCase: SignUpUseCase;
   let session: SessionService;
   const register = vi.fn();
-  const signup = { planCode: 'PRO', admin: { email: 'ana@bompreco.com' } } as CompanySignup;
+  const signup = { admin: { email: 'ana@bompreco.com' } } as CompanySignup;
   const conflict = (message: string) => throwError(() => new HttpErrorResponse({ status: 409, error: { message } }));
 
   function failure(): unknown {

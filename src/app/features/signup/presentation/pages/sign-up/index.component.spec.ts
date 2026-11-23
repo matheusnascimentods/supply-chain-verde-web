@@ -6,17 +6,12 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { ViaCepService } from '../../../../../core/integrations/via-cep/index.service';
 import { SignUpConflict, SignUpUseCase } from '../../../application/use-cases/sign-up/index.use-case';
-import { SignupRepository } from '../../../infrastructure/index.repository';
 import { SignUpComponent } from './index.component';
 
 @Component({ template: '' })
 class BlankComponent {}
 
 describe('SignUpComponent', () => {
-  const plans = [
-    { code: 'BASIC', name: 'Basic', maxUsers: 3 },
-    { code: 'PRO', name: 'Pro', maxUsers: 10 },
-  ];
   const execute = vi.fn();
   let harness: RouterTestingHarness;
   let element: HTMLElement;
@@ -26,10 +21,8 @@ describe('SignUpComponent', () => {
       providers: [
         provideRouter([
           { path: 'cadastro', component: SignUpComponent },
-          { path: 'planos', component: BlankComponent },
           { path: 'dashboard', component: BlankComponent },
         ]),
-        { provide: SignupRepository, useValue: { listPlans: () => of(plans) } },
         { provide: SignUpUseCase, useValue: { execute } },
         { provide: ViaCepService, useValue: { lookup: () => of({ erro: true }) } },
       ],
@@ -77,26 +70,21 @@ describe('SignUpComponent', () => {
 
   beforeEach(() => execute.mockReset());
 
-  it('sends an unknown plan back to /planos', async () => {
-    await open('/cadastro?plano=GOLD');
-    expect(TestBed.inject(Router).url).toBe('/planos');
-  });
-
-  it('sends a missing plan back to /planos', async () => {
+  it('shows the single subscription linking back to /assinatura', async () => {
     await open('/cadastro');
-    expect(TestBed.inject(Router).url).toBe('/planos');
+    expect(element.textContent).toContain('até 10 usuários ativos');
+    expect(element.querySelector('.sign-up-plan a')?.getAttribute('href')).toBe('/assinatura');
   });
 
   it('does not advance while a company field is invalid', async () => {
-    await open('/cadastro?plano=PRO');
-    expect(element.textContent).toContain('Pro');
+    await open('/cadastro');
     await click('[data-testid="sign-up-next"]');
     expect(heading()).toBe('1. Empresa');
     expect(element.querySelector('#company-name-error')?.textContent).toContain('Campo obrigatório.');
   });
 
   it('does not advance when the passwords differ', async () => {
-    await open('/cadastro?plano=PRO');
+    await open('/cadastro');
     await fillCompany();
     type('admin-name', 'Ana Souza');
     type('admin-email', 'ana@bompreco.com');
@@ -109,7 +97,7 @@ describe('SignUpComponent', () => {
 
   it('submits the signup with digits only and goes to the dashboard', async () => {
     execute.mockReturnValue(of({ token: 'jwt', expiresAt: '2099-01-01', role: 'admin' }));
-    await open('/cadastro?plano=PRO');
+    await open('/cadastro');
     await fillCompany();
     await fillAdmin();
     expect(heading()).toBe('3. Revisão');
@@ -117,7 +105,6 @@ describe('SignUpComponent', () => {
     await click('[data-testid="sign-up-submit"]');
 
     expect(execute).toHaveBeenCalledWith({
-      planCode: 'PRO',
       type: 'MARKET',
       company: {
         name: 'Mercado Bom Preço LTDA',
@@ -133,7 +120,7 @@ describe('SignUpComponent', () => {
 
   it('returns to the company step with the API message on a CNPJ conflict, keeping the typed data', async () => {
     execute.mockReturnValue(throwError(() => new SignUpConflict('company', 'CNPJ já cadastrado: 12345678000190')) as Observable<never>);
-    await open('/cadastro?plano=PRO');
+    await open('/cadastro');
     await fillCompany();
     await fillAdmin();
 
@@ -151,7 +138,7 @@ describe('SignUpComponent', () => {
 
   it('returns to the admin step on an e-mail conflict', async () => {
     execute.mockReturnValue(throwError(() => new SignUpConflict('admin', 'Email já cadastrado: ana@bompreco.com')));
-    await open('/cadastro?plano=PRO');
+    await open('/cadastro');
     await fillCompany();
     await fillAdmin();
 
@@ -163,7 +150,7 @@ describe('SignUpComponent', () => {
 
   it('keeps the review step and shows a toast on other errors', async () => {
     execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
-    await open('/cadastro?plano=PRO');
+    await open('/cadastro');
     await fillCompany();
     await fillAdmin();
 
