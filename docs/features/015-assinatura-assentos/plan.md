@@ -99,4 +99,4 @@ A sessão (`core/auth/session`) não guarda o `userId`, então a própria linha 
 - `users/domain/index.rules.spec.ts`: `canToggleStatus` (a própria linha, `platform_admin` alvo, perfil sem permissão) e `seatsFull`.
 - `users/infrastructure/index.repository.spec.ts`: `PATCH /status` com corpo, `role` repetido em `getAll('role')`, e `active` ausente quando `null`.
 - `users/application/index.facade.spec.ts`: `toggleStatus` recarrega a lista e os assentos, o erro vai ao toast, e `toggleRole`/`setActive` zeram o offset.
-- `pages/list/index.component.spec.ts`: o botão some na própria linha, "Reativar" fica desabilitado com assentos cheios, o menu de perfil fica desabilitado em inativo, e os badges ficam pressionados.
+- `pages/list/index.component.spec.ts`: a pílula é só leitura na própria linha, a de um inativo fica desabilitada com assentos cheios, o menu de perfil fica desabilitado em inativo, e os badges ficam pressionados.

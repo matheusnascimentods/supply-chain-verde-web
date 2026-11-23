@@ -1,6 +1,8 @@
 # Especificação — Planos, cadastro de empresas e visão por companhia
 
 > Arquitetura em [`plan.md`](plan.md) e execução em [`tasks.md`](tasks.md). Contrato e regras da API: `supply-chain-verde-api/docs/features/010-empresas-planos/spec.md`.
+>
+> **A escolha de plano foi substituída pela feature [015-assinatura-assentos](../015-assinatura-assentos/spec.md).** Não há mais planos: a companhia tem uma assinatura única de até 10 usuários ativos, `/planos` virou `/assinatura` e o cadastro não leva plano. RF-01 a RF-04 e a parte de plano do RF-10 ficam como histórico.
 
 ## 1. Problema
 
@@ -22,10 +24,10 @@
 
 | ID | Requisito |
 |---|---|
-| RF-01 | O CTA da hero section leva a `/planos`. |
-| RF-02 | `/planos` é pública e tem um header com a marca e o botão **Entrar** (`/login`). Usuário logado é redirecionado ao dashboard, como já acontece na landing. |
-| RF-03 | `/planos` mostra os planos de `GET /plans` lado a lado (Basic, Pro, Pro Max), com o limite de contas de cada um e o botão **Escolher**. Sem preço nesta versão. |
-| RF-04 | **Escolher** leva a `/cadastro?plano=<code>`. Plano ausente ou inválido volta para `/planos`. |
+| RF-01 | ~~O CTA da hero section leva a `/planos`.~~ **Substituído pela 015** (RF-04): o CTA "Conhecer a assinatura" leva a `/assinatura`. |
+| RF-02 | **Substituído pela 015** (RF-01): a rota é `/assinatura`, com o mesmo header e a mesma regra de redirecionamento. Original: `/planos` é pública e tem um header com a marca e o botão **Entrar** (`/login`). Usuário logado é redirecionado ao dashboard, como já acontece na landing. |
+| RF-03 | ~~`/planos` mostra os planos de `GET /plans` lado a lado (Basic, Pro, Pro Max), com o limite de contas de cada um e o botão **Escolher**. Sem preço nesta versão.~~ **Substituído pela 015** (RF-02): `/assinatura` é estática, explica a assinatura única e tem o CTA "Criar conta". |
+| RF-04 | ~~**Escolher** leva a `/cadastro?plano=<code>`. Plano ausente ou inválido volta para `/planos`.~~ **Substituído pela 015** (RF-03): `/cadastro` não lê `?plano`, não chama `GET /plans` e não envia `planCode`. |
 | RF-05 | `/cadastro` tem três passos:<br>1. **Empresa:** tipo (Varejista / Fornecedor), razão social, CNPJ, email, telefone e endereço com busca de CEP.<br>2. **Administrador:** nome, email, senha e confirmação.<br>3. **Revisão:** plano, empresa e admin, com **Voltar** em cada passo. |
 | RF-06 | Ao confirmar, chama `POST /companies`. No sucesso, salva a sessão como no login e vai para `/dashboard`. |
 | RF-07 | CNPJ ou email já cadastrado (409) mostra a mensagem da API no passo correspondente, sem perder o que foi digitado. |
@@ -38,7 +40,7 @@
 | RF-08a | O menu depende do tipo de companhia e do perfil:<br>- **Varejista:** admin vê Fornecedores, Lotes, Usuários e Auditoria; gestor vê Fornecedores, Lotes e Usuários; auditor vê Auditoria, Fornecedores, Lotes e Usuários.<br>- **Fornecedor:** admin vê Lotes, Produtos, Certificações, Usuários e Auditoria; fornecedor vê Lotes, Produtos, Certificações e Usuários.<br>- **`platform_admin`:** vê Fornecedores, Lotes, Usuários e Auditoria.<br>As rotas fora do menu de cada um são bloqueadas por guard. |
 | RF-08b | Dashboard: para o fornecedor, o card "Fornecedores" vira "Lotes pendentes", com link para `/batches?status=PENDING`. Para o varejista, o card conta só os fornecedores com quem ele já trabalhou. |
 | RF-09 | O menu do usuário mostra o nome da companhia; o `platform_admin` vê "Plataforma". |
-| RF-10 | "Meu perfil": todo usuário edita o próprio acesso (`PATCH /users/me`, como hoje). O `admin` também edita os dados e o endereço da companhia (`PATCH /companies/me`), e vê o plano ativo e o uso de contas (ex.: "2 de 3 contas"), só para leitura. |
+| RF-10 | "Meu perfil": todo usuário edita o próprio acesso (`PATCH /users/me`, como hoje). O `admin` também edita os dados e o endereço da companhia (`PATCH /companies/me`), ~~e vê o plano ativo e o uso de contas (ex.: "2 de 3 contas"), só para leitura~~. **A parte de plano foi substituída pela 015** (RF-05 e RF-08): o perfil não mostra plano, e os assentos aparecem no contador da lista de usuários. |
 | RF-11 | Usuários:<br>- Todos os perfis com companhia veem a lista da própria companhia, só para leitura. **+ Adicionar usuário** e o menu de troca de perfil aparecem só para `admin` e `platform_admin`.<br>- A coluna "Fornecedor" sai. O `platform_admin` vê a coluna "Empresa".<br>- O `admin` cria usuários só com os perfis do tipo da companhia (varejista: admin, gestor, auditor; fornecedor: admin, fornecedor).<br>- O seletor de fornecedor sai do modal.<br>- O erro de limite do plano ou de último admin (409) aparece como toast com a mensagem da API. |
 | RF-12 | Fornecedores: saem o botão **+ Novo fornecedor** e o modal de criar e editar. O nome do fornecedor deixa de abrir edição. Ranking, certificações e relatórios continuam. |
 | RF-12a | A tela mostra o catálogo de todos os fornecedores. Ao lado da busca entra o filtro **Só com quem já trabalhei** (`workedWith=true`). A tela lembra a última escolha de cada usuário. |
