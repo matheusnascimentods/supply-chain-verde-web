@@ -1,5 +1,5 @@
 import { Batch } from './index.model';
-import type { SupplierRanking } from '../../suppliers';
+import type { Product } from '../../products';
 import { canAddStageTo, canCalculateEmission, canCreateBatch, canReject, isRecommended } from './index.rules';
 
 describe('batches rules', () => {
@@ -47,11 +47,11 @@ describe('batches rules', () => {
     expect(canReject('supplier', 'supplier', { ...batch, status: 'REJECTED' })).toBe(false);
   });
 
-  it('recommends only the first supplier of the first page with emission history', () => {
-    const withHistory = { co2KgPerUnit: 0.42 } as SupplierRanking;
+  it('recommends only the first product of the first page with emission history', () => {
+    const withHistory = { co2KgPerUnit: 0.42 } as Product;
     expect(isRecommended(withHistory, 0, 0)).toBe(true);
     expect(isRecommended(withHistory, 1, 0)).toBe(false);
     expect(isRecommended(withHistory, 0, 1)).toBe(false);
-    expect(isRecommended({ co2KgPerUnit: null } as SupplierRanking, 0, 0)).toBe(false);
+    expect(isRecommended({ co2KgPerUnit: null } as Product, 0, 0)).toBe(false);
   });
 });

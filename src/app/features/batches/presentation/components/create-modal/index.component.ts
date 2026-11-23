@@ -10,8 +10,7 @@ import {
   PRODUCT_CATEGORY_LABELS,
   PRODUCT_UNITS,
   PRODUCT_UNIT_LABELS,
-  ProductCategory,
-  ProductUnit,
+  PRODUCT_UNIT_SYMBOLS,
 } from '../../../../products';
 import { BatchCreationFacade } from '../../../application/create-batch/index.facade';
 import { isRecommended } from '../../../domain/index.rules';
@@ -26,11 +25,12 @@ import { isRecommended } from '../../../domain/index.rules';
 })
 export class BatchCreateModalComponent {
   protected readonly facade = inject(BatchCreationFacade);
-  protected readonly steps = ['Produto', 'Fornecedor', 'Produto do fornecedor', 'Revisão'];
+  protected readonly steps = ['Produto', 'Revisão'];
   protected readonly categories = PRODUCT_CATEGORIES;
   protected readonly categoryLabels = PRODUCT_CATEGORY_LABELS;
   protected readonly units = PRODUCT_UNITS;
   protected readonly unitLabels = PRODUCT_UNIT_LABELS;
+  protected readonly unitSymbols = PRODUCT_UNIT_SYMBOLS;
   protected readonly score = formatNumberBr;
   protected readonly isRecommended = isRecommended;
 
@@ -63,7 +63,7 @@ export class BatchCreateModalComponent {
 
   submit(): void {
     const facade = this.facade;
-    if (facade.step() !== 3 || facade.saving() || !facade.selectedProduct() || !facade.selectedSupplier()) return;
+    if (facade.step() !== 1 || facade.saving() || !facade.selectedProduct()) return;
     if (this.quantity.invalid) {
       this.quantity.markAsTouched();
       return;
@@ -76,13 +76,5 @@ export class BatchCreateModalComponent {
 
   requestDismiss(): void {
     if (!this.facade.saving()) this.dismiss.emit();
-  }
-
-  protected categoryOf(value: ProductCategory | null): string {
-    return value ? PRODUCT_CATEGORY_LABELS[value] : '';
-  }
-
-  protected unitOf(value: ProductUnit | null): string {
-    return value ? PRODUCT_UNIT_LABELS[value] : '';
   }
 }

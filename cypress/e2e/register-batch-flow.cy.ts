@@ -4,7 +4,12 @@ const product = {
   description: 'Café de origem sustentável',
   category: 'AGRICULTURE',
   unit: 'KG',
+  supplierId: 9,
+  supplierName: 'Fazenda Verde',
+  co2KgPerUnit: 0.42,
+  acceptedBatchesLast30Days: 2,
 };
+const otherProduct = { ...product, productId: 5, name: 'Arroz', supplierId: 7, supplierName: 'Grãos da Serra', co2KgPerUnit: null, acceptedBatchesLast30Days: 0 };
 const supplier = {
   supplierId: 9,
   name: 'Fazenda Verde',
@@ -27,17 +32,6 @@ const createdBatch = {
   currentStage: null,
   stages: [],
 };
-const ranking = {
-  ...supplier,
-  registeredAt: '2025-01-10',
-  sustainabilityScore: 87.5,
-  activeCertificationCount: 1,
-  totalCo2Kg: 120,
-  reportCount: 0,
-  certifications: [],
-  co2KgPerUnit: 0.42,
-  workedWith: true,
-};
 
 // Quem pede lote é o gestor ou o admin do varejista (RF-13); o menu vem da claim `companyType`.
 const managerToken = ['e30', btoa(JSON.stringify({ companyId: 2, companyType: 'MARKET' })), 'e2e'].join('.');
@@ -54,16 +48,13 @@ describe('Batch registration wizard', () => {
     }).as('loadBatches');
     cy.intercept('GET', '**/api/v1/products*', {
       statusCode: 200,
-      body: { items: [product], limit: 20, offset: 0, hasNext: false, totalPages: 1 },
+      body: { items: [product, otherProduct], limit: 100, offset: 0, hasNext: false, totalPages: 1 },
     }).as('loadProducts');
-    cy.intercept({ method: 'GET', pathname: '/api/v1/products', query: { supplierId: '9' } }, {
+    // O modal pagina de 20 em 20; a lista de lotes carrega o catálogo inteiro (limit=100) para mostrar a unidade.
+    cy.intercept({ method: 'GET', pathname: '/api/v1/products', query: { limit: '20' } }, {
       statusCode: 200,
-      body: { items: [product, { ...product, productId: 4, name: 'Café em tonelada', unit: 'TON' }], limit: 100, offset: 0, hasNext: false, totalPages: 1 },
-    }).as('loadSupplierProducts');
-    cy.intercept({ method: 'GET', pathname: '/api/v1/suppliers', query: { ranked: 'true' } }, {
-      statusCode: 200,
-      body: { items: [ranking], limit: 20, offset: 0, hasNext: false, totalPages: 1 },
-    }).as('loadRanking');
+      body: { items: [product, otherProduct], limit: 20, offset: 0, hasNext: false, totalPages: 1 },
+    }).as('loadCatalog');
     // O top-nav busca o nome da companhia; sem stub, o 401 da API real derruba a sessão.
     cy.intercept('GET', '**/api/v1/users/me', {
       statusCode: 200,
@@ -71,7 +62,7 @@ describe('Batch registration wizard', () => {
     });
   });
 
-  it('lets a retailer manager request a batch: category and unit, ranked supplier, its product, then the quantity', () => {
+  it('lets a retailer manager request a batch: search the catalog, pick a product, then the quantity', () => {
     cy.intercept('POST', '**/api/v1/batches', { statusCode: 201, body: createdBatch }).as('createBatch');
     cy.visit('/login');
     cy.get('[data-testid="email-input"]').type('manager@example.com');
@@ -82,22 +73,20 @@ describe('Batch registration wizard', () => {
     cy.wait('@loadBatches');
 
     cy.contains('button', 'Novo lote').click();
+    // O catálogo abre já ordenado, sem exigir categoria nem unidade.
+    cy.wait('@loadCatalog').its('request.query').should('not.have.any.keys', 'category', 'unit');
+    cy.contains('button', 'Café orgânico').should('contain.text', 'Recomendado').and('contain.text', '2 lotes nos últimos 30 dias');
+
+    cy.get('#batch-product-search').type('fazenda');
+    cy.wait('@loadCatalog').its('request.query').should('include', { search: 'fazenda' });
     cy.get('select#batch-category').select('AGRICULTURE');
-    cy.get('select#batch-unit').select('KG');
-    cy.contains('button', 'Avançar').click();
+    cy.wait('@loadCatalog').its('request.query').should('include', { search: 'fazenda', category: 'AGRICULTURE' });
 
-    cy.wait('@loadRanking').its('request.query').should('include', { category: 'AGRICULTURE', unit: 'KG' });
-    cy.contains('button', 'Fazenda Verde').click();
-    cy.contains('button', 'Avançar').click();
-
-    cy.wait('@loadSupplierProducts');
-    cy.contains('h3', 'Produtos de Fazenda Verde').should('be.visible');
-    // Só o produto em KG é do pedido; sendo o único, ele já vem escolhido.
-    cy.contains('button', 'Café em tonelada').should('not.exist');
-    cy.contains('Produto selecionado').should('contain.text', 'Café orgânico');
+    cy.contains('button', 'Café orgânico').click();
     cy.contains('button', 'Avançar').click();
 
     cy.contains('h3', 'Revise o pedido').should('be.visible');
+    cy.get('.review-list').should('contain.text', 'Fazenda Verde');
     cy.get('input[type="date"]').should('not.exist');
     cy.get('#batch-quantity').type('250');
     cy.get('[data-testid="confirm-batch"]').click();
