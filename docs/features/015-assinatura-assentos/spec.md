@@ -22,7 +22,7 @@
 | RF-02 | `/assinatura` não chama a API: o teto (10) e as features são texto fixo. Ela tem um CTA "Criar conta" → `/cadastro`. |
 | RF-03 | `/cadastro` não lê `?plano`, não chama `GET /plans` e não envia `planCode`. O resumo mostra "Assinatura · até 10 usuários ativos". "Voltar" e "Trocar plano" levam a `/assinatura`, e "Trocar plano" sai. |
 | RF-04 | A landing troca "Conhecer os planos" por "Conhecer a assinatura" → `/assinatura`. |
-| RF-05 | O perfil do admin troca a seção "Plano" por "Assinatura", com a linha "Assentos: X de Y em uso" vinda de `seatsUsed`/`maxUsers` de `GET /companies/me`. O `countCompanyUsers` sai. |
+| RF-05 | O perfil do admin perde a seção "Plano". Os assentos aparecem só no contador da lista de usuários (RF-08), que lê `seatsUsed`/`maxUsers` de `GET /companies/me`. O `countCompanyUsers` sai. |
 | RF-06 | A lista de usuários ganha a coluna **Situação**, com o badge Ativo/Inativo e um botão "Desativar" ou "Reativar" (`PATCH /users/{id}/status`). O botão aparece só para quem troca perfil (`canChangeRoles`) e não aparece na própria linha nem em usuário sem companhia (`PLATFORM_ADMIN`). |
 | RF-07 | Em linha inativa, o menu de perfil fica desabilitado (RN-12 da API). |
 | RF-08 | Contador "X de 10 assentos em uso" no topo da lista, só para o `admin` de companhia. Com o contador cheio, "Reativar" e "+ Convidar usuário" ficam desabilitados, com `title` explicando o motivo. |
