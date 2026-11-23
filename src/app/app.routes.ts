@@ -13,7 +13,7 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth').then((module) => module.routes),
   },
   {
-    path: 'planos',
+    path: 'assinatura',
     canActivate: [guestGuard],
     loadChildren: () => import('./features/signup').then((module) => module.routes),
   },
