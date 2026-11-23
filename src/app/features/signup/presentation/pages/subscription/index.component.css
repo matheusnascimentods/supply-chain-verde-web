@@ -1,0 +1,124 @@
+@reference "tailwindcss";
+
+.subscription-page {
+  @apply min-h-screen bg-neutral-50 text-neutral-900;
+}
+.subscription-icon {
+  @apply h-5 w-5;
+}
+.subscription-icon-sm {
+  @apply h-4 w-4;
+}
+
+/* Hero */
+.subscription-hero {
+  @apply relative mx-auto grid max-w-6xl items-center gap-12 px-4 pt-12 pb-16 sm:pt-20 lg:grid-cols-[1.1fr_1fr];
+}
+.subscription-guides {
+  @apply pointer-events-none absolute inset-0 hidden grid-cols-4 md:grid;
+}
+.subscription-guides span {
+  @apply border-l border-dashed border-neutral-200 last:border-r;
+}
+.subscription-hero-text {
+  @apply relative;
+}
+.subscription-badge {
+  @apply inline-flex items-center gap-1.5 rounded-full bg-lime-100 px-3 py-1 text-sm font-medium text-lime-900;
+}
+.subscription-title {
+  @apply mt-5 text-4xl font-semibold tracking-tight sm:text-6xl;
+}
+.subscription-highlight {
+  @apply text-green-700;
+}
+.subscription-subtitle {
+  @apply mt-5 max-w-lg text-lg text-neutral-600;
+}
+.subscription-actions {
+  @apply mt-8 flex flex-wrap items-center gap-6;
+}
+.subscription-cta {
+  @apply inline-flex items-center gap-4 rounded-full bg-green-950 py-2 pr-2 pl-6 font-semibold text-white transition-colors hover:bg-green-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-700;
+}
+.subscription-cta-icon {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-full bg-lime-300 text-green-950;
+}
+.subscription-link {
+  @apply text-sm font-semibold text-neutral-700 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-700;
+}
+
+/* Card com a grade de assentos */
+.subscription-card {
+  @apply relative rounded-3xl bg-green-950 p-6 text-white shadow-xl sm:p-8;
+  background-image: radial-gradient(circle at 100% 0%, rgb(190 242 100 / 0.18), transparent 55%);
+}
+.subscription-card-head {
+  @apply flex flex-col gap-1;
+}
+.subscription-card-label {
+  @apply text-sm text-white/60;
+}
+.subscription-card-number {
+  @apply text-3xl font-semibold tracking-tight;
+}
+.subscription-seats {
+  @apply mt-8 grid grid-cols-5 gap-3;
+}
+.subscription-seats .subscription-seat {
+  @apply aspect-square h-auto w-full rounded-2xl;
+}
+.subscription-seat {
+  @apply inline-block h-3 w-3 rounded-full;
+}
+.subscription-seat[data-seat='active'] {
+  @apply bg-lime-300;
+}
+.subscription-seat[data-seat='pending'] {
+  @apply border-2 border-dashed border-lime-300/70;
+}
+.subscription-seat[data-seat='free'] {
+  @apply border-2 border-white/20;
+}
+.subscription-legend {
+  @apply mt-6 flex flex-wrap gap-x-5 gap-y-2 border-t border-white/15 pt-5 text-sm text-white/75;
+}
+.subscription-legend li {
+  @apply flex items-center gap-2;
+}
+
+/* Seções */
+.subscription-section {
+  @apply mx-auto max-w-6xl border-t border-neutral-200 px-4 py-16;
+}
+.subscription-section-title {
+  @apply text-2xl font-semibold tracking-tight sm:text-3xl;
+}
+.subscription-steps {
+  @apply mt-8 grid gap-5 md:grid-cols-3;
+}
+.subscription-step {
+  @apply rounded-2xl border border-neutral-200 bg-white p-6;
+}
+.subscription-step-number {
+  @apply inline-flex h-9 w-9 items-center justify-center rounded-full bg-lime-100 font-semibold text-lime-900;
+}
+.subscription-step-title {
+  @apply mt-4 font-semibold;
+}
+.subscription-step-text {
+  @apply mt-1 text-sm text-neutral-600;
+}
+.subscription-features {
+  @apply mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4;
+}
+.subscription-feature-icon {
+  @apply inline-flex h-11 w-11 items-center justify-center rounded-xl bg-green-950 text-lime-300;
+}
+.subscription-feature-title {
+  @apply mt-4 font-semibold;
+}
+.subscription-feature-text {
+  @apply mt-1 text-sm text-neutral-600;
+}
+

@@ -14,12 +14,12 @@ Ordem entre os repositórios: **API Task 1 → web Task 1 → web Task 2 → API
 
 Depende da API Task 1 em produção: o `POST /companies` aceita o cadastro sem `planCode`.
 
-- [ ] `app.routes.ts`: `/planos` renomeada para `/assinatura` (plan §1)
-- [ ] `signup/index.routes.ts`, e `pages/plans` → `pages/subscription` (ts, html, css, spec)
-- [ ] `signup` model, repository e dto sem `Plan`/`listPlans`/`planCode`
-- [ ] `pages/sign-up` (ts, html, spec) sem plano
-- [ ] Landing: CTA e spec
-- [ ] Cypress `signup.cy.ts` e `login.cy.ts`
+- [x] `app.routes.ts`: `/planos` renomeada para `/assinatura` (plan §1)
+- [x] `signup/index.routes.ts`, e `pages/plans` → `pages/subscription` (ts, html, css, spec)
+- [x] `signup` model, repository e dto sem `Plan`/`listPlans`/`planCode`
+- [x] `pages/sign-up` (ts, html, spec) sem plano
+- [x] Landing: CTA e spec
+- [x] Cypress `signup.cy.ts` e `login.cy.ts`
 
 Se passar de 10 arquivos, o Cypress vai num commit próprio da mesma branch.
 
