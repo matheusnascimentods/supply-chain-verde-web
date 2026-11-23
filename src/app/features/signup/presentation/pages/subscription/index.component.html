@@ -1,29 +1,79 @@
 <div class="subscription-page">
   <app-public-header />
 
-  <main class="subscription-main" aria-labelledby="subscription-title">
-    <div class="subscription-guides" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <main>
+    <section class="subscription-hero" aria-labelledby="subscription-title">
+      <div class="subscription-guides" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
 
-    <div class="subscription-intro">
-      <p class="subscription-badge">
-        <svg viewBox="0 0 24 24" class="subscription-badge-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M20 4c-7 0-12 2-13 7-1 4 2 7 6 6 5-1 7-6 7-13Z" /><path d="M4 21c2-5 5-8 11-11" />
-        </svg>
-        Assinatura
-      </p>
-      <h1 id="subscription-title" class="subscription-title">Uma assinatura, sem escolha de plano</h1>
-      <p class="subscription-subtitle">Varejistas e fornecedores usam a mesma plataforma. Cada usuário ativo ocupa um assento; desative quem saiu e a vaga volta na hora.</p>
-    </div>
+      <div class="subscription-hero-text">
+        <p class="subscription-badge">
+          <svg viewBox="0 0 24 24" class="subscription-icon-sm" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 4c-7 0-12 2-13 7-1 4 2 7 6 6 5-1 7-6 7-13Z" /><path d="M4 21c2-5 5-8 11-11" />
+          </svg>
+          Assinatura
+        </p>
+        <h1 id="subscription-title" class="subscription-title">Tudo incluído para até <span class="subscription-highlight">{{ maxUsers }} pessoas</span>.</h1>
+        <p class="subscription-subtitle">Varejistas e fornecedores usam a mesma plataforma, com todos os recursos liberados. Você só gerencia quem ocupa os assentos.</p>
+        <div class="subscription-actions">
+          <a class="subscription-cta" routerLink="/cadastro" data-testid="subscription-cta">
+            Criar conta
+            <span class="subscription-cta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="subscription-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7" /><path d="M8 7h9v9" /></svg>
+            </span>
+          </a>
+          <a class="subscription-link" routerLink="/login">Já tenho conta</a>
+        </div>
+      </div>
 
-    <section class="subscription-card" aria-labelledby="subscription-name" data-testid="subscription-card">
-      <h2 id="subscription-name" class="subscription-name">Assinatura Supply Chain Verde</h2>
-      <p class="subscription-users"><strong class="subscription-users-number">{{ maxUsers }}</strong> usuários ativos</p>
+      <figure class="subscription-card" data-testid="subscription-card">
+        <figcaption class="subscription-card-head">
+          <span class="subscription-card-label">Assentos da empresa</span>
+          <strong class="subscription-card-number">{{ maxUsers }} usuários ativos</strong>
+        </figcaption>
+        <ul class="subscription-seats" aria-label="Exemplo: 7 assentos ativos, 1 convite pendente e 2 livres">
+          @for (seat of seats; track $index) {
+            <li class="subscription-seat" [attr.data-seat]="seat"></li>
+          }
+        </ul>
+        <ul class="subscription-legend" aria-hidden="true">
+          <li><span class="subscription-seat" data-seat="active"></span>Ativo</li>
+          <li><span class="subscription-seat" data-seat="pending"></span>Convite pendente</li>
+          <li><span class="subscription-seat" data-seat="free"></span>Livre</li>
+        </ul>
+      </figure>
+    </section>
+
+    <section class="subscription-section" aria-labelledby="subscription-steps-title">
+      <h2 id="subscription-steps-title" class="subscription-section-title">Como funcionam os assentos</h2>
+      <ol class="subscription-steps">
+        @for (step of steps; track step.title; let index = $index) {
+          <li class="subscription-step">
+            <span class="subscription-step-number" aria-hidden="true">{{ index + 1 }}</span>
+            <h3 class="subscription-step-title">{{ step.title }}</h3>
+            <p class="subscription-step-text">{{ step.text }}</p>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <section class="subscription-section" aria-labelledby="subscription-features-title">
+      <h2 id="subscription-features-title" class="subscription-section-title">O que vem incluso</h2>
       <ul class="subscription-features">
-        @for (feature of features; track feature) {
-          <li class="subscription-feature">{{ feature }}</li>
+        @for (feature of features; track feature.title) {
+          <li class="subscription-feature">
+            <span class="subscription-feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="subscription-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path [attr.d]="feature.icon" /></svg>
+            </span>
+            <h3 class="subscription-feature-title">{{ feature.title }}</h3>
+            <p class="subscription-feature-text">{{ feature.text }}</p>
+          </li>
         }
       </ul>
-      <a class="subscription-cta" routerLink="/cadastro" data-testid="subscription-cta">Criar conta</a>
+    </section>
+
+    <section class="subscription-band" aria-labelledby="subscription-band-title">
+      <h2 id="subscription-band-title" class="subscription-band-title">Comece agora, sem escolher plano.</h2>
+      <a class="subscription-band-cta" routerLink="/cadastro">Criar conta</a>
     </section>
   </main>
 </div>
