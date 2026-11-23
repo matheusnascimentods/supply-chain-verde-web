@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, switchMap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { NewProduct, Page, Product } from '../domain/index.model';
+import { NewProduct, Page, Product, ProductCategory, ProductUnit } from '../domain/index.model';
 import { productPageSchema, productResponseSchema } from './index.dto';
 
 const MAX_PAGE_SIZE = 100;
@@ -12,9 +12,22 @@ export class ProductsRepository {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/products`;
 
-  load(params: { limit: number; offset: number; search?: string }): Observable<Page<Product>> {
+  load(params: {
+    limit: number;
+    offset: number;
+    search?: string;
+    category?: ProductCategory;
+    unit?: ProductUnit;
+  }): Observable<Page<Product>> {
+    const { category, unit } = params;
     const search = params.search?.trim();
-    const query = { limit: String(params.limit), offset: String(params.offset), ...(search ? { search } : {}) };
+    const query = {
+      limit: String(params.limit),
+      offset: String(params.offset),
+      ...(search ? { search } : {}),
+      ...(category ? { category } : {}),
+      ...(unit ? { unit } : {}),
+    };
     return this.http.get<unknown>(this.base, { params: query }).pipe(
       map((raw) => {
         const page = productPageSchema.parse(raw);

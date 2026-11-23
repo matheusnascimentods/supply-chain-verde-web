@@ -24,7 +24,25 @@ describe('ProductsRepository', () => {
     const request = http.expectOne((req) => req.url === base);
     expect(request.request.params.get('search')).toBe('café');
     expect(request.request.params.get('offset')).toBe('20');
+    expect(request.request.params.has('category')).toBe(false);
+    expect(request.request.params.has('unit')).toBe(false);
     request.flush({ ...page([product(1)], 2, 20), limit: 20 });
+  });
+
+  it('filters by category and unit when given', () => {
+    repository.load({ limit: 20, offset: 0, category: 'TEXTILE', unit: 'M3' }).subscribe();
+    const request = http.expectOne((req) => req.url === base);
+    expect(request.request.params.get('category')).toBe('TEXTILE');
+    expect(request.request.params.get('unit')).toBe('M3');
+    request.flush(page([], 0));
+  });
+
+  it('accepts the market catalog fields', () => {
+    const catalogItem = { ...product(1), supplierId: 9, supplierName: 'Grãos da Serra', co2KgPerUnit: 1.5, acceptedBatchesLast30Days: 3 };
+    let items: unknown[] = [];
+    repository.load({ limit: 20, offset: 0 }).subscribe((result) => (items = result.items));
+    http.expectOne((req) => req.url === base).flush(page([catalogItem, { ...product(2), supplierName: null, co2KgPerUnit: null }], 1));
+    expect(items[0]).toEqual(catalogItem);
   });
 
   it('loads every page of the catalog', () => {
