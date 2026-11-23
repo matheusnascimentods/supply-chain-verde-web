@@ -58,10 +58,10 @@ Depende da API Task 2 em produção (`PATCH /users/{id}/status` e `active` no us
 
 Depende da API Task 3 em produção (`role` e `active` em `GET /users`).
 
-- [ ] `UsersRepository.load` com `roles`/`active` (plan §4)
-- [ ] Facade: `roles`, `active`, `toggleRole`, `setActive` e `filterRoles`
-- [ ] `pages/list` (html, css): os dois grupos de filtro
-- [ ] Specs de repository, facade e lista
+- [x] `UsersRepository.load` com `roles`/`active` (plan §4)
+- [x] Facade: `roles`, `active`, `toggleRole`, `setActive` e `filterRoles`
+- [x] `pages/list` (html, css): os dois grupos de filtro
+- [x] Specs de repository, facade e lista
 
 **Arquivos (~7).**
 
