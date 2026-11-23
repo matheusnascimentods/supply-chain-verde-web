@@ -8,6 +8,7 @@ import { DataTableComponent } from '../../../../../shared/ui/data-table/index.co
 import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
 import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
 import { UsersListFacade } from '../../../application/index.facade';
+import { seatsUsage } from '../../../domain/index.rules';
 import { InviteUserModalComponent } from '../../components/invite-modal/index.component';
 import { RoleBadgeComponent } from '../../components/role-badge/index.component';
 import { RoleMenuComponent } from '../../components/role-menu/index.component';
@@ -34,11 +35,13 @@ import { RoleMenuComponent } from '../../components/role-menu/index.component';
 export class UserListComponent {
   protected readonly facade = inject(UsersListFacade);
   private readonly toast = inject(ErrorToastService);
+  protected readonly seatsUsage = seatsUsage;
   readonly inviteModalOpen = signal(false);
 
-  // O convidado ainda não é usuário, então a lista não muda (RF-03).
+  // O convidado ainda não é usuário, então a lista não muda (RF-03); o convite pendente já ocupa assento.
   userInvited(email: string): void {
     this.inviteModalOpen.set(false);
     this.toast.success(`Convite enviado para ${email}.`);
+    this.facade.loadSeats();
   }
 }

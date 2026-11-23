@@ -7,9 +7,14 @@
         <p class="users-subtitle">Gerencie os usuários e os perfis de acesso ao sistema.</p>
       </div>
       @if (facade.canCreate()) {
-        <button appButton type="button" variant="primary" (click)="inviteModalOpen.set(true)">
-          + Convidar usuário
-        </button>
+        <div class="users-header-actions">
+          @if (facade.seats(); as seats) {
+            <p class="users-seats" [class.users-seats-full]="facade.seatsFull()" data-testid="seats-counter">{{ seatsUsage(seats) }}</p>
+          }
+          <button appButton type="button" variant="primary" [disabled]="facade.seatsFull()" [attr.title]="facade.seatsFull() ? 'Sem assentos livres' : null" (click)="inviteModalOpen.set(true)">
+            + Convidar usuário
+          </button>
+        </div>
       }
     </header>
 

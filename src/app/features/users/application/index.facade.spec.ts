@@ -11,7 +11,7 @@ import { UsersListFacade } from './index.facade';
 
 describe('UsersListFacade', () => {
   const ana = { userId: 1, name: 'Ana', email: 'ana@example.com', role: 'manager' as UserRole };
-  let repository: { load: ReturnType<typeof vi.fn> };
+  let repository: { load: ReturnType<typeof vi.fn>; seats: ReturnType<typeof vi.fn> };
   let updateRole: { execute: ReturnType<typeof vi.fn> };
   const role = signal<UserRole | null>('admin');
   let toast: { show: ReturnType<typeof vi.fn> };
@@ -32,7 +32,10 @@ describe('UsersListFacade', () => {
   beforeEach(() => {
     role.set('admin');
     toast = { show: vi.fn() };
-    repository = { load: vi.fn().mockReturnValue(of({ items: [ana], totalPages: 3 })) };
+    repository = {
+      load: vi.fn().mockReturnValue(of({ items: [ana], totalPages: 3 })),
+      seats: vi.fn().mockReturnValue(of({ used: 8, max: 10 })),
+    };
     updateRole = { execute: vi.fn().mockReturnValue(of(ana)) };
   });
 
@@ -106,6 +109,30 @@ describe('UsersListFacade', () => {
     expect(facade.canCreate()).toBe(false);
     expect(facade.canChangeRoles()).toBe(true);
     expect(facade.showCompany()).toBe(true);
+  });
+
+  it('loads the seats for the company admin', () => {
+    const facade = createFacade();
+    expect(facade.seats()).toEqual({ used: 8, max: 10 });
+    expect(facade.seatsFull()).toBe(false);
+
+    repository.seats.mockReturnValue(of({ used: 10, max: 10 }));
+    facade.loadSeats();
+    expect(facade.seatsFull()).toBe(true);
+  });
+
+  it.each(['platform_admin', 'manager'] as const)('does not load the seats for the %s', (current) => {
+    role.set(current);
+    const facade = createFacade();
+    expect(repository.seats).not.toHaveBeenCalled();
+    expect(facade.seats()).toBeNull();
+  });
+
+  it('hides the counter when the seats fail to load', () => {
+    repository.seats.mockReturnValue(throwError(() => new Error('500')));
+    const facade = createFacade();
+    expect(facade.seats()).toBeNull();
+    expect(facade.seatsFull()).toBe(false);
   });
 
   it('shows an error when the role update fails', () => {

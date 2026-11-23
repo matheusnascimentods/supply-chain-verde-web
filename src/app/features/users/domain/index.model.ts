@@ -17,6 +17,12 @@ export interface UserPage {
   totalPages: number;
 }
 
+/** Assentos da assinatura: usuários ativos + convites pendentes, contra o teto da companhia. */
+export interface Seats {
+  used: number;
+  max: number;
+}
+
 // O convidado entra na companhia de quem convida (RN-09); a API recusa perfis fora do tipo da companhia.
 export const newInviteSchema = z.object({
   email: z.string().email(),
