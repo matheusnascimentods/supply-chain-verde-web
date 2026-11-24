@@ -19,7 +19,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: unknown) => {
-      if (error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403)) {
+      // Só o 401 é sessão inválida (token ausente ou expirado). O 403 é falta de permissão para aquela chamada:
+      // a sessão segue válida, e quem chamou mostra o erro.
+      if (error instanceof HttpErrorResponse && error.status === 401) {
         session.clearSession();
         router.navigate(['/login']);
       }
