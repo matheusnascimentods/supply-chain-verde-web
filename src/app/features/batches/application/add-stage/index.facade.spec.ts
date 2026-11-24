@@ -23,11 +23,11 @@ describe('AddStageFacade', () => {
   let currentUser: { load: ReturnType<typeof vi.fn> };
   let advanceStage: { execute: ReturnType<typeof vi.fn> };
 
-  function createFacade(role: string): AddStageFacade {
+  function createFacade(role: string, companyType = role === 'supplier' ? 'supplier' : 'market'): AddStageFacade {
     TestBed.configureTestingModule({
       providers: [
         AddStageFacade,
-        { provide: SessionService, useValue: { role: () => role } },
+        { provide: SessionService, useValue: { role: () => role, companyType: () => companyType } },
         { provide: CurrentUserService, useValue: currentUser },
         { provide: SuppliersRepository, useValue: suppliers },
         { provide: AdvanceStageUseCase, useValue: advanceStage },
@@ -49,7 +49,14 @@ describe('AddStageFacade', () => {
     const facade = createFacade('supplier');
     expect(suppliers.get).toHaveBeenCalledWith(9);
     expect(facade.addresses()).toEqual([{ addressId: 90, label: 'Fornecedor 9 — Campinas/SP' }]);
-    expect(facade.canCalculateEmission).toBe(false);
+    expect(facade.canCalculateEmission).toBe(true);
+  });
+
+  it('offers only the own address to a supplier company admin, without the supplier catalog', () => {
+    const facade = createFacade('admin', 'supplier');
+    expect(suppliers.get).toHaveBeenCalledWith(9);
+    expect(suppliers.load).not.toHaveBeenCalled();
+    expect(facade.addresses()).toEqual([{ addressId: 90, label: 'Fornecedor 9 — Campinas/SP' }]);
   });
 
   it('offers the addresses of every supplier to other profiles', () => {

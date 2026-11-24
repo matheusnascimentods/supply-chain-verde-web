@@ -30,7 +30,8 @@ export class AddStageFacade {
   private readonly currentUser = inject(CurrentUserService);
   private readonly suppliers = inject(SuppliersRepository);
   private readonly advanceStage = inject(AdvanceStageUseCase);
-  private readonly role = inject(SessionService).role();
+  private readonly session = inject(SessionService);
+  private readonly role = this.session.role();
   private responsibleUserId: number | null = null;
   private progress: StageProgress = { chainId: null, transportSaved: false, emissionSaved: false };
 
@@ -76,10 +77,11 @@ export class AddStageFacade {
     );
   }
 
-  // Fornecedor só registra etapas com o próprio endereço; os demais perfis escolhem entre todos os fornecedores.
+  // Companhia fornecedora (supplier ou admin) só usa o próprio endereço: o catálogo de fornecedores devolve 403 para
+  // ela (RN-13a da API). O mercado escolhe entre todos os fornecedores.
   private loadChoices(): void {
     const choices$ =
-      this.role === 'supplier'
+      this.session.companyType() === 'supplier'
         ? this.currentUser.load().pipe(
             switchMap((user) =>
               user.supplierId
