@@ -14,9 +14,9 @@ Ordem entre os repositórios: **web Task 1 → API Task 1 → web Task 2 → API
 
 Não depende de nada e **precisa entrar em produção antes da API Task 1**: o `z.enum` quebra a listagem se receber um status desconhecido.
 
-- [ ] `domain/index.model.ts`: `COMPLETED` e `CANCELED` em `BATCH_STATUSES` e nos labels (plan §1)
-- [ ] `status-badge` (css e spec): as cores e os labels novos
-- [ ] `infrastructure/index.repository.spec.ts`: o `parse` aceita `COMPLETED` e `CANCELED`
+- [x] `domain/index.model.ts`: `COMPLETED` e `CANCELED` em `BATCH_STATUSES` e nos labels (plan §1)
+- [x] `status-badge` (css e spec): as cores e os labels novos
+- [x] `infrastructure/index.repository.spec.ts`: o `parse` aceita `COMPLETED` e `CANCELED`
 
 **Arquivos (~4):** `index.model.ts`, `status-badge/*`, `index.repository.spec.ts`.
 
