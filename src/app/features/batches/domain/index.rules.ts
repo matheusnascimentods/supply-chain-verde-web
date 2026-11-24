@@ -40,6 +40,11 @@ export function canReject(role: Role, companyType: Company, batch: Batch): boole
   return actsFor('supplier', role, companyType) && canMove(batch.status, 'REJECTED');
 }
 
+// O mercado cancela o próprio pedido enquanto o fornecedor não o aceitou.
+export function canCancel(role: Role, companyType: Company, batch: Batch): boolean {
+  return actsFor('market', role, companyType) && canMove(batch.status, 'CANCELED');
+}
+
 // O catálogo vem ordenado pela API; só o topo da primeira página é o melhor, e só se tiver histórico de CO₂.
 export function isRecommended(product: Product, index: number, page: number): boolean {
   return page === 0 && index === 0 && product.co2KgPerUnit != null;

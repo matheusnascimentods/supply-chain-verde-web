@@ -41,7 +41,7 @@
     } @else if (facade.items().length) {
       <section class="batches-grid" aria-label="Lotes">
         @for (batch of facade.items(); track batch.batchId) {
-          <app-batch-card [batch]="batch" [unit]="facade.unitOf(batch)" [canAddStage]="facade.canAddStageTo(batch)" [canReject]="facade.canReject(batch)" (addStage)="stageBatch.set(batch)" (reject)="rejectBatch.set(batch)" />
+          <app-batch-card [batch]="batch" [unit]="facade.unitOf(batch)" [canAddStage]="facade.canAddStageTo(batch)" [canReject]="facade.canReject(batch)" [canCancel]="facade.canCancel(batch)" (addStage)="stageBatch.set(batch)" (reject)="rejectBatch.set(batch)" (cancelOrder)="cancelBatch.set(batch)" />
         }
       </section>
     } @else if (facade.status()) {
@@ -71,6 +71,20 @@
 }
 @if (stageBatch(); as batch) {
   <app-batch-stage-modal [batchId]="batch.batchId" [currentStage]="batch.currentStage" (dismiss)="stageBatch.set(null)" (changed)="facade.load()" (created)="stageCreated()" />
+}
+@if (cancelBatch(); as batch) {
+  <app-modal labelledBy="cancel-modal-title" describedBy="cancel-modal-description" [closeOnEscape]="!canceling()" [closeOnBackdrop]="!canceling()" (dismissed)="cancelBatch.set(null)">
+    <div class="batches-cancel">
+      <header>
+        <h2 id="cancel-modal-title" class="batches-cancel-title">Cancelar pedido</h2>
+        <p id="cancel-modal-description" class="batches-cancel-description">Cancelar o pedido do lote #{{ batch.batchId }}? O fornecedor não poderá mais aceitá-lo.</p>
+      </header>
+      <div class="batches-cancel-actions">
+        <button appButton variant="secondary" type="button" [disabled]="canceling()" (click)="cancelBatch.set(null)">Voltar</button>
+        <button appButton variant="danger" type="button" data-testid="confirm-cancel" [disabled]="canceling()" (click)="confirmCancel()">{{ canceling() ? 'Cancelando…' : 'Cancelar pedido' }}</button>
+      </div>
+    </div>
+  </app-modal>
 }
 @if (rejectBatch(); as batch) {
   <app-batch-reject-modal [batch]="batch" (dismissed)="rejectBatch.set(null)" (rejected)="batchRejected()" />

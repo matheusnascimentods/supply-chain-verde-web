@@ -64,6 +64,16 @@ describe('BatchesRepository', () => {
     expect(status).toBe('REJECTED');
   });
 
+  it('cancels a batch and parses the updated batch', () => {
+    let status = '';
+    repository.cancel(7).subscribe((updated) => (status = updated.status));
+    const request = http.expectOne(`${base}/7/cancel`);
+    expect(request.request.method).toBe('PATCH');
+    expect(request.request.body).toEqual({});
+    request.flush({ ...batch, status: 'CANCELED', producedAt: null });
+    expect(status).toBe('CANCELED');
+  });
+
   it('creates a batch', () => {
     const newBatch = { productId: 3, supplierId: 9, quantity: 250 };
     repository.create(newBatch).subscribe((created) => expect(created.batchId).toBe(7));
