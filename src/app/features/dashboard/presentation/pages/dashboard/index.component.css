@@ -102,8 +102,9 @@
 .dashboard-emissions-header {
   @apply flex flex-wrap items-end justify-between gap-4;
 }
+/* grid-cols-2 = minmax(0,1fr): os campos de mês encolhem em vez de estourar o card no celular. */
 .dashboard-emissions-range {
-  @apply flex gap-3;
+  @apply grid w-full grid-cols-2 gap-3 sm:flex sm:w-auto;
 }
 .dashboard-range-error {
   @apply mt-5 text-sm text-red-700;
