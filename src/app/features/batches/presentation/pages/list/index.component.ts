@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ButtonComponent } from '../../../../../shared/ui/button/index.component';
+import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.service';
+import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
 import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
+import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 import { BatchesListFacade } from '../../../application/index.facade';
+import { CancelBatchUseCase } from '../../../application/use-cases/cancel-batch/index.use-case';
 import { BATCH_STATUSES, BATCH_STATUS_LABELS, Batch } from '../../../domain/index.model';
 import { BatchCardComponent } from '../../components/batch-card/index.component';
 import { BatchCreateModalComponent } from '../../components/create-modal/index.component';
@@ -9,7 +14,7 @@ import { BatchStageModalComponent } from '../../components/stage-modal/index.com
 
 @Component({
   selector: 'app-batches-list',
-  imports: [BatchCardComponent, BatchCreateModalComponent, BatchRejectModalComponent, BatchStageModalComponent, PaginationComponent],
+  imports: [BatchCardComponent, BatchCreateModalComponent, BatchRejectModalComponent, BatchStageModalComponent, ButtonComponent, ModalComponent, PaginationComponent],
   providers: [BatchesListFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
@@ -17,11 +22,15 @@ import { BatchStageModalComponent } from '../../components/stage-modal/index.com
 })
 export class BatchListComponent {
   protected readonly facade = inject(BatchesListFacade);
+  private readonly cancelUseCase = inject(CancelBatchUseCase);
+  private readonly toast = inject(ErrorToastService);
   protected readonly statuses = BATCH_STATUSES;
   protected readonly statusLabels = BATCH_STATUS_LABELS;
   readonly createModalOpen = signal(false);
   readonly stageBatch = signal<Batch | null>(null);
   readonly rejectBatch = signal<Batch | null>(null);
+  readonly cancelBatch = signal<Batch | null>(null);
+  readonly canceling = signal(false);
 
   batchCreated(): void {
     this.createModalOpen.set(false);
@@ -32,6 +41,27 @@ export class BatchListComponent {
   batchRejected(): void {
     this.rejectBatch.set(null);
     this.facade.load();
+  }
+
+  // ponytail: a confirmação fica aqui, sem um cancel-modal próprio, porque não há formulário. Vira componente se ganhar um motivo.
+  confirmCancel(): void {
+    const batch = this.cancelBatch();
+    if (!batch || this.canceling()) return;
+    this.canceling.set(true);
+    this.cancelUseCase.execute(batch.batchId).subscribe({
+      next: () => {
+        this.canceling.set(false);
+        this.cancelBatch.set(null);
+        this.facade.load();
+      },
+      error: (error: unknown) => {
+        this.canceling.set(false);
+        this.cancelBatch.set(null);
+        // 409: o fornecedor aceitou ou recusou antes; a lista recarrega com o status atual.
+        this.toast.show(apiErrorMessage(error, 'Não foi possível cancelar o pedido. Tente novamente.'));
+        this.facade.load();
+      },
+    });
   }
 
   stageCreated(): void {

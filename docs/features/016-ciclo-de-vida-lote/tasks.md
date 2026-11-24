@@ -39,12 +39,12 @@ Depende da API Task 1 em produção (dono da etapa e `SUPPLIER` na emissão).
 
 Depende da API Task 2 em produção (`PATCH /batches/{id}/cancel`) e da Task 2.
 
-- [ ] `index.rules.ts`: `canCancel` (+ spec)
-- [ ] `infrastructure/index.repository.ts`: `cancel` (+ spec)
-- [ ] `application/use-cases/cancel-batch/index.use-case.ts` e o `canCancel` na `index.facade.ts`
-- [ ] `batch-card` (html, ts e spec): o botão **Cancelar pedido**
-- [ ] `pages/list` (html, ts e spec): a confirmação com o `app-modal` (plan §3)
-- [ ] Cypress `register-batch-flow.cy.ts`: cancelar e concluir
+- [x] `index.rules.ts`: `canCancel` (+ spec)
+- [x] `infrastructure/index.repository.ts`: `cancel` (+ spec)
+- [x] `application/use-cases/cancel-batch/index.use-case.ts` e o `canCancel` na `index.facade.ts`
+- [x] `batch-card` (html, ts e spec): o botão **Cancelar pedido**
+- [x] `pages/list` (html, ts e spec): a confirmação com o `app-modal` (plan §3)
+- [x] Cypress `register-batch-flow.cy.ts`: cancelar e concluir
 
 Se passar de 10 arquivos, o Cypress vai num commit próprio da mesma branch.
 

@@ -102,4 +102,16 @@ describe('BatchCardComponent', () => {
     (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.batch-reject')!.click();
     expect(rejected).toBe(1);
   });
+
+  it('emits cancel only when allowed', () => {
+    const pending = { ...batch, status: 'PENDING' as const, producedAt: null, stages: [], currentStage: null };
+    expect(render(pending).querySelector('[data-testid="batch-cancel"]')).toBeNull();
+
+    fixture.componentRef.setInput('canCancel', true);
+    fixture.detectChanges();
+    let canceled = 0;
+    fixture.componentInstance.cancelOrder.subscribe(() => canceled++);
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('[data-testid="batch-cancel"]')!.click();
+    expect(canceled).toBe(1);
+  });
 });

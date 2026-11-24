@@ -34,6 +34,9 @@
     @if (canReject()) {
       <button type="button" class="batch-reject" (click)="reject.emit()">Recusar</button>
     }
+    @if (canCancel()) {
+      <button type="button" class="batch-reject" data-testid="batch-cancel" (click)="cancelOrder.emit()">Cancelar pedido</button>
+    }
   </section>
 
   <section class="batch-journey" aria-label="Jornada do lote">

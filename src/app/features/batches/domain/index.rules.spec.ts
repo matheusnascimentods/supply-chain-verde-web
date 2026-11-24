@@ -1,6 +1,6 @@
 import { Batch } from './index.model';
 import type { Product } from '../../products';
-import { canAddStageTo, canCalculateEmission, canCreateBatch, canReject, isRecommended } from './index.rules';
+import { canAddStageTo, canCalculateEmission, canCancel, canCreateBatch, canReject, isRecommended } from './index.rules';
 
 describe('batches rules', () => {
   const batch = { currentStage: 'TRANSPORT', status: 'ACTIVE' } as Batch;
@@ -51,6 +51,19 @@ describe('batches rules', () => {
     expect(canReject('supplier', 'supplier', { ...batch, status: 'REJECTED' })).toBe(false);
     expect(canReject('supplier', 'supplier', { ...batch, status: 'COMPLETED' })).toBe(false);
     expect(canReject('supplier', 'supplier', { ...batch, status: 'CANCELED' })).toBe(false);
+  });
+
+  it('lets only the market company cancel a pending batch', () => {
+    const pending = { ...batch, status: 'PENDING' } as Batch;
+    expect(canCancel('manager', 'market', pending)).toBe(true);
+    expect(canCancel('admin', 'market', pending)).toBe(true);
+    expect(canCancel('auditor', 'market', pending)).toBe(false);
+    expect(canCancel('admin', 'supplier', pending)).toBe(false);
+    expect(canCancel('supplier', 'supplier', pending)).toBe(false);
+    expect(canCancel('platform_admin', null, pending)).toBe(false);
+    for (const status of ['ACTIVE', 'COMPLETED', 'REJECTED', 'CANCELED'] as const) {
+      expect(canCancel('manager', 'market', { ...batch, status })).toBe(false);
+    }
   });
 
   it('recommends only the first product of the first page with emission history', () => {

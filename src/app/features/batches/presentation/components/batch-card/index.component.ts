@@ -18,8 +18,10 @@ export class BatchCardComponent {
   readonly unit = input<ProductUnit | undefined>(undefined);
   readonly canAddStage = input(false);
   readonly canReject = input(false);
+  readonly canCancel = input(false);
   readonly addStage = output<void>();
   readonly reject = output<void>();
+  readonly cancelOrder = output<void>();
 
   protected readonly stageLabels = STAGE_TYPE_LABELS;
   protected readonly transportModeLabels = TRANSPORT_MODE_LABELS;

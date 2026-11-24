@@ -1,6 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of, throwError } from 'rxjs';
+import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.service';
 import { BatchesListFacade } from '../../../application/index.facade';
+import { CancelBatchUseCase } from '../../../application/use-cases/cancel-batch/index.use-case';
 import { Batch } from '../../../domain/index.model';
 import { BatchListComponent } from './index.component';
 
@@ -21,6 +25,7 @@ describe('BatchListComponent', () => {
       setStatus: vi.fn(),
       canAddStageTo: () => true,
       canReject: () => false,
+      canCancel: () => false,
       unitOf: () => 'KG',
       load: vi.fn(),
       previousPage: vi.fn(),
@@ -83,5 +88,51 @@ describe('BatchListComponent', () => {
     fixture.detectChanges();
     expect(page.querySelector('app-batch-reject-modal')).toBeNull();
     expect(load).toHaveBeenCalled();
+  });
+
+  describe('cancel', () => {
+    const execute = vi.fn();
+    const show = vi.fn();
+
+    beforeEach(() => {
+      execute.mockReset();
+      show.mockReset();
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: CancelBatchUseCase, useValue: { execute } },
+          { provide: ErrorToastService, useValue: { show } },
+        ],
+      });
+    });
+
+    function openConfirmation(load: ReturnType<typeof vi.fn>): HTMLElement {
+      const page = render({ canCancel: () => true, load });
+      page.querySelector<HTMLButtonElement>('[data-testid="batch-cancel"]')!.click();
+      fixture.detectChanges();
+      return page;
+    }
+
+    it('cancels the batch after the confirmation and reloads the list', () => {
+      execute.mockReturnValue(of({ ...batch, status: 'CANCELED' }));
+      const load = vi.fn();
+      const page = openConfirmation(load);
+      expect(page.textContent).toContain('Cancelar o pedido do lote #7?');
+
+      page.querySelector<HTMLButtonElement>('[data-testid="confirm-cancel"]')!.click();
+      fixture.detectChanges();
+      expect(execute).toHaveBeenCalledWith(7);
+      expect(load).toHaveBeenCalled();
+      expect(page.querySelector('[data-testid="confirm-cancel"]')).toBeNull();
+    });
+
+    it('shows the API message in a toast when the batch left PENDING', () => {
+      execute.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 409, error: { message: 'O lote não está mais pendente.' } })));
+      const load = vi.fn();
+      const page = openConfirmation(load);
+      page.querySelector<HTMLButtonElement>('[data-testid="confirm-cancel"]')!.click();
+      fixture.detectChanges();
+      expect(show).toHaveBeenCalledWith('O lote não está mais pendente.');
+      expect(load).toHaveBeenCalled();
+    });
   });
 });

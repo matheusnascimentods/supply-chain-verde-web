@@ -70,3 +70,15 @@
 .batches-filter[aria-pressed='true'] {
   @apply border-emerald-700 bg-emerald-700 text-white hover:text-white;
 }
+.batches-cancel {
+  @apply flex flex-col gap-5;
+}
+.batches-cancel-title {
+  @apply text-xl font-semibold text-slate-900;
+}
+.batches-cancel-description {
+  @apply mt-1 text-sm text-slate-600;
+}
+.batches-cancel-actions {
+  @apply flex justify-end gap-3;
+}
