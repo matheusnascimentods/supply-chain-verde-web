@@ -1,3 +1,5 @@
+import type { CompanyType } from '../../../../core/auth/session/index.model';
+
 export const STAGE_TYPES = ['PRODUCTION', 'STORAGE', 'PROCESSING', 'TRANSPORT', 'DISTRIBUTION', 'RETAIL'] as const;
 export type StageType = (typeof STAGE_TYPES)[number];
 export const STAGE_TYPE_LABELS: Record<StageType, string> = {
@@ -14,6 +16,9 @@ export function nextStage(current: StageType | null): StageType | null {
   if (current === null) return 'PRODUCTION';
   return STAGE_TYPES[STAGE_TYPES.indexOf(current) + 1] ?? null;
 }
+
+/** RN-08 da API: o mercado registra só o RETAIL; o resto da cadeia é do fornecedor. */
+export const stageOwner = (stage: StageType): CompanyType => (stage === 'RETAIL' ? 'market' : 'supplier');
 
 export const TRANSPORT_MODES = ['ROAD', 'RAIL', 'MARITIME', 'AIR'] as const;
 export type TransportMode = (typeof TRANSPORT_MODES)[number];

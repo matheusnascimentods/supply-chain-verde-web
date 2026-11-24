@@ -63,11 +63,13 @@ describe('BatchesListFacade', () => {
 
   it('applies the permission rules of the session and company', () => {
     const facade = createFacade();
+    const atDistribution = { ...batch, currentStage: 'DISTRIBUTION' } as Batch;
     expect(facade.canCreate()).toBe(true);
-    expect(facade.canAddStageTo(batch)).toBe(true);
+    expect(facade.canAddStageTo(atDistribution)).toBe(true);
+    expect(facade.canAddStageTo(batch)).toBe(false);
     role.set('auditor');
     expect(facade.canCreate()).toBe(false);
-    expect(facade.canAddStageTo(batch)).toBe(false);
+    expect(facade.canAddStageTo(atDistribution)).toBe(false);
   });
 
   it('starts with the status of the URL, as the dashboard pending link sends', () => {

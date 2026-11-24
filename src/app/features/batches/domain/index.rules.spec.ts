@@ -14,26 +14,30 @@ describe('batches rules', () => {
     expect(canCreateBatch('platform_admin', null)).toBe(false);
   });
 
-  it('lets admins and managers calculate emissions', () => {
+  it('lets admins, managers and suppliers calculate emissions', () => {
     expect(canCalculateEmission('admin')).toBe(true);
     expect(canCalculateEmission('manager')).toBe(true);
-    expect(canCalculateEmission('supplier')).toBe(false);
+    expect(canCalculateEmission('supplier')).toBe(true);
+    expect(canCalculateEmission('auditor')).toBe(false);
   });
 
-  it('allows new stages on an active batch until it reaches retail', () => {
-    expect(canAddStageTo('manager', 'market', batch)).toBe(true);
-    expect(canAddStageTo('supplier', 'supplier', { ...batch, currentStage: null })).toBe(true);
-    expect(canAddStageTo('admin', 'market', { ...batch, currentStage: 'RETAIL' })).toBe(false);
-    expect(canAddStageTo('auditor', 'market', batch)).toBe(false);
-  });
-
-  it('blocks rejected batches and leaves pending ones to the supplier company', () => {
-    const pending = { ...batch, status: 'PENDING', currentStage: null } as Batch;
-    expect(canAddStageTo('admin', 'supplier', { ...batch, status: 'REJECTED' })).toBe(false);
-    expect(canAddStageTo('supplier', 'supplier', pending)).toBe(true);
-    expect(canAddStageTo('admin', 'supplier', pending)).toBe(true);
-    expect(canAddStageTo('admin', 'market', pending)).toBe(false);
-    expect(canAddStageTo('manager', 'market', pending)).toBe(false);
+  // [etapa atual, status, fornecedor (supplier e admin), mercado (manager e admin)]
+  it.each([
+    [null, 'PENDING', true, false],
+    ['STORAGE', 'ACTIVE', true, false],
+    ['TRANSPORT', 'ACTIVE', true, false],
+    ['DISTRIBUTION', 'ACTIVE', false, true],
+    ['RETAIL', 'COMPLETED', false, false],
+    [null, 'REJECTED', false, false],
+    [null, 'CANCELED', false, false],
+  ] as const)('leaves the stage after %s (%s) to its owner side', (currentStage, status, supplier, market) => {
+    const target = { currentStage, status } as Batch;
+    expect(canAddStageTo('supplier', 'supplier', target)).toBe(supplier);
+    expect(canAddStageTo('admin', 'supplier', target)).toBe(supplier);
+    expect(canAddStageTo('manager', 'market', target)).toBe(market);
+    expect(canAddStageTo('admin', 'market', target)).toBe(market);
+    expect(canAddStageTo('auditor', 'market', target)).toBe(false);
+    expect(canAddStageTo('platform_admin', null, target)).toBe(false);
   });
 
   it('lets only the supplier company reject a pending batch', () => {
@@ -45,6 +49,8 @@ describe('batches rules', () => {
     expect(canReject('platform_admin', null, pending)).toBe(false);
     expect(canReject('supplier', 'supplier', batch)).toBe(false);
     expect(canReject('supplier', 'supplier', { ...batch, status: 'REJECTED' })).toBe(false);
+    expect(canReject('supplier', 'supplier', { ...batch, status: 'COMPLETED' })).toBe(false);
+    expect(canReject('supplier', 'supplier', { ...batch, status: 'CANCELED' })).toBe(false);
   });
 
   it('recommends only the first product of the first page with emission history', () => {

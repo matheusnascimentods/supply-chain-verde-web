@@ -26,10 +26,10 @@ Não depende de nada e **precisa entrar em produção antes da API Task 1**: o `
 
 Depende da API Task 1 em produção (dono da etapa e `SUPPLIER` na emissão).
 
-- [ ] `domain/stage/index.model.ts`: `stageOwner`
-- [ ] `domain/index.rules.ts`: `TRANSITIONS`, `canMove`, `actsFor`, o novo `canAddStageTo`, o `canReject` pela tabela e o `canCalculateEmission` com `supplier` (plan §2)
-- [ ] `domain/index.rules.spec.ts`: a matriz lado × etapa × status
-- [ ] `application/add-stage/index.facade.spec.ts`: o `supplier` calcula a emissão
+- [x] `domain/stage/index.model.ts`: `stageOwner`
+- [x] `domain/index.rules.ts`: `TRANSITIONS`, `canMove`, `actsFor`, o novo `canAddStageTo`, o `canReject` pela tabela e o `canCalculateEmission` com `supplier` (plan §2)
+- [x] `domain/index.rules.spec.ts`: a matriz lado × etapa × status
+- [x] `application/add-stage/index.facade.spec.ts`: o `supplier` calcula a emissão
 
 **Arquivos (~5):** `stage/index.model.ts`, `index.rules.ts`, `index.rules.spec.ts`, `add-stage/index.facade.spec.ts`.
 
