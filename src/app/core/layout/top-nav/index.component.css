@@ -20,10 +20,6 @@
   @apply hidden sm:inline;
 }
 
-.brand-short-name {
-  @apply sm:hidden;
-}
-
 .desktop-nav {
   @apply hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto lg:flex;
 }
