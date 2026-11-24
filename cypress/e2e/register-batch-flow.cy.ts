@@ -62,8 +62,7 @@ describe('Batch registration wizard', () => {
     });
   });
 
-  it('lets a retailer manager request a batch: search the catalog, pick a product, then the quantity', () => {
-    cy.intercept('POST', '**/api/v1/batches', { statusCode: 201, body: createdBatch }).as('createBatch');
+  function loginAndOpenBatches(): void {
     cy.visit('/login');
     cy.get('[data-testid="email-input"]').type('manager@example.com');
     cy.get('[data-testid="password-input"]').type('valid-password');
@@ -71,6 +70,20 @@ describe('Batch registration wizard', () => {
     cy.wait('@login');
     cy.visit('/batches');
     cy.wait('@loadBatches');
+  }
+
+  // A primeira resposta é o lote antes da ação; as seguintes, o lote atualizado que a lista recarrega.
+  function stubBatches(before: object, after: object): void {
+    let calls = 0;
+    cy.intercept('GET', '**/api/v1/batches?page=0&size=20', (req) => {
+      const batch = calls++ === 0 ? before : after;
+      req.reply({ content: [batch], page: 0, size: 20, totalElements: 1, totalPages: 1 });
+    }).as('loadBatches');
+  }
+
+  it('lets a retailer manager request a batch: search the catalog, pick a product, then the quantity', () => {
+    cy.intercept('POST', '**/api/v1/batches', { statusCode: 201, body: createdBatch }).as('createBatch');
+    loginAndOpenBatches();
 
     cy.contains('button', 'Novo lote').click();
     // O catálogo abre já ordenado, sem exigir categoria nem unidade.
@@ -94,5 +107,47 @@ describe('Batch registration wizard', () => {
     cy.wait('@createBatch').its('request.body').should('deep.equal', { productId: 3, supplierId: 9, quantity: 250 });
     cy.location('pathname').should('eq', '/batches');
     cy.contains('Pedir novo lote').should('not.exist');
+  });
+
+  it('lets the retailer manager cancel a pending batch after confirming', () => {
+    stubBatches(createdBatch, { ...createdBatch, status: 'CANCELED' });
+    cy.intercept('PATCH', '**/api/v1/batches/77/cancel', { statusCode: 200, body: { ...createdBatch, status: 'CANCELED' } }).as('cancelBatch');
+    loginAndOpenBatches();
+
+    // O fornecedor executa ou recusa; o mercado não vê a etapa de Produção nem o Recusar.
+    cy.contains('button', 'Adicionar etapa').should('not.exist');
+    cy.contains('button', 'Recusar').should('not.exist');
+
+    cy.get('[data-testid="batch-cancel"]').click();
+    cy.contains('Cancelar o pedido do lote #77?').should('be.visible');
+    cy.get('[data-testid="confirm-cancel"]').click();
+
+    cy.wait('@cancelBatch').its('request.body').should('deep.equal', {});
+    cy.wait('@loadBatches');
+    cy.get('app-status-badge').should('have.text', 'Cancelado');
+    cy.get('[data-testid="batch-cancel"]').should('not.exist');
+  });
+
+  it('lets the retailer manager register the retail stage, which completes the batch', () => {
+    const distribution = { ...createdBatch, status: 'ACTIVE', currentStage: 'DISTRIBUTION' };
+    const retail = {
+      chainId: 6, batchId: 77, originAddress: null, destinationAddress: null, responsibleUserId: 4, responsibleUserName: 'Gestor',
+      stageType: 'RETAIL', startedAt: '2026-11-24T10:00:00', endedAt: null, transport: null, emission: null,
+    };
+    stubBatches(distribution, { ...distribution, status: 'COMPLETED', currentStage: 'RETAIL', stages: [retail] });
+    cy.intercept('GET', '**/api/v1/suppliers', { statusCode: 200, body: [] });
+    cy.intercept('POST', '**/api/v1/batches/77/stages', { statusCode: 201, body: retail }).as('createStage');
+    loginAndOpenBatches();
+
+    cy.get('[data-testid="batch-cancel"]').should('not.exist');
+    cy.contains('button', 'Adicionar etapa').click();
+    cy.get('.stage-next').should('have.text', 'Varejo');
+    cy.get('input[formControlName="startedAt"]').type('2026-11-24T10:00');
+    cy.contains('button', 'Registrar etapa').click();
+
+    cy.wait('@createStage').its('request.body').should('include', { stageType: 'RETAIL' });
+    cy.wait('@loadBatches');
+    cy.get('app-status-badge').should('have.text', 'Concluído');
+    cy.contains('button', 'Adicionar etapa').should('not.exist');
   });
 });
