@@ -39,6 +39,9 @@
 .batches-skeleton {
   @apply h-56 animate-pulse rounded-xl border border-slate-200 bg-white;
 }
+.batches-filter-empty {
+  @apply py-10 text-center text-sm text-slate-500;
+}
 .batches-empty {
   @apply rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center;
 }

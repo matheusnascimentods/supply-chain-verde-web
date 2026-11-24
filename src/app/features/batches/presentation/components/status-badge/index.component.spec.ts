@@ -5,7 +5,9 @@ describe('StatusBadgeComponent', () => {
   it.each([
     ['PENDING', 'Pendente'],
     ['ACTIVE', 'Em andamento'],
+    ['COMPLETED', 'Concluído'],
     ['REJECTED', 'Recusado'],
+    ['CANCELED', 'Cancelado'],
   ] as const)('labels %s as "%s" and exposes the status for styling', (status, label) => {
     const fixture = TestBed.createComponent(StatusBadgeComponent);
     fixture.componentRef.setInput('status', status);

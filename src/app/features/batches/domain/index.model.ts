@@ -1,12 +1,14 @@
 import { Stage, StageType } from './stage/index.model';
 
-export const BATCH_STATUSES = ['PENDING', 'ACTIVE', 'REJECTED'] as const;
+export const BATCH_STATUSES = ['PENDING', 'ACTIVE', 'COMPLETED', 'REJECTED', 'CANCELED'] as const;
 export type BatchStatus = (typeof BATCH_STATUSES)[number];
 
 export const BATCH_STATUS_LABELS: Record<BatchStatus, string> = {
   PENDING: 'Pendente',
   ACTIVE: 'Em andamento',
+  COMPLETED: 'Concluído',
   REJECTED: 'Recusado',
+  CANCELED: 'Cancelado',
 };
 
 export interface Batch {

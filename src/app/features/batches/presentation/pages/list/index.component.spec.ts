@@ -58,7 +58,7 @@ describe('BatchListComponent', () => {
     const setStatus = vi.fn();
     const page = render({ setStatus, status: signal('ACTIVE') });
     const badges = [...page.querySelectorAll<HTMLButtonElement>('.batches-filter')];
-    expect(badges.map((badge) => badge.textContent?.trim())).toEqual(['Todos', 'Pendente', 'Em andamento', 'Recusado']);
+    expect(badges.map((badge) => badge.textContent?.trim())).toEqual(['Todos', 'Pendente', 'Em andamento', 'Concluído', 'Recusado', 'Cancelado']);
     expect(badges.filter((badge) => badge.getAttribute('aria-pressed') === 'true').map((badge) => badge.textContent?.trim())).toEqual(['Em andamento']);
     badges[1].click();
     expect(setStatus).toHaveBeenCalledWith('PENDING');
@@ -69,6 +69,7 @@ describe('BatchListComponent', () => {
   it('explains an empty filtered list', () => {
     const page = render({ items: signal([]), status: signal('REJECTED') });
     expect(page.textContent).toContain('Nenhum lote com esse status');
+    expect(page.querySelector('.batches-empty')).toBeNull();
   });
 
   it('opens the reject modal from a card and reloads the list after rejecting', () => {

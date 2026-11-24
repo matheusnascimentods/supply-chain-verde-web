@@ -42,6 +42,11 @@ describe('BatchesRepository', () => {
     http.expectOne(`${base}?page=0&size=20`).flush({ content: [rejected], page: 0, size: 20, totalElements: 1, totalPages: 1 });
   });
 
+  it.each(['COMPLETED', 'CANCELED'])('accepts a %s batch', (status) => {
+    repository.load({ page: 0, size: 20 }).subscribe((page) => expect(page.items[0].status).toBe(status));
+    http.expectOne(`${base}?page=0&size=20`).flush({ content: [{ ...batch, status }], page: 0, size: 20, totalElements: 1, totalPages: 1 });
+  });
+
   it('rejects an unknown status', () => {
     let failed = false;
     repository.load({ page: 0, size: 20 }).subscribe({ error: () => (failed = true) });

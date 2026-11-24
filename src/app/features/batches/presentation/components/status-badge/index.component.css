@@ -12,3 +12,9 @@
 :host([data-status='REJECTED']) {
   @apply bg-red-100 text-red-800;
 }
+:host([data-status='COMPLETED']) {
+  @apply bg-teal-100 text-teal-800;
+}
+:host([data-status='CANCELED']) {
+  @apply bg-slate-100 text-slate-700;
+}
