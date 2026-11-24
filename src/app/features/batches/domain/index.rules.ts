@@ -1,31 +1,43 @@
 import { CompanyType, UserRole } from '../../../core/auth/session/index.model';
 import type { Product } from '../../products';
-import { Batch } from './index.model';
-import { nextStage } from './stage/index.model';
+import { Batch, BatchStatus } from './index.model';
+import { nextStage, stageOwner } from './stage/index.model';
 
 type Role = UserRole | null;
 
 type Company = CompanyType | null;
 
+// Espelho do BatchStatus.canTransitionTo da API (017). Os estados ausentes são finais.
+const TRANSITIONS: Partial<Record<BatchStatus, readonly BatchStatus[]>> = {
+  PENDING: ['ACTIVE', 'REJECTED', 'CANCELED'],
+  ACTIVE: ['COMPLETED'],
+};
+const canMove = (from: BatchStatus, to: BatchStatus) => TRANSITIONS[from]?.includes(to) ?? false;
+
+const MARKET_ROLES: readonly Role[] = ['admin', 'manager'];
+const SUPPLIER_ROLES: readonly Role[] = ['admin', 'supplier'];
+const actsFor = (side: CompanyType, role: Role, companyType: Company) =>
+  companyType === side && (side === 'market' ? MARKET_ROLES : SUPPLIER_ROLES).includes(role);
+
 // RF-13: o mercado pede o lote; o fornecedor executa ou recusa.
 export function canCreateBatch(role: Role, companyType: Company): boolean {
-  return companyType === 'market' && (role === 'admin' || role === 'manager');
+  return actsFor('market', role, companyType);
 }
 
 export function canCalculateEmission(role: Role): boolean {
-  return role === 'admin' || role === 'manager';
+  return role === 'admin' || role === 'manager' || role === 'supplier';
 }
 
-// A jornada termina no varejo; lote recusado não recebe etapa, e o pendente só pelo fornecedor (RF-15).
+// Só o lado dono da próxima etapa a registra (RN-08 da API), e só em lote Pendente ou Em andamento.
 export function canAddStageTo(role: Role, companyType: Company, batch: Batch): boolean {
-  const allowed = role === 'admin' || role === 'manager' || role === 'supplier';
-  if (!allowed || batch.status === 'REJECTED' || nextStage(batch.currentStage) === null) return false;
-  return batch.status !== 'PENDING' || companyType === 'supplier';
+  const next = nextStage(batch.currentStage);
+  if (next === null || (batch.status !== 'PENDING' && batch.status !== 'ACTIVE')) return false;
+  return actsFor(stageOwner(next), role, companyType);
 }
 
-// RF-15: o fornecedor recusa um lote pendente (RN-19 da API); recusado é final.
+// RF-15: o fornecedor recusa um lote pendente.
 export function canReject(role: Role, companyType: Company, batch: Batch): boolean {
-  return companyType === 'supplier' && (role === 'admin' || role === 'supplier') && batch.status === 'PENDING';
+  return actsFor('supplier', role, companyType) && canMove(batch.status, 'REJECTED');
 }
 
 // O catálogo vem ordenado pela API; só o topo da primeira página é o melhor, e só se tiver histórico de CO₂.

@@ -85,7 +85,7 @@ describe('authInterceptor', () => {
     expect(errorReceived).toBeDefined();
   });
 
-  it('should clear session, navigate to /login and throw error on 403 Forbidden', () => {
+  it('should keep the session and only throw the error on 403 Forbidden', () => {
     sessionService.setSession('test-token-123', 'supplier');
     const navigateSpy = vi.spyOn(router, 'navigate');
     const clearSessionSpy = vi.spyOn(sessionService, 'clearSession');
@@ -101,9 +101,9 @@ describe('authInterceptor', () => {
     const req = httpTestingController.expectOne('/api/test');
     req.flush('Forbidden', { status: 403, statusText: 'Forbidden' });
 
-    expect(clearSessionSpy).toHaveBeenCalled();
-    expect(sessionService.token).toBeNull();
-    expect(navigateSpy).toHaveBeenCalledWith(['/login']);
+    expect(clearSessionSpy).not.toHaveBeenCalled();
+    expect(sessionService.token).toBe('test-token-123');
+    expect(navigateSpy).not.toHaveBeenCalled();
     expect(errorReceived).toBeDefined();
   });
 
