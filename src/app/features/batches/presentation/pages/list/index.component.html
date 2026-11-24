@@ -44,6 +44,8 @@
           <app-batch-card [batch]="batch" [unit]="facade.unitOf(batch)" [canAddStage]="facade.canAddStageTo(batch)" [canReject]="facade.canReject(batch)" (addStage)="stageBatch.set(batch)" (reject)="rejectBatch.set(batch)" />
         }
       </section>
+    } @else if (facade.status()) {
+      <p class="batches-filter-empty">Nenhum lote com esse status.</p>
     } @else {
       <section class="batches-empty">
         <span class="batches-empty-icon" aria-hidden="true">
@@ -52,7 +54,7 @@
             <path d="m4.3 7.7 7.7 4.4 7.7-4.4M12 12v9" />
           </svg>
         </span>
-        <h2 class="batches-empty-title">{{ facade.status() ? 'Nenhum lote com esse status' : 'Nenhum lote por aqui ainda' }}</h2>
+        <h2 class="batches-empty-title">Nenhum lote por aqui ainda</h2>
         <p class="batches-empty-text">Quando um lote for cadastrado, você poderá acompanhar cada etapa da cadeia nesta tela.</p>
         @if (facade.canCreate()) {
           <button type="button" class="batches-empty-create" (click)="createModalOpen.set(true)">Cadastrar primeiro lote</button>
