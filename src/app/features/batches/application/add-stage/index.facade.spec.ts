@@ -3,23 +3,19 @@ import { TestBed } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../core/auth/session/index.service';
-import { SuppliersRepository } from '../../../suppliers';
+import { ProfileRepository } from '../../../profile';
 import { AdvanceStageError, AdvanceStageUseCase } from '../use-cases/advance-stage/index.use-case';
 import { AddStageFacade } from './index.facade';
 
 describe('AddStageFacade', () => {
-  const supplier = (supplierId: number, city: string) => ({
-    supplierId,
-    name: `Fornecedor ${supplierId}`,
-    address: { addressId: supplierId * 10, city, state: 'SP' },
-  });
+  const farm = { street: 'Estrada do Café', number: '100', neighborhood: 'Rural', complement: null, zipCode: '13900000', city: 'Amparo', state: 'SP' };
   const submission = {
     batchId: 7,
-    stage: { stageType: 'TRANSPORT' as const, startedAt: '2026-10-05T08:30', endedAt: null, originAddressId: null, destinationAddressId: null },
+    stage: { stageType: 'TRANSPORT' as const, startedAt: '2026-10-05T08:30', endedAt: null, destination: null },
     transport: { transportMode: 'ROAD' as const, distance: 10, fuelType: 'DIESEL' as const, capacity: 100 },
     emissionMethod: null,
   };
-  let suppliers: { get: ReturnType<typeof vi.fn>; load: ReturnType<typeof vi.fn> };
+  let profile: { getMyCompany: ReturnType<typeof vi.fn> };
   let currentUser: { load: ReturnType<typeof vi.fn> };
   let advanceStage: { execute: ReturnType<typeof vi.fn> };
 
@@ -29,7 +25,7 @@ describe('AddStageFacade', () => {
         AddStageFacade,
         { provide: SessionService, useValue: { role: () => role, companyType: () => companyType } },
         { provide: CurrentUserService, useValue: currentUser },
-        { provide: SuppliersRepository, useValue: suppliers },
+        { provide: ProfileRepository, useValue: profile },
         { provide: AdvanceStageUseCase, useValue: advanceStage },
       ],
     });
@@ -37,33 +33,20 @@ describe('AddStageFacade', () => {
   }
 
   beforeEach(() => {
-    suppliers = {
-      get: vi.fn().mockReturnValue(of(supplier(9, 'Campinas'))),
-      load: vi.fn().mockReturnValue(of([supplier(1, 'São Paulo'), { supplierId: 2, name: 'Sem endereço', address: null }])),
-    };
+    profile = { getMyCompany: vi.fn().mockReturnValue(of({ companyId: 9, name: 'Fazenda', address: farm })) };
     currentUser = { load: vi.fn().mockReturnValue(of({ userId: 4, supplierId: 9 })) };
     advanceStage = { execute: vi.fn().mockReturnValue(of({ step: 'stage', chainId: 50 }, { step: 'transport' })) };
   });
 
-  it('offers only the own address to suppliers', () => {
-    const facade = createFacade('supplier');
-    expect(suppliers.get).toHaveBeenCalledWith(9);
-    expect(facade.addresses()).toEqual([{ addressId: 90, label: 'Fornecedor 9 — Campinas/SP' }]);
-    expect(facade.canCalculateEmission).toBe(true);
-  });
-
-  it('offers only the own address to a supplier company admin, without the supplier catalog', () => {
-    const facade = createFacade('admin', 'supplier');
-    expect(suppliers.get).toHaveBeenCalledWith(9);
-    expect(suppliers.load).not.toHaveBeenCalled();
-    expect(facade.addresses()).toEqual([{ addressId: 90, label: 'Fornecedor 9 — Campinas/SP' }]);
-  });
-
-  it('offers the addresses of every supplier to other profiles', () => {
-    const facade = createFacade('manager');
-    expect(facade.addresses()).toEqual([{ addressId: 10, label: 'Fornecedor 1 — São Paulo/SP' }]);
-    expect(facade.canCalculateEmission).toBe(true);
-    expect(facade.loadingChoices()).toBe(false);
+  it('loads the address of the own company for suppliers and markets', () => {
+    for (const role of ['supplier', 'manager']) {
+      TestBed.resetTestingModule();
+      const facade = createFacade(role);
+      expect(facade.ownAddress()).toEqual(farm);
+      expect(facade.loadingChoices()).toBe(false);
+      expect(facade.canCalculateEmission).toBe(true);
+    }
+    expect(profile.getMyCompany).toHaveBeenCalledTimes(2);
   });
 
   it('submits with the responsible user and resumes without repeating saved steps', () => {

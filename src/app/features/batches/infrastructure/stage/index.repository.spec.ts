@@ -22,12 +22,12 @@ describe('StagesRepository', () => {
   afterEach(() => http.verify());
 
   it('registers a stage with the responsible user header and full date-times', () => {
-    repository.create(7, 2, { stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', endedAt: null, originAddressId: 3, destinationAddressId: null })
+    repository.create(7, 2, { stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', endedAt: null, destination: { street: 'Rua A', number: '1', neighborhood: 'Centro', complement: null, zipCode: '13000000', city: 'Campinas', state: 'SP' } })
       .subscribe((result) => expect(result.originAddress?.complement).toBeNull());
     const request = http.expectOne(`${environment.apiUrl}/batches/7/stages`);
     expect(request.request.headers.get('X-Responsible-User-Id')).toBe('2');
     expect(request.request.body).toEqual({
-      batchId: 7, stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30:00', endedAt: null, originAddressId: 3, destinationAddressId: null,
+      batchId: 7, stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30:00', endedAt: null, destination: { street: 'Rua A', number: '1', neighborhood: 'Centro', complement: null, zipCode: '13000000', city: 'Campinas', state: 'SP' },
     });
     request.flush(stage);
   });

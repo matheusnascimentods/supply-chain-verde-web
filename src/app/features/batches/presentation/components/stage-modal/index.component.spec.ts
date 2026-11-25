@@ -12,7 +12,7 @@ describe('BatchStageModalComponent', () => {
     saving: ReturnType<typeof signal<boolean>>;
     error: ReturnType<typeof signal<string>>;
     stageSaved: ReturnType<typeof signal<boolean>>;
-    addresses: ReturnType<typeof signal<{ addressId: number; label: string }[]>>;
+    ownAddress: ReturnType<typeof signal<Record<string, string | null> | null>>;
     submit: ReturnType<typeof vi.fn>;
   };
   let events: string[];
@@ -25,7 +25,7 @@ describe('BatchStageModalComponent', () => {
       saving: signal(false),
       error: signal(''),
       stageSaved: signal(false),
-      addresses: signal([{ addressId: 10, label: 'Fazenda — Campinas/SP' }]),
+      ownAddress: signal({ street: 'Estrada do Café', number: '100', city: 'Amparo', state: 'SP' }),
       submit: vi.fn().mockReturnValue(of({ step: 'stage', chainId: 50 }, { step: 'transport' })),
     };
     TestBed.overrideComponent(BatchStageModalComponent, { set: { providers: [{ provide: AddStageFacade, useValue: facade }] } });
@@ -36,9 +36,12 @@ describe('BatchStageModalComponent', () => {
     fixture.detectChanges();
   });
 
+  const destination = { zipCode: '13069-000', state: 'sp', street: ' Rod. Anhanguera ', number: 'km 102', neighborhood: 'Distrito', complement: ' ', city: 'Campinas' };
+  const sentDestination = { zipCode: '13069000', state: 'SP', street: 'Rod. Anhanguera', number: 'km 102', neighborhood: 'Distrito', complement: null, city: 'Campinas' };
+
   it('requires the transport data only for transport stages', () => {
     const form = fixture.componentInstance.form;
-    form.patchValue({ stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30' });
+    form.patchValue({ stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', destination });
     expect(form.valid).toBe(false);
     form.patchValue({ stageType: 'STORAGE' });
     expect(form.valid).toBe(true);
@@ -46,13 +49,13 @@ describe('BatchStageModalComponent', () => {
 
   it('submits stage, transport and emission and notifies each saved step', () => {
     fixture.componentInstance.form.patchValue({
-      stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', originAddressId: '10',
+      stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', destination,
       transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000, calculateEmission: true, calculationMethod: 'IPCC',
     });
     fixture.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalledWith({
       batchId: 7,
-      stage: { stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', endedAt: null, originAddressId: 10, destinationAddressId: null },
+      stage: { stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', endedAt: null, destination: sentDestination },
       transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 },
       emissionMethod: 'IPCC',
     });
@@ -83,14 +86,44 @@ describe('BatchStageModalComponent', () => {
     const form = next.componentInstance.form;
     expect(form.controls.stageType.value).toBe('TRANSPORT');
     expect(next.nativeElement.textContent).toContain('Dados do transporte');
-    form.patchValue({ startedAt: '2026-10-05T08:30' });
+    form.patchValue({ startedAt: '2026-10-05T08:30', destination });
     expect(form.valid).toBe(false);
     form.patchValue({ transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 });
     expect(form.valid).toBe(true);
   });
 
+  it('requires a complete destination and shows the own company as the origin of production', () => {
+    const form = fixture.componentInstance.form;
+    form.patchValue({ startedAt: '2026-10-05T08:30', destination: { ...destination, city: '' } });
+    expect(form.valid).toBe(false);
+    form.patchValue({ destination });
+    expect(form.valid).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Estrada do Café, 100 – Amparo/SP');
+  });
+
+  it('starts at the destination of the previous stage', () => {
+    const next = TestBed.createComponent(BatchStageModalComponent);
+    next.componentRef.setInput('batchId', 7);
+    next.componentRef.setInput('currentStage', 'PRODUCTION');
+    next.componentRef.setInput('origin', { addressId: 5, street: 'Rua do Silo', number: '9', city: 'Campinas', state: 'SP' });
+    next.detectChanges();
+    expect(next.nativeElement.textContent).toContain('Rua do Silo, 9 – Campinas/SP');
+  });
+
+  it('ends retail at the own market address without a destination form', () => {
+    const retail = TestBed.createComponent(BatchStageModalComponent);
+    retail.componentRef.setInput('batchId', 7);
+    retail.componentRef.setInput('currentStage', 'DISTRIBUTION');
+    retail.detectChanges();
+    expect(retail.nativeElement.querySelector('fieldset[formGroupName="destination"]')).toBeNull();
+    expect(retail.nativeElement.textContent).toContain('Destino Estrada do Café, 100 – Amparo/SP');
+    retail.componentInstance.form.patchValue({ startedAt: '2026-10-05T08:30' });
+    retail.componentInstance.submit();
+    expect(facade.submit).toHaveBeenCalledWith(expect.objectContaining({ stage: expect.objectContaining({ stageType: 'RETAIL', destination: null }) }));
+  });
+
   it('submits the next stage of the chain', () => {
-    fixture.componentInstance.form.patchValue({ startedAt: '2026-10-05T08:30' });
+    fixture.componentInstance.form.patchValue({ startedAt: '2026-10-05T08:30', destination });
     fixture.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalledWith(expect.objectContaining({ stage: expect.objectContaining({ stageType: 'PRODUCTION' }), transport: null }));
   });
