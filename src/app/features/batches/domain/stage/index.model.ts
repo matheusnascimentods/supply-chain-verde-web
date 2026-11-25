@@ -93,12 +93,33 @@ export interface Stage {
   emission: CarbonEmission | null;
 }
 
+/** Endereço que a etapa cria como destino (RN-01 da API); só o complemento é opcional. */
+export interface NewStageAddress {
+  street: string;
+  number: string;
+  neighborhood: string;
+  complement: string | null;
+  zipCode: string;
+  city: string;
+  state: string;
+}
+
 export interface NewStage {
   stageType: StageType;
   startedAt: string;
   endedAt: string | null;
-  originAddressId: number | null;
-  destinationAddressId: number | null;
+  /** null só no RETAIL, que termina no endereço do mercado (RN-03 da API). */
+  destination: NewStageAddress | null;
+}
+
+type PlaceAddress = Partial<Record<'street' | 'number' | 'city' | 'state', string | null>>;
+
+/** "Rua, número – Cidade/UF" para a origem e o destino mostrados no modal. */
+export function placeLabel(address: PlaceAddress | null | undefined): string {
+  if (!address) return 'Endereço não informado';
+  const street = [address.street, address.number].filter(Boolean).join(', ');
+  const place = [address.city, address.state?.toUpperCase()].filter(Boolean).join('/');
+  return [street, place].filter(Boolean).join(' – ') || 'Endereço não informado';
 }
 
 export interface NewTransport {

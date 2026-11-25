@@ -42,9 +42,19 @@
 .stage-optional {
   @apply font-normal text-slate-400;
 }
-.stage-fieldset {
-  /* fieldset tem min-inline-size: min-content por padrão; sem isso, a opção mais longa do select estoura a coluna. */
-  @apply grid min-w-0 gap-1.5;
+.stage-destination {
+  /* fieldset tem min-inline-size: min-content por padrão; sem o min-w-0, um campo longo estoura a coluna. */
+  @apply grid min-w-0 gap-4 rounded-xl border border-slate-200 p-4 sm:col-span-2 sm:grid-cols-2;
+}
+.stage-destination-hint,
+.stage-destination-zip {
+  @apply -mt-2 sm:col-span-2;
+}
+.stage-place {
+  @apply text-sm text-slate-700;
+}
+.stage-place-label {
+  @apply mr-1 font-semibold text-slate-800;
 }
 .stage-legend {
   @apply mb-1 text-sm font-semibold text-slate-800;

@@ -135,17 +135,25 @@ describe('Batch registration wizard', () => {
       stageType: 'RETAIL', startedAt: '2026-11-24T10:00:00', endedAt: null, transport: null, emission: null,
     };
     stubBatches(distribution, { ...distribution, status: 'COMPLETED', currentStage: 'RETAIL', stages: [retail] });
-    cy.intercept('GET', '**/api/v1/suppliers', { statusCode: 200, body: [] });
+    cy.intercept('GET', '**/api/v1/companies/me', {
+      statusCode: 200,
+      body: {
+        companyId: 2, name: 'Mercado Verde', cnpj: '11222333000181', email: null, phone: null, type: 'MARKET',
+        address: { street: 'Av. Paulista', number: '1000', neighborhood: 'Bela Vista', complement: null, zipCode: '01310100', city: 'São Paulo', state: 'SP' },
+      },
+    });
     cy.intercept('POST', '**/api/v1/batches/77/stages', { statusCode: 201, body: retail }).as('createStage');
     loginAndOpenBatches();
 
     cy.get('[data-testid="batch-cancel"]').should('not.exist');
     cy.contains('button', 'Adicionar etapa').click();
     cy.get('.stage-next').should('have.text', 'Varejo');
+    cy.contains('.stage-place', 'Destino').should('contain', 'Av. Paulista, 1000 – São Paulo/SP');
+    cy.get('fieldset[formGroupName="destination"]').should('not.exist');
     cy.get('input[formControlName="startedAt"]').type('2026-11-24T10:00');
     cy.contains('button', 'Registrar etapa').click();
 
-    cy.wait('@createStage').its('request.body').should('include', { stageType: 'RETAIL' });
+    cy.wait('@createStage').its('request.body').should('include', { stageType: 'RETAIL', destination: null });
     cy.wait('@loadBatches');
     cy.get('app-status-badge').should('have.text', 'Concluído');
     cy.contains('button', 'Adicionar etapa').should('not.exist');

@@ -11,7 +11,7 @@
   </header>
 
   @if (facade.loadingChoices()) {
-    <p class="stage-loading" aria-live="polite">Carregando endereços disponíveis…</p>
+    <p class="stage-loading" aria-live="polite">Carregando…</p>
   } @else {
     <form [formGroup]="form" (ngSubmit)="submit()" class="stage-form">
       <div class="stage-field">
@@ -29,21 +29,44 @@
         <input formControlName="endedAt" type="datetime-local" class="stage-input" />
       </label>
 
-      <fieldset class="stage-fieldset">
-        <legend class="stage-legend">Origem <span class="stage-optional">(opcional)</span></legend>
-        <select formControlName="originAddressId" class="stage-select">
-          <option value="">Não informar origem</option>
-          @for (address of facade.addresses(); track address.addressId) { <option [value]="address.addressId">{{ address.label }}</option> }
-        </select>
-        @if (facade.addresses().length === 0) { <span class="stage-hint">Nenhum endereço cadastrado está disponível.</span> }
-      </fieldset>
-      <fieldset class="stage-fieldset">
-        <legend class="stage-legend">Destino <span class="stage-optional">(opcional)</span></legend>
-        <select formControlName="destinationAddressId" class="stage-select">
-          <option value="">Não informar destino</option>
-          @for (address of facade.addresses(); track address.addressId) { <option [value]="address.addressId">{{ address.label }}</option> }
-        </select>
-      </fieldset>
+      <p class="stage-place stage-field-wide"><span class="stage-place-label">Origem</span> {{ originLabel() }}</p>
+
+      @if (isRetail) {
+        <p class="stage-place stage-field-wide"><span class="stage-place-label">Destino</span> {{ marketLabel() }}</p>
+      } @else {
+        <fieldset formGroupName="destination" class="stage-destination">
+          <legend class="stage-legend">Destino</legend>
+          <p class="stage-section-hint stage-destination-hint">Onde o lote está ao fim desta etapa. Se ele não saiu do lugar, repita o endereço da origem.</p>
+          <label class="stage-field">CEP
+            <input id="stage-dest-zip-code" formControlName="zipCode" class="stage-input" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" />
+            @if (destination.controls.zipCode.touched && destination.controls.zipCode.invalid) { <span class="stage-field-error">Informe o CEP.</span> }
+          </label>
+          <p class="stage-hint stage-destination-zip" aria-live="polite">@if (zipCodeLookup.loading()) { Consultando CEP… } @else { {{ zipCodeLookup.message() }} }</p>
+          <label class="stage-field">Estado (UF)
+            <input id="stage-dest-state" formControlName="state" class="stage-input" autocomplete="address-level1" maxlength="2" />
+            @if (destination.controls.state.touched && destination.controls.state.invalid) { <span class="stage-field-error">Informe a UF.</span> }
+          </label>
+          <label class="stage-field-wide">Logradouro
+            <input id="stage-dest-street" formControlName="street" class="stage-input" autocomplete="address-line1" />
+            @if (destination.controls.street.touched && destination.controls.street.invalid) { <span class="stage-field-error">Informe o logradouro.</span> }
+          </label>
+          <label class="stage-field">Número
+            <input id="stage-dest-number" formControlName="number" class="stage-input" autocomplete="address-line2" />
+            @if (destination.controls.number.touched && destination.controls.number.invalid) { <span class="stage-field-error">Informe o número.</span> }
+          </label>
+          <label class="stage-field">Bairro
+            <input id="stage-dest-neighborhood" formControlName="neighborhood" class="stage-input" />
+            @if (destination.controls.neighborhood.touched && destination.controls.neighborhood.invalid) { <span class="stage-field-error">Informe o bairro.</span> }
+          </label>
+          <label class="stage-field">Complemento <span class="stage-optional">(opcional)</span>
+            <input id="stage-dest-complement" formControlName="complement" class="stage-input" autocomplete="address-line3" />
+          </label>
+          <label class="stage-field">Cidade
+            <input id="stage-dest-city" formControlName="city" class="stage-input" autocomplete="address-level2" />
+            @if (destination.controls.city.touched && destination.controls.city.invalid) { <span class="stage-field-error">Informe a cidade.</span> }
+          </label>
+        </fieldset>
+      }
 
       @if (isTransport) {
         <section class="stage-transport" aria-labelledby="transport-heading">

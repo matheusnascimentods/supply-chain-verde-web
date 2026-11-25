@@ -1,8 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, catchError, forkJoin, map, of, switchMap, tap, throwError } from 'rxjs';
+import { Observable, forkJoin, tap } from 'rxjs';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
 import { SessionService } from '../../../../core/auth/session/index.service';
-import { Supplier, SuppliersRepository } from '../../../suppliers';
+import { OwnCompany, ProfileRepository } from '../../../profile';
 import { apiErrorMessage } from '../../../../shared/utils/http/index.utils';
 import { canCalculateEmission } from '../../domain/index.rules';
 import {
@@ -14,11 +14,6 @@ import {
   StageSubmission,
 } from '../use-cases/advance-stage/index.use-case';
 
-export interface AddressOption {
-  addressId: number;
-  label: string;
-}
-
 const FAILURE_MESSAGES: Record<AdvanceStageStep, string> = {
   stage: 'Não foi possível registrar a etapa. Confira os dados e tente novamente.',
   transport: 'A etapa foi registrada, mas não foi possível salvar os dados do transporte. Você pode tentar novamente.',
@@ -28,7 +23,7 @@ const FAILURE_MESSAGES: Record<AdvanceStageStep, string> = {
 @Injectable()
 export class AddStageFacade {
   private readonly currentUser = inject(CurrentUserService);
-  private readonly suppliers = inject(SuppliersRepository);
+  private readonly profile = inject(ProfileRepository);
   private readonly advanceStage = inject(AdvanceStageUseCase);
   private readonly session = inject(SessionService);
   private readonly role = this.session.role();
@@ -39,7 +34,7 @@ export class AddStageFacade {
   readonly loadingChoices = signal(true);
   readonly saving = signal(false);
   readonly error = signal('');
-  readonly addresses = signal<AddressOption[]>([]);
+  readonly ownAddress = signal<OwnCompany['address']>(null);
   readonly stageSaved = signal(false);
 
   constructor() {
@@ -77,26 +72,12 @@ export class AddStageFacade {
     );
   }
 
-  // Companhia fornecedora (supplier ou admin) só usa o próprio endereço: o catálogo de fornecedores devolve 403 para
-  // ela (RN-13a da API). O mercado escolhe entre todos os fornecedores.
+  // A companhia de quem registra dá a origem da Produção (fornecedor) e o destino do Varejo (mercado): RN-03/RN-04 da API.
   private loadChoices(): void {
-    const choices$ =
-      this.session.companyType() === 'supplier'
-        ? this.currentUser.load().pipe(
-            switchMap((user) =>
-              user.supplierId
-                ? this.suppliers.get(user.supplierId).pipe(map((supplier) => ({ user, suppliers: [supplier] })))
-                : throwError(() => new Error('Usuário fornecedor sem fornecedor vinculado.')),
-            ),
-          )
-        : forkJoin({
-            user: this.currentUser.load(),
-            suppliers: this.suppliers.load().pipe(catchError(() => of([] as Supplier[]))),
-          });
-    choices$.subscribe({
-      next: ({ user, suppliers }) => {
+    forkJoin({ user: this.currentUser.load(), company: this.profile.getMyCompany() }).subscribe({
+      next: ({ user, company }) => {
         this.responsibleUserId = user.userId;
-        this.addresses.set(suppliers.flatMap((supplier) => toAddressOptions(supplier)));
+        this.ownAddress.set(company.address);
         this.loadingChoices.set(false);
       },
       error: () => {
@@ -105,11 +86,4 @@ export class AddStageFacade {
       },
     });
   }
-}
-
-function toAddressOptions(supplier: Supplier): AddressOption[] {
-  const address = supplier.address;
-  if (!address?.addressId) return [];
-  const place = [address.city, address.state].filter(Boolean).join('/');
-  return [{ addressId: address.addressId, label: `${supplier.name}${place ? ` — ${place}` : ''}` }];
 }
