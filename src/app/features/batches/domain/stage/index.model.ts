@@ -104,10 +104,9 @@ export interface NewStageAddress {
   state: string;
 }
 
+/** Sem datas: a API inicia a etapa no registro e encerra a anterior (RN da API). */
 export interface NewStage {
   stageType: StageType;
-  startedAt: string;
-  endedAt: string | null;
   /** null só no RETAIL, que termina no endereço do mercado (RN-03 da API). */
   destination: NewStageAddress | null;
 }

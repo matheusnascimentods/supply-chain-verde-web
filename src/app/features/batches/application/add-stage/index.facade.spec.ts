@@ -11,7 +11,7 @@ describe('AddStageFacade', () => {
   const farm = { street: 'Estrada do Café', number: '100', neighborhood: 'Rural', complement: null, zipCode: '13900000', city: 'Amparo', state: 'SP' };
   const submission = {
     batchId: 7,
-    stage: { stageType: 'TRANSPORT' as const, startedAt: '2026-10-05T08:30', endedAt: null, destination: null },
+    stage: { stageType: 'TRANSPORT' as const, destination: null },
     transport: { transportMode: 'ROAD' as const, distance: 10, fuelType: 'DIESEL' as const, capacity: 100 },
     emissionMethod: null,
   };

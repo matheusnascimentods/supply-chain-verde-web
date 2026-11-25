@@ -65,7 +65,7 @@ describe('BatchStageModalComponent', () => {
     fixture.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalledWith({
       batchId: 7,
-      stage: { stageType: 'TRANSPORT', startedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/), endedAt: null, destination: sentDestination },
+      stage: { stageType: 'TRANSPORT', destination: sentDestination },
       transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 },
       emissionMethod: 'IPCC',
     });

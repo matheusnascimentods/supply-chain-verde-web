@@ -3,7 +3,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
 import { StepperComponent } from '../../../../../shared/ui/stepper/index.component';
 import { formatZipCodeWhileTyping, lookUpCompanyZipCode } from '../../../../../shared/forms/company-fields/index.helper';
-import { localDateTimeNow } from '../../../../../shared/utils/date/index.utils';
 import { digitsOnly } from '../../../../../shared/utils/format/index.utils';
 import { AddStageFacade } from '../../../application/add-stage/index.facade';
 import {
@@ -140,9 +139,6 @@ export class BatchStageModalComponent implements OnInit {
       batchId: this.batchId(),
       stage: {
         stageType: value.stageType as StageType,
-        // A etapa começa ao ser registrada; o fim é o registro da próxima.
-        startedAt: localDateTimeNow(),
-        endedAt: null,
         destination: this.isRetail ? null : this.destinationValue(),
       },
       transport: this.isTransport ? this.transport() : null,

@@ -8,7 +8,7 @@ describe('AdvanceStageUseCase', () => {
   const submission: StageSubmission = {
     batchId: 7,
     responsibleUserId: 2,
-    stage: { stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', endedAt: null, destination: null },
+    stage: { stageType: 'TRANSPORT', destination: null },
     transport,
     emissionMethod: 'GHG_PROTOCOL',
   };
