@@ -1,4 +1,10 @@
-import { localDateDaysAgo } from './index.utils';
+import { localDateDaysAgo, localDateTimeNow } from './index.utils';
+
+describe('localDateTimeNow', () => {
+  it('formats the local wall-clock time without timezone', () => {
+    expect(localDateTimeNow(new Date(2026, 10, 25, 9, 5, 7))).toBe('2026-11-25T09:05:07');
+  });
+});
 
 describe('localDateDaysAgo', () => {
   it('computes local dates relative to today', () => {

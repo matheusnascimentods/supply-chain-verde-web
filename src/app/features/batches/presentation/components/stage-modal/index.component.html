@@ -20,32 +20,14 @@
 
       @switch (step()) {
         @case (0) {
-          <section class="stage-step-content" aria-labelledby="stage-details-heading">
-            <div class="stage-step-heading">
-              <h3 #stepHeading id="stage-details-heading" class="stage-section-title" tabindex="-1">Etapa e período</h3>
-              <p class="stage-section-hint">As etapas seguem a ordem da cadeia: {{ orderLabel }}.</p>
-            </div>
-            <div class="stage-field">
-              Tipo da etapa
-              <p class="stage-next">{{ stageLabel }}</p>
-            </div>
-            <label class="stage-field" formGroupName="period">
-              Início
-              <input formControlName="startedAt" type="datetime-local" class="stage-input" />
-              @if (period.controls.startedAt.touched && period.controls.startedAt.invalid) { <span class="stage-field-error">Informe quando a etapa começou.</span> }
-            </label>
-            <label class="stage-field-wide" formGroupName="period">
-              Fim <span class="stage-optional">(opcional)</span>
-              <input formControlName="endedAt" type="datetime-local" class="stage-input" />
-            </label>
-          </section>
-        }
-
-        @case (1) {
           <section class="stage-step-content" aria-labelledby="stage-route-heading">
             <div class="stage-step-heading">
               <h3 #stepHeading id="stage-route-heading" class="stage-section-title" tabindex="-1">Origem e destino</h3>
-              <p class="stage-section-hint">Confira a origem e informe onde o lote termina esta etapa.</p>
+              <p class="stage-section-hint">As etapas seguem a ordem da cadeia: {{ orderLabel }}. A etapa começa ao ser registrada e termina quando a próxima for registrada.</p>
+            </div>
+            <div class="stage-field-wide">
+              Tipo da etapa
+              <p class="stage-next">{{ stageLabel }}</p>
             </div>
             <p class="stage-place stage-field-wide"><span class="stage-place-label">Origem</span> {{ originLabel() }}</p>
 
@@ -88,7 +70,7 @@
           </section>
         }
 
-        @case (2) {
+        @case (1) {
           <section class="stage-step-content" aria-labelledby="stage-emission-heading">
             <div class="stage-step-heading">
               <h3 #stepHeading id="stage-emission-heading" class="stage-section-title" tabindex="-1">Cálculo de emissão</h3>
@@ -149,7 +131,7 @@
           </section>
         }
 
-        @case (3) {
+        @case (2) {
           <section class="stage-review" aria-labelledby="stage-review-heading">
             <div>
               <h3 #stepHeading id="stage-review-heading" class="stage-section-title" tabindex="-1">Revise a etapa</h3>
@@ -157,8 +139,6 @@
             </div>
             <dl class="stage-review-list">
               <div class="stage-review-row"><dt>Tipo</dt><dd>{{ stageLabel }}</dd></div>
-              <div class="stage-review-row"><dt>Início</dt><dd>{{ period.controls.startedAt.value | date: 'dd/MM/yyyy HH:mm' }}</dd></div>
-              <div class="stage-review-row"><dt>Fim</dt><dd>{{ period.controls.endedAt.value ? (period.controls.endedAt.value | date: 'dd/MM/yyyy HH:mm') : 'Não informado' }}</dd></div>
               <div class="stage-review-row"><dt>Origem</dt><dd>{{ originLabel() }}</dd></div>
               <div class="stage-review-row"><dt>Destino</dt><dd>{{ isRetail ? marketLabel() : placeLabel(destination.getRawValue()) }}</dd></div>
               @if (isTransport) {

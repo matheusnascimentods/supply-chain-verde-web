@@ -148,8 +148,6 @@ describe('Batch registration wizard', () => {
     cy.get('[data-testid="batch-cancel"]').should('not.exist');
     cy.contains('button', 'Adicionar etapa').click();
     cy.get('.stage-next').should('have.text', 'Varejo');
-    cy.get('input[formControlName="startedAt"]').type('2026-11-24T10:00');
-    cy.contains('button', 'Avançar').click();
     cy.contains('.stage-place', 'Destino').should('contain', 'Av. Paulista, 1000 – São Paulo/SP');
     cy.get('fieldset[formGroupName="destination"]').should('not.exist');
     cy.contains('button', 'Avançar').click();

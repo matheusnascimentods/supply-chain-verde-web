@@ -1,9 +1,9 @@
-import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, Injector, OnInit, afterNextRender, computed, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
 import { StepperComponent } from '../../../../../shared/ui/stepper/index.component';
 import { formatZipCodeWhileTyping, lookUpCompanyZipCode } from '../../../../../shared/forms/company-fields/index.helper';
+import { localDateTimeNow } from '../../../../../shared/utils/date/index.utils';
 import { digitsOnly } from '../../../../../shared/utils/format/index.utils';
 import { AddStageFacade } from '../../../application/add-stage/index.facade';
 import {
@@ -30,7 +30,7 @@ const POSITIVE = Validators.min(0.000001);
 
 @Component({
   selector: 'app-batch-stage-modal',
-  imports: [DatePipe, ReactiveFormsModule, ModalComponent, StepperComponent],
+  imports: [ReactiveFormsModule, ModalComponent, StepperComponent],
   providers: [AddStageFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
@@ -39,7 +39,7 @@ const POSITIVE = Validators.min(0.000001);
 export class BatchStageModalComponent implements OnInit {
   protected readonly facade = inject(AddStageFacade);
   protected readonly orderLabel = STAGE_TYPES.map((type) => STAGE_TYPE_LABELS[type]).join(' → ');
-  protected readonly steps = ['Etapa e período', 'Origem e destino', 'Emissão', 'Revisão'];
+  protected readonly steps = ['Origem e destino', 'Emissão', 'Revisão'];
   readonly step = signal(0);
   protected stageLabel = '';
   protected readonly transportModes = TRANSPORT_MODES;
@@ -63,10 +63,6 @@ export class BatchStageModalComponent implements OnInit {
   private readonly stepHeading = viewChild<ElementRef<HTMLElement>>('stepHeading');
   readonly form = this.fb.group({
     stageType: ['', Validators.required],
-    period: this.fb.nonNullable.group({
-      startedAt: ['', Validators.required],
-      endedAt: [''],
-    }),
     destination: this.fb.nonNullable.group({
       zipCode: ['', Validators.required],
       state: ['', Validators.required],
@@ -92,7 +88,7 @@ export class BatchStageModalComponent implements OnInit {
   protected readonly zipCodeLookup = lookUpCompanyZipCode(this.form.controls.destination);
   protected isRetail = false;
   /** Grupo validado ao avançar de cada passo; a revisão não tem campos. */
-  private readonly stepGroups = [this.form.controls.period, this.form.controls.destination, this.form.controls.transport];
+  private readonly stepGroups = [this.form.controls.destination, this.form.controls.transport];
 
   constructor() {
     formatZipCodeWhileTyping(this.form.controls.destination.controls.zipCode);
@@ -111,10 +107,6 @@ export class BatchStageModalComponent implements OnInit {
 
   protected get destination() {
     return this.form.controls.destination;
-  }
-
-  protected get period() {
-    return this.form.controls.period;
   }
 
   protected get transportGroup() {
@@ -148,8 +140,9 @@ export class BatchStageModalComponent implements OnInit {
       batchId: this.batchId(),
       stage: {
         stageType: value.stageType as StageType,
-        startedAt: value.period.startedAt,
-        endedAt: value.period.endedAt || null,
+        // A etapa começa ao ser registrada; o fim é o registro da próxima.
+        startedAt: localDateTimeNow(),
+        endedAt: null,
         destination: this.isRetail ? null : this.destinationValue(),
       },
       transport: this.isTransport ? this.transport() : null,
