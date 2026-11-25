@@ -7,13 +7,7 @@
       <a routerLink="/assinatura" class="sign-up-link">Assinatura</a> · até 10 usuários ativos
     </p>
 
-    <ol class="sign-up-steps" aria-label="Etapas do cadastro">
-      @for (label of steps; track label; let index = $index) {
-        <li class="sign-up-step" [class.sign-up-step-current]="index === step()" [attr.aria-current]="index === step() ? 'step' : null">
-          <span class="sign-up-step-number" aria-hidden="true">{{ index + 1 }}</span>{{ label }}
-        </li>
-      }
-    </ol>
+    <app-stepper class="sign-up-stepper" [steps]="steps" [current]="step()" label="Etapas do cadastro" />
 
     <section class="sign-up-card" aria-labelledby="sign-up-step-title">
       <h2 #stepHeading id="sign-up-step-title" class="sign-up-step-title" tabindex="-1">{{ step() + 1 }}. {{ steps[step()] }}</h2>
