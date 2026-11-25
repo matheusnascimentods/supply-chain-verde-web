@@ -27,20 +27,21 @@
 .stage-step-content {
   @apply grid gap-5 sm:col-span-2 sm:grid-cols-2;
 }
-.stage-step-heading {
+.stage-step-heading,
+.stage-transport-header,
+.stage-field-wide {
   @apply sm:col-span-2;
 }
-.stage-field {
+.stage-field,
+.stage-field-wide {
   @apply grid gap-1.5 text-sm font-medium text-slate-700;
 }
-.stage-field-wide {
-  @apply grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2;
+.stage-input,
+.stage-select {
+  @apply min-h-11 min-w-0 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
 }
 .stage-select {
-  @apply min-h-11 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
-}
-.stage-input {
-  @apply min-h-11 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
+  @apply bg-white text-sm;
 }
 .stage-field-error {
   @apply text-xs font-normal text-red-700;
@@ -73,9 +74,6 @@
 }
 .stage-transport {
   @apply grid gap-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 sm:col-span-2 sm:grid-cols-2;
-}
-.stage-transport-header {
-  @apply sm:col-span-2;
 }
 .stage-section-title {
   @apply text-sm font-bold text-slate-900 focus:outline-none;
