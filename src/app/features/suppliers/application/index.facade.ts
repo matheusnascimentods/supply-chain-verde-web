@@ -113,6 +113,7 @@ export class SuppliersListFacade {
 
   // RF-12b: relatórios só de fornecedores com quem a companhia já trabalhou.
   canOpenReports(supplier: SupplierRanking): boolean {
-    return supplier.workedWith && canOpenReports(this.session.role(), this.session.supplierId(), supplier.supplierId);
+    const role = this.session.role();
+    return (role === 'platform_admin' || supplier.workedWith) && canOpenReports(role, this.session.supplierId(), supplier.supplierId);
   }
 }
