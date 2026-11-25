@@ -88,6 +88,13 @@ describe('SuppliersListFacade', () => {
     expect(facade.canOpenReports(five[0])).toBe(false);
   });
 
+  it('lets the platform admin open reports for suppliers without a market relationship', () => {
+    role.set('platform_admin');
+    const facade = createFacade();
+    expect(facade.canOpenReports(supplier(9, { workedWith: false }))).toBe(true);
+    expect(facade.canGenerateReports()).toBe(false);
+  });
+
   it('reloads from the first page with workedWith and remembers the choice', () => {
     const facade = createFacade();
     facade.nextPage();

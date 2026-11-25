@@ -8,6 +8,7 @@ export function canGenerateReports(role: Role): boolean {
 }
 
 export function canOpenReports(role: Role, ownSupplierId: number | null, supplierId: number): boolean {
+  if (role === 'platform_admin') return true;
   if (role === 'supplier') return ownSupplierId === supplierId;
   return canGenerateReports(role);
 }

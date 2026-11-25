@@ -16,6 +16,8 @@ describe('suppliers rules', () => {
     expect(canOpenReports('supplier', 9, 9)).toBe(true);
     expect(canOpenReports('supplier', 9, 10)).toBe(false);
     expect(canOpenReports('manager', null, 10)).toBe(true);
+    expect(canOpenReports('platform_admin', null, 10)).toBe(true);
+    expect(canGenerateReports('platform_admin')).toBe(false);
   });
 
   it('classifies the certification situation of a supplier', () => {
