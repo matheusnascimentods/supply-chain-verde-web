@@ -40,11 +40,11 @@ describe('BatchStageModalComponent', () => {
   const sentDestination = { zipCode: '13069000', state: 'SP', street: 'Rod. Anhanguera', number: 'km 102', neighborhood: 'Distrito', complement: null, city: 'Campinas' };
 
   function advanceToReview(component = fixture.componentInstance): void {
-    component.form.patchValue({ startedAt: '2026-10-05T08:30', destination });
+    component.form.patchValue({ period: { startedAt: '2026-10-05T08:30' }, destination });
     component.next();
     component.next();
     if (component.isTransport) {
-      component.form.patchValue({ transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 });
+      component.form.patchValue({ transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 } });
     }
     component.next();
     component.next();
@@ -52,16 +52,15 @@ describe('BatchStageModalComponent', () => {
 
   it('requires the transport data only for transport stages', () => {
     const form = fixture.componentInstance.form;
-    form.patchValue({ stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', destination });
-    expect(form.valid).toBe(false);
-    form.patchValue({ stageType: 'STORAGE' });
+    form.patchValue({ period: { startedAt: '2026-10-05T08:30' }, destination });
+    expect(form.controls.transport.disabled).toBe(true);
     expect(form.valid).toBe(true);
   });
 
   it('submits stage, transport and emission and notifies each saved step', () => {
     fixture.componentInstance.form.patchValue({
-      stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', destination,
-      transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000, calculateEmission: true, calculationMethod: 'IPCC',
+      stageType: 'TRANSPORT', period: { startedAt: '2026-10-05T08:30' }, destination,
+      transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 }, calculateEmission: true, calculationMethod: 'IPCC',
     });
     advanceToReview();
     expect(fixture.componentInstance.step()).toBe(3);
@@ -87,7 +86,7 @@ describe('BatchStageModalComponent', () => {
   it('validates each step and waits for confirmation before submitting', () => {
     fixture.componentInstance.next();
     expect(fixture.componentInstance.step()).toBe(0);
-    expect(fixture.componentInstance.form.controls.startedAt.touched).toBe(true);
+    expect(fixture.componentInstance.form.controls.period.controls.startedAt.touched).toBe(true);
 
     advanceToReview();
     expect(facade.submit).not.toHaveBeenCalled();
@@ -96,11 +95,11 @@ describe('BatchStageModalComponent', () => {
   });
 
   it('shows four wizard steps and the stage type in the first step', () => {
-    expect([...fixture.nativeElement.querySelectorAll('.stage-step')].map((node: Element) => node.textContent?.replace(/\s+/g, ' ').trim())).toEqual([
-      '1Etapa e período',
-      '2Origem e destino',
-      '3Emissão',
-      '4Revisão',
+    expect([...fixture.nativeElement.querySelectorAll('.stepper-label')].map((node: Element) => node.textContent)).toEqual([
+      'Etapa e período',
+      'Origem e destino',
+      'Emissão',
+      'Revisão',
     ]);
     expect(fixture.nativeElement.textContent).toContain('Produção');
     expect(fixture.nativeElement.querySelector('input[formControlName="startedAt"]')).not.toBeNull();
@@ -122,19 +121,19 @@ describe('BatchStageModalComponent', () => {
     next.detectChanges();
     const form = next.componentInstance.form;
     expect(form.controls.stageType.value).toBe('TRANSPORT');
-    form.patchValue({ startedAt: '2026-10-05T08:30', destination });
+    form.patchValue({ period: { startedAt: '2026-10-05T08:30' }, destination });
     next.componentInstance.next();
     next.componentInstance.next();
     next.detectChanges();
     expect(next.nativeElement.textContent).toContain('Dados do transporte');
     expect(form.valid).toBe(false);
-    form.patchValue({ transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 });
+    form.patchValue({ transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 } });
     expect(form.valid).toBe(true);
   });
 
   it('requires a complete destination and shows the own company as the origin of production', () => {
     const form = fixture.componentInstance.form;
-    form.patchValue({ startedAt: '2026-10-05T08:30', destination: { ...destination, city: '' } });
+    form.patchValue({ period: { startedAt: '2026-10-05T08:30' }, destination: { ...destination, city: '' } });
     expect(form.valid).toBe(false);
     form.patchValue({ destination });
     expect(form.valid).toBe(true);
@@ -148,7 +147,7 @@ describe('BatchStageModalComponent', () => {
     next.componentRef.setInput('batchId', 7);
     next.componentRef.setInput('currentStage', 'PRODUCTION');
     next.componentRef.setInput('origin', { addressId: 5, street: 'Rua do Silo', number: '9', city: 'Campinas', state: 'SP' });
-    next.componentInstance.form.patchValue({ startedAt: '2026-10-05T08:30' });
+    next.componentInstance.form.patchValue({ period: { startedAt: '2026-10-05T08:30' } });
     next.componentInstance.next();
     next.detectChanges();
     expect(next.nativeElement.textContent).toContain('Rua do Silo, 9 – Campinas/SP');
@@ -159,7 +158,7 @@ describe('BatchStageModalComponent', () => {
     retail.componentRef.setInput('batchId', 7);
     retail.componentRef.setInput('currentStage', 'DISTRIBUTION');
     retail.detectChanges();
-    retail.componentInstance.form.patchValue({ startedAt: '2026-10-05T08:30' });
+    retail.componentInstance.form.patchValue({ period: { startedAt: '2026-10-05T08:30' } });
     retail.componentInstance.next();
     retail.detectChanges();
     expect(retail.nativeElement.querySelector('fieldset[formGroupName="destination"]')).toBeNull();

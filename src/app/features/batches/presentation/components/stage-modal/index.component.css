@@ -21,21 +21,6 @@
 .stage-loading {
   @apply px-6 py-10 text-center text-sm text-slate-500;
 }
-.stage-steps {
-  @apply grid grid-cols-2 gap-3 border-b border-slate-100 px-6 py-4 sm:grid-cols-4 sm:px-7;
-}
-.stage-step {
-  @apply flex items-center gap-2 text-xs font-semibold text-slate-400 sm:text-sm;
-}
-.stage-step-number {
-  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-300;
-}
-.stage-step[data-active='true'] {
-  @apply text-emerald-800;
-}
-.stage-step[data-active='true'] .stage-step-number {
-  @apply border-emerald-700 bg-emerald-700 text-white;
-}
 .stage-form {
   @apply grid gap-5 px-6 py-6 sm:grid-cols-2 sm:px-7;
 }
