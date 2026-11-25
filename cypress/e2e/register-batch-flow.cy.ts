@@ -148,10 +148,14 @@ describe('Batch registration wizard', () => {
     cy.get('[data-testid="batch-cancel"]').should('not.exist');
     cy.contains('button', 'Adicionar etapa').click();
     cy.get('.stage-next').should('have.text', 'Varejo');
+    cy.get('input[formControlName="startedAt"]').type('2026-11-24T10:00');
+    cy.contains('button', 'Avançar').click();
     cy.contains('.stage-place', 'Destino').should('contain', 'Av. Paulista, 1000 – São Paulo/SP');
     cy.get('fieldset[formGroupName="destination"]').should('not.exist');
-    cy.get('input[formControlName="startedAt"]').type('2026-11-24T10:00');
-    cy.contains('button', 'Registrar etapa').click();
+    cy.contains('button', 'Avançar').click();
+    cy.contains('button', 'Avançar').click();
+    cy.contains('h3', 'Revise a etapa').should('be.visible');
+    cy.contains('button', 'Confirmar etapa').click();
 
     cy.wait('@createStage').its('request.body').should('include', { stageType: 'RETAIL', destination: null });
     cy.wait('@loadBatches');
