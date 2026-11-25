@@ -8,14 +8,7 @@
     <button type="button" class="create-close" aria-label="Fechar pedido de lote" [disabled]="facade.saving()" (click)="requestDismiss()">&times;</button>
   </header>
 
-  <nav class="create-steps" aria-label="Etapas do pedido">
-    @for (label of steps; track label; let index = $index) {
-      <div class="create-step" [attr.data-active]="facade.step() === index" [attr.aria-current]="facade.step() === index ? 'step' : null">
-        <span class="create-step-number">{{ index + 1 }}</span>
-        <span>{{ label }}</span>
-      </div>
-    }
-  </nav>
+  <app-stepper [steps]="steps" [current]="facade.step()" label="Etapas do pedido" />
 
   @if (facade.error()) {
     <div role="alert" class="create-error">
