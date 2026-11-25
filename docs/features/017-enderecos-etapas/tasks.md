@@ -2,7 +2,7 @@
 
 > Os requisitos estão em [`spec.md`](spec.md) e a arquitetura em [`plan.md`](plan.md).
 
-**Status:** planejada.
+**Status:** Task 1 implementada.
 
 Cada task mexe em **no máximo 10 arquivos** (os specs contam) e deixa o `npm test` verde. As dependências "API Task N" apontam para `supply-chain-verde-api/docs/features/018-enderecos-etapas/tasks.md`.
 
@@ -16,13 +16,13 @@ O body do `POST /stages` muda de forma incompatível, então esta task e a API T
 
 Sobe no mesmo deploy da API Task 1.
 
-- [ ] `domain/stage/index.model.ts`: `NewStageAddress`, `NewStage.destination` e `placeLabel` (plan §1, §3)
-- [ ] `features/profile/index.ts`: exportar `ProfileRepository`
-- [ ] `application/add-stage/index.facade.ts`: `ownAddress` pelo `getMyCompany`, sem o catálogo de fornecedores (plan §2)
-- [ ] `shared/forms/company-fields/index.helper.ts`: extrair `formatZipCodeWhileTyping`
-- [ ] `stage-modal` (ts, html, css): origem em texto, grupo `destination` com CEP, Varejo só leitura (plan §3)
-- [ ] `pages/list/index.component.html`: input `[origin]`
-- [ ] Specs: facade, modal e `register-batch-flow.cy.ts`
+- [x] `domain/stage/index.model.ts`: `NewStageAddress`, `NewStage.destination` e `placeLabel` (plan §1, §3)
+- [x] `features/profile/index.ts`: exportar `ProfileRepository`
+- [x] `application/add-stage/index.facade.ts`: `ownAddress` pelo `getMyCompany`, sem o catálogo de fornecedores (plan §2)
+- [x] `shared/forms/company-fields/index.helper.ts`: extrair `formatZipCodeWhileTyping`
+- [x] `stage-modal` (ts, html, css): origem em texto, grupo `destination` com CEP, Varejo só leitura (plan §3)
+- [x] `pages/list/index.component.html`: input `[origin]`
+- [x] Specs: facade, modal, `advance-stage` e `stage/index.repository` (o `NewStage` mudou) e `register-batch-flow.cy.ts` (destino do Varejo só como texto e `destination: null` no body)
 
 Se passar de 10 arquivos, o Cypress vai num commit próprio da mesma branch.
 

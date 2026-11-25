@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
+import { formatZipCodeWhileTyping, lookUpCompanyZipCode } from '../../../../../shared/forms/company-fields/index.helper';
+import { digitsOnly } from '../../../../../shared/utils/format/index.utils';
 import { AddStageFacade } from '../../../application/add-stage/index.facade';
 import {
   CALCULATION_METHODS,
@@ -10,14 +12,17 @@ import {
   FUEL_TYPES,
   FUEL_TYPE_LABELS,
   FuelType,
+  NewStageAddress,
   NewTransport,
   STAGE_TYPES,
   STAGE_TYPE_LABELS,
+  StageAddress,
   StageType,
   TRANSPORT_MODES,
   TRANSPORT_MODE_LABELS,
   TransportMode,
   nextStage,
+  placeLabel,
 } from '../../../domain/stage/index.model';
 
 const POSITIVE = Validators.min(0.000001);
@@ -43,16 +48,26 @@ export class BatchStageModalComponent implements OnInit {
 
   readonly batchId = input.required<number>();
   readonly currentStage = input<StageType | null>(null);
+  /** Destino da última etapa do lote; null antes da Produção, quando a origem é a própria companhia (RN-04 da API). */
+  readonly origin = input<StageAddress | null>(null);
   readonly dismiss = output<void>();
   readonly created = output<void>();
   readonly changed = output<void>();
 
-  readonly form = inject(FormBuilder).group({
+  private readonly fb = inject(FormBuilder);
+  readonly form = this.fb.group({
     stageType: ['', Validators.required],
     startedAt: ['', Validators.required],
     endedAt: [''],
-    originAddressId: [''],
-    destinationAddressId: [''],
+    destination: this.fb.nonNullable.group({
+      zipCode: ['', Validators.required],
+      state: ['', Validators.required],
+      street: ['', Validators.required],
+      number: ['', Validators.required],
+      neighborhood: ['', Validators.required],
+      complement: [''],
+      city: ['', Validators.required],
+    }),
     transportMode: [''],
     distance: [null as number | null],
     fuelType: [''],
@@ -61,7 +76,13 @@ export class BatchStageModalComponent implements OnInit {
     calculateEmission: [false],
   });
 
+  protected readonly originLabel = computed(() => placeLabel(this.origin() ?? this.facade.ownAddress()));
+  protected readonly marketLabel = computed(() => placeLabel(this.facade.ownAddress()));
+  protected readonly zipCodeLookup = lookUpCompanyZipCode(this.form.controls.destination);
+  protected isRetail = false;
+
   constructor() {
+    formatZipCodeWhileTyping(this.form.controls.destination.controls.zipCode);
     this.form.controls.stageType.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((stageType) => this.requireTransport(stageType === 'TRANSPORT'));
@@ -72,6 +93,13 @@ export class BatchStageModalComponent implements OnInit {
     const stage = nextStage(this.currentStage());
     this.stageLabel = stage ? STAGE_TYPE_LABELS[stage] : '';
     this.form.controls.stageType.setValue(stage ?? '');
+    // O varejo termina no endereço do mercado (RN-03 da API): o grupo desabilitado sai da validação.
+    this.isRetail = stage === 'RETAIL';
+    if (this.isRetail) this.form.controls.destination.disable();
+  }
+
+  protected get destination() {
+    return this.form.controls.destination;
   }
 
   get isTransport(): boolean {
@@ -92,8 +120,7 @@ export class BatchStageModalComponent implements OnInit {
         stageType: value.stageType as StageType,
         startedAt: value.startedAt!,
         endedAt: value.endedAt || null,
-        originAddressId: value.originAddressId ? Number(value.originAddressId) : null,
-        destinationAddressId: value.destinationAddressId ? Number(value.destinationAddressId) : null,
+        destination: this.isRetail ? null : this.destinationValue(),
       },
       transport: this.isTransport ? this.transport() : null,
       emissionMethod: this.facade.canCalculateEmission && value.calculateEmission ? (value.calculationMethod as CalculationMethod) : null,
@@ -107,6 +134,19 @@ export class BatchStageModalComponent implements OnInit {
 
   requestDismiss(): void {
     if (!this.facade.saving()) this.dismiss.emit();
+  }
+
+  private destinationValue(): NewStageAddress {
+    const { street, number, neighborhood, complement, zipCode, city, state } = this.form.controls.destination.getRawValue();
+    return {
+      street: street.trim(),
+      number: number.trim(),
+      neighborhood: neighborhood.trim(),
+      complement: complement.trim() || null,
+      zipCode: digitsOnly(zipCode),
+      city: city.trim(),
+      state: state.trim().toUpperCase(),
+    };
   }
 
   private transport(): NewTransport {

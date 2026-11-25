@@ -46,17 +46,21 @@ export function companyFormValue(company: CompanyFormSource) {
 
 // Chamar no construtor (contexto de injeção): formata CNPJ, telefone e CEP enquanto o usuário digita.
 export function formatCompanyFieldsWhileTyping({ cnpj, phone, zipCode }: FormattedControls): void {
-  const fields = [
-    [cnpj, formatCnpj],
-    [phone, formatPhone],
-    [zipCode, formatZipCode],
-  ] as const;
-  for (const [control, formatter] of fields) {
-    control.valueChanges.pipe(startWith(control.value), distinctUntilChanged(), takeUntilDestroyed()).subscribe((value) => {
-      const formatted = formatter(value);
-      if (formatted !== value) control.setValue(formatted, { emitEvent: false });
-    });
-  }
+  formatWhileTyping(cnpj, formatCnpj);
+  formatWhileTyping(phone, formatPhone);
+  formatZipCodeWhileTyping(zipCode);
+}
+
+// Chamar no construtor (contexto de injeção): para formulários de endereço sem CNPJ e telefone, como o destino da etapa.
+export function formatZipCodeWhileTyping(zipCode: FormControl<string>): void {
+  formatWhileTyping(zipCode, formatZipCode);
+}
+
+function formatWhileTyping(control: FormControl<string>, formatter: (value: string) => string): void {
+  control.valueChanges.pipe(startWith(control.value), distinctUntilChanged(), takeUntilDestroyed()).subscribe((value) => {
+    const formatted = formatter(value);
+    if (formatted !== value) control.setValue(formatted, { emitEvent: false });
+  });
 }
 
 // Chamar no construtor (contexto de injeção): com 8 dígitos no CEP, busca no ViaCEP e preenche o endereço.
