@@ -1,0 +1,8 @@
+<ol class="stepper" [attr.aria-label]="label()">
+  @for (step of steps(); track step; let index = $index) {
+    <li class="stepper-step" [attr.data-active]="current() === index" [attr.aria-current]="current() === index ? 'step' : null">
+      <span class="stepper-number" aria-hidden="true">{{ index + 1 }}</span>
+      <span class="stepper-label">{{ step }}</span>
+    </li>
+  }
+</ol>

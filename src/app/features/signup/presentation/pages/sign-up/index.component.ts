@@ -6,6 +6,7 @@ import { formatCompanyFieldsWhileTyping, lookUpCompanyZipCode } from '../../../.
 import { ButtonComponent } from '../../../../../shared/ui/button/index.component';
 import { ErrorToastComponent } from '../../../../../shared/ui/error-toast/index.component';
 import { ErrorToastService } from '../../../../../shared/ui/error-toast/index.service';
+import { StepperComponent } from '../../../../../shared/ui/stepper/index.component';
 import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
 import { digitsOnly } from '../../../../../shared/utils/format/index.utils';
 import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
@@ -21,7 +22,7 @@ const FIELD_MESSAGES: Record<string, string> = {
 
 @Component({
   selector: 'app-sign-up',
-  imports: [ReactiveFormsModule, RouterLink, ButtonComponent, ErrorToastComponent, TextFieldComponent, PublicHeaderComponent],
+  imports: [ReactiveFormsModule, RouterLink, ButtonComponent, ErrorToastComponent, TextFieldComponent, PublicHeaderComponent, StepperComponent],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

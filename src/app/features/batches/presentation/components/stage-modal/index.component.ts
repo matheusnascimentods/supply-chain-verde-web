@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, ElementRef, Injector, OnInit, afterNextRender, computed, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
+import { StepperComponent } from '../../../../../shared/ui/stepper/index.component';
 import { formatZipCodeWhileTyping, lookUpCompanyZipCode } from '../../../../../shared/forms/company-fields/index.helper';
+import { localDateTimeNow } from '../../../../../shared/utils/date/index.utils';
 import { digitsOnly } from '../../../../../shared/utils/format/index.utils';
 import { AddStageFacade } from '../../../application/add-stage/index.facade';
 import {
@@ -29,7 +30,7 @@ const POSITIVE = Validators.min(0.000001);
 
 @Component({
   selector: 'app-batch-stage-modal',
-  imports: [ReactiveFormsModule, ModalComponent],
+  imports: [ReactiveFormsModule, ModalComponent, StepperComponent],
   providers: [AddStageFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
@@ -38,13 +39,16 @@ const POSITIVE = Validators.min(0.000001);
 export class BatchStageModalComponent implements OnInit {
   protected readonly facade = inject(AddStageFacade);
   protected readonly orderLabel = STAGE_TYPES.map((type) => STAGE_TYPE_LABELS[type]).join(' → ');
+  protected readonly steps = ['Origem e destino', 'Emissão', 'Revisão'];
+  readonly step = signal(0);
   protected stageLabel = '';
   protected readonly transportModes = TRANSPORT_MODES;
-  protected readonly transportModeLabels = TRANSPORT_MODE_LABELS;
+  protected readonly transportModeLabels: Readonly<Record<string, string>> = TRANSPORT_MODE_LABELS;
   protected readonly fuelTypes = FUEL_TYPES;
-  protected readonly fuelTypeLabels = FUEL_TYPE_LABELS;
+  protected readonly fuelTypeLabels: Readonly<Record<string, string>> = FUEL_TYPE_LABELS;
   protected readonly calculationMethods = CALCULATION_METHODS;
-  protected readonly calculationMethodLabels = CALCULATION_METHOD_LABELS;
+  protected readonly calculationMethodLabels: Readonly<Record<string, string>> = CALCULATION_METHOD_LABELS;
+  protected readonly placeLabel = placeLabel;
 
   readonly batchId = input.required<number>();
   readonly currentStage = input<StageType | null>(null);
@@ -55,10 +59,10 @@ export class BatchStageModalComponent implements OnInit {
   readonly changed = output<void>();
 
   private readonly fb = inject(FormBuilder);
+  private readonly injector = inject(Injector);
+  private readonly stepHeading = viewChild<ElementRef<HTMLElement>>('stepHeading');
   readonly form = this.fb.group({
     stageType: ['', Validators.required],
-    startedAt: ['', Validators.required],
-    endedAt: [''],
     destination: this.fb.nonNullable.group({
       zipCode: ['', Validators.required],
       state: ['', Validators.required],
@@ -68,10 +72,13 @@ export class BatchStageModalComponent implements OnInit {
       complement: [''],
       city: ['', Validators.required],
     }),
-    transportMode: [''],
-    distance: [null as number | null],
-    fuelType: [''],
-    capacity: [null as number | null],
+    // Desabilitado fora do transporte: grupo desabilitado não entra na validação.
+    transport: this.fb.group({
+      transportMode: ['', Validators.required],
+      distance: [null as number | null, [Validators.required, POSITIVE]],
+      fuelType: ['', Validators.required],
+      capacity: [null as number | null, [Validators.required, POSITIVE]],
+    }),
     calculationMethod: ['GHG_PROTOCOL', Validators.required],
     calculateEmission: [false],
   });
@@ -80,15 +87,14 @@ export class BatchStageModalComponent implements OnInit {
   protected readonly marketLabel = computed(() => placeLabel(this.facade.ownAddress()));
   protected readonly zipCodeLookup = lookUpCompanyZipCode(this.form.controls.destination);
   protected isRetail = false;
+  /** Grupo validado ao avançar de cada passo; a revisão não tem campos. */
+  private readonly stepGroups = [this.form.controls.destination, this.form.controls.transport];
 
   constructor() {
     formatZipCodeWhileTyping(this.form.controls.destination.controls.zipCode);
-    this.form.controls.stageType.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((stageType) => this.requireTransport(stageType === 'TRANSPORT'));
   }
 
-  // A API só aceita a próxima etapa da sequência; o valueChanges acima já exige o transporte quando for o caso.
+  // A API só aceita a próxima etapa da sequência.
   ngOnInit(): void {
     const stage = nextStage(this.currentStage());
     this.stageLabel = stage ? STAGE_TYPE_LABELS[stage] : '';
@@ -96,30 +102,47 @@ export class BatchStageModalComponent implements OnInit {
     // O varejo termina no endereço do mercado (RN-03 da API): o grupo desabilitado sai da validação.
     this.isRetail = stage === 'RETAIL';
     if (this.isRetail) this.form.controls.destination.disable();
+    if (stage !== 'TRANSPORT') this.form.controls.transport.disable();
   }
 
   protected get destination() {
     return this.form.controls.destination;
   }
 
+  protected get transportGroup() {
+    return this.form.controls.transport;
+  }
+
   get isTransport(): boolean {
     return this.form.controls.stageType.value === 'TRANSPORT';
   }
 
-  submit(): void {
-    if (this.facade.loadingChoices() || this.facade.saving()) return;
-    // Depois que a etapa foi salva, uma nova tentativa só completa transporte e emissão.
-    if (!this.facade.stageSaved() && this.form.invalid) {
-      this.form.markAllAsTouched();
+  next(): void {
+    const group = this.stepGroups[this.step()];
+    if (group.invalid) {
+      group.markAllAsTouched();
       return;
     }
+    this.goTo(this.step() + 1);
+  }
+
+  back(): void {
+    if (this.step() === 0) this.requestDismiss();
+    else if (!this.facade.saving()) this.goTo(this.step() - 1);
+  }
+
+  submit(): void {
+    if (this.step() < this.steps.length - 1) return this.next();
+    // Só se chega à revisão por next(), que já validou cada passo.
+    if (this.facade.loadingChoices() || this.facade.saving()) return;
     const value = this.form.getRawValue();
     const request$ = this.facade.submit({
       batchId: this.batchId(),
       stage: {
         stageType: value.stageType as StageType,
-        startedAt: value.startedAt!,
-        endedAt: value.endedAt || null,
+        // A etapa começa ao ser registrada; o fim é o registro da próxima.
+        startedAt: localDateTimeNow(),
+        endedAt: null,
         destination: this.isRetail ? null : this.destinationValue(),
       },
       transport: this.isTransport ? this.transport() : null,
@@ -136,6 +159,12 @@ export class BatchStageModalComponent implements OnInit {
     if (!this.facade.saving()) this.dismiss.emit();
   }
 
+  // RNF-02: ao trocar de passo, o foco vai para o título do novo passo (mesmo padrão do cadastro).
+  private goTo(step: number): void {
+    this.step.set(step);
+    afterNextRender(() => this.stepHeading()?.nativeElement.focus(), { injector: this.injector });
+  }
+
   private destinationValue(): NewStageAddress {
     const { street, number, neighborhood, complement, zipCode, city, state } = this.form.controls.destination.getRawValue();
     return {
@@ -150,7 +179,7 @@ export class BatchStageModalComponent implements OnInit {
   }
 
   private transport(): NewTransport {
-    const value = this.form.getRawValue();
+    const value = this.form.controls.transport.getRawValue();
     return {
       transportMode: value.transportMode as TransportMode,
       distance: Number(value.distance),
@@ -159,12 +188,4 @@ export class BatchStageModalComponent implements OnInit {
     };
   }
 
-  private requireTransport(required: boolean): void {
-    const { transportMode, distance, fuelType, capacity } = this.form.controls;
-    transportMode.setValidators(required ? [Validators.required] : []);
-    fuelType.setValidators(required ? [Validators.required] : []);
-    distance.setValidators(required ? [Validators.required, POSITIVE] : []);
-    capacity.setValidators(required ? [Validators.required, POSITIVE] : []);
-    for (const control of [transportMode, distance, fuelType, capacity]) control.updateValueAndValidity({ emitEvent: false });
-  }
 }

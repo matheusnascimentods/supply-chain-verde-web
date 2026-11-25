@@ -39,23 +39,33 @@ describe('BatchStageModalComponent', () => {
   const destination = { zipCode: '13069-000', state: 'sp', street: ' Rod. Anhanguera ', number: 'km 102', neighborhood: 'Distrito', complement: ' ', city: 'Campinas' };
   const sentDestination = { zipCode: '13069000', state: 'SP', street: 'Rod. Anhanguera', number: 'km 102', neighborhood: 'Distrito', complement: null, city: 'Campinas' };
 
+  function advanceToReview(component = fixture.componentInstance): void {
+    component.form.patchValue({ destination });
+    component.next();
+    if (component.isTransport) {
+      component.form.patchValue({ transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 } });
+    }
+    component.next();
+  }
+
   it('requires the transport data only for transport stages', () => {
     const form = fixture.componentInstance.form;
-    form.patchValue({ stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', destination });
-    expect(form.valid).toBe(false);
-    form.patchValue({ stageType: 'STORAGE' });
+    form.patchValue({ destination });
+    expect(form.controls.transport.disabled).toBe(true);
     expect(form.valid).toBe(true);
   });
 
   it('submits stage, transport and emission and notifies each saved step', () => {
     fixture.componentInstance.form.patchValue({
-      stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', destination,
-      transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000, calculateEmission: true, calculationMethod: 'IPCC',
+      stageType: 'TRANSPORT', destination,
+      transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 }, calculateEmission: true, calculationMethod: 'IPCC',
     });
+    advanceToReview();
+    expect(fixture.componentInstance.step()).toBe(2);
     fixture.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalledWith({
       batchId: 7,
-      stage: { stageType: 'TRANSPORT', startedAt: '2026-10-05T08:30', endedAt: null, destination: sentDestination },
+      stage: { stageType: 'TRANSPORT', startedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/), endedAt: null, destination: sentDestination },
       transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 },
       emissionMethod: 'IPCC',
     });
@@ -65,9 +75,45 @@ describe('BatchStageModalComponent', () => {
   it('does not submit an invalid new stage but retries a saved one', () => {
     fixture.componentInstance.submit();
     expect(facade.submit).not.toHaveBeenCalled();
+    advanceToReview();
     facade.stageSaved.set(true);
     fixture.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalled();
+  });
+
+  it('validates each step and waits for confirmation before submitting', () => {
+    fixture.componentInstance.next();
+    expect(fixture.componentInstance.step()).toBe(0);
+    expect(fixture.componentInstance.form.controls.destination.controls.zipCode.touched).toBe(true);
+
+    advanceToReview();
+    expect(facade.submit).not.toHaveBeenCalled();
+    fixture.componentInstance.submit();
+    expect(facade.submit).toHaveBeenCalledTimes(1);
+  });
+
+  it('advances on form submit and focuses the new step heading', async () => {
+    const component = fixture.componentInstance;
+    component.form.patchValue({ destination });
+    component.submit();
+    expect(component.step()).toBe(1);
+    expect(facade.submit).not.toHaveBeenCalled();
+    await fixture.whenStable();
+    expect(document.activeElement?.id).toBe('stage-emission-heading');
+
+    component.next();
+    await fixture.whenStable();
+    expect(document.activeElement?.id).toBe('stage-review-heading');
+  });
+
+  it('shows three wizard steps, the stage type in the first one and no date fields', () => {
+    expect([...fixture.nativeElement.querySelectorAll('.stepper-label')].map((node: Element) => node.textContent)).toEqual([
+      'Origem e destino',
+      'Emissão',
+      'Revisão',
+    ]);
+    expect(fixture.nativeElement.textContent).toContain('Produção');
+    expect(fixture.nativeElement.querySelector('input[type="datetime-local"]')).toBeNull();
   });
 
   it('starts a batch without stages at production', () => {
@@ -85,16 +131,18 @@ describe('BatchStageModalComponent', () => {
     next.detectChanges();
     const form = next.componentInstance.form;
     expect(form.controls.stageType.value).toBe('TRANSPORT');
+    form.patchValue({ destination });
+    next.componentInstance.next();
+    next.detectChanges();
     expect(next.nativeElement.textContent).toContain('Dados do transporte');
-    form.patchValue({ startedAt: '2026-10-05T08:30', destination });
     expect(form.valid).toBe(false);
-    form.patchValue({ transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 });
+    form.patchValue({ transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 } });
     expect(form.valid).toBe(true);
   });
 
   it('requires a complete destination and shows the own company as the origin of production', () => {
     const form = fixture.componentInstance.form;
-    form.patchValue({ startedAt: '2026-10-05T08:30', destination: { ...destination, city: '' } });
+    form.patchValue({ destination: { ...destination, city: '' } });
     expect(form.valid).toBe(false);
     form.patchValue({ destination });
     expect(form.valid).toBe(true);
@@ -117,13 +165,14 @@ describe('BatchStageModalComponent', () => {
     retail.detectChanges();
     expect(retail.nativeElement.querySelector('fieldset[formGroupName="destination"]')).toBeNull();
     expect(retail.nativeElement.textContent).toContain('Destino Estrada do Café, 100 – Amparo/SP');
-    retail.componentInstance.form.patchValue({ startedAt: '2026-10-05T08:30' });
+    retail.componentInstance.next();
+    retail.componentInstance.next();
     retail.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalledWith(expect.objectContaining({ stage: expect.objectContaining({ stageType: 'RETAIL', destination: null }) }));
   });
 
   it('submits the next stage of the chain', () => {
-    fixture.componentInstance.form.patchValue({ startedAt: '2026-10-05T08:30', destination });
+    advanceToReview();
     fixture.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalledWith(expect.objectContaining({ stage: expect.objectContaining({ stageType: 'PRODUCTION' }), transport: null }));
   });

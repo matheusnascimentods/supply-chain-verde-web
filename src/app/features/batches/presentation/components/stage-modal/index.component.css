@@ -24,17 +24,24 @@
 .stage-form {
   @apply grid gap-5 px-6 py-6 sm:grid-cols-2 sm:px-7;
 }
-.stage-field {
+.stage-step-content {
+  @apply grid gap-5 sm:col-span-2 sm:grid-cols-2;
+}
+.stage-step-heading,
+.stage-transport-header,
+.stage-field-wide {
+  @apply sm:col-span-2;
+}
+.stage-field,
+.stage-field-wide {
   @apply grid gap-1.5 text-sm font-medium text-slate-700;
 }
-.stage-field-wide {
-  @apply grid gap-1.5 text-sm font-medium text-slate-700 sm:col-span-2;
+.stage-input,
+.stage-select {
+  @apply min-h-11 min-w-0 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
 }
 .stage-select {
-  @apply min-h-11 min-w-0 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
-}
-.stage-input {
-  @apply min-h-11 rounded-lg border border-slate-300 px-3 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100;
+  @apply bg-white text-sm;
 }
 .stage-field-error {
   @apply text-xs font-normal text-red-700;
@@ -68,11 +75,8 @@
 .stage-transport {
   @apply grid gap-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 sm:col-span-2 sm:grid-cols-2;
 }
-.stage-transport-header {
-  @apply sm:col-span-2;
-}
 .stage-section-title {
-  @apply text-sm font-bold text-slate-900;
+  @apply text-sm font-bold text-slate-900 focus:outline-none;
 }
 .stage-section-hint {
   @apply mt-0.5 text-xs text-slate-500;
@@ -94,6 +98,21 @@
 }
 .stage-emission-unavailable {
   @apply rounded-lg bg-slate-50 px-4 py-3 text-xs text-slate-600 sm:col-span-2;
+}
+.stage-review {
+  @apply grid gap-4 sm:col-span-2;
+}
+.stage-review-list {
+  @apply divide-y divide-slate-100 rounded-xl border border-slate-200;
+}
+.stage-review-row {
+  @apply grid gap-1 p-4 sm:grid-cols-[10rem_1fr];
+}
+.stage-review-row dt {
+  @apply text-xs font-semibold uppercase tracking-wide text-slate-500;
+}
+.stage-review-row dd {
+  @apply min-w-0 break-words text-sm text-slate-800;
 }
 .stage-error {
   @apply rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 sm:col-span-2;

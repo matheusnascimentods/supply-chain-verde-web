@@ -3,6 +3,7 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { EnumSelectComponent } from '../../../../../shared/ui/enum-select/index.component';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
 import { PaginationComponent } from '../../../../../shared/ui/pagination/index.component';
+import { StepperComponent } from '../../../../../shared/ui/stepper/index.component';
 import { TextFieldComponent } from '../../../../../shared/ui/text-field/index.component';
 import { formatNumberBr } from '../../../../../shared/utils/format/index.utils';
 import {
@@ -17,7 +18,7 @@ import { isRecommended } from '../../../domain/index.rules';
 
 @Component({
   selector: 'app-batch-create-modal',
-  imports: [ReactiveFormsModule, FormsModule, EnumSelectComponent, PaginationComponent, TextFieldComponent, ModalComponent],
+  imports: [ReactiveFormsModule, FormsModule, EnumSelectComponent, PaginationComponent, TextFieldComponent, ModalComponent, StepperComponent],
   providers: [BatchCreationFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',

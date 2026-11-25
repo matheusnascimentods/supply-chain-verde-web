@@ -15,17 +15,9 @@
 .sign-up-link {
   @apply font-medium text-green-700 underline;
 }
-.sign-up-steps {
-  @apply mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500;
-}
-.sign-up-step {
-  @apply flex items-center gap-2;
-}
-.sign-up-step-current {
-  @apply font-semibold text-slate-900;
-}
-.sign-up-step-number {
-  @apply flex h-6 w-6 items-center justify-center rounded-full border border-current text-xs;
+.sign-up-stepper {
+  /* O app-stepper vem com a moldura dos modais; na página ele fica solto. */
+  @apply mt-8 border-0 p-0;
 }
 .sign-up-card {
   @apply mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8;

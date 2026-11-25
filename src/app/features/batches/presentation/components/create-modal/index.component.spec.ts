@@ -49,7 +49,7 @@ describe('BatchCreateModalComponent', () => {
   };
 
   it('shows the two steps of the request', () => {
-    expect([...element().querySelectorAll('.create-step')].map(text)).toEqual(['1Produto', '2Revisão']);
+    expect([...element().querySelectorAll('.stepper-label')].map(text)).toEqual(['Produto', 'Revisão']);
   });
 
   it('offers search and optional category and unit filters, with no production date', () => {
