@@ -22,7 +22,7 @@
         @case (0) {
           <section class="stage-step-content" aria-labelledby="stage-details-heading">
             <div class="stage-step-heading">
-              <h3 id="stage-details-heading" class="stage-section-title">Etapa e período</h3>
+              <h3 #stepHeading id="stage-details-heading" class="stage-section-title" tabindex="-1">Etapa e período</h3>
               <p class="stage-section-hint">As etapas seguem a ordem da cadeia: {{ orderLabel }}.</p>
             </div>
             <div class="stage-field">
@@ -44,7 +44,7 @@
         @case (1) {
           <section class="stage-step-content" aria-labelledby="stage-route-heading">
             <div class="stage-step-heading">
-              <h3 id="stage-route-heading" class="stage-section-title">Origem e destino</h3>
+              <h3 #stepHeading id="stage-route-heading" class="stage-section-title" tabindex="-1">Origem e destino</h3>
               <p class="stage-section-hint">Confira a origem e informe onde o lote termina esta etapa.</p>
             </div>
             <p class="stage-place stage-field-wide"><span class="stage-place-label">Origem</span> {{ originLabel() }}</p>
@@ -91,7 +91,7 @@
         @case (2) {
           <section class="stage-step-content" aria-labelledby="stage-emission-heading">
             <div class="stage-step-heading">
-              <h3 id="stage-emission-heading" class="stage-section-title">Cálculo de emissão</h3>
+              <h3 #stepHeading id="stage-emission-heading" class="stage-section-title" tabindex="-1">Cálculo de emissão</h3>
               <p class="stage-section-hint">Informe os dados logísticos e escolha se deseja calcular a emissão agora.</p>
             </div>
 
@@ -152,13 +152,13 @@
         @case (3) {
           <section class="stage-review" aria-labelledby="stage-review-heading">
             <div>
-              <h3 id="stage-review-heading" class="stage-section-title">Revise a etapa</h3>
+              <h3 #stepHeading id="stage-review-heading" class="stage-section-title" tabindex="-1">Revise a etapa</h3>
               <p class="stage-section-hint">Confirme os dados antes de registrar a etapa no lote.</p>
             </div>
             <dl class="stage-review-list">
               <div class="stage-review-row"><dt>Tipo</dt><dd>{{ stageLabel }}</dd></div>
-              <div class="stage-review-row"><dt>Início</dt><dd>{{ period.controls.startedAt.value }}</dd></div>
-              <div class="stage-review-row"><dt>Fim</dt><dd>{{ period.controls.endedAt.value || 'Não informado' }}</dd></div>
+              <div class="stage-review-row"><dt>Início</dt><dd>{{ period.controls.startedAt.value | date: 'dd/MM/yyyy HH:mm' }}</dd></div>
+              <div class="stage-review-row"><dt>Fim</dt><dd>{{ period.controls.endedAt.value ? (period.controls.endedAt.value | date: 'dd/MM/yyyy HH:mm') : 'Não informado' }}</dd></div>
               <div class="stage-review-row"><dt>Origem</dt><dd>{{ originLabel() }}</dd></div>
               <div class="stage-review-row"><dt>Destino</dt><dd>{{ isRetail ? marketLabel() : placeLabel(destination.getRawValue()) }}</dd></div>
               @if (isTransport) {
@@ -179,13 +179,11 @@
 
       <footer class="stage-footer">
         <button type="button" class="stage-cancel" [disabled]="facade.saving()" (click)="back()">{{ step() === 0 ? 'Cancelar' : 'Voltar' }}</button>
-        @if (step() < steps.length - 1) {
-          <button type="button" class="stage-submit" [disabled]="facade.saving()" (click)="next()">Avançar</button>
-        } @else {
-          <button type="submit" class="stage-submit" [disabled]="facade.saving()">
-            {{ facade.saving() ? (facade.stageSaved() ? 'Finalizando etapa…' : 'Registrando etapa…') : (facade.stageSaved() ? 'Tentar novamente' : 'Confirmar etapa') }}
-          </button>
-        }
+        <!-- Um único botão submit: Enter num campo avança o passo (submit() delega a next() fora da revisão). -->
+        <button type="submit" class="stage-submit" [disabled]="facade.saving()">
+          @if (step() < steps.length - 1) { Avançar }
+          @else { {{ facade.saving() ? (facade.stageSaved() ? 'Finalizando etapa…' : 'Registrando etapa…') : (facade.stageSaved() ? 'Tentar novamente' : 'Confirmar etapa') }} }
+        </button>
       </footer>
     </form>
   }

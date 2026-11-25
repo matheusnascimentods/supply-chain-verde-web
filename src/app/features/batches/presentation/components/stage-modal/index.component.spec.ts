@@ -47,7 +47,6 @@ describe('BatchStageModalComponent', () => {
       component.form.patchValue({ transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 } });
     }
     component.next();
-    component.next();
   }
 
   it('requires the transport data only for transport stages', () => {
@@ -92,6 +91,23 @@ describe('BatchStageModalComponent', () => {
     expect(facade.submit).not.toHaveBeenCalled();
     fixture.componentInstance.submit();
     expect(facade.submit).toHaveBeenCalledTimes(1);
+  });
+
+  it('advances on form submit, focuses the new step heading and formats dates in the review', async () => {
+    const component = fixture.componentInstance;
+    component.form.patchValue({ period: { startedAt: '2026-10-05T08:30' }, destination });
+    component.submit();
+    expect(component.step()).toBe(1);
+    expect(facade.submit).not.toHaveBeenCalled();
+    await fixture.whenStable();
+    expect(document.activeElement?.id).toBe('stage-route-heading');
+
+    component.next();
+    component.next();
+    await fixture.whenStable();
+    expect(document.activeElement?.id).toBe('stage-review-heading');
+    expect(fixture.nativeElement.textContent).toContain('05/10/2026 08:30');
+    expect(fixture.nativeElement.textContent).toContain('Não informado');
   });
 
   it('shows four wizard steps and the stage type in the first step', () => {
@@ -163,7 +179,6 @@ describe('BatchStageModalComponent', () => {
     retail.detectChanges();
     expect(retail.nativeElement.querySelector('fieldset[formGroupName="destination"]')).toBeNull();
     expect(retail.nativeElement.textContent).toContain('Destino Estrada do Café, 100 – Amparo/SP');
-    retail.componentInstance.next();
     retail.componentInstance.next();
     retail.componentInstance.next();
     retail.componentInstance.submit();

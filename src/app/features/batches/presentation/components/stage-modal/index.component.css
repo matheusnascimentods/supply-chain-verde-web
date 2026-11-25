@@ -78,7 +78,7 @@
   @apply sm:col-span-2;
 }
 .stage-section-title {
-  @apply text-sm font-bold text-slate-900;
+  @apply text-sm font-bold text-slate-900 focus:outline-none;
 }
 .stage-section-hint {
   @apply mt-0.5 text-xs text-slate-500;

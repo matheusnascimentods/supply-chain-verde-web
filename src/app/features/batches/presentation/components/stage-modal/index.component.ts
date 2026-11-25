@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, ElementRef, Injector, OnInit, afterNextRender, computed, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../../shared/ui/modal/index.component';
 import { StepperComponent } from '../../../../../shared/ui/stepper/index.component';
@@ -29,7 +30,7 @@ const POSITIVE = Validators.min(0.000001);
 
 @Component({
   selector: 'app-batch-stage-modal',
-  imports: [ReactiveFormsModule, ModalComponent, StepperComponent],
+  imports: [DatePipe, ReactiveFormsModule, ModalComponent, StepperComponent],
   providers: [AddStageFacade],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css',
@@ -58,6 +59,8 @@ export class BatchStageModalComponent implements OnInit {
   readonly changed = output<void>();
 
   private readonly fb = inject(FormBuilder);
+  private readonly injector = inject(Injector);
+  private readonly stepHeading = viewChild<ElementRef<HTMLElement>>('stepHeading');
   readonly form = this.fb.group({
     stageType: ['', Validators.required],
     period: this.fb.nonNullable.group({
@@ -124,22 +127,22 @@ export class BatchStageModalComponent implements OnInit {
 
   next(): void {
     const group = this.stepGroups[this.step()];
-    if (!group) return;
     if (group.invalid) {
       group.markAllAsTouched();
       return;
     }
-    this.step.update((step) => step + 1);
+    this.goTo(this.step() + 1);
   }
 
   back(): void {
     if (this.step() === 0) this.requestDismiss();
-    else if (!this.facade.saving()) this.step.update((step) => step - 1);
+    else if (!this.facade.saving()) this.goTo(this.step() - 1);
   }
 
   submit(): void {
+    if (this.step() < this.steps.length - 1) return this.next();
     // Só se chega à revisão por next(), que já validou cada passo.
-    if (this.step() !== this.steps.length - 1 || this.facade.loadingChoices() || this.facade.saving()) return;
+    if (this.facade.loadingChoices() || this.facade.saving()) return;
     const value = this.form.getRawValue();
     const request$ = this.facade.submit({
       batchId: this.batchId(),
@@ -161,6 +164,12 @@ export class BatchStageModalComponent implements OnInit {
 
   requestDismiss(): void {
     if (!this.facade.saving()) this.dismiss.emit();
+  }
+
+  // RNF-02: ao trocar de passo, o foco vai para o título do novo passo (mesmo padrão do cadastro).
+  private goTo(step: number): void {
+    this.step.set(step);
+    afterNextRender(() => this.stepHeading()?.nativeElement.focus(), { injector: this.injector });
   }
 
   private destinationValue(): NewStageAddress {
