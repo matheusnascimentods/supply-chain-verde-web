@@ -143,6 +143,14 @@ describe('Batch registration wizard', () => {
       },
     });
     cy.intercept('POST', '**/api/v1/batches/77/stages', { statusCode: 201, body: retail }).as('createStage');
+    cy.intercept('GET', '**/api/v1/emission-factors', {
+      statusCode: 200,
+      body: [{ calculationMethod: 'GHG_PROTOCOL', transportMode: null, fuelType: null, energySource: 'ELECTRICITY', value: 0.0385, unit: 'kg CO₂e/kWh', source: 'MCTI', referenceYear: 2024 }],
+    });
+    cy.intercept('POST', '**/api/v1/stages/6/emission', {
+      statusCode: 201,
+      body: { emissionId: 1, chainId: 6, emissionFactor: 0.0385, co2Kg: 11.55, calculationMethod: 'GHG_PROTOCOL', calculatedAt: '2026-11-24T10:00:00', cargoWeightKg: null, energySource: 'ELECTRICITY', consumption: 300 },
+    }).as('calculateEmission');
     loginAndOpenBatches();
 
     cy.get('[data-testid="batch-cancel"]').should('not.exist');
@@ -152,10 +160,16 @@ describe('Batch registration wizard', () => {
     cy.get('fieldset[formGroupName="destination"]').should('not.exist');
     cy.contains('button', 'Avançar').click();
     cy.contains('button', 'Avançar').click();
+    cy.contains('Selecione a fonte de energia.').should('be.visible');
+    cy.get('select[formControlName="energySource"]').select('ELECTRICITY');
+    cy.get('input[formControlName="consumption"]').type('300');
+    cy.get('select[formControlName="calculationMethod"]').select('GHG_PROTOCOL');
+    cy.contains('button', 'Avançar').click();
     cy.contains('h3', 'Revise a etapa').should('be.visible');
     cy.contains('button', 'Confirmar etapa').click();
 
     cy.wait('@createStage').its('request.body').should('include', { stageType: 'RETAIL', destination: null });
+    cy.wait('@calculateEmission').its('request.body').should('deep.equal', { calculationMethod: 'GHG_PROTOCOL', energySource: 'ELECTRICITY', consumption: 300 });
     cy.wait('@loadBatches');
     cy.get('app-status-badge').should('have.text', 'Concluído');
     cy.contains('button', 'Adicionar etapa').should('not.exist');

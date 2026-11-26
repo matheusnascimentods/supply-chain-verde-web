@@ -1,10 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, forkJoin, tap } from 'rxjs';
 import { CurrentUserService } from '../../../../core/auth/session/current-user/index.service';
-import { SessionService } from '../../../../core/auth/session/index.service';
 import { OwnCompany, ProfileRepository } from '../../../profile';
 import { apiErrorMessage } from '../../../../shared/utils/http/index.utils';
-import { canCalculateEmission } from '../../domain/index.rules';
+import { EmissionFactor, Stage } from '../../domain/stage/index.model';
+import { StagesRepository } from '../../infrastructure/stage/index.repository';
 import {
   AdvanceStageError,
   AdvanceStageProgress,
@@ -24,21 +24,25 @@ const FAILURE_MESSAGES: Record<AdvanceStageStep, string> = {
 export class AddStageFacade {
   private readonly currentUser = inject(CurrentUserService);
   private readonly profile = inject(ProfileRepository);
+  private readonly stages = inject(StagesRepository);
   private readonly advanceStage = inject(AdvanceStageUseCase);
-  private readonly session = inject(SessionService);
-  private readonly role = this.session.role();
   private responsibleUserId: number | null = null;
   private progress: StageProgress = { chainId: null, transportSaved: false, emissionSaved: false };
 
-  readonly canCalculateEmission = canCalculateEmission(this.role);
   readonly loadingChoices = signal(true);
   readonly saving = signal(false);
   readonly error = signal('');
   readonly ownAddress = signal<OwnCompany['address']>(null);
+  readonly factors = signal<EmissionFactor[]>([]);
   readonly stageSaved = signal(false);
 
   constructor() {
     this.loadChoices();
+  }
+
+  /** Emissão pendente de uma etapa já salva: falta a emissão e, se a etapa não tiver, o transporte. Chamar uma vez, ao abrir. */
+  startPending(stage: Stage): void {
+    this.progress = { chainId: stage.chainId, transportSaved: stage.transport !== null, emissionSaved: false };
   }
 
   submit(submission: Omit<StageSubmission, 'responsibleUserId'>): Observable<AdvanceStageProgress> | null {
@@ -65,8 +69,8 @@ export class AddStageFacade {
           this.saving.set(false);
           const step = error instanceof AdvanceStageError ? error.step : 'stage';
           const cause = error instanceof AdvanceStageError ? error.cause : error;
-          // Só a recusa da etapa traz regra da API (ex.: transição fora de ordem); os outros passos dizem que a etapa já foi salva.
-          this.error.set(step === 'stage' ? apiErrorMessage(cause, FAILURE_MESSAGES.stage) : FAILURE_MESSAGES[step]);
+          // A etapa e a emissão trazem regra da API (transição fora de ordem, emissão já calculada): RF-09.
+          this.error.set(step === 'transport' ? FAILURE_MESSAGES.transport : apiErrorMessage(cause, FAILURE_MESSAGES[step]));
         },
       }),
     );
@@ -74,10 +78,11 @@ export class AddStageFacade {
 
   // A companhia de quem registra dá a origem da Produção (fornecedor) e o destino do Varejo (mercado): RN-03/RN-04 da API.
   private loadChoices(): void {
-    forkJoin({ user: this.currentUser.load(), company: this.profile.getMyCompany() }).subscribe({
-      next: ({ user, company }) => {
+    forkJoin({ user: this.currentUser.load(), company: this.profile.getMyCompany(), factors: this.stages.listEmissionFactors() }).subscribe({
+      next: ({ user, company, factors }) => {
         this.responsibleUserId = user.userId;
         this.ownAddress.set(company.address);
+        this.factors.set(factors);
         this.loadingChoices.set(false);
       },
       error: () => {

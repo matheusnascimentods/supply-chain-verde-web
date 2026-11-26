@@ -32,10 +32,10 @@ Depende da API Task 2 (`V22`) e da API Task 3 (`GET /emission-factors`) em produ
 
 Depende da Task 1 e da API Task 4 em produção.
 
-- [ ] `advance-stage/index.use-case.ts` (+ spec): `emission: NewEmission` obrigatório (plan §3)
-- [ ] `add-stage/index.facade.ts` (+ spec): `factors` no `forkJoin`, a mensagem de erro da API no passo `emission`, `startPending` e a remoção do `canCalculateEmission`
-- [ ] `stage-modal` (ts, html, css e spec): sem a caixa, os grupos `transport` e `consumption`, o peso derivado e travado, os selects filtrados, o fator na revisão, a remoção do `@else` da RF-08 e as entradas `unit`, `quantity` e `pendingStage` (plan §4)
-- [ ] `pages/list/index.component.html`: passar `unit` e `quantity` ao modal
+- [x] `advance-stage/index.use-case.ts` (+ spec): `emission: NewEmission` obrigatório (plan §3)
+- [x] `add-stage/index.facade.ts` (+ spec): `factors` no `forkJoin`, a mensagem de erro da API no passo `emission`, `startPending` e a remoção do `canCalculateEmission`
+- [x] `stage-modal` (ts, html, css e spec): sem a caixa, os grupos `transport` e `consumption`, o peso derivado e travado, os selects filtrados, o fator na revisão, a remoção do `@else` da RF-08 e as entradas `unit`, `quantity` e `pendingStage` (plan §4)
+- [x] `pages/list/index.component.html`: passar `unit` e `quantity` ao modal
 
 **Arquivos (~10):** `advance-stage/*`, `add-stage/*`, `stage-modal/*` (4), `pages/list/index.component.html`.
 
