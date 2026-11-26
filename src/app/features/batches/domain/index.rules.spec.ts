@@ -3,6 +3,7 @@ import type { Product } from '../../products';
 import {
   canAddStageTo,
   canCalculateEmission,
+  canCalculatePendingEmission,
   canCancel,
   canCreateBatch,
   canReject,
@@ -10,10 +11,11 @@ import {
   fuelsFor,
   isRecommended,
   methodsFor,
+  pendingEmissionStage,
 } from './index.rules';
 
 describe('batches rules', () => {
-  const batch = { currentStage: 'TRANSPORT', status: 'ACTIVE' } as Batch;
+  const batch = { currentStage: 'TRANSPORT', status: 'ACTIVE', stages: [] } as unknown as Batch;
 
   it('lets only retailer admins and managers request batches', () => {
     expect(canCreateBatch('admin', 'market')).toBe(true);
@@ -41,13 +43,43 @@ describe('batches rules', () => {
     [null, 'REJECTED', false, false],
     [null, 'CANCELED', false, false],
   ] as const)('leaves the stage after %s (%s) to its owner side', (currentStage, status, supplier, market) => {
-    const target = { currentStage, status } as Batch;
+    const target = { currentStage, status, stages: [] } as unknown as Batch;
     expect(canAddStageTo('supplier', 'supplier', target)).toBe(supplier);
     expect(canAddStageTo('admin', 'supplier', target)).toBe(supplier);
     expect(canAddStageTo('manager', 'market', target)).toBe(market);
     expect(canAddStageTo('admin', 'market', target)).toBe(market);
     expect(canAddStageTo('auditor', 'market', target)).toBe(false);
     expect(canAddStageTo('platform_admin', null, target)).toBe(false);
+  });
+
+  const withLast = (stageType: string, emission: unknown, status = 'ACTIVE') =>
+    ({ currentStage: stageType, status, stages: [{ chainId: 1, stageType, emission: {} }, { chainId: 2, stageType, emission }] }) as unknown as Batch;
+
+  it('finds the last stage without emission', () => {
+    expect(pendingEmissionStage(withLast('STORAGE', null))?.chainId).toBe(2);
+    expect(pendingEmissionStage(withLast('STORAGE', {}))).toBeNull();
+    expect(pendingEmissionStage(batch)).toBeNull();
+  });
+
+  it('blocks the next stage while the last one has no emission', () => {
+    expect(canAddStageTo('supplier', 'supplier', withLast('STORAGE', {}))).toBe(true);
+    expect(canAddStageTo('supplier', 'supplier', withLast('STORAGE', null))).toBe(false);
+  });
+
+  // [etapa pendente, status, fornecedor (supplier e admin), mercado (manager e admin)]
+  it.each([
+    ['STORAGE', 'ACTIVE', true, false],
+    ['DISTRIBUTION', 'ACTIVE', true, false],
+    ['RETAIL', 'COMPLETED', false, true],
+  ] as const)('leaves the pending emission of %s (%s) to its owner side', (stageType, status, supplier, market) => {
+    const target = withLast(stageType, null, status);
+    expect(canCalculatePendingEmission('supplier', 'supplier', target)).toBe(supplier);
+    expect(canCalculatePendingEmission('admin', 'supplier', target)).toBe(supplier);
+    expect(canCalculatePendingEmission('manager', 'market', target)).toBe(market);
+    expect(canCalculatePendingEmission('admin', 'market', target)).toBe(market);
+    expect(canCalculatePendingEmission('auditor', 'market', target)).toBe(false);
+    expect(canCalculatePendingEmission('platform_admin', null, target)).toBe(false);
+    expect(canCalculatePendingEmission('supplier', 'supplier', withLast(stageType, {}, status))).toBe(false);
   });
 
   it('lets only the supplier company reject a pending batch', () => {

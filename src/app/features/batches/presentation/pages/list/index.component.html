@@ -41,7 +41,7 @@
     } @else if (facade.items().length) {
       <section class="batches-grid" aria-label="Lotes">
         @for (batch of facade.items(); track batch.batchId) {
-          <app-batch-card [batch]="batch" [unit]="facade.unitOf(batch)" [canAddStage]="facade.canAddStageTo(batch)" [canReject]="facade.canReject(batch)" [canCancel]="facade.canCancel(batch)" (addStage)="stageBatch.set(batch)" (reject)="rejectBatch.set(batch)" (cancelOrder)="cancelBatch.set(batch)" />
+          <app-batch-card [batch]="batch" [unit]="facade.unitOf(batch)" [canAddStage]="facade.canAddStageTo(batch)" [canCalculateEmission]="facade.canCalculatePendingEmission(batch)" [canReject]="facade.canReject(batch)" [canCancel]="facade.canCancel(batch)" (addStage)="stageBatch.set(batch)" (calculateEmission)="emissionBatch.set(batch)" (reject)="rejectBatch.set(batch)" (cancelOrder)="cancelBatch.set(batch)" />
         }
       </section>
     } @else if (facade.status()) {
@@ -71,6 +71,9 @@
 }
 @if (stageBatch(); as batch) {
   <app-batch-stage-modal [batchId]="batch.batchId" [currentStage]="batch.currentStage" [origin]="batch.stages.at(-1)?.destinationAddress ?? null" [unit]="facade.unitOf(batch)" [quantity]="batch.quantity" (dismiss)="stageBatch.set(null)" (changed)="facade.load()" (created)="stageCreated()" />
+}
+@if (emissionBatch(); as batch) {
+  <app-batch-stage-modal [batchId]="batch.batchId" [pendingStage]="pendingEmissionStage(batch)" [unit]="facade.unitOf(batch)" [quantity]="batch.quantity" (dismiss)="emissionBatch.set(null)" (changed)="facade.load()" (created)="emissionCalculated()" />
 }
 @if (cancelBatch(); as batch) {
   <app-modal labelledBy="cancel-modal-title" describedBy="cancel-modal-description" [closeOnEscape]="!canceling()" [closeOnBackdrop]="!canceling()" (dismissed)="cancelBatch.set(null)">

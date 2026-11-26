@@ -7,6 +7,7 @@ import { apiErrorMessage } from '../../../../../shared/utils/http/index.utils';
 import { BatchesListFacade } from '../../../application/index.facade';
 import { CancelBatchUseCase } from '../../../application/use-cases/cancel-batch/index.use-case';
 import { BATCH_STATUSES, BATCH_STATUS_LABELS, Batch } from '../../../domain/index.model';
+import { pendingEmissionStage } from '../../../domain/index.rules';
 import { BatchCardComponent } from '../../components/batch-card/index.component';
 import { BatchCreateModalComponent } from '../../components/create-modal/index.component';
 import { BatchRejectModalComponent } from '../../components/reject-modal/index.component';
@@ -26,8 +27,10 @@ export class BatchListComponent {
   private readonly toast = inject(ErrorToastService);
   protected readonly statuses = BATCH_STATUSES;
   protected readonly statusLabels = BATCH_STATUS_LABELS;
+  protected readonly pendingEmissionStage = pendingEmissionStage;
   readonly createModalOpen = signal(false);
   readonly stageBatch = signal<Batch | null>(null);
+  readonly emissionBatch = signal<Batch | null>(null);
   readonly rejectBatch = signal<Batch | null>(null);
   readonly cancelBatch = signal<Batch | null>(null);
   readonly canceling = signal(false);
@@ -62,6 +65,11 @@ export class BatchListComponent {
         this.facade.load();
       },
     });
+  }
+
+  emissionCalculated(): void {
+    this.emissionBatch.set(null);
+    this.facade.load();
   }
 
   stageCreated(): void {

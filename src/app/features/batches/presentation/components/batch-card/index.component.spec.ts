@@ -28,11 +28,12 @@ describe('BatchCardComponent', () => {
     ],
   };
 
-  function render(value: Batch, canAddStage = true): HTMLElement {
+  function render(value: Batch, canAddStage = true, canCalculateEmission = false): HTMLElement {
     fixture = TestBed.createComponent(BatchCardComponent);
     fixture.componentRef.setInput('batch', value);
     fixture.componentRef.setInput('unit', 'KG');
     fixture.componentRef.setInput('canAddStage', canAddStage);
+    fixture.componentRef.setInput('canCalculateEmission', canCalculateEmission);
     fixture.detectChanges();
     return fixture.nativeElement;
   }
@@ -65,6 +66,15 @@ describe('BatchCardComponent', () => {
     host.querySelector<HTMLButtonElement>('.batch-add-stage')!.click();
     expect(clicks).toBe(1);
     expect(render(batch, false).querySelector('.batch-add-stage')).toBeNull();
+  });
+
+  it('emits calculateEmission only when allowed', () => {
+    let clicks = 0;
+    const host = render(batch, false, true);
+    fixture.componentInstance.calculateEmission.subscribe(() => clicks++);
+    host.querySelector<HTMLButtonElement>('[data-testid="batch-calculate-emission"]')!.click();
+    expect(clicks).toBe(1);
+    expect(render(batch).querySelector('[data-testid="batch-calculate-emission"]')).toBeNull();
   });
 
   it('starts the route at the supplier when the first stage has no origin', () => {

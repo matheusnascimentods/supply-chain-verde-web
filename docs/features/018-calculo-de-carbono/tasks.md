@@ -2,7 +2,7 @@
 
 > Os requisitos estão em [`spec.md`](spec.md) e a arquitetura em [`plan.md`](plan.md).
 
-**Status:** planejada.
+**Status:** implementada.
 
 Cada task mexe em **no máximo 10 arquivos** (os specs contam) e deixa o `npm test` verde. As dependências "API Task N" apontam para `supply-chain-verde-api/docs/features/019-calculo-de-carbono/tasks.md`.
 
@@ -45,11 +45,11 @@ Depende da Task 1 e da API Task 4 em produção.
 
 Depende da Task 2.
 
-- [ ] `domain/index.rules.ts` (+ spec): `pendingEmissionStage`, `canCalculatePendingEmission` e o `canAddStageTo` sem a etapa pendente (plan §5)
-- [ ] `application/index.facade.ts` (+ spec): `canCalculatePendingEmission`
-- [ ] `batch-card` (html, ts e spec): o botão **Calcular emissão**
-- [ ] `pages/list` (html e ts): `emissionBatch` e o modal com `pendingStage`
-- [ ] Cypress `register-batch-flow.cy.ts`: a emissão obrigatória e a emissão pendente
+- [x] `domain/index.rules.ts` (+ spec): `pendingEmissionStage`, `canCalculatePendingEmission` e o `canAddStageTo` sem a etapa pendente (plan §5)
+- [x] `application/index.facade.ts` (+ spec): `canCalculatePendingEmission`
+- [x] `batch-card` (html, ts e spec): o botão **Calcular emissão**
+- [x] `pages/list` (html e ts): `emissionBatch` e o modal com `pendingStage`
+- [x] Cypress `register-batch-flow.cy.ts`: a emissão obrigatória e a emissão pendente
 
 Se passar de 10 arquivos, o Cypress vai num commit próprio da mesma branch.
 

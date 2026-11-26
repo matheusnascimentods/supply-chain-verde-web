@@ -17,9 +17,11 @@ export class BatchCardComponent {
   readonly batch = input.required<Batch>();
   readonly unit = input<ProductUnit | undefined>(undefined);
   readonly canAddStage = input(false);
+  readonly canCalculateEmission = input(false);
   readonly canReject = input(false);
   readonly canCancel = input(false);
   readonly addStage = output<void>();
+  readonly calculateEmission = output<void>();
   readonly reject = output<void>();
   readonly cancelOrder = output<void>();
 

@@ -9,6 +9,7 @@ import {
   EnergySource,
   FUEL_TYPES,
   FuelType,
+  Stage,
   TransportMode,
   nextStage,
   stageOwner,
@@ -65,10 +66,22 @@ export function canCalculateEmission(role: Role): boolean {
   return role === 'admin' || role === 'manager' || role === 'supplier';
 }
 
-// Só o lado dono da próxima etapa a registra (RN-08 da API), e só em lote Pendente ou Em andamento.
+/** RN-11 da API: a última etapa sem emissão bloqueia a próxima. */
+export function pendingEmissionStage(batch: Batch): Stage | null {
+  const last = batch.stages.at(-1);
+  return last && !last.emission ? last : null;
+}
+
+// RF-06: o lado dono da etapa pendente calcula a emissão dela, inclusive em lote Concluído (RN-13 da API).
+export function canCalculatePendingEmission(role: Role, companyType: Company, batch: Batch): boolean {
+  const stage = pendingEmissionStage(batch);
+  return stage !== null && canCalculateEmission(role) && actsFor(stageOwner(stage.stageType), role, companyType);
+}
+
+// Só o lado dono da próxima etapa a registra (RN-08 da API), só em lote Pendente ou Em andamento e sem emissão pendente (RF-07).
 export function canAddStageTo(role: Role, companyType: Company, batch: Batch): boolean {
   const next = nextStage(batch.currentStage);
-  if (next === null || (batch.status !== 'PENDING' && batch.status !== 'ACTIVE')) return false;
+  if (next === null || (batch.status !== 'PENDING' && batch.status !== 'ACTIVE') || pendingEmissionStage(batch)) return false;
   return actsFor(stageOwner(next), role, companyType);
 }
 
