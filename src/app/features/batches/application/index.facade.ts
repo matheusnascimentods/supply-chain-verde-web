@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SessionService } from '../../../core/auth/session/index.service';
 import { BATCH_STATUSES, Batch, BatchStatus } from '../domain/index.model';
-import { canAddStageTo, canCancel, canCreateBatch, canReject } from '../domain/index.rules';
+import { canAddStageTo, canCalculatePendingEmission, canCancel, canCreateBatch, canReject } from '../domain/index.rules';
 import { BatchesRepository } from '../infrastructure/index.repository';
 import { ProductUnit, ProductsRepository } from '../../products';
 
@@ -81,6 +81,10 @@ export class BatchesListFacade {
 
   canAddStageTo(batch: Batch): boolean {
     return canAddStageTo(this.session.role(), this.session.companyType(), batch);
+  }
+
+  canCalculatePendingEmission(batch: Batch): boolean {
+    return canCalculatePendingEmission(this.session.role(), this.session.companyType(), batch);
   }
 
   canReject(batch: Batch): boolean {

@@ -56,11 +56,29 @@ describe('Batch registration wizard', () => {
       body: { items: [product, otherProduct], limit: 20, offset: 0, hasNext: false, totalPages: 1 },
     }).as('loadCatalog');
     // O top-nav busca o nome da companhia; sem stub, o 401 da API real derruba a sessão.
+    cy.intercept('GET', '**/api/v1/emission-factors', {
+      statusCode: 200,
+      body: [{ calculationMethod: 'GHG_PROTOCOL', transportMode: null, fuelType: null, energySource: 'ELECTRICITY', value: 0.0385, unit: 'kg CO₂e/kWh', source: 'MCTI', referenceYear: 2024 }],
+    });
     cy.intercept('GET', '**/api/v1/users/me', {
       statusCode: 200,
       body: { userId: 4, name: 'Gestor', email: 'manager@example.com', role: 'MANAGER', companyId: 2, companyType: 'MARKET', companyName: 'Mercado Bom Preço' },
     });
   });
+
+  const retailEmission = {
+    emissionId: 1, chainId: 6, emissionFactor: 0.0385, co2Kg: 11.55, calculationMethod: 'GHG_PROTOCOL', calculatedAt: '2026-11-24T10:00:00', cargoWeightKg: null, energySource: 'ELECTRICITY', consumption: 300,
+  };
+  const marketCompany = {
+    companyId: 2, name: 'Mercado Verde', cnpj: '11222333000181', email: null, phone: null, type: 'MARKET',
+    address: { street: 'Av. Paulista', number: '1000', neighborhood: 'Bela Vista', complement: null, zipCode: '01310100', city: 'São Paulo', state: 'SP' },
+  };
+
+  function fillRetailConsumption(): void {
+    cy.get('select[formControlName="energySource"]').select('ELECTRICITY');
+    cy.get('input[formControlName="consumption"]').type('300');
+    cy.get('select[formControlName="calculationMethod"]').select('GHG_PROTOCOL');
+  }
 
   function loginAndOpenBatches(): void {
     cy.visit('/login');
@@ -134,23 +152,10 @@ describe('Batch registration wizard', () => {
       chainId: 6, batchId: 77, originAddress: null, destinationAddress: null, responsibleUserId: 4, responsibleUserName: 'Gestor',
       stageType: 'RETAIL', startedAt: '2026-11-24T10:00:00', endedAt: null, transport: null, emission: null,
     };
-    stubBatches(distribution, { ...distribution, status: 'COMPLETED', currentStage: 'RETAIL', stages: [retail] });
-    cy.intercept('GET', '**/api/v1/companies/me', {
-      statusCode: 200,
-      body: {
-        companyId: 2, name: 'Mercado Verde', cnpj: '11222333000181', email: null, phone: null, type: 'MARKET',
-        address: { street: 'Av. Paulista', number: '1000', neighborhood: 'Bela Vista', complement: null, zipCode: '01310100', city: 'São Paulo', state: 'SP' },
-      },
-    });
+    stubBatches(distribution, { ...distribution, status: 'COMPLETED', currentStage: 'RETAIL', stages: [{ ...retail, emission: retailEmission }] });
+    cy.intercept('GET', '**/api/v1/companies/me', { statusCode: 200, body: marketCompany });
     cy.intercept('POST', '**/api/v1/batches/77/stages', { statusCode: 201, body: retail }).as('createStage');
-    cy.intercept('GET', '**/api/v1/emission-factors', {
-      statusCode: 200,
-      body: [{ calculationMethod: 'GHG_PROTOCOL', transportMode: null, fuelType: null, energySource: 'ELECTRICITY', value: 0.0385, unit: 'kg CO₂e/kWh', source: 'MCTI', referenceYear: 2024 }],
-    });
-    cy.intercept('POST', '**/api/v1/stages/6/emission', {
-      statusCode: 201,
-      body: { emissionId: 1, chainId: 6, emissionFactor: 0.0385, co2Kg: 11.55, calculationMethod: 'GHG_PROTOCOL', calculatedAt: '2026-11-24T10:00:00', cargoWeightKg: null, energySource: 'ELECTRICITY', consumption: 300 },
-    }).as('calculateEmission');
+    cy.intercept('POST', '**/api/v1/stages/6/emission', { statusCode: 201, body: retailEmission }).as('calculateEmission');
     loginAndOpenBatches();
 
     cy.get('[data-testid="batch-cancel"]').should('not.exist');
@@ -161,9 +166,7 @@ describe('Batch registration wizard', () => {
     cy.contains('button', 'Avançar').click();
     cy.contains('button', 'Avançar').click();
     cy.contains('Selecione a fonte de energia.').should('be.visible');
-    cy.get('select[formControlName="energySource"]').select('ELECTRICITY');
-    cy.get('input[formControlName="consumption"]').type('300');
-    cy.get('select[formControlName="calculationMethod"]').select('GHG_PROTOCOL');
+    fillRetailConsumption();
     cy.contains('button', 'Avançar').click();
     cy.contains('h3', 'Revise a etapa').should('be.visible');
     cy.contains('button', 'Confirmar etapa').click();
@@ -173,5 +176,33 @@ describe('Batch registration wizard', () => {
     cy.wait('@loadBatches');
     cy.get('app-status-badge').should('have.text', 'Concluído');
     cy.contains('button', 'Adicionar etapa').should('not.exist');
+    cy.contains('11.55 kg CO₂e').should('be.visible');
+  });
+
+  it('lets the retailer manager calculate the pending emission of the retail stage', () => {
+    const retail = {
+      chainId: 6, batchId: 77, originAddress: null, destinationAddress: null, responsibleUserId: 4, responsibleUserName: 'Gestor',
+      stageType: 'RETAIL', startedAt: '2026-11-24T10:00:00', endedAt: null, transport: null, emission: null,
+    };
+    const completed = { ...createdBatch, status: 'COMPLETED', currentStage: 'RETAIL', stages: [retail] };
+    stubBatches(completed, { ...completed, stages: [{ ...retail, emission: retailEmission }] });
+    cy.intercept('GET', '**/api/v1/companies/me', { statusCode: 200, body: marketCompany });
+    cy.intercept('POST', '**/api/v1/batches/77/stages', cy.spy().as('createStage'));
+    cy.intercept('POST', '**/api/v1/stages/6/emission', { statusCode: 201, body: retailEmission }).as('calculateEmission');
+    loginAndOpenBatches();
+
+    cy.contains('button', 'Adicionar etapa').should('not.exist');
+    cy.get('[data-testid="batch-calculate-emission"]').click();
+    cy.get('#stage-modal-title').should('have.text', 'Calcular emissão');
+    cy.get('.stepper-label').should('have.length', 2);
+    fillRetailConsumption();
+    cy.contains('button', 'Avançar').click();
+    cy.contains('.stage-submit', 'Calcular emissão').click();
+
+    cy.wait('@calculateEmission').its('request.body').should('deep.equal', { calculationMethod: 'GHG_PROTOCOL', energySource: 'ELECTRICITY', consumption: 300 });
+    cy.get('@createStage').should('not.have.been.called');
+    cy.wait('@loadBatches');
+    cy.get('[data-testid="batch-calculate-emission"]').should('not.exist');
+    cy.contains('11.55 kg CO₂e').should('be.visible');
   });
 });

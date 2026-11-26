@@ -24,6 +24,7 @@ describe('BatchListComponent', () => {
       status: signal(null),
       setStatus: vi.fn(),
       canAddStageTo: () => true,
+      canCalculatePendingEmission: () => false,
       canReject: () => false,
       canCancel: () => false,
       unitOf: () => 'KG',
@@ -75,6 +76,19 @@ describe('BatchListComponent', () => {
     const page = render({ items: signal([]), status: signal('REJECTED') });
     expect(page.textContent).toContain('Nenhum lote com esse status');
     expect(page.querySelector('.batches-empty')).toBeNull();
+  });
+
+  it('opens the emission modal for the pending stage and reloads the list after calculating', () => {
+    const stage = { chainId: 50, stageType: 'STORAGE', transport: null, emission: null };
+    const pending = { ...batch, currentStage: 'STORAGE', stages: [stage] } as unknown as Batch;
+    const load = vi.fn();
+    const page = render({ items: signal([pending]), canAddStageTo: () => false, canCalculatePendingEmission: () => true, load });
+    page.querySelector<HTMLButtonElement>('[data-testid="batch-calculate-emission"]')!.click();
+    expect(fixture.componentInstance.emissionBatch()).toBe(pending);
+
+    fixture.componentInstance.emissionCalculated();
+    expect(fixture.componentInstance.emissionBatch()).toBeNull();
+    expect(load).toHaveBeenCalled();
   });
 
   it('opens the reject modal from a card and reloads the list after rejecting', () => {

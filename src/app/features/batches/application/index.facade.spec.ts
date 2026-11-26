@@ -67,6 +67,9 @@ describe('BatchesListFacade', () => {
     expect(facade.canCreate()).toBe(true);
     expect(facade.canAddStageTo(atDistribution)).toBe(true);
     expect(facade.canAddStageTo(batch)).toBe(false);
+    const pendingRetail = { ...batch, status: 'COMPLETED', currentStage: 'RETAIL', stages: [{ stageType: 'RETAIL', emission: null }] } as unknown as Batch;
+    expect(facade.canCalculatePendingEmission(pendingRetail)).toBe(true);
+    expect(facade.canCalculatePendingEmission(batch)).toBe(false);
     role.set('auditor');
     expect(facade.canCreate()).toBe(false);
     expect(facade.canAddStageTo(atDistribution)).toBe(false);

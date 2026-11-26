@@ -31,6 +31,14 @@
         Adicionar etapa
       </button>
     }
+    @if (canCalculateEmission()) {
+      <button type="button" class="batch-add-stage" data-testid="batch-calculate-emission" (click)="calculateEmission.emit()">
+        <svg viewBox="0 0 20 20" class="batch-icon" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 10 3Z" clip-rule="evenodd" />
+        </svg>
+        Calcular emissão
+      </button>
+    }
     @if (canReject()) {
       <button type="button" class="batch-reject" (click)="reject.emit()">Recusar</button>
     }
