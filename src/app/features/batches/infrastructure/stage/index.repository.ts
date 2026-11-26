@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import {
-  CalculationMethod,
   CarbonEmission,
   EmissionFactor,
   NewEmission,
@@ -40,12 +39,9 @@ export class StagesRepository {
       .pipe(map((raw) => z.array(emissionFactorSchema).parse(raw)));
   }
 
-  calculateEmission(chainId: number, emission: NewEmission | CalculationMethod): Observable<CarbonEmission> {
-    const body: NewEmission = typeof emission === 'string'
-      ? { calculationMethod: emission, cargoWeightKg: null }
-      : emission;
+  calculateEmission(chainId: number, emission: NewEmission): Observable<CarbonEmission> {
     return this.http
-      .post<unknown>(`${environment.apiUrl}/stages/${chainId}/emission`, body)
+      .post<unknown>(`${environment.apiUrl}/stages/${chainId}/emission`, emission)
       .pipe(map((raw) => carbonEmissionResponseSchema.parse(raw)));
   }
 }

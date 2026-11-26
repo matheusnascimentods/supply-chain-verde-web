@@ -28,7 +28,7 @@
   @apply grid gap-5 sm:col-span-2 sm:grid-cols-2;
 }
 .stage-step-heading,
-.stage-transport-header,
+.stage-activity-header,
 .stage-field-wide {
   @apply sm:col-span-2;
 }
@@ -72,7 +72,7 @@
 .stage-hint {
   @apply text-xs font-normal text-slate-500;
 }
-.stage-transport {
+.stage-activity {
   @apply grid gap-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 sm:col-span-2 sm:grid-cols-2;
 }
 .stage-section-title {
@@ -83,21 +83,6 @@
 }
 .stage-emission {
   @apply grid gap-3 rounded-xl border border-slate-200 p-4 sm:col-span-2;
-}
-.stage-checkbox-label {
-  @apply flex items-start gap-3 text-sm text-slate-800;
-}
-.stage-checkbox {
-  @apply mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-700 focus:ring-emerald-600;
-}
-.stage-checkbox-title {
-  @apply font-semibold;
-}
-.stage-checkbox-hint {
-  @apply mt-0.5 block text-xs text-slate-500;
-}
-.stage-emission-unavailable {
-  @apply rounded-lg bg-slate-50 px-4 py-3 text-xs text-slate-600 sm:col-span-2;
 }
 .stage-review {
   @apply grid gap-4 sm:col-span-2;

@@ -70,7 +70,7 @@
   <app-batch-create-modal (dismiss)="createModalOpen.set(false)" (created)="batchCreated()" />
 }
 @if (stageBatch(); as batch) {
-  <app-batch-stage-modal [batchId]="batch.batchId" [currentStage]="batch.currentStage" [origin]="batch.stages.at(-1)?.destinationAddress ?? null" (dismiss)="stageBatch.set(null)" (changed)="facade.load()" (created)="stageCreated()" />
+  <app-batch-stage-modal [batchId]="batch.batchId" [currentStage]="batch.currentStage" [origin]="batch.stages.at(-1)?.destinationAddress ?? null" [unit]="facade.unitOf(batch)" [quantity]="batch.quantity" (dismiss)="stageBatch.set(null)" (changed)="facade.load()" (created)="stageCreated()" />
 }
 @if (cancelBatch(); as batch) {
   <app-modal labelledBy="cancel-modal-title" describedBy="cancel-modal-description" [closeOnEscape]="!canceling()" [closeOnBackdrop]="!canceling()" (dismissed)="cancelBatch.set(null)">

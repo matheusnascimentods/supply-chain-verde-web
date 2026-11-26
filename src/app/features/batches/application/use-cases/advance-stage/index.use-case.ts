@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { EMPTY, Observable, catchError, concat, defer, map, tap, throwError } from 'rxjs';
-import { CalculationMethod, NewStage, NewTransport } from '../../../domain/stage/index.model';
+import { NewEmission, NewStage, NewTransport } from '../../../domain/stage/index.model';
 import { StagesRepository } from '../../../infrastructure/stage/index.repository';
 
 export interface StageSubmission {
@@ -8,7 +8,7 @@ export interface StageSubmission {
   responsibleUserId: number;
   stage: NewStage;
   transport: NewTransport | null;
-  emissionMethod: CalculationMethod | null;
+  emission: NewEmission;
 }
 
 /** O que já foi salvo numa tentativa anterior, para não repetir. */
@@ -31,7 +31,7 @@ export class AdvanceStageError extends Error {
 const failAt = <T>(step: AdvanceStageStep) =>
   catchError<T, Observable<never>>((cause) => throwError(() => new AdvanceStageError(step, { cause })));
 
-/** Registra a etapa e, quando pedidos, o transporte e o cálculo de emissão dela. */
+/** Registra a etapa, o transporte (quando há) e a emissão dela, que é obrigatória (RN-11 da API). */
 @Injectable({ providedIn: 'root' })
 export class AdvanceStageUseCase {
   private readonly stages = inject(StagesRepository);
@@ -57,9 +57,9 @@ export class AdvanceStageUseCase {
           ),
     );
     const emission$ = defer(() =>
-      !submission.emissionMethod || progress.emissionSaved
+      progress.emissionSaved
         ? EMPTY
-        : this.stages.calculateEmission(chainId!, submission.emissionMethod).pipe(
+        : this.stages.calculateEmission(chainId!, submission.emission).pipe(
             map((): AdvanceStageProgress => ({ step: 'emission' })),
             failAt('emission'),
           ),

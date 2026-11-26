@@ -10,7 +10,7 @@ describe('AdvanceStageUseCase', () => {
     responsibleUserId: 2,
     stage: { stageType: 'TRANSPORT', destination: null },
     transport,
-    emissionMethod: 'GHG_PROTOCOL',
+    emission: { calculationMethod: 'GHG_PROTOCOL', cargoWeightKg: null },
   };
   const fresh: StageProgress = { chainId: null, transportSaved: false, emissionSaved: false };
   let stages: { create: ReturnType<typeof vi.fn>; createTransport: ReturnType<typeof vi.fn>; calculateEmission: ReturnType<typeof vi.fn> };
@@ -36,13 +36,21 @@ describe('AdvanceStageUseCase', () => {
     const { events } = run(submission, fresh);
     expect(events).toEqual([{ step: 'stage', chainId: 50 }, { step: 'transport' }, { step: 'emission' }]);
     expect(stages.createTransport).toHaveBeenCalledWith(50, transport);
-    expect(stages.calculateEmission).toHaveBeenCalledWith(50, 'GHG_PROTOCOL');
+    expect(stages.calculateEmission).toHaveBeenCalledWith(50, { calculationMethod: 'GHG_PROTOCOL', cargoWeightKg: null });
   });
 
-  it('skips the optional steps that were not requested', () => {
-    const { events } = run({ ...submission, transport: null, emissionMethod: null }, fresh);
-    expect(events).toEqual([{ step: 'stage', chainId: 50 }]);
+  it('skips the transport of a fixed stage but always calculates the emission', () => {
+    const emission = { calculationMethod: 'DEFRA' as const, energySource: 'ELECTRICITY' as const, consumption: 300 };
+    const { events } = run({ ...submission, stage: { stageType: 'PRODUCTION', destination: null }, transport: null, emission }, fresh);
+    expect(events).toEqual([{ step: 'stage', chainId: 50 }, { step: 'emission' }]);
     expect(stages.createTransport).not.toHaveBeenCalled();
+    expect(stages.calculateEmission).toHaveBeenCalledWith(50, emission);
+  });
+
+  it('does not calculate again an emission already saved', () => {
+    const { events } = run(submission, { chainId: 50, transportSaved: true, emissionSaved: true });
+    expect(events).toEqual([]);
+    expect(stages.calculateEmission).not.toHaveBeenCalled();
   });
 
   it('resumes after a failure without repeating what was saved', () => {

@@ -2,8 +2,8 @@
   <header class="stage-header">
     <div>
       <p class="stage-eyebrow">Lote #{{ batchId() }}</p>
-      <h2 id="stage-modal-title" class="stage-title">Adicionar etapa</h2>
-      <p class="stage-subtitle">Registre o próximo ponto da jornada deste lote.</p>
+      <h2 id="stage-modal-title" class="stage-title">{{ isPending ? 'Calcular emissão' : 'Adicionar etapa' }}</h2>
+      <p class="stage-subtitle">{{ isPending ? 'Calcule a emissão da etapa ' + stageLabel + ' para liberar a próxima.' : 'Registre o próximo ponto da jornada deste lote.' }}</p>
     </div>
     <button type="button" class="stage-close" aria-label="Fechar formulário de etapa" [disabled]="facade.saving()" (click)="requestDismiss()">
       <svg viewBox="0 0 24 24" class="stage-close-icon" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
@@ -18,8 +18,8 @@
     <form [formGroup]="form" (ngSubmit)="submit()" class="stage-form">
       @if (facade.error()) { <p role="alert" class="stage-error">{{ facade.error() }}</p> }
 
-      @switch (step()) {
-        @case (0) {
+      @switch (stepName) {
+        @case ('Origem e destino') {
           <section class="stage-step-content" aria-labelledby="stage-route-heading">
             <div class="stage-step-heading">
               <h3 #stepHeading id="stage-route-heading" class="stage-section-title" tabindex="-1">Origem e destino</h3>
@@ -70,25 +70,25 @@
           </section>
         }
 
-        @case (1) {
+        @case ('Emissão') {
           <section class="stage-step-content" aria-labelledby="stage-emission-heading">
             <div class="stage-step-heading">
               <h3 #stepHeading id="stage-emission-heading" class="stage-section-title" tabindex="-1">Cálculo de emissão</h3>
-              <p class="stage-section-hint">Informe os dados logísticos e escolha se deseja calcular a emissão agora.</p>
+              <p class="stage-section-hint">Informe os dados da atividade e a metodologia. A emissão é calculada ao registrar a etapa.</p>
             </div>
 
             @if (isTransport) {
-              <section class="stage-transport" aria-labelledby="transport-heading" formGroupName="transport">
-                <div class="stage-transport-header">
+              <section class="stage-activity" aria-labelledby="transport-heading" formGroupName="transport">
+                <div class="stage-activity-header">
                   <h4 id="transport-heading" class="stage-section-title">Dados do transporte</h4>
-                  <p class="stage-section-hint">Esses dados são necessários para registrar uma etapa de transporte.</p>
+                  <p class="stage-section-hint">A emissão desta etapa vem do frete.</p>
                 </div>
-                <label class="stage-field">Modal
+                <label class="stage-field">Modo de transporte
                   <select formControlName="transportMode" class="stage-select">
                     <option value="">Selecione</option>
                     @for (mode of transportModes; track mode) { <option [value]="mode">{{ transportModeLabels[mode] }}</option> }
                   </select>
-                  @if (transportGroup.controls.transportMode.touched && transportGroup.controls.transportMode.invalid) { <span class="stage-field-error">Selecione o modal.</span> }
+                  @if (transportGroup.controls.transportMode.touched && transportGroup.controls.transportMode.invalid) { <span class="stage-field-error">Selecione o modo de transporte.</span> }
                 </label>
                 <label class="stage-field">Distância (km)
                   <input formControlName="distance" type="number" min="0.000001" step="any" class="stage-input" />
@@ -97,7 +97,7 @@
                 <label class="stage-field">Combustível
                   <select formControlName="fuelType" class="stage-select">
                     <option value="">Selecione</option>
-                    @for (fuel of fuelTypes; track fuel) { <option [value]="fuel">{{ fuelTypeLabels[fuel] }}</option> }
+                    @for (fuel of fuels(); track fuel) { <option [value]="fuel">{{ fuelTypeLabels[fuel] }}</option> }
                   </select>
                   @if (transportGroup.controls.fuelType.touched && transportGroup.controls.fuelType.invalid) { <span class="stage-field-error">Selecione o combustível.</span> }
                 </label>
@@ -105,33 +105,46 @@
                   <input formControlName="capacity" type="number" min="0.000001" step="any" class="stage-input" />
                   @if (transportGroup.controls.capacity.touched && transportGroup.controls.capacity.invalid) { <span class="stage-field-error">Informe uma capacidade maior que zero.</span> }
                 </label>
+                <label class="stage-field-wide">Peso da carga (kg)
+                  <input formControlName="cargoWeightKg" type="number" min="0.000001" step="any" class="stage-input" />
+                  @if (cargoDerived) { <span class="stage-hint">Calculado pela quantidade do lote.</span> }
+                  @if (transportGroup.controls.cargoWeightKg.touched && transportGroup.controls.cargoWeightKg.invalid) { <span class="stage-field-error">Informe um peso maior que zero.</span> }
+                </label>
+              </section>
+            } @else {
+              <section class="stage-activity" aria-labelledby="consumption-heading" formGroupName="consumption">
+                <div class="stage-activity-header">
+                  <h4 id="consumption-heading" class="stage-section-title">Consumo de energia</h4>
+                  <p class="stage-section-hint">A emissão desta etapa vem do consumo no local.</p>
+                </div>
+                <label class="stage-field">Fonte de energia
+                  <select formControlName="energySource" class="stage-select">
+                    <option value="">Selecione</option>
+                    @for (source of energySources; track source) { <option [value]="source">{{ energySourceLabels[source] }} ({{ energySourceUnits[source] }})</option> }
+                  </select>
+                  @if (consumptionGroup.controls.energySource.touched && consumptionGroup.controls.energySource.invalid) { <span class="stage-field-error">Selecione a fonte de energia.</span> }
+                </label>
+                <label class="stage-field">Consumo{{ consumptionGroup.controls.energySource.value ? ' (' + energySourceUnits[consumptionGroup.controls.energySource.value] + ')' : '' }}
+                  <input formControlName="consumption" type="number" min="0" step="any" class="stage-input" />
+                  @if (consumptionGroup.controls.consumption.touched && consumptionGroup.controls.consumption.invalid) { <span class="stage-field-error">Informe um consumo maior ou igual a zero.</span> }
+                </label>
               </section>
             }
 
-            @if (facade.canCalculateEmission) {
-              <section class="stage-emission">
-                <label class="stage-checkbox-label">
-                  <input formControlName="calculateEmission" type="checkbox" class="stage-checkbox" />
-                  <span>
-                    <span class="stage-checkbox-title">Calcular emissão desta etapa</span>
-                    <span class="stage-checkbox-hint">Você pode registrar a etapa agora e calcular a emissão em outro momento.</span>
-                  </span>
-                </label>
-                @if (form.controls.calculateEmission.value) {
-                  <label class="stage-field">Metodologia
-                    <select formControlName="calculationMethod" class="stage-select">
-                      @for (method of calculationMethods; track method) { <option [value]="method">{{ calculationMethodLabels[method] }}</option> }
-                    </select>
-                  </label>
-                }
-              </section>
-            } @else {
-              <p class="stage-emission-unavailable">O cálculo de emissão está disponível para perfis de gestor e administrador.</p>
-            }
+            <section class="stage-emission">
+              <label class="stage-field">Metodologia
+                <select formControlName="calculationMethod" class="stage-select">
+                  <option value="">Selecione</option>
+                  @for (method of methods(); track method) { <option [value]="method">{{ calculationMethodLabels[method] }}</option> }
+                </select>
+                @if (noMethods()) { <span class="stage-field-error">Nenhuma metodologia tem fator para esta combinação.</span> }
+                @else if (form.controls.calculationMethod.touched && form.controls.calculationMethod.invalid) { <span class="stage-field-error">Selecione a metodologia.</span> }
+              </label>
+            </section>
           </section>
         }
 
-        @case (2) {
+        @case ('Revisão') {
           <section class="stage-review" aria-labelledby="stage-review-heading">
             <div>
               <h3 #stepHeading id="stage-review-heading" class="stage-section-title" tabindex="-1">Revise a etapa</h3>
@@ -139,17 +152,21 @@
             </div>
             <dl class="stage-review-list">
               <div class="stage-review-row"><dt>Tipo</dt><dd>{{ stageLabel }}</dd></div>
-              <div class="stage-review-row"><dt>Origem</dt><dd>{{ originLabel() }}</dd></div>
-              <div class="stage-review-row"><dt>Destino</dt><dd>{{ isRetail ? marketLabel() : placeLabel(destination.getRawValue()) }}</dd></div>
+              @if (!isPending) {
+                <div class="stage-review-row"><dt>Origem</dt><dd>{{ originLabel() }}</dd></div>
+                <div class="stage-review-row"><dt>Destino</dt><dd>{{ isRetail ? marketLabel() : placeLabel(destination.getRawValue()) }}</dd></div>
+              }
               @if (isTransport) {
-                <div class="stage-review-row"><dt>Transporte</dt><dd>{{ transportModeLabels[transportGroup.controls.transportMode.value!] }} · {{ transportGroup.controls.distance.value }} km · {{ fuelTypeLabels[transportGroup.controls.fuelType.value!] }} · {{ transportGroup.controls.capacity.value }} kg</dd></div>
+                @let transport = transportGroup.getRawValue();
+                <div class="stage-review-row"><dt>Transporte</dt><dd>{{ transportModeLabels[transport.transportMode!] }} · {{ transport.distance }} km · {{ fuelTypeLabels[transport.fuelType!] }} · {{ transport.capacity }} kg · carga de {{ transport.cargoWeightKg }} kg</dd></div>
+              } @else {
+                <div class="stage-review-row"><dt>Consumo</dt><dd>{{ consumptionGroup.controls.consumption.value }} {{ energySourceUnits[consumptionGroup.controls.energySource.value!] }} de {{ energySourceLabels[consumptionGroup.controls.energySource.value!] }}</dd></div>
               }
               <div class="stage-review-row">
                 <dt>Emissão</dt>
                 <dd>
-                  @if (!facade.canCalculateEmission) { Sem cálculo (perfil sem permissão) }
-                  @else if (form.controls.calculateEmission.value) { Calcular com {{ calculationMethodLabels[form.controls.calculationMethod.value!] }} }
-                  @else { Registrar sem calcular agora }
+                  {{ calculationMethodLabels[form.controls.calculationMethod.value!] }}
+                  @if (factor(); as factor) { · fator {{ formatNumber(factor.value) }} {{ factor.unit }} ({{ factor.source }}, {{ factor.referenceYear }}) }
                 </dd>
               </div>
             </dl>
@@ -162,6 +179,7 @@
         <!-- Um único botão submit: Enter num campo avança o passo (submit() delega a next() fora da revisão). -->
         <button type="submit" class="stage-submit" [disabled]="facade.saving()">
           @if (step() < steps.length - 1) { Avançar }
+          @else if (isPending) { {{ facade.saving() ? 'Calculando emissão…' : 'Calcular emissão' }} }
           @else { {{ facade.saving() ? (facade.stageSaved() ? 'Finalizando etapa…' : 'Registrando etapa…') : (facade.stageSaved() ? 'Tentar novamente' : 'Confirmar etapa') }} }
         </button>
       </footer>
