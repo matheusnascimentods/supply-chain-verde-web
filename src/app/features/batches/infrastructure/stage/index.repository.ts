@@ -1,9 +1,19 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { z } from 'zod';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
-import { CalculationMethod, CarbonEmission, NewStage, NewTransport, Stage, Transport } from '../../domain/stage/index.model';
-import { carbonEmissionResponseSchema, stageResponseSchema, transportResponseSchema } from './index.dto';
+import {
+  CalculationMethod,
+  CarbonEmission,
+  EmissionFactor,
+  NewEmission,
+  NewStage,
+  NewTransport,
+  Stage,
+  Transport,
+} from '../../domain/stage/index.model';
+import { carbonEmissionResponseSchema, emissionFactorSchema, stageResponseSchema, transportResponseSchema } from './index.dto';
 
 @Injectable({ providedIn: 'root' })
 export class StagesRepository {
@@ -24,9 +34,18 @@ export class StagesRepository {
       .pipe(map((raw) => transportResponseSchema.parse(raw)));
   }
 
-  calculateEmission(chainId: number, calculationMethod: CalculationMethod): Observable<CarbonEmission> {
+  listEmissionFactors(): Observable<EmissionFactor[]> {
     return this.http
-      .post<unknown>(`${environment.apiUrl}/stages/${chainId}/emission`, { chainId, calculationMethod })
+      .get<unknown>(`${environment.apiUrl}/emission-factors`)
+      .pipe(map((raw) => z.array(emissionFactorSchema).parse(raw)));
+  }
+
+  calculateEmission(chainId: number, emission: NewEmission | CalculationMethod): Observable<CarbonEmission> {
+    const body: NewEmission = typeof emission === 'string'
+      ? { calculationMethod: emission, cargoWeightKg: null }
+      : emission;
+    return this.http
+      .post<unknown>(`${environment.apiUrl}/stages/${chainId}/emission`, body)
       .pipe(map((raw) => carbonEmissionResponseSchema.parse(raw)));
   }
 }

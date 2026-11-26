@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { environment } from '../../../../../environments/environment';
+import { carbonEmissionResponseSchema } from './index.dto';
 import { StagesRepository } from './index.repository';
 
 describe('StagesRepository', () => {
@@ -41,9 +42,35 @@ describe('StagesRepository', () => {
   });
 
   it('calculates the emission with the chosen method', () => {
-    repository.calculateEmission(50, 'IPCC').subscribe((emission) => expect(emission.co2Kg).toBe(12.5));
+    repository.calculateEmission(50, { calculationMethod: 'GHG_PROTOCOL', cargoWeightKg: 1000 }).subscribe((emission) => expect(emission.co2Kg).toBe(12.5));
     const request = http.expectOne(`${environment.apiUrl}/stages/50/emission`);
-    expect(request.request.body).toEqual({ chainId: 50, calculationMethod: 'IPCC' });
-    request.flush({ emissionId: 1, chainId: 50, emissionFactor: 0.1, co2Kg: 12.5, calculationMethod: 'IPCC', calculatedAt: '2026-10-05' });
+    expect(request.request.body).toEqual({ calculationMethod: 'GHG_PROTOCOL', cargoWeightKg: 1000 });
+    request.flush({ emissionId: 1, chainId: 50, emissionFactor: 0.1, co2Kg: 12.5, calculationMethod: 'GHG_PROTOCOL', calculatedAt: '2026-10-05', cargoWeightKg: 1000, energySource: null, consumption: null });
+  });
+
+  it('lists emission factors', () => {
+    repository.listEmissionFactors().subscribe((factors) => expect(factors).toHaveLength(1));
+    const request = http.expectOne(`${environment.apiUrl}/emission-factors`);
+    request.flush([{
+      calculationMethod: 'GHG_PROTOCOL',
+      transportMode: 'AIR',
+      fuelType: 'AVIATION_KEROSENE',
+      energySource: null,
+      value: 0.75539,
+      unit: 'kgCO2e/tkm',
+      source: 'DESNZ 2026, short-haul freight flight',
+      referenceYear: 2026,
+    }]);
+  });
+
+  it('parses legacy emissions without the new activity fields', () => {
+    expect(carbonEmissionResponseSchema.parse({
+      emissionId: 1,
+      chainId: 50,
+      emissionFactor: 0.1,
+      co2Kg: 12.5,
+      calculationMethod: 'GHG_PROTOCOL',
+      calculatedAt: '2026-10-05',
+    })).toMatchObject({ emissionId: 1, co2Kg: 12.5 });
   });
 });

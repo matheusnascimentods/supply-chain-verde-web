@@ -41,14 +41,47 @@ export const FUEL_TYPE_LABELS: Record<FuelType, string> = {
   HEAVY_FUEL_OIL: 'Óleo combustível pesado',
 };
 
-export const CALCULATION_METHODS = ['DEFRA', 'GHG_PROTOCOL', 'IPCC', 'EMEP_EEA'] as const;
+export const CALCULATION_METHODS = ['GHG_PROTOCOL', 'DEFRA'] as const;
 export type CalculationMethod = (typeof CALCULATION_METHODS)[number];
 export const CALCULATION_METHOD_LABELS: Record<CalculationMethod, string> = {
   DEFRA: 'DEFRA',
   GHG_PROTOCOL: 'GHG Protocol',
-  IPCC: 'IPCC',
-  EMEP_EEA: 'EMEP/EEA',
 };
+
+/** Etapas que emitem pelo frete; as demais emitem pelo consumo no local. */
+export function isTransportStage(stage: StageType): boolean {
+  return stage === 'TRANSPORT' || stage === 'DISTRIBUTION';
+}
+
+export const ENERGY_SOURCES = ['ELECTRICITY', 'DIESEL', 'LPG', 'NATURAL_GAS'] as const;
+export type EnergySource = (typeof ENERGY_SOURCES)[number];
+export const ENERGY_SOURCE_LABELS: Record<EnergySource, string> = {
+  ELECTRICITY: 'Energia elétrica',
+  DIESEL: 'Diesel',
+  LPG: 'GLP',
+  NATURAL_GAS: 'Gás natural',
+};
+export const ENERGY_SOURCE_UNITS: Record<EnergySource, string> = {
+  ELECTRICITY: 'kWh',
+  DIESEL: 'L',
+  LPG: 'kg',
+  NATURAL_GAS: 'm³',
+};
+
+export interface EmissionFactor {
+  calculationMethod: CalculationMethod;
+  transportMode: TransportMode | null;
+  fuelType: FuelType | null;
+  energySource: EnergySource | null;
+  value: number;
+  unit: string;
+  source: string;
+  referenceYear: number;
+}
+
+export type NewEmission =
+  | { calculationMethod: CalculationMethod; cargoWeightKg: number | null }
+  | { calculationMethod: CalculationMethod; energySource: EnergySource; consumption: number };
 
 export interface StageAddress {
   addressId: number;
@@ -77,6 +110,9 @@ export interface CarbonEmission {
   co2Kg: number;
   calculationMethod: CalculationMethod;
   calculatedAt: string;
+  cargoWeightKg?: number | null;
+  energySource?: EnergySource | null;
+  consumption?: number | null;
 }
 
 export interface Stage {

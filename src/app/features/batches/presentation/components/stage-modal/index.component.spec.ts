@@ -58,7 +58,7 @@ describe('BatchStageModalComponent', () => {
   it('submits stage, transport and emission and notifies each saved step', () => {
     fixture.componentInstance.form.patchValue({
       stageType: 'TRANSPORT', destination,
-      transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 }, calculateEmission: true, calculationMethod: 'IPCC',
+      transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 }, calculateEmission: true, calculationMethod: 'GHG_PROTOCOL',
     });
     advanceToReview();
     expect(fixture.componentInstance.step()).toBe(2);
@@ -67,7 +67,7 @@ describe('BatchStageModalComponent', () => {
       batchId: 7,
       stage: { stageType: 'TRANSPORT', destination: sentDestination },
       transport: { transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 },
-      emissionMethod: 'IPCC',
+      emissionMethod: 'GHG_PROTOCOL',
     });
     expect(events).toEqual(['changed', 'changed', 'created']);
   });

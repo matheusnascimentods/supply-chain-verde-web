@@ -1,7 +1,18 @@
 import { CompanyType, UserRole } from '../../../core/auth/session/index.model';
 import type { Product } from '../../products';
 import { Batch, BatchStatus } from './index.model';
-import { nextStage, stageOwner } from './stage/index.model';
+import type { ProductUnit } from '../../products';
+import {
+  CALCULATION_METHODS,
+  CalculationMethod,
+  EmissionFactor,
+  EnergySource,
+  FUEL_TYPES,
+  FuelType,
+  TransportMode,
+  nextStage,
+  stageOwner,
+} from './stage/index.model';
 
 type Role = UserRole | null;
 
@@ -18,6 +29,32 @@ const MARKET_ROLES: readonly Role[] = ['admin', 'manager'];
 const SUPPLIER_ROLES: readonly Role[] = ['admin', 'supplier'];
 const actsFor = (side: CompanyType, role: Role, companyType: Company) =>
   companyType === side && (side === 'market' ? MARKET_ROLES : SUPPLIER_ROLES).includes(role);
+
+/** KG e TON derivam o peso da quantidade; nas demais unidades, o usuário informa. */
+export function derivedCargoWeightKg(unit: ProductUnit | undefined, quantity: number): number | null {
+  if (unit === 'KG') return quantity;
+  if (unit === 'TON') return quantity * 1000;
+  return null;
+}
+
+/** Metodologias com fator para a atividade escolhida. */
+export function methodsFor(
+  factors: EmissionFactor[],
+  activity: { transportMode: TransportMode; fuelType: FuelType } | { energySource: EnergySource },
+): CalculationMethod[] {
+  const matches = (factor: EmissionFactor) =>
+    'energySource' in activity
+      ? factor.energySource === activity.energySource
+      : factor.transportMode === activity.transportMode && factor.fuelType === activity.fuelType;
+  return CALCULATION_METHODS.filter((method) => factors.some((factor) => factor.calculationMethod === method && matches(factor)));
+}
+
+/** Combustíveis com fator em alguma metodologia para o modo. */
+export function fuelsFor(factors: EmissionFactor[], mode: TransportMode): FuelType[] {
+  return FUEL_TYPES.filter((fuel) =>
+    factors.some((factor) => factor.transportMode === mode && factor.fuelType === fuel),
+  );
+}
 
 // RF-13: o mercado pede o lote; o fornecedor executa ou recusa.
 export function canCreateBatch(role: Role, companyType: Company): boolean {

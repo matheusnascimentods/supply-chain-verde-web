@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { CALCULATION_METHODS, FUEL_TYPES, STAGE_TYPES, TRANSPORT_MODES } from '../../domain/stage/index.model';
+import {
+  CALCULATION_METHODS,
+  ENERGY_SOURCES,
+  FUEL_TYPES,
+  STAGE_TYPES,
+  TRANSPORT_MODES,
+} from '../../domain/stage/index.model';
 
 const nullableString = z.string().nullable().optional();
 
@@ -30,6 +36,20 @@ export const carbonEmissionResponseSchema = z.object({
   co2Kg: z.number(),
   calculationMethod: z.enum(CALCULATION_METHODS),
   calculatedAt: z.string(),
+  cargoWeightKg: z.number().nullable().optional(),
+  energySource: z.enum(ENERGY_SOURCES).nullable().optional(),
+  consumption: z.number().nullable().optional(),
+});
+
+export const emissionFactorSchema = z.object({
+  calculationMethod: z.enum(CALCULATION_METHODS),
+  transportMode: z.enum(TRANSPORT_MODES).nullable(),
+  fuelType: z.enum(FUEL_TYPES).nullable(),
+  energySource: z.enum(ENERGY_SOURCES).nullable(),
+  value: z.number(),
+  unit: z.string(),
+  source: z.string(),
+  referenceYear: z.number(),
 });
 
 export const stageResponseSchema = z.object({
