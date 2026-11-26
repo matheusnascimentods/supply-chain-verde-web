@@ -23,7 +23,7 @@ describe('BatchCardComponent', () => {
         chainId: 1, batchId: 7, originAddress: address('Campinas'), destinationAddress: address('Santos'), responsibleUserId: 2,
         responsibleUserName: 'Ana', stageType: 'TRANSPORT', startedAt: '2026-05-21T08:00:00', endedAt: null,
         transport: { transportId: 1, chainId: 1, transportMode: 'ROAD', distance: 120, fuelType: 'DIESEL', capacity: 1000 },
-        emission: { emissionId: 1, chainId: 1, emissionFactor: 0.1, co2Kg: 12.5, calculationMethod: 'IPCC', calculatedAt: '2026-05-21' },
+        emission: { emissionId: 1, chainId: 1, emissionFactor: 0.1, co2Kg: 12.5, calculationMethod: 'GHG_PROTOCOL', calculatedAt: '2026-05-21', cargoWeightKg: 1250.5, energySource: null, consumption: null },
       },
     ],
   };

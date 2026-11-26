@@ -18,11 +18,11 @@ Ordem entre os repositórios: **API Task 1 → API Task 2 → API Task 3 → web
 
 Depende da API Task 2 (`V22`) e da API Task 3 (`GET /emission-factors`) em produção.
 
-- [ ] `domain/stage/index.model.ts`: `CALCULATION_METHODS` só com `GHG_PROTOCOL` e `DEFRA`, `isTransportStage`, `ENERGY_SOURCES` (labels e unidades), `EmissionFactor`, `NewEmission` e os campos novos de `CarbonEmission` (plan §1)
-- [ ] `infrastructure/stage/index.dto.ts`: `emissionFactorSchema` e os campos novos `nullable().optional()`
-- [ ] `infrastructure/stage/index.repository.ts` (+ spec): `listEmissionFactors` e o novo corpo de `calculateEmission`
-- [ ] `domain/index.rules.ts` (+ spec): `derivedCargoWeightKg`, `methodsFor` e `fuelsFor` (plan §2)
-- [ ] `stage-modal/index.component.ts`: só o que deixar de compilar com o enum novo. O passo continua como está até a Task 2
+- [x] `domain/stage/index.model.ts`: `CALCULATION_METHODS` só com `GHG_PROTOCOL` e `DEFRA`, `isTransportStage`, `ENERGY_SOURCES` (labels e unidades), `EmissionFactor`, `NewEmission` e os campos novos de `CarbonEmission` (plan §1)
+- [x] `infrastructure/stage/index.dto.ts`: `emissionFactorSchema` e os campos novos `nullable().optional()`
+- [x] `infrastructure/stage/index.repository.ts` (+ spec): `listEmissionFactors` e o novo corpo de `calculateEmission`
+- [x] `domain/index.rules.ts` (+ spec): `derivedCargoWeightKg`, `methodsFor` e `fuelsFor` (plan §2)
+- [x] `stage-modal/index.component.ts`: só o que deixar de compilar com o enum novo. O passo continua como está até a Task 2
 
 **Arquivos (~7):** `stage/index.model.ts`, `stage/index.dto.ts`, `stage/index.repository*`, `index.rules*`, `stage-modal/index.component.ts`.
 

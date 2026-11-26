@@ -1,6 +1,16 @@
 import { Batch } from './index.model';
 import type { Product } from '../../products';
-import { canAddStageTo, canCalculateEmission, canCancel, canCreateBatch, canReject, isRecommended } from './index.rules';
+import {
+  canAddStageTo,
+  canCalculateEmission,
+  canCancel,
+  canCreateBatch,
+  canReject,
+  derivedCargoWeightKg,
+  fuelsFor,
+  isRecommended,
+  methodsFor,
+} from './index.rules';
 
 describe('batches rules', () => {
   const batch = { currentStage: 'TRANSPORT', status: 'ACTIVE' } as Batch;
@@ -72,5 +82,27 @@ describe('batches rules', () => {
     expect(isRecommended(withHistory, 1, 0)).toBe(false);
     expect(isRecommended(withHistory, 0, 1)).toBe(false);
     expect(isRecommended({ co2KgPerUnit: null } as Product, 0, 0)).toBe(false);
+  });
+
+  it('derives cargo weight only for KG and TON', () => {
+    expect(derivedCargoWeightKg('KG', 125)).toBe(125);
+    expect(derivedCargoWeightKg('TON', 2.5)).toBe(2500);
+    expect(derivedCargoWeightKg('LITER', 10)).toBeNull();
+    expect(derivedCargoWeightKg('UNIT', 10)).toBeNull();
+    expect(derivedCargoWeightKg('M3', 10)).toBeNull();
+    expect(derivedCargoWeightKg(undefined, 10)).toBeNull();
+  });
+
+  it('filters methods and fuels by emission factors', () => {
+    const factors = [
+      { calculationMethod: 'GHG_PROTOCOL', transportMode: 'ROAD', fuelType: 'DIESEL', energySource: null, value: 0.1, unit: 'kg CO₂e/t·km', source: 'Teste', referenceYear: 2026 },
+      { calculationMethod: 'DEFRA', transportMode: 'AIR', fuelType: 'AVIATION_KEROSENE', energySource: null, value: 0.2, unit: 'kg CO₂e/t·km', source: 'Teste', referenceYear: 2026 },
+      { calculationMethod: 'GHG_PROTOCOL', transportMode: null, fuelType: null, energySource: 'ELECTRICITY', value: 0.0461, unit: 'kgCO2/kWh', source: 'MCTI/SIRENE', referenceYear: 2025 },
+    ] as const;
+    expect(methodsFor([...factors], { transportMode: 'ROAD', fuelType: 'DIESEL' })).toEqual(['GHG_PROTOCOL']);
+    expect(methodsFor([...factors], { transportMode: 'AIR', fuelType: 'AVIATION_KEROSENE' })).toEqual(['DEFRA']);
+    expect(methodsFor([], { transportMode: 'ROAD', fuelType: 'DIESEL' })).toEqual([]);
+    expect(methodsFor([...factors], { energySource: 'ELECTRICITY' })).toEqual(['GHG_PROTOCOL']);
+    expect(fuelsFor([...factors], 'AIR')).toEqual(['AVIATION_KEROSENE']);
   });
 });

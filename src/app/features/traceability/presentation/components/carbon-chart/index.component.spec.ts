@@ -11,8 +11,8 @@ describe('CarbonChartComponent', () => {
 
   it('renders a proportional, labeled bar for each stage emission', () => {
     fixture.componentRef.setInput('emissions', [
-      { emissionId: 1, chainId: 5, emissionFactor: 1, co2Kg: 4, calculationMethod: 'IPCC', calculatedAt: '2026-01-01' },
-      { emissionId: 2, chainId: 6, emissionFactor: 1, co2Kg: 2, calculationMethod: 'IPCC', calculatedAt: '2026-01-01' },
+      { emissionId: 1, chainId: 5, emissionFactor: 1, co2Kg: 4, calculationMethod: 'GHG_PROTOCOL', calculatedAt: '2026-01-01' },
+      { emissionId: 2, chainId: 6, emissionFactor: 1, co2Kg: 2, calculationMethod: 'GHG_PROTOCOL', calculatedAt: '2026-01-01' },
     ]);
     fixture.componentRef.setInput('stages', [
       { chainId: 5, batchId: 10, originAddress: null, destinationAddress: null, responsibleUserId: 1, responsibleUserName: 'Ana', stageType: 'PRODUCTION', startedAt: '2026-01-01T10:00:00', endedAt: null, transport: null, emission: null },
@@ -41,7 +41,7 @@ describe('CarbonChartComponent', () => {
       { ...stage, chainId: 6, stageType: 'STORAGE' },
     ]);
     fixture.componentRef.setInput('emissions', [
-      { emissionId: 1, chainId: 6, emissionFactor: 1, co2Kg: 3, calculationMethod: 'IPCC', calculatedAt: '2026-01-01' },
+      { emissionId: 1, chainId: 6, emissionFactor: 1, co2Kg: 3, calculationMethod: 'GHG_PROTOCOL', calculatedAt: '2026-01-01' },
     ]);
     fixture.detectChanges();
 
