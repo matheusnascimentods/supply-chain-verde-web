@@ -534,7 +534,7 @@ A imagem Docker lê duas variáveis, listadas no [`.env.example`](.env.example):
 
 - **Sessão JWT**: o token e o perfil ficam em `sessionStorage` e o interceptor envia `Authorization: Bearer <token>` em cada requisição à API.
 - **Sessão inválida encerrada**: respostas `401`/`403` limpam a sessão e levam o usuário de volta ao login.
-- **Controle por perfil (RBAC)**: `authGuard`, `roleGuard` e o menu por perfil limitam a experiência a cada papel (`admin`, `manager`, `auditor`, `supplier`); a API aplica a autorização efetiva.
+- **Controle por perfil (RBAC)**: `authGuard`, `roleGuard` e o menu por perfil limitam a experiência a cada papel (`admin`, `manager`, `auditor`, `supplier`), e o `platform_admin` herda tudo do `admin` sem filtro por companhia. A API aplica a autorização efetiva; a matriz de permissões está na [ADR 0008 da API](https://github.com/matheusnascimentods/supply-chain-verde-api/blob/main/docs/adr/0008-perfis-de-acesso-na-aplicacao.md).
 - **Dados validados**: nenhuma resposta da API chega às telas sem passar por um schema Zod.
 - **Auditoria somente leitura**: o frontend só exibe os eventos gravados pelas triggers do banco; não cria logs nem define o autor das operações.
 - **Sem refresh token**: quando o JWT expira, o usuário precisa entrar de novo.
