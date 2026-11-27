@@ -358,7 +358,7 @@ Em push na `main`, depois que os quatro jobs passam, o job `publish` gera a imag
 
 ### Pré-requisitos
 - [Node.js 22](https://nodejs.org/) e npm 10 ou superior
-- [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api) em execução localmente (PostgreSQL via Docker Compose)
+- [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api) em execução localmente (MySQL 8.4 via Docker Compose)
 
 ### 1. Clonar o repositório
 ```bash
