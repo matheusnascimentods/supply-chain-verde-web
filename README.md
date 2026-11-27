@@ -10,13 +10,13 @@
 
 > Rastreabilidade pública de lotes, gestão de fornecedores e acompanhamento das emissões de CO₂ da cadeia de suprimentos.
 
-O **Supply Chain Verde Web** é um projeto acadêmico da disciplina **Banco de Dados**, do curso de **Ciência da Computação** da **Universidade Anhembi Morumbi**: uma Single Page Application (SPA) desenvolvida em **Angular 21** e **TypeScript**, organizada em **core / shared / features**, com cada feature separada nas camadas **domain, application, infrastructure e presentation**. A aplicação consome a [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api) e coloca consumidores, fornecedores, gestores, auditores e administradores em contato com os fluxos de rastreabilidade, emissões, certificações, relatórios e auditoria.
+O **Supply Chain Verde Web** é um projeto acadêmico da disciplina **Banco de Dados**, do curso de **Ciência da Computação** da **Universidade Anhembi Morumbi**: uma Single Page Application (SPA) desenvolvida em **Angular 21** e **TypeScript**, organizada em **core / shared / features**, com cada feature separada nas camadas **domain, application, infrastructure e presentation**. A aplicação consome a [API Supply Chain Verde](https://github.com/matheusnascimentods/supply-chain-verde-api) e coloca mercados, fornecedores, gestores, auditores e administradores em contato com os fluxos de rastreabilidade, emissões, certificações, relatórios e auditoria.
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor User as Operador / Fornecedor
-    actor Consumer as Consumidor
+    actor Consumer as Quem recebe o link
     participant Web as Frontend (Presentation)
     participant Facade as Application (Facade)
     participant Repo as Infrastructure (Repository + Zod)
@@ -33,7 +33,7 @@ sequenceDiagram
     Repo-->>Facade: Etapa, transporte e emissão
     Facade-->>Web: Signals atualizam a timeline do lote
 
-    Consumer->>Web: Abre /rastreio/{batchId} (QR Code)
+    Consumer->>Web: Abre /rastreio/{batchId} (link público)
     Web->>API: GET /batches/{batchId}/traceability e /carbon-footprint
     API-->>Web: Jornada do lote e pegada de carbono
     Web-->>Consumer: Timeline e gráfico de CO₂ por etapa, sem login
@@ -46,13 +46,13 @@ Os dados de sustentabilidade de uma cadeia de suprimentos são difíceis de cons
 - **Informação espalhada**: origem, transporte, certificações e emissões ficam em sistemas e documentos diferentes, sem uma visão única por lote.
 - **Operação trabalhosa**: cadastrar um lote exige produto, fornecedor, etapas, transporte e emissão, normalmente em telas e passos separados.
 - **Comparação difícil entre fornecedores**: sem ranking nem recomendação, escolher o parceiro com menor emissão depende de planilhas.
-- **Opacidade para o consumidor**: o consumidor final não tem uma forma simples de consultar a procedência e a pegada de carbono do produto.
+- **Opacidade entre mercado e fornecedor**: o mercado que compra um lote não tem uma forma simples de consultar a procedência e a pegada de carbono de cada etapa.
 
 ---
 
 ## 🚀 A Solução
 O frontend reúne os recursos da API numa interface única, adaptada a cada perfil:
-- **Rastreabilidade pública**: página aberta, acessível por QR Code, com a jornada do lote e o CO₂ de cada etapa.
+- **Rastreabilidade pública**: página aberta, acessível por link, com a jornada do lote e o CO₂ de cada etapa.
 - **Dashboard operacional**: indicadores gerais, lotes por etapa, série mensal de emissões de CO₂ e lotes recentes.
 - **Gestão de fornecedores**: listagem e ranking de sustentabilidade na mesma tela, com cadastro, certificações e relatórios em modais do próprio fornecedor.
 - **Gestão da cadeia**: criação de lotes num fluxo de etapas que cadastra produto e fornecedor sem sair do modal e recomenda os fornecedores com menor emissão por unidade.
