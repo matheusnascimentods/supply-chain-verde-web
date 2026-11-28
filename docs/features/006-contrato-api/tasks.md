@@ -1,6 +1,8 @@
 # Tarefas — Ajustes ao contrato novo da API
 
 > Requisitos em [`spec.md`](spec.md); arquitetura em [`plan.md`](plan.md).
+>
+> **Nota histórica:** escrito quando a API usava PostgreSQL. A pedido da professora, o banco passou a ser MySQL 8.4 (feature 008 e ADR 0002 da API). As menções a PostgreSQL abaixo descrevem a implementação da época.
 
 **Status:** concluída. Tasks 1 (#66), 2 (#67), 3 (#68), 4 (#69) e 5 entregues; `npm test` e `npm run cypress:run` verdes. Depende da API já mergeada: PR #66 (views e procedures) e PR #67 (ordem das etapas).
 

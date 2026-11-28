@@ -1,6 +1,8 @@
 # Histórico de implementação — Supply Chain Verde Web
 
 > Registro cumulativo das entregas. As fases iniciais e Tasks 12–26 foram implementadas; as descrições de design abaixo preservam o contexto original e as referências usadas na época. Para o estado funcional e técnico atual, consulte [`spec.md`](spec.md) e [`plan.md`](plan.md).
+>
+> **Nota histórica:** escrito quando a API usava PostgreSQL. A pedido da professora, o banco passou a ser MySQL 8.4 (feature 008 e ADR 0002 da API). As menções a PostgreSQL abaixo descrevem a implementação da época.
 
 **Como usar em dupla:** a partir do fim da Fase 2 (Core + Shared), as features das Fases 4 e 6 não dependem umas das outras — só de `core`/`shared` — então dá pra dividir por pessoa a partir daí. `traceability` (pública) também pode ser feita em paralelo com `auth`, já que não depende de sessão.
 
